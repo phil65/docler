@@ -34,9 +34,17 @@ keywords = []
 requires-python = ">=3.12"
 license = { file = "LICENSE" }
 dependencies = [
-"pydantic",
+    "anyenv>=0.4.1",
+    "pydantic",
     # Only add below (Copier)
+    "upathtools>=0.4.3",
 ]
+
+[project.optional-dependencies]
+marker = ["marker-pdf"]
+mistralai = ["mistralai"]
+docling = ["docling"]
+olmocr = ["olmocr"]
 
 [tool.uv]
 default-groups = ["dev", "lint", "docs"]
@@ -152,7 +160,7 @@ select = [
     # "TD",   # flake8-todos
     "T10", # flake8-debugger
     # "T20",  # flake8-print
-    "TC", # flake8-type-checking
+    "TC",  # flake8-type-checking
     "TID", # flake8-tidy-imports
     "TRY", # tryceratops
     "UP",  # PyUpgrade
