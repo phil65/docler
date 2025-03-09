@@ -59,7 +59,7 @@ all = [
     "streamlit",
 ]
 [project.scripts]
-docler = "docler.cli:main"
+docler = "docler.__main__:cli"
 
 [tool.uv]
 default-groups = ["dev", "lint", "docs"]
