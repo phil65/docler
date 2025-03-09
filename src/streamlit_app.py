@@ -14,6 +14,7 @@ from docler.datalab_provider import DataLabConverter
 from docler.docling_provider import DoclingConverter
 from docler.kreuzberg_provider import KreuzbergConverter
 from docler.litellm_provider import LiteLLMConverter
+from docler.marker_provider import MarkerConverter
 from docler.markitdown_provider import MarkItDownConverter
 from docler.mistral_provider import MistralConverter
 from docler.olmocr_provider import OlmConverter
@@ -33,6 +34,7 @@ CONVERTERS: dict[str, type[DocumentConverter]] = {
     "Docling": DoclingConverter,
     "Kreuzberg": KreuzbergConverter,
     "LiteLLM": LiteLLMConverter,
+    "Marker": MarkerConverter,
     "MarkItDown": MarkItDownConverter,
     "Mistral": MistralConverter,
     "OLM": OlmConverter,
