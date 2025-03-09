@@ -50,6 +50,9 @@ kreuzberg = ["kreuzberg"]
 litellm = ["litellm", "tokonomics"]
 streamlit = ["streamlit"]
 
+[project.scripts]
+docler = "docler.cli:main"
+
 [tool.uv]
 default-groups = ["dev", "lint", "docs"]
 

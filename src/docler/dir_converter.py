@@ -182,7 +182,7 @@ if __name__ == "__main__":
 
     async def main():
         converter = MistralConverter()
-        converter = DirectoryConverter(converter)
-        await converter.convert("path/to/directory")
+        dir_converter = DirectoryConverter(converter)
+        await dir_converter.convert("path/to/directory")
 
     asyncio.run(main())

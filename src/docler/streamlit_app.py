@@ -92,7 +92,7 @@ def main():
                     with st.spinner(f"Converting with {converter_name}..."):
                         converter_cls = CONVERTERS[converter_name]
                         content = convert_file(temp_path, converter_cls, language)
-                        st.markdown(content)
+                        st.markdown(f"```markdown\n{content}\n```")
                 except Exception as e:  # noqa: BLE001
                     st.error(f"Conversion failed: {e!s}")
 
