@@ -49,7 +49,15 @@ markitdown = ["markitdown[all]>=0.1.0a1"]
 kreuzberg = ["kreuzberg"]
 litellm = ["litellm", "tokonomics"]
 streamlit = ["streamlit"]
-
+all = [
+    "marker",
+    "mistralai",
+    "docling",
+    "markitdown[all]>=0.1.0a1",
+    "kreuzberg",
+    "litellm",
+    "streamlit",
+]
 [project.scripts]
 docler = "docler.cli:main"
 

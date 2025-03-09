@@ -13,7 +13,7 @@ import typer
 from docler.lang_code import SupportedLanguage  # noqa: TC001
 
 
-app = typer.Typer(
+cli = typer.Typer(
     help="Docler document converter CLI",
     no_args_is_help=True,
 )
@@ -21,7 +21,7 @@ app = typer.Typer(
 logger = logging.getLogger(__name__)
 
 
-@app.command()
+@cli.command()
 def serve(
     language: Annotated[
         SupportedLanguage,
@@ -74,7 +74,7 @@ def serve(
 
 def main():
     """Main entry point."""
-    app()
+    cli()
 
 
 if __name__ == "__main__":
