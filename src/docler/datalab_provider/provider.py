@@ -128,7 +128,7 @@ class DataLabConverter(DocumentConverter):
         for _ in range(MAX_POLLS):
             time.sleep(POLL_INTERVAL)
 
-            result = await anyenv.get_json(check_url, headers=headers, return_type=dict)
+            result = await anyenv.get_json(check_url, headers=headers, return_type=dict)  # type: ignore
 
             if result["status"] == "complete":
                 break

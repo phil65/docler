@@ -59,7 +59,7 @@ class MistralConverter(DocumentConverter):
         logger.debug("Uploading file %s...", pdf_file.name)
         data = pdf_file.read_bytes()
         file_ = File(file_name=pdf_file.stem, content=data)
-        uploaded = client.files.upload(file=file_, purpose="ocr")  # pyright: ignore
+        uploaded = client.files.upload(file=file_, purpose="ocr")  # type: ignore
         signed_url = client.files.get_signed_url(file_id=uploaded.id, expiry=1)
         logger.debug("Processing with OCR model...")
         doc = DocumentURLChunk(document_url=signed_url.url)

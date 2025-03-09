@@ -55,7 +55,7 @@ class DocumentConverter(ABC):
             ValueError: If any file format is not supported.
         """
         tasks = [self.convert_file(path) for path in file_paths]
-        return await list(anyenv.gather(*tasks))  # pyright: ignore
+        return await anyenv.gather(*tasks)  # type: ignore
 
     async def convert_file(self, file_path: StrPath) -> Document:
         """Convert a document file using Marker.
