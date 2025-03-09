@@ -114,14 +114,17 @@ class DataLabConverter(DocumentConverter):
         # Create synchronous client
         headers = {"X-Api-Key": self.api_key}
         response = await anyenv.post(
-            f"{API_BASE}/{self.mode}", data=form, files=files, headers=headers
+            f"{API_BASE}/{self.mode}",
+            data=form,
+            files=files,
+            headers=headers,  # type: ignore
         )
-        data = await response.json()
-        if not data["success"]:
-            msg = f"Failed to submit conversion: {data['error']}"
+        json_data = await response.json()
+        if not json_data["success"]:
+            msg = f"Failed to submit conversion: {json_data['error']}"
             raise ValueError(msg)
         # Poll for results
-        check_url = data["request_check_url"]
+        check_url = json_data["request_check_url"]
         for _ in range(MAX_POLLS):
             time.sleep(POLL_INTERVAL)
 
