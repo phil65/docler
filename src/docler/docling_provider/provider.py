@@ -107,7 +107,7 @@ class DoclingConverter(DocumentConverter):
         images: list[Image] = []
         page_count = 0
 
-        for content_text, content_md, _, _segments, page in generate_multimodal_pages(
+        for content_text, content_md, _, _, _segments, page in generate_multimodal_pages(
             conv_result
         ):
             page_count += 1
