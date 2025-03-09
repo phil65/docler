@@ -4,10 +4,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, ClassVar, Literal
 
-from marker.converters.pdf import PdfConverter
-from marker.models import create_model_dict
-from marker.output import text_from_rendered
-
 from docler.base import DocumentConverter
 from docler.models import Document, Image
 from docler.utils import get_mime_from_pil, pil_to_bytes
@@ -15,6 +11,7 @@ from docler.utils import get_mime_from_pil, pil_to_bytes
 
 if TYPE_CHECKING:
     from docler.common_types import StrPath
+    from docler.lang_code import SupportedLanguage
 
 
 ProviderType = Literal["gemini", "ollama", "vertex", "claude"]
@@ -30,6 +27,7 @@ PROVIDERS: dict[ProviderType, str] = {
 class MarkerConverter(DocumentConverter):
     """Document converter using Marker's PDF processing."""
 
+    NAME = "marker"
     SUPPORTED_MIME_TYPES: ClassVar = {
         # PDF
         "application/pdf",
@@ -59,9 +57,9 @@ class MarkerConverter(DocumentConverter):
 
     def __init__(
         self,
+        languages: list[SupportedLanguage] | None = None,
         *,
         dpi: int = 192,
-        languages: list[str] | None = None,
         llm_provider: ProviderType | None = None,
     ):
         """Initialize the Marker converter.
@@ -71,6 +69,11 @@ class MarkerConverter(DocumentConverter):
             languages: Languages to use for OCR.
             llm_provider: Language model provider to use for OCR.
         """
+        from marker.converters.pdf import PdfConverter
+        from marker.models import create_model_dict
+
+        super().__init__(languages=languages)
+
         self.config = {
             "output_format": "markdown",
             "highres_image_dpi": dpi,
@@ -85,6 +88,7 @@ class MarkerConverter(DocumentConverter):
 
     def _convert_path_sync(self, file_path: StrPath, mime_type: str) -> Document:
         """Implementation of abstract method."""
+        from marker.output import text_from_rendered
         import upath
 
         local_file = upath.UPath(file_path)

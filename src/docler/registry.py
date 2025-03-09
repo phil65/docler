@@ -8,6 +8,9 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from docler.base import DocumentConverter
+    from docler.common_types import StrPath
+    from docler.lang_code import SupportedLanguage
+    from docler.models import Document
 
 
 class ConverterRegistry:
@@ -81,18 +84,143 @@ class ConverterRegistry:
         converters = self._converters.get(mime_type, [])
         return converters[0][1] if converters else None
 
+    async def convert_file(
+        self,
+        file_path: StrPath,
+        language: SupportedLanguage,
+        **converter_kwargs,
+    ) -> Document:
+        """Convert a single file using the appropriate converter.
+
+        Args:
+            file_path: Path to the file to convert
+            language: Primary language for OCR/processing
+            **converter_kwargs: Additional arguments to pass to the converter
+
+        Returns:
+            Converted document
+
+        Raises:
+            ValueError: If no suitable converter is found
+        """
+        converter_cls = self.get_converter(str(file_path))
+        if not converter_cls:
+            msg = f"No converter found for file: {file_path}"
+            raise ValueError(msg)
+
+        converter = converter_cls(languages=[language], **converter_kwargs)
+        return await converter.convert_file(file_path)
+
+    # async def convert_directory(
+    #     self,
+    #     directory: StrPath,
+    #     language: SupportedLanguage,
+    #     *,
+    #     pattern: str = "**/*",
+    #     recursive: bool = True,
+    #     exclude: list[str] | None = None,
+    #     max_depth: int | None = None,
+    #     chunk_size: int = 50,
+    #     **converter_kwargs,
+    # ) -> dict[str, Document]:
+    #     """Convert all supported files in a directory.
+
+    #     Args:
+    #         directory: Directory to process
+    #         language: Primary language for OCR/processing
+    #         pattern: File glob pattern
+    #         recursive: Whether to process subdirectories
+    #         exclude: Patterns to exclude
+    #         max_depth: Maximum directory depth
+    #         chunk_size: Files to process in parallel
+    #         **converter_kwargs: Additional arguments for converters
+
+    #     Returns:
+    #         Map of relative paths to converted documents
+    #     """
+    #     from docler.dir_converter import DirectoryConverter
+
+    #     # Find the first matching converter for any file
+    #     files = await DirectoryConverter._list_files(
+    #         directory, pattern, recursive, exclude, max_depth
+    #     )
+    #     for file in files:
+    #         if converter_cls := self.get_converter(str(file)):
+    #             converter = converter_cls(languages=[language], **converter_kwargs)
+    #             dir_converter = DirectoryConverter(converter, chunk_size=chunk_size)
+    #             return await dir_converter.convert(
+    #                 directory,
+    #                 pattern=pattern,
+    #                 recursive=recursive,
+    #                 exclude=exclude,
+    #                 max_depth=max_depth,
+    #             )
+
+    #     msg = f"No suitable converter found for any files in {directory}"
+    #     raise ValueError(msg)
+
+    # async def convert_directory_with_progress(
+    #     self,
+    #     directory: StrPath,
+    #     language: SupportedLanguage,
+    #     *,
+    #     pattern: str = "**/*",
+    #     recursive: bool = True,
+    #     exclude: list[str] | None = None,
+    #     max_depth: int | None = None,
+    #     chunk_size: int = 50,
+    #     **converter_kwargs,
+    # ) -> AsyncIterator[Conversion]:
+    #     """Convert directory with progress updates.
+
+    #     Args:
+    #         directory: Directory to process
+    #         language: Primary language for OCR/processing
+    #         pattern: File glob pattern
+    #         recursive: Whether to process subdirectories
+    #         exclude: Patterns to exclude
+    #         max_depth: Maximum directory depth
+    #         chunk_size: Files to process in parallel
+    #         **converter_kwargs: Additional arguments for converters
+
+    #     Yields:
+    #         Conversion progress states
+    #     """
+    #     from docler.dir_converter import DirectoryConverter
+
+    #     # Find the first matching converter for any file
+    #     files = await DirectoryConverter._list_files(
+    #         directory, pattern, recursive, exclude, max_depth
+    #     )
+    #     for file in files:
+    #         if converter_cls := self.get_converter(str(file)):
+    #             converter = converter_cls(languages=[language], **converter_kwargs)
+    #             dir_converter = DirectoryConverter(converter, chunk_size=chunk_size)
+    #             async for state in dir_converter.convert_with_progress(
+    #                 directory,
+    #                 pattern=pattern,
+    #                 recursive=recursive,
+    #                 exclude=exclude,
+    #                 max_depth=max_depth,
+    #             ):
+    #                 yield state
+    #             return
+
+    #     msg = f"No suitable converter found for any files in {directory}"
+    #     raise ValueError(msg)
+
 
 if __name__ == "__main__":
+    import logging
+
+    import anyenv
+
+    logging.basicConfig(level=logging.DEBUG)
 
     async def main():
         registry = ConverterRegistry.create_default()
-        file_path = "document.pdf"
-        converter_cls = registry.get_converter(file_path)
-        assert converter_cls is not None
-        converter = converter_cls()
-        return await converter.convert_file(file_path)
-
-    import anyenv
+        pdf_path = "document.pdf"
+        return await registry.convert_file(pdf_path, language="en")
 
     result = anyenv.run_sync(main())
     print(result)

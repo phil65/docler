@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from abc import ABC, abstractmethod
+from abc import ABC
 import mimetypes
 import tempfile
 from typing import TYPE_CHECKING, ClassVar
@@ -15,13 +15,21 @@ if TYPE_CHECKING:
     from collections.abc import Sequence
 
     from docler.common_types import StrPath
+    from docler.lang_code import SupportedLanguage
 
     from .models import Document
 
 
 class DocumentConverter(ABC):
-    """Abstract base class for document converters."""
+    """Abstract base class for document converters.
 
+    Implementation classes should override either:
+    - _convert_path_sync: For CPU-bound operations
+    - _convert_path_async: For IO-bound/API-based operations
+    """
+
+    NAME: str
+    """Name of the converter."""
     SUPPORTED_MIME_TYPES: ClassVar[set[str]] = set()
     """Mime types this converter can handle."""
     SUPPORTED_PROTOCOLS: ClassVar[set[str]] = {"file", ""}
@@ -29,6 +37,9 @@ class DocumentConverter(ABC):
 
     Non-supported protocols will get handled using fsspec + a temporary file.
     """
+
+    def __init__(self, languages: list[SupportedLanguage] | None = None) -> None:
+        self.languages = languages
 
     async def convert_files(self, file_paths: Sequence[StrPath]) -> list[Document]:
         """Convert multiple document files in parallel.
@@ -96,15 +107,24 @@ class DocumentConverter(ABC):
         file_path: StrPath,
         mime_type: str,
     ) -> Document:
-        """Run _convert_path in a thread to handle CPU-intensive operations."""
-        return await anyenv.run_in_thread(self._convert_path_sync, file_path, mime_type)
+        """Internal method to handle conversion routing.
 
-    @abstractmethod
-    def _convert_path_sync(self, file_path: StrPath, mime_type: str) -> Document:
-        """Synchronous implementation of document conversion.
-
-        This method runs in a thread and should contain all CPU-intensive operations.
+        Will use _convert_path_async if implemented, otherwise falls back to
+        running _convert_path_sync in a thread.
         """
+        try:
+            return await self._convert_path_async(file_path, mime_type)
+        except NotImplementedError:
+            return await anyenv.run_in_thread(
+                self._convert_path_sync, file_path, mime_type
+            )
+
+    def _convert_path_sync(self, file_path: StrPath, mime_type: str) -> Document:
+        """Synchronous implementation for CPU-bound operations."""
+        raise NotImplementedError
+
+    async def _convert_path_async(self, file_path: StrPath, mime_type: str) -> Document:
+        """Asynchronous implementation for IO-bound operations."""
         raise NotImplementedError
 
     async def convert_directory(

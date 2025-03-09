@@ -6,6 +6,7 @@ import logging
 from typing import TYPE_CHECKING, ClassVar
 
 from docler.base import DocumentConverter
+from docler.lang_code import SupportedLanguage, convert_languages
 from docler.models import Document, Image
 
 
@@ -19,10 +20,12 @@ logger = logging.getLogger(__name__)
 class DoclingConverter(DocumentConverter):
     """Document converter using Docling's processing."""
 
+    NAME = "docling"
     SUPPORTED_MIME_TYPES: ClassVar[set[str]] = {"application/pdf"}
 
     def __init__(
         self,
+        languages: list[SupportedLanguage] | None = None,
         *,
         image_scale: float = 2.0,
         generate_images: bool = True,
@@ -31,6 +34,7 @@ class DoclingConverter(DocumentConverter):
         """Initialize the Docling converter.
 
         Args:
+            languages: List of supported languages.
             image_scale: Scale factor for image resolution (1.0 = 72 DPI).
             generate_images: Whether to generate and keep page images.
             ocr_engine: The OCR engine to use.
@@ -49,6 +53,8 @@ class DoclingConverter(DocumentConverter):
             PdfFormatOption,
         )
 
+        super().__init__(languages=languages)
+
         opts = dict(
             easy_ocr=EasyOcrOptions,
             tesseract_cli_ocr=TesseractCliOcrOptions,
@@ -59,7 +65,8 @@ class DoclingConverter(DocumentConverter):
         # Configure pipeline options
         engine = opts.get(ocr_engine)
         assert engine
-        pipeline_options = PdfPipelineOptions(ocr_options=engine())
+        opts = engine(lang=convert_languages(languages or ["en"], engine))
+        pipeline_options = PdfPipelineOptions(ocr_options=opts)
         pipeline_options.images_scale = image_scale
         pipeline_options.generate_page_images = generate_images
 
@@ -70,11 +77,7 @@ class DoclingConverter(DocumentConverter):
             }
         )
 
-    def _convert_path_sync(
-        self,
-        file_path: StrPath,
-        mime_type: str,
-    ) -> Document:
+    def _convert_path_sync(self, file_path: StrPath, mime_type: str) -> Document:
         """Convert a PDF file using Docling.
 
         Args:

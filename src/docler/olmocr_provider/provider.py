@@ -6,7 +6,7 @@ import base64
 from io import BytesIO
 import json
 import logging
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING, ClassVar, Literal
 
 from docler.base import DocumentConverter
 from docler.models import Document, Image as DoclerImage
@@ -14,31 +14,40 @@ from docler.models import Document, Image as DoclerImage
 
 if TYPE_CHECKING:
     from docler.common_types import StrPath
+    from docler.lang_code import SupportedLanguage
 
 
 logger = logging.getLogger(__name__)
+PdfEngine = Literal["pdftotext", "pdfium", "pypdf", "topcoherency", "pdfreport"]
 
 
 class OlmConverter(DocumentConverter):
     """Document converter using OLM's OCR model."""
 
+    NAME = "olm"
     SUPPORTED_MIME_TYPES: ClassVar[set[str]] = {"application/pdf"}
 
     def __init__(
         self,
+        languages: list[SupportedLanguage] | None = None,
         *,
         model_name: str = "ollm/ollm-ocr-v1.0",
         device: str | None = None,
+        engine: PdfEngine = "pdfreport",
     ) -> None:
         """Initialize the OLM converter.
 
         Args:
+            languages: List of supported languages.
             model_name: Name of the OLM model to use.
             device: Device to run model on ("cuda", "cpu", etc).
                 If None, will use CUDA if available.
+            engine: PDF engine to use.
         """
         import torch
         from transformers import AutoModelForCausalLM, AutoProcessor
+
+        super().__init__(languages=languages)
 
         self.device = device or ("cuda" if torch.cuda.is_available() else "cpu")
         logger.debug("Loading OLM model on %s...", self.device)
@@ -48,6 +57,7 @@ class OlmConverter(DocumentConverter):
             torch_dtype=torch.float16,
             device_map=self.device,
         )
+        self.engine = engine
         self.processor = AutoProcessor.from_pretrained(model_name)
 
     def _convert_page(
@@ -72,7 +82,7 @@ class OlmConverter(DocumentConverter):
         anchor_text = get_anchor_text(
             pdf_path,
             page_num,
-            pdf_engine="pdfreport",
+            pdf_engine=self.engine,  # pyright: ignore
             target_length=4000,
         )
         prompt = build_finetuning_prompt(anchor_text)
@@ -143,11 +153,7 @@ class OlmConverter(DocumentConverter):
 
         return content, [image]
 
-    def _convert_path_sync(
-        self,
-        file_path: StrPath,
-        mime_type: str,
-    ) -> Document:
+    def _convert_path_sync(self, file_path: StrPath, mime_type: str) -> Document:
         """Convert a PDF file using OLM OCR."""
         from pypdf import PdfReader
         import upath
