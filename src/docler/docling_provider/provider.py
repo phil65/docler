@@ -65,7 +65,7 @@ class DoclingConverter(DocumentConverter):
         # Configure pipeline options
         engine = opts.get(ocr_engine)
         assert engine
-        ocr_opts = engine(lang=convert_languages(languages or ["en"], engine))
+        ocr_opts = engine(lang=convert_languages(languages or ["en"], engine))  # type: ignore
         pipeline_options = PdfPipelineOptions(ocr_options=ocr_opts)
         pipeline_options.images_scale = image_scale
         pipeline_options.generate_page_images = generate_images
