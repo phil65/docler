@@ -31,7 +31,7 @@ class OlmConverter(DocumentConverter):
         self,
         languages: list[SupportedLanguage] | None = None,
         *,
-        model_name: str = "ollm/ollm-ocr-v1.0",
+        model_name: str = "allenai/olmOCR-7B-0225-preview",
         device: str | None = None,
         engine: PdfEngine = "pdfreport",
     ) -> None:
@@ -45,14 +45,14 @@ class OlmConverter(DocumentConverter):
             engine: PDF engine to use.
         """
         import torch
-        from transformers import AutoModelForCausalLM, AutoProcessor
+        from transformers import AutoProcessor, Qwen2VLForConditionalGeneration
 
         super().__init__(languages=languages)
 
         self.device = device or ("cuda" if torch.cuda.is_available() else "cpu")
         logger.debug("Loading OLM model on %s...", self.device)
 
-        self.model = AutoModelForCausalLM.from_pretrained(
+        self.model = Qwen2VLForConditionalGeneration.from_pretrained(
             model_name,
             torch_dtype=torch.float16,
             device_map=self.device,
@@ -190,7 +190,7 @@ if __name__ == "__main__":
 
     logging.basicConfig(level=logging.DEBUG)
 
-    pdf_path = "document.pdf"
+    pdf_path = "C:/Users/phili/Downloads/CustomCodeMigration_EndToEnd.pdf"
     converter = OlmConverter()
     result = anyenv.run_sync(converter.convert_file(pdf_path))
     print(result)
