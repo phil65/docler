@@ -173,3 +173,16 @@ class DirectoryConverter:
                 errors=errors,
                 results=results,
             )
+
+
+if __name__ == "__main__":
+    import asyncio
+
+    from docler.mistral_provider.provider import MistralConverter
+
+    async def main():
+        converter = MistralConverter()
+        converter = DirectoryConverter(converter)
+        await converter.convert("path/to/directory")
+
+    asyncio.run(main())
