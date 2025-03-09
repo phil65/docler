@@ -45,7 +45,7 @@ marker = ["marker-pdf"]
 mistralai = ["mistralai"]
 docling = ["docling"]
 # olmocr = ["olmocr", "accelerate"]
-markitdown = ["markitdown[all]>=0.1.0a1"]
+markitdown = ["markitdown[all]"]
 kreuzberg = ["kreuzberg"]
 litellm = ["litellm", "tokonomics"]
 streamlit = ["streamlit"]
@@ -53,7 +53,7 @@ all = [
     "marker",
     "mistralai",
     "docling",
-    "markitdown[all]>=0.1.0a1",
+    "markitdown[all]",
     "kreuzberg",
     "litellm",
     "streamlit",
