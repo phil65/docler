@@ -44,7 +44,7 @@ dependencies = [
 marker = ["marker-pdf"]
 mistralai = ["mistralai"]
 docling = ["docling"]
-olmocr = ["olmocr", "accelerate"]
+# olmocr = ["olmocr", "accelerate"]
 markitdown = ["markitdown[all]>=0.1.0a1"]
 kreuzberg = ["kreuzberg"]
 litellm = ["litellm", "tokonomics"]

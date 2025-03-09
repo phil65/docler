@@ -17,7 +17,6 @@ from docler.litellm_provider import LiteLLMConverter
 from docler.marker_provider import MarkerConverter
 from docler.markitdown_provider import MarkItDownConverter
 from docler.mistral_provider import MistralConverter
-from docler.olmocr_provider import OlmConverter
 
 
 if TYPE_CHECKING:
@@ -37,7 +36,7 @@ CONVERTERS: dict[str, type[DocumentConverter]] = {
     "Marker": MarkerConverter,
     "MarkItDown": MarkItDownConverter,
     "Mistral": MistralConverter,
-    "OLM": OlmConverter,
+    # "OLM": OlmConverter,
 }
 
 # Language options
