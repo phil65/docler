@@ -110,11 +110,12 @@ class KreuzbergConverter(DocumentConverter):
                 created = parser.parse(date_str)
             except Exception:  # noqa: BLE001
                 pass
-
+        authors = metadata.get("authors")
+        author = authors[0] if authors else None
         return Document(
             content=result.content,
             title=metadata.get("title"),
-            author=metadata.get("creator") or metadata.get("authors", [None])[0],
+            author=metadata.get("creator") or author,
             created=created,
             source_path=str(local_file),
             mime_type=result.mime_type or mime_type,
