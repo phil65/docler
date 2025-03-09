@@ -13,7 +13,7 @@ from docler.marker_provider import MarkerConverter
 from docler.mistral_provider import MistralConverter
 from docler.olmocr_provider import OlmConverter
 
-__version__ = "0.0.1"
+__version__ = "0.1.0"
 
 __all__ = [
     "Conversion",
