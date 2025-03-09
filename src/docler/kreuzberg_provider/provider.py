@@ -81,6 +81,7 @@ class KreuzbergConverter(DocumentConverter):
         Returns:
             Converted document.
         """
+        import anyenv
         from kreuzberg import extract_file
         from kreuzberg._constants import DEFAULT_MAX_PROCESSES
         import upath
