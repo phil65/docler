@@ -48,6 +48,7 @@ olmocr = ["olmocr"]
 markitdown = ["markitdown[all]>=0.1.0a1"]
 kreuzberg = ["kreuzberg"]
 litellm = ["litellm", "tokonomics"]
+streamlit = ["streamlit"]
 
 [tool.uv]
 default-groups = ["dev", "lint", "docs"]
