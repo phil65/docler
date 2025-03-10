@@ -91,7 +91,16 @@ def main():
                     with st.spinner(f"Converting with {converter_name}..."):
                         converter_cls = CONVERTERS[converter_name]
                         content = convert_file(temp_path, converter_cls, language)
-                        st.markdown(f"```markdown\n{content}\n```")
+
+                        # Create nested tabs for raw/rendered content
+                        raw_tab, rendered_tab = st.tabs(["Raw Markdown", "Rendered"])
+
+                        # Show raw markdown
+                        with raw_tab:
+                            st.markdown(f"```markdown\n{content}\n```")
+                        with rendered_tab:
+                            st.markdown(content)
+
                 except Exception as e:  # noqa: BLE001
                     st.error(f"Conversion failed: {e!s}")
 
