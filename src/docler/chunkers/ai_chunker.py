@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict
 
 from docler.chunkers.base import TextChunk
 
@@ -19,20 +19,29 @@ class Chunk(BaseModel):
     """A chunk of text with semantic metadata."""
 
     start_row: int
+    """Start line number (1-based)"""
+
     end_row: int
-    keywords: list[str] = Field(description="Key terms and concepts in this chunk")
-    references: list[int] = Field(
-        description="Line numbers that this chunk references or depends on"
-    )
+    """End line number (1-based)"""
+
+    keywords: list[str]
+    """Key terms and concepts in this chunk"""
+
+    references: list[int]
+    """Line numbers that this chunk references or depends on"""
+
+    model_config = ConfigDict(use_attribute_docstrings=True)
 
 
 class Chunks(BaseModel):
     """Collection of chunks with their metadata."""
 
     chunks: list[Chunk]
+    """A list of chunks to extract from the document."""
 
 
-CHUNKING_PROMPT = """You are an expert at dividing text into meaningful chunks while preserving context and relationships.
+SYS_PROMPT = """
+You are an expert at dividing text into meaningful chunks while preserving context and relationships.
 
 Analyze this text and split it into coherent chunks. For each chunk:
 1. Define its start and end line numbers (1-based)
@@ -45,13 +54,14 @@ Rules:
 - Keywords should be specific and relevant
 - Line numbers must be accurate
 
+"""  # noqa: E501
+
+CHUNKING_PROMPT = """
 Here's the text with line numbers:
 
 {numbered_text}
 
-Return only valid JSON matching this schema:
-{schema}
-"""  # noqa: E501
+"""
 
 
 class AIChunker:
@@ -59,7 +69,8 @@ class AIChunker:
 
     def __init__(
         self,
-        model: str = "gpt-4-turbo-preview",
+        model: str = "openrouter:openai/o3-mini",  # google/gemini-2.0-flash-lite-001
+        provider: Literal["pydantic_ai", "litellm"] = "pydantic_ai",
         min_chunk_size: int = 200,
         max_chunk_size: int = 1500,
     ) -> None:
@@ -67,10 +78,12 @@ class AIChunker:
 
         Args:
             model: LLM model to use
+            provider: LLM provider to use
             min_chunk_size: Minimum characters per chunk
             max_chunk_size: Maximum characters per chunk
         """
         self.model = model
+        self.provider = provider
         self.min_chunk_size = min_chunk_size
         self.max_chunk_size = max_chunk_size
 
@@ -83,32 +96,18 @@ class AIChunker:
         """Get chunk definitions from LLM."""
         numbered_text = self._add_line_numbers(text)
 
-        # Get JSON schema for expected response
-        schema = Chunks.model_json_schema()
-        import litellm
+        import llmling_agent
 
-        # Prepare prompt
-        prompt = CHUNKING_PROMPT.format(
-            numbered_text=numbered_text,
-            schema=schema,
-        )
+        agent = llmling_agent.Agent(
+            model=self.model,
+            provider=self.provider,  # pyright: ignore
+            system_prompt=SYS_PROMPT,
+        ).to_structured(Chunks)
+        prompt = CHUNKING_PROMPT.format(numbered_text=numbered_text)
 
         # Get response from LLM
-        response = await litellm.acompletion(
-            model=self.model,
-            messages=[
-                {
-                    "role": "system",
-                    "content": "You are a text analysis expert.",
-                },
-                {"role": "user", "content": prompt},
-            ],
-            response_format={"type": "json_object"},
-        )
-
-        # Parse response into our model
-        result = response.choices[0].message.content
-        return Chunks.model_validate_json(result)
+        response = await agent.run(prompt)
+        return response.content
 
     def _create_text_chunk(
         self,
@@ -164,7 +163,7 @@ if __name__ == "__main__":
 
     async def main():
         # Example usage
-        doc = Document(source_path="example.txt", content=CHUNKING_PROMPT)
+        doc = Document(source_path="example.txt", content=SYS_PROMPT)
         chunker = AIChunker()
         chunks = await chunker.split(doc)
         print(chunks)
