@@ -97,9 +97,7 @@ class DataLabConverter(DocumentConverter):
         path = upath.UPath(file_path)
 
         # Prepare form data
-        form = {
-            "output_format": "markdown",
-        }
+        form = {"output_format": "markdown"}
         data = await read_path(path, mode="rb")
         files = {"file": (path.name, data, mime_type)}
         if self.languages:
@@ -113,12 +111,8 @@ class DataLabConverter(DocumentConverter):
 
         # Create synchronous client
         headers = {"X-Api-Key": self.api_key}
-        response = await anyenv.post(
-            f"{API_BASE}/{self.mode}",
-            data=form,
-            files=files,
-            headers=headers,  # type: ignore
-        )
+        url = f"{API_BASE}/{self.mode}"
+        response = await anyenv.post(url, data=form, files=files, headers=headers)  # type: ignore
         json_data = await response.json()
         if not json_data["success"]:
             msg = f"Failed to submit conversion: {json_data['error']}"
@@ -127,9 +121,7 @@ class DataLabConverter(DocumentConverter):
         check_url = json_data["request_check_url"]
         for _ in range(MAX_POLLS):
             time.sleep(POLL_INTERVAL)
-
             result = await anyenv.get_json(check_url, headers=headers, return_type=dict)  # type: ignore
-
             if result["status"] == "complete":
                 break
         else:
