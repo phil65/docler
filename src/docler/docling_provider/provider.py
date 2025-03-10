@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from io import BytesIO
 import logging
 from typing import TYPE_CHECKING, ClassVar
 
@@ -66,16 +67,13 @@ class DoclingConverter(DocumentConverter):
         engine = opts.get(ocr_engine)
         assert engine
         ocr_opts = engine(lang=convert_languages(languages or ["en"], engine))  # type: ignore
-        pipeline_options = PdfPipelineOptions(ocr_options=ocr_opts)
+        pipeline_options = PdfPipelineOptions(
+            ocr_options=ocr_opts, generate_picture_images=True
+        )
         pipeline_options.images_scale = image_scale
         pipeline_options.generate_page_images = generate_images
-
-        # Create converter
-        self.converter = DoclingDocumentConverter(
-            format_options={
-                InputFormat.PDF: PdfFormatOption(pipeline_options=pipeline_options)
-            }
-        )
+        fmt_opts = {InputFormat.PDF: PdfFormatOption(pipeline_options=pipeline_options)}
+        self.converter = DoclingDocumentConverter(format_options=fmt_opts)  # type: ignore
 
     def _convert_path_sync(self, file_path: StrPath, mime_type: str) -> Document:
         """Convert a PDF file using Docling.
@@ -91,57 +89,67 @@ class DoclingConverter(DocumentConverter):
             FileNotFoundError: If the file doesn't exist.
             ValueError: If the file is not a PDF.
         """
-        from io import BytesIO
+        import re
 
-        from docling.utils.export import generate_multimodal_pages
-        from PIL import Image as PILImage
         import upath
 
         pdf_path = upath.UPath(file_path)
 
         # Convert using Docling
-        conv_result = self.converter.convert(str(pdf_path))
+        doc_result = self.converter.convert(str(pdf_path))
 
-        # Process all pages
-        contents: list[str] = []
+        # Get markdown content
+        markdown_content = doc_result.document.export_to_markdown()
+
+        # Find all image placeholders
+        image_placeholders = re.findall(r"<!-- image -->", markdown_content)
+
+        # Prepare images
         images: list[Image] = []
-        page_count = 0
+        image_replacements = []
 
-        for content_text, content_md, _, _, _segments, page in generate_multimodal_pages(
-            conv_result
-        ):
-            page_count += 1
+        # Process each page with an image
+        for page_item in doc_result.pages:
+            if page_item.image:
+                # Create image ID and filename
+                image_count = len(images) + 1
+                image_id = f"img-{image_count}"
+                filename = f"{image_id}.png"
 
-            # Add page content (preferring markdown if available)
-            contents.append(content_md or content_text)
+                # Prepare image replacement
+                image_replacements.append((image_id, filename))
 
-            # Convert page image to our format
-            if page.image:
                 # Convert PIL image to bytes
                 img_bytes = BytesIO()
-                pil_image = PILImage.frombytes(
-                    "RGB",
-                    (page.image.width, page.image.height),
-                    page.image.tobytes(),
-                )
+                pil_image = page_item.image
                 pil_image.save(img_bytes, format="PNG")
 
-                images.append(
-                    Image(
-                        id=f"page_{page.page_no}",
-                        content=img_bytes.getvalue(),
-                        mime_type="image/png",
-                        filename=f"page_{page.page_no}.png",
-                    )
+                # Create image object
+                image = Image(
+                    id=image_id,
+                    content=img_bytes.getvalue(),
+                    mime_type="image/png",
+                    filename=filename,
+                )
+                images.append(image)
+
+        # Replace placeholders with actual image references
+        for i, _placeholder in enumerate(image_placeholders):
+            if i < len(image_replacements):
+                image_id, filename = image_replacements[i]
+                markdown_content = markdown_content.replace(
+                    "<!-- image -->",
+                    f"![{image_id}]({filename})",
+                    1,  # Replace only the first occurrence
                 )
 
         return Document(
-            content="\n\n".join(contents),
+            content=markdown_content,
             images=images,
             title=pdf_path.stem,
             source_path=str(pdf_path),
             mime_type=mime_type,
-            page_count=page_count,
+            page_count=len(doc_result.pages),
         )
 
 
@@ -152,7 +160,7 @@ if __name__ == "__main__":
 
     logging.basicConfig(level=logging.INFO)
 
-    pdf_path = "C:/Users/phili/Downloads/CustomCodeMigration_EndToEnd.pdf"
+    pdf_path = "C:/Users/phili/Downloads/2402.079271.pdf"
     converter = DoclingConverter()
     result = anyenv.run_sync(converter.convert_file(pdf_path))
     print(result)
