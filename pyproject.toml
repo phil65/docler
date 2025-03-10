@@ -72,6 +72,7 @@ dev = [
     "pytest-cov",
     "pyreadline3",
     "devtools",
+    "pytest-asyncio",
     # Only add below (Copier)
 ]
 benchmark = ["pyinstrument"]
@@ -99,6 +100,7 @@ testpaths = "tests/"
 log_cli = true
 log_format = "%(asctime)s %(levelname)s %(message)s"
 log_date_format = "%Y-%m-%d %H:%M:%S"
+asyncio_mode = "auto"
 
 [tool.coverage.report]
 exclude_lines = [
