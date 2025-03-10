@@ -112,25 +112,16 @@ class DoclingConverter(DocumentConverter):
         for page_item in doc_result.pages:
             if page_item.image:
                 # Create image ID and filename
-                image_count = len(images) + 1
-                image_id = f"img-{image_count}"
-                filename = f"{image_id}.png"
-
+                img_id = f"img-{len(images) + 1}"
+                fname = f"{img_id}.png"
                 # Prepare image replacement
-                image_replacements.append((image_id, filename))
-
+                image_replacements.append((img_id, fname))
                 # Convert PIL image to bytes
                 img_bytes = BytesIO()
-                pil_image = page_item.image
-                pil_image.save(img_bytes, format="PNG")
-
-                # Create image object
-                image = Image(
-                    id=image_id,
-                    content=img_bytes.getvalue(),
-                    mime_type="image/png",
-                    filename=filename,
-                )
+                page_item.image.save(img_bytes, format="PNG")
+                content = img_bytes.getvalue()
+                mime = "image/png"
+                image = Image(id=img_id, content=content, mime_type=mime, filename=fname)
                 images.append(image)
 
         # Replace placeholders with actual image references
