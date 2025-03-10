@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class LiteLLMConverter(DocumentConverter):
+class LLMConverter(DocumentConverter):
     """Document converter using LLM providers that support PDF input."""
 
     NAME = "litellm"
@@ -130,7 +130,7 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 
     pdf_path = "C:/Users/phili/Downloads/CustomCodeMigration_EndToEnd.pdf"
-    converter = LiteLLMConverter(
+    converter = LLMConverter(
         languages=["en", "de"],
         user_prompt="Convert this PDF to markdown, focusing on technical details.",
     )

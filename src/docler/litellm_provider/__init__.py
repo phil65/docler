@@ -1,5 +1,5 @@
 """LiteLLM Provider."""
 
-from docler.litellm_provider.provider import LiteLLMConverter
+from docler.litellm_provider.provider import LLMConverter
 
-__all__ = ["LiteLLMConverter"]
+__all__ = ["LLMConverter"]

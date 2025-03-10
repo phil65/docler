@@ -123,11 +123,11 @@ class DataLabConfig(BaseConverterConfig):
         return DataLabConverter(**self.model_dump(exclude={"type"}))
 
 
-class LiteLLMConfig(BaseConverterConfig):
-    """Configuration for LiteLLM-based converter."""
+class LLMConverterConfig(BaseConverterConfig):
+    """Configuration for LLM-based converter."""
 
-    type: Literal["litellm"] = Field("litellm", init=False)
-    """Type discriminator for LiteLLM converter."""
+    type: Literal["llm"] = Field("llm", init=False)
+    """Type discriminator for LLM converter."""
 
     model: str = "gemini/gemini-2.0-flash"
     """LLM model to use."""
@@ -146,9 +146,9 @@ class LiteLLMConfig(BaseConverterConfig):
 
     def get_converter(self) -> DocumentConverter:
         """Get the converter instance."""
-        from docler.litellm_provider import LiteLLMConverter
+        from docler.litellm_provider import LLMConverter
 
-        return LiteLLMConverter(**self.model_dump(exclude={"type"}))
+        return LLMConverter(**self.model_dump(exclude={"type"}))
 
 
 class MistralConfig(BaseConverterConfig):
@@ -198,7 +198,7 @@ ConverterConfig = Annotated[
     DataLabConfig
     | DoclingConverterConfig
     | KreuzbergConfig
-    | LiteLLMConfig
+    | LLMConverterConfig
     | MarkItDownConfig
     | MistralConfig
     | OlmConfig,
