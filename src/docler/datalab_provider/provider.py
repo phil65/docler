@@ -8,8 +8,6 @@ import os
 import time
 from typing import TYPE_CHECKING, ClassVar, Literal
 
-import anyenv
-
 from docler.base import DocumentConverter
 from docler.models import Document, Image
 
@@ -91,6 +89,7 @@ class DataLabConverter(DocumentConverter):
         Raises:
             ValueError: If conversion fails.
         """
+        import anyenv
         import upath
         from upathtools import read_path
 
@@ -156,6 +155,8 @@ class DataLabConverter(DocumentConverter):
 
 if __name__ == "__main__":
     import logging
+
+    import anyenv
 
     logging.basicConfig(level=logging.DEBUG)
     pdf_path = "C:/Users/phili/Downloads/CustomCodeMigration_EndToEnd.pdf"

@@ -1,11 +1,16 @@
 """Converter configuration."""
 
-from typing import Annotated, Literal
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from docler.base import DocumentConverter
-from docler.lang_code import SupportedLanguage
+from docler.lang_code import SupportedLanguage  # noqa: TC001
+
+
+if TYPE_CHECKING:
+    from docler.base import DocumentConverter
 
 
 FormatterType = Literal["text", "json", "vtt", "srt"]

@@ -46,12 +46,7 @@ class Conversion:
 class DirectoryConverter:
     """Directory conversion functionality."""
 
-    def __init__(
-        self,
-        converter: DocumentConverter,
-        *,
-        chunk_size: int = 50,
-    ) -> None:
+    def __init__(self, converter: DocumentConverter, *, chunk_size: int = 50):
         """Initialize the directory converter.
 
         Args:
