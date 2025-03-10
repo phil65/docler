@@ -135,17 +135,13 @@ class DataLabConverter(DocumentConverter):
         # Convert images if present
         images: list[Image] = []
         if result.get("images"):
-            for filename, img_data in result["images"].items():
+            for fname, img_data in result["images"].items():
                 if img_data.startswith("data:"):
                     img_data = img_data.split(",", 1)[1]
-
-                ext = filename.split(".")[-1].lower()
-                image = Image(
-                    id=filename,
-                    content=base64.b64decode(img_data),
-                    mime_type=f"image/{ext}",
-                    filename=filename,
-                )
+                ext = fname.split(".")[-1].lower()
+                content = base64.b64decode(img_data)
+                mime = f"image/{ext}"
+                image = Image(id=fname, content=content, mime_type=mime, filename=fname)
                 images.append(image)
 
         return Document(
