@@ -106,19 +106,17 @@ class MarkdownChunker:
 
         # Try header-based splitting first
         header_sections = list(self._split_by_headers(doc.content))
-
         if not header_sections:
             # Fallback to size-based if no headers
             for content, images in self._fallback_split(doc.content, doc.images):
-                chunks.append(
-                    TextChunk(
-                        text=content,
-                        source_doc_id=doc.source_path or "",
-                        chunk_index=chunk_idx,
-                        images=images,
-                        metadata=extra_metadata or {},
-                    )
+                chunk = TextChunk(
+                    text=content,
+                    source_doc_id=doc.source_path or "",
+                    chunk_index=chunk_idx,
+                    images=images,
+                    metadata=extra_metadata or {},
                 )
+                chunks.append(chunk)
                 chunk_idx += 1
             return chunks
 
@@ -127,36 +125,28 @@ class MarkdownChunker:
             if len(content) > self.max_chunk_size:
                 # Split large sections
                 for sub_content, images in self._fallback_split(content, doc.images):
-                    chunks.append(
-                        TextChunk(
-                            text=f"{header}\n\n{sub_content}",
-                            source_doc_id=doc.source_path or "",
-                            chunk_index=chunk_idx,
-                            images=images,
-                            metadata={
-                                **(extra_metadata or {}),
-                                "header": header,
-                                "level": level,
-                            },
-                        )
+                    meta = {**(extra_metadata or {}), "header": header, "level": level}
+                    chunk = TextChunk(
+                        text=f"{header}\n\n{sub_content}",
+                        source_doc_id=doc.source_path or "",
+                        chunk_index=chunk_idx,
+                        images=images,
+                        metadata=meta,
                     )
+                    chunks.append(chunk)
                     chunk_idx += 1
             else:
                 # Use section as-is
                 content, images = self._assign_images(content, doc.images)
-                chunks.append(
-                    TextChunk(
-                        text=f"{header}\n\n{content}",
-                        source_doc_id=doc.source_path or "",
-                        chunk_index=chunk_idx,
-                        images=images,
-                        metadata={
-                            **(extra_metadata or {}),
-                            "header": header,
-                            "level": level,
-                        },
-                    )
+                meta = {**(extra_metadata or {}), "header": header, "level": level}
+                chunk = TextChunk(
+                    text=f"{header}\n\n{content}",
+                    source_doc_id=doc.source_path or "",
+                    chunk_index=chunk_idx,
+                    images=images,
+                    metadata=meta,
                 )
+                chunks.append(chunk)
                 chunk_idx += 1
 
         return chunks
