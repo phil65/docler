@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import base64
 import logging
 from pathlib import Path
 import tempfile
@@ -43,15 +44,18 @@ CONVERTERS: dict[str, type[DocumentConverter]] = {
 LANGUAGES: list[SupportedLanguage] = ["en", "de", "fr", "es", "zh"]
 
 
-def convert_file(
-    file_path: str | Path,
-    converter_cls: type[DocumentConverter],
-    language: SupportedLanguage,
-) -> str:
-    """Convert a single file using the specified converter."""
-    converter = converter_cls(languages=[language])
-    doc = anyenv.run_sync(converter.convert_file(file_path))
-    return doc.content
+def format_image_content(image_content: bytes | str, mime_type: str) -> str:
+    """Convert image content to base64 data URL."""
+    if isinstance(image_content, bytes):
+        # Convert bytes to base64
+        b64_content = base64.b64encode(image_content).decode()
+    else:
+        # Already base64 string - ensure no data URL prefix
+        b64_content = (
+            image_content.split(",")[-1] if "," in image_content else image_content
+        )
+
+    return f"data:{mime_type};base64,{b64_content}"
 
 
 def main():
@@ -81,25 +85,52 @@ def main():
             temp_file.write(uploaded_file.getvalue())
             temp_path = temp_file.name
 
-        # Create tabs for results
-        tabs = st.tabs(selected_converters)
+        # Create tabs for converters
+        converter_tabs = st.tabs(selected_converters)
 
         # Convert with each selected converter
-        for tab, converter_name in zip(tabs, selected_converters):
+        for tab, converter_name in zip(converter_tabs, selected_converters):
             with tab:
                 try:
                     with st.spinner(f"Converting with {converter_name}..."):
                         converter_cls = CONVERTERS[converter_name]
-                        content = convert_file(temp_path, converter_cls, language)
+                        converter = converter_cls(languages=[language])
+                        doc = anyenv.run_sync(converter.convert_file(temp_path))
 
-                        # Create nested tabs for raw/rendered content
-                        raw_tab, rendered_tab = st.tabs(["Raw Markdown", "Rendered"])
+                        # Create nested tabs
+                        raw_tab, rendered_tab, images_tab = st.tabs([
+                            "Raw Markdown",
+                            "Rendered",
+                            "Images",
+                        ])
 
                         # Show raw markdown
                         with raw_tab:
-                            st.markdown(f"```markdown\n{content}\n```")
+                            st.markdown(f"```markdown\n{doc.content}\n```")
+
+                        # Show rendered markdown
                         with rendered_tab:
-                            st.markdown(content)
+                            st.markdown(doc.content)
+
+                        # Show images
+                        with images_tab:
+                            if not doc.images:
+                                st.info("No images extracted")
+                            else:
+                                for image in doc.images:
+                                    # Create image data URL
+                                    data_url = format_image_content(
+                                        image.content,
+                                        image.mime_type,
+                                    )
+
+                                    # Show image details and preview
+                                    st.markdown(f"**ID:** {image.id}")
+                                    if image.filename:
+                                        st.markdown(f"**Filename:** {image.filename}")
+                                    st.markdown(f"**MIME Type:** {image.mime_type}")
+                                    st.image(data_url)
+                                    st.divider()
 
                 except Exception as e:  # noqa: BLE001
                     st.error(f"Conversion failed: {e!s}")
