@@ -49,6 +49,7 @@ markitdown = ["markitdown[all]"]
 kreuzberg = ["kreuzberg"]
 litellm = ["litellm", "tokonomics"]
 streamlit = ["streamlit"]
+llama-parse = ["llama-parse"]
 all = [
     "marker",
     "mistralai",
@@ -56,6 +57,7 @@ all = [
     "markitdown[all]",
     "kreuzberg",
     "litellm",
+    "llama-parse",
     "streamlit",
 ]
 [project.scripts]
