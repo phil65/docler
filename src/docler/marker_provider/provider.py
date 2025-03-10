@@ -97,17 +97,35 @@ class MarkerConverter(DocumentConverter):
         rendered = self.converter(str(local_file))
         content, _, pil_images = text_from_rendered(rendered)
 
-        # Convert PIL images to our Image model
+        # Convert PIL images to our Image model with standardized IDs
         images: list[Image] = []
+        image_replacements = {}
+
         for img_name, pil_img in pil_images.items():
+            # Create standardized image ID and filename
+            image_count = len(images)
+            image_id = f"img-{image_count}"
+            filename = f"{image_id}.png"
+
+            # Store old->new mapping for content replacement
+            image_replacements[img_name] = (image_id, filename)
+
+            # Create image object
             image_data = pil_to_bytes(pil_img)
             image = Image(
-                id=img_name,
+                id=image_id,
                 content=image_data,
                 mime_type=get_mime_from_pil(pil_img),
-                filename=img_name,
+                filename=filename,
             )
             images.append(image)
+
+        # Replace image references in content
+        # Match Marker's format: ![](_page_X_Picture_Y.jpeg)
+        for old_name, (image_id, filename) in image_replacements.items():
+            old_ref = f"![]({old_name})"
+            new_ref = f"![{image_id}]({filename})"
+            content = content.replace(old_ref, new_ref)
 
         return Document(
             content=content,
