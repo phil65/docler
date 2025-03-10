@@ -89,53 +89,35 @@ class DoclingConverter(DocumentConverter):
             FileNotFoundError: If the file doesn't exist.
             ValueError: If the file is not a PDF.
         """
-        import re
-
+        from docling_core.types.doc.base import ImageRefMode
         import upath
 
         pdf_path = upath.UPath(file_path)
-
-        # Convert using Docling
         doc_result = self.converter.convert(str(pdf_path))
 
-        # Get markdown content
-        markdown_content = doc_result.document.export_to_markdown()
+        # Get markdown with placeholders
+        mk_content = doc_result.document.export_to_markdown(
+            image_mode=ImageRefMode.REFERENCED
+        )
 
-        # Find all image placeholders
-        image_placeholders = re.findall(r"<!-- image -->", markdown_content)
-
-        # Prepare images
+        # Process actual images from the document
         images: list[Image] = []
-        image_replacements = []
+        for i, picture in enumerate(doc_result.document.pictures):
+            if not picture.image or not picture.image.pil_image:
+                continue
 
-        # Process each page with an image
-        for page_item in doc_result.pages:
-            if page_item.image:
-                # Create image ID and filename
-                img_id = f"img-{len(images) + 1}"
-                fname = f"{img_id}.png"
-                # Prepare image replacement
-                image_replacements.append((img_id, fname))
-                # Convert PIL image to bytes
-                img_bytes = BytesIO()
-                page_item.image.save(img_bytes, format="PNG")
-                content = img_bytes.getvalue()
-                mime = "image/png"
-                image = Image(id=img_id, content=content, mime_type=mime, filename=fname)
-                images.append(image)
-
-        # Replace placeholders with actual image references
-        for i, _placeholder in enumerate(image_placeholders):
-            if i < len(image_replacements):
-                image_id, filename = image_replacements[i]
-                markdown_content = markdown_content.replace(
-                    "<!-- image -->",
-                    f"![{image_id}]({filename})",
-                    1,  # Replace only the first occurrence
-                )
+            # Create image ID and filename
+            image_id = f"img-{i}"
+            filename = f"{image_id}.png"
+            img_bytes = BytesIO()
+            picture.image.pil_image.save(img_bytes, format="PNG")
+            content = img_bytes.getvalue()
+            mime = "image/png"
+            image = Image(id=image_id, content=content, mime_type=mime, filename=filename)
+            images.append(image)
 
         return Document(
-            content=markdown_content,
+            content=mk_content,
             images=images,
             title=pdf_path.stem,
             source_path=str(pdf_path),
