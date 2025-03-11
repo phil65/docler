@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 import os
+import pathlib
 import subprocess
 import sys
 
@@ -14,12 +15,27 @@ cli = typer.Typer(help="Docler document converter CLI", no_args_is_help=True)
 
 logger = logging.getLogger(__name__)
 
+PACKAGE_DIR = pathlib.Path(__file__).parent
+
 
 @cli.command()
 def serve() -> None:
     """Start the Streamlit web interface."""
-    package_dir = os.path.dirname(__file__)  # noqa: PTH120
-    app_path = os.path.join(package_dir, "streamlit_app.py")  # noqa: PTH118
+    app_path = str(PACKAGE_DIR / "streamlit_app.py")
+    try:
+        cmd = [sys.executable, "-m", "streamlit", "run", app_path]
+        subprocess.run(cmd, env=os.environ.copy(), check=True)
+    except subprocess.CalledProcessError as e:
+        # msg = f"Failed to start Streamlit: {e}"
+        raise typer.Exit(1) from e
+    except KeyboardInterrupt:
+        logger.info("Shutting down...")
+
+
+@cli.command("chunk_ui")
+def chunk_ui() -> None:
+    """Start the Streamlit web interface."""
+    app_path = str(PACKAGE_DIR / "streamlit_chunk_app.py")
     try:
         cmd = [sys.executable, "-m", "streamlit", "run", app_path]
         subprocess.run(cmd, env=os.environ.copy(), check=True)
