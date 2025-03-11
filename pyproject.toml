@@ -49,6 +49,7 @@ docling = ["docling"]
 kreuzberg = ["kreuzberg"]
 litellm = ["litellm", "tokonomics"]
 streamlit = ["streamlit"]
+llama-index = ["llama-index"]
 llama-parse = ["llama-parse"]
 all = [
     "marker",

@@ -22,18 +22,6 @@ class BaseChunkerConfig(BaseModel):
     )
 
 
-class LangChainChunkerConfig(BaseChunkerConfig):
-    """Configuration for LangChain chunkers."""
-
-    type: Literal["langchain"] = Field(default="langchain", init=False)
-
-    chunker_type: Literal["recursive", "markdown", "character"] = "recursive"
-    """Which LangChain chunker to use."""
-
-    chunk_size: int = 1000
-    """Target size of chunks."""
-
-
 class LlamaIndexChunkerConfig(BaseChunkerConfig):
     """Configuration for LlamaIndex chunkers."""
 
@@ -94,9 +82,6 @@ class AiChunkerConfig(BaseChunkerConfig):
 
 
 ChunkerConfig = Annotated[
-    LangChainChunkerConfig
-    | LlamaIndexChunkerConfig
-    | MarkdownChunkerConfig
-    | AiChunkerConfig,
+    LlamaIndexChunkerConfig | MarkdownChunkerConfig | AiChunkerConfig,
     Field(discriminator="type"),
 ]
