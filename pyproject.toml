@@ -51,6 +51,7 @@ litellm = ["litellm", "tokonomics"]
 streamlit = ["streamlit"]
 llama-index = ["llama-index"]
 llama-parse = ["llama-parse"]
+smart-pdf = ["llmsherpa", "llama-index-readers-smart-pdf-loader"]
 all = [
     "marker-pdf",
     "mistralai",
@@ -61,6 +62,8 @@ all = [
     "llmling-agent[pydantic-ai]",
     # "llama-parse",
     "streamlit",
+    "llmsherpa",
+    "llama-index-readers-smart-pdf-loader",
 ]
 [project.scripts]
 docler = "docler.__main__:cli"
