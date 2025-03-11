@@ -59,7 +59,6 @@ def main() -> None:
             step=10,
             help="Character overlap between chunks",
         )
-        _show_debug = st.checkbox("Show debug info", value=False)
 
     # Main content area
     col1, col2 = st.columns([2, 1])
