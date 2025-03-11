@@ -63,7 +63,9 @@ def main():
     st.title("Document Converter")
 
     # File upload
-    uploaded_file = st.file_uploader("Choose a PDF file", type="pdf")
+    uploaded_file = st.file_uploader(
+        "Choose a file", type=["pdf", "docx", "jpg", "png", "ppt", "pptx", "xls", "xlsx"]
+    )
 
     # Converter selection
     selected_converters = st.multiselect(
