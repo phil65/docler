@@ -2,11 +2,8 @@
 
 from __future__ import annotations
 
-import base64
 import logging
-from typing import TYPE_CHECKING, Any, ClassVar
-
-from litellm import completion
+from typing import TYPE_CHECKING, ClassVar
 
 from docler.base import DocumentConverter
 from docler.models import Document
@@ -20,10 +17,19 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
+USER_PROMPT = """
+Convert this PDF document to markdown format
+Preserve the original formatting and structure where possible.
+Include any important tables or lists.
+Describe any images you see in brackets.
+{txt}
+"""
+
+
 class LLMConverter(DocumentConverter):
     """Document converter using LLM providers that support PDF input."""
 
-    NAME = "litellm"
+    NAME = "llm"
     SUPPORTED_MIME_TYPES: ClassVar[set[str]] = {"application/pdf"}
 
     def __init__(
@@ -55,21 +61,12 @@ class LLMConverter(DocumentConverter):
         self.system_prompt = system_prompt
         self.temperature = temperature
         self.max_tokens = max_tokens
-
-        # Build prompt
-        prompt_parts = []
-        prompt_parts.append("Convert this PDF document to markdown format.")
+        txt = ""
         if languages:
             lang_str = ", ".join(languages)
-            prompt_parts.append(
-                f"The document may contain text in these languages: {lang_str}."
-            )
-        prompt_parts.extend([
-            "Preserve the original formatting and structure where possible.",
-            "Include any important tables or lists.",
-            "Describe any images you see in brackets.",
-        ])
-        self.user_prompt = user_prompt or " ".join(prompt_parts)
+            txt = f"The document may contain text in these languages: {lang_str}."
+
+        self.user_prompt = user_prompt or USER_PROMPT.format(txt)
 
     def _convert_path_sync(self, file_path: StrPath, mime_type: str) -> Document:
         """Convert a PDF file using the configured LLM.
@@ -81,6 +78,9 @@ class LLMConverter(DocumentConverter):
         Returns:
             Converted document
         """
+        import base64
+
+        import llmling_agent
         import upath
 
         path = upath.UPath(file_path)
@@ -88,34 +88,18 @@ class LLMConverter(DocumentConverter):
         # Read and encode PDF
         pdf_bytes = path.read_bytes()
         pdf_b64 = base64.b64encode(pdf_bytes).decode()
-        pdf_data = f"data:application/pdf;base64,{pdf_b64}"
-
-        # Prepare messages
-        messages: list[dict[str, Any]] = []
-        if self.system_prompt:
-            messages.append({
-                "role": "system",
-                "content": self.system_prompt,
-            })
-
-        messages.append({
-            "role": "user",
-            "content": [
-                {"type": "text", "text": self.user_prompt},
-                {"type": "image_url", "image_url": pdf_data},
-            ],
-        })
-
-        # Get response from LLM
-        response = completion(
-            model=self.model,
-            messages=messages,
-            temperature=self.temperature,
-            max_tokens=self.max_tokens,
+        content = llmling_agent.ImageBase64Content(
+            data=pdf_b64,
+            mime_type="application/pdf",
         )
-
+        agent = llmling_agent.Agent[None](
+            model=self.model,
+            system_prompt=self.system_prompt,
+            provider="litellm",  # (pydantic-ai does not work with pdfs yet)
+        )
+        response = agent.run_sync(self.user_prompt, content)
         return Document(
-            content=response.choices[0].message.content,  # type: ignore
+            content=response.content,
             title=path.stem,
             source_path=str(path),
             mime_type=mime_type,

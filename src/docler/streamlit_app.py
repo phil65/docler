@@ -33,7 +33,7 @@ CONVERTERS: dict[str, type[DocumentConverter]] = {
     "DataLab": DataLabConverter,
     "Docling": DoclingConverter,
     "Kreuzberg": KreuzbergConverter,
-    "LiteLLM": LLMConverter,
+    "LLM": LLMConverter,
     "Marker": MarkerConverter,
     "MarkItDown": MarkItDownConverter,
     "Mistral": MistralConverter,
