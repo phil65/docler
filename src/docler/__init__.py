@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from docler.base import DocumentConverter
-from docler.dir_converter import Conversion, DirectoryConverter
+from docler.converters.dir_converter import Conversion, DirectoryConverter
 from docler.models import Document, Image, ImageReferenceFormat
 from docler.registry import ConverterRegistry
 

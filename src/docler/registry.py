@@ -27,8 +27,8 @@ class ConverterRegistry:
 
     @classmethod
     def create_default(cls):
-        from docler.marker_provider import MarkerConverter
-        from docler.mistral_provider import MistralConverter
+        from docler.converters.marker_provider import MarkerConverter
+        from docler.converters.mistral_provider import MistralConverter
 
         registry = ConverterRegistry()
 

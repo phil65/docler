@@ -16,10 +16,7 @@ class BaseChunkerConfig(BaseModel):
     chunk_overlap: int = 200
     """Number of characters to overlap between chunks."""
 
-    model_config = ConfigDict(
-        frozen=True,
-        use_attribute_docstrings=True,
-    )
+    model_config = ConfigDict(frozen=True, use_attribute_docstrings=True)
 
 
 class LlamaIndexChunkerConfig(BaseChunkerConfig):
