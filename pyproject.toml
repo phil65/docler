@@ -52,7 +52,7 @@ streamlit = ["streamlit"]
 llama-index = ["llama-index"]
 llama-parse = ["llama-parse"]
 all = [
-    "marker",
+    "marker-pdf",
     "mistralai",
     "docling",
     "markitdown",
