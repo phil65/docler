@@ -14,6 +14,8 @@ from docler.models import Image
 if TYPE_CHECKING:
     import numpy as np
 
+    from docler.vector_db.embedding_model import EmbeddingModel
+
 
 Metric = Literal["cosine", "euclidean", "dot"]
 
@@ -26,32 +28,6 @@ class SearchResult:
     score: float  # similarity score between 0-1
     metadata: dict[str, Any]
     text: str | None = None
-
-
-class EmbeddingModel(ABC):
-    """Abstract interface for embedding models."""
-
-    @abstractmethod
-    async def embed_texts(self, texts: list[str]) -> list[np.ndarray]:
-        """Convert texts to embeddings.
-
-        Args:
-            texts: List of texts to convert to embeddings
-
-        Returns:
-            List of embedding vectors
-        """
-
-    @abstractmethod
-    async def embed_query(self, query: str) -> np.ndarray:
-        """Convert query to embedding.
-
-        Args:
-            query: Query text to convert
-
-        Returns:
-            Embedding vector for the query
-        """
 
 
 class VectorStoreBackend(ABC):
