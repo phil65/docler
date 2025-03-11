@@ -8,26 +8,28 @@ from docler.models import Document, Image, ImageReferenceFormat
 from docler.registry import ConverterRegistry
 
 # Import providers
-from docler.docling_provider import DoclingConverter
-from docler.marker_provider import MarkerConverter
-from docler.mistral_provider import MistralConverter
-from docler.olmocr_provider import OlmConverter
+from docler.converters.docling_provider import DoclingConverter
+from docler.converters.marker_provider import MarkerConverter
+from docler.converters.mistral_provider import MistralConverter
+from docler.converters.olmocr_provider import OlmConverter
+from docler.converters.llm_provider import LLMConverter
+from docler.converters.datalab_provider import DataLabConverter
+from docler.converters.llamaparse_provider import LlamaParseConverter
 
 __version__ = "0.1.3"
 
 __all__ = [
     "Conversion",
-    # Registry
     "ConverterRegistry",
-    # Directory handling
+    "DataLabConverter",
     "DirectoryConverter",
-    # Providers
     "DoclingConverter",
     "Document",
-    # Core classes
     "DocumentConverter",
     "Image",
     "ImageReferenceFormat",
+    "LLMConverter",
+    "LlamaParseConverter",
     "MarkerConverter",
     "MistralConverter",
     "OlmConverter",

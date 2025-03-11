@@ -11,13 +11,13 @@ from typing import TYPE_CHECKING
 import anyenv
 import streamlit as st
 
-from docler.datalab_provider import DataLabConverter
-from docler.docling_provider import DoclingConverter
-from docler.kreuzberg_provider import KreuzbergConverter
-from docler.litellm_provider import LLMConverter
-from docler.marker_provider import MarkerConverter
-from docler.markitdown_provider import MarkItDownConverter
-from docler.mistral_provider import MistralConverter
+from docler.converters.datalab_provider import DataLabConverter
+from docler.converters.docling_provider import DoclingConverter
+from docler.converters.kreuzberg_provider import KreuzbergConverter
+from docler.converters.llm_provider import LLMConverter
+from docler.converters.marker_provider import MarkerConverter
+from docler.converters.markitdown_provider import MarkItDownConverter
+from docler.converters.mistral_provider import MistralConverter
 
 
 if TYPE_CHECKING:

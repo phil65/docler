@@ -54,7 +54,7 @@ class DoclingConverterConfig(BaseConverterConfig):
 
     def get_converter(self) -> DocumentConverter:
         """Get the converter instance."""
-        from docler.docling_provider import DoclingConverter
+        from docler.converters.docling_provider import DoclingConverter
 
         return DoclingConverter(**self.model_dump(exclude={"type"}))
 
@@ -67,7 +67,7 @@ class MarkItDownConfig(BaseConverterConfig):
 
     def get_converter(self) -> DocumentConverter:
         """Get the converter instance."""
-        from docler.markitdown_provider import MarkItDownConverter
+        from docler.converters.markitdown_provider import MarkItDownConverter
 
         return MarkItDownConverter(**self.model_dump(exclude={"type"}))
 
@@ -90,7 +90,7 @@ class KreuzbergConfig(BaseConverterConfig):
 
     def get_converter(self) -> DocumentConverter:
         """Get the converter instance."""
-        from docler.kreuzberg_provider import KreuzbergConverter
+        from docler.converters.kreuzberg_provider import KreuzbergConverter
 
         return KreuzbergConverter(**self.model_dump(exclude={"type"}))
 
@@ -118,7 +118,7 @@ class DataLabConfig(BaseConverterConfig):
 
     def get_converter(self) -> DocumentConverter:
         """Get the converter instance."""
-        from docler.datalab_provider import DataLabConverter
+        from docler.converters.datalab_provider import DataLabConverter
 
         return DataLabConverter(**self.model_dump(exclude={"type"}))
 
@@ -146,7 +146,7 @@ class LLMConverterConfig(BaseConverterConfig):
 
     def get_converter(self) -> DocumentConverter:
         """Get the converter instance."""
-        from docler.litellm_provider import LLMConverter
+        from docler.converters.llm_provider import LLMConverter
 
         return LLMConverter(**self.model_dump(exclude={"type"}))
 
@@ -165,7 +165,7 @@ class MistralConfig(BaseConverterConfig):
 
     def get_converter(self) -> DocumentConverter:
         """Get the converter instance."""
-        from docler.mistral_provider import MistralConverter
+        from docler.converters.mistral_provider import MistralConverter
 
         return MistralConverter(**self.model_dump(exclude={"type"}))
 
@@ -189,7 +189,7 @@ class OlmConfig(BaseConverterConfig):
 
     def get_converter(self) -> DocumentConverter:
         """Get the converter instance."""
-        from docler.olmocr_provider import OlmConverter
+        from docler.converters.olmocr_provider import OlmConverter
 
         return OlmConverter(**self.model_dump(exclude={"type"}))
 

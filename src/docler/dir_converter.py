@@ -175,7 +175,7 @@ class DirectoryConverter:
 if __name__ == "__main__":
     import asyncio
 
-    from docler.mistral_provider.provider import MistralConverter
+    from docler.converters.mistral_provider.provider import MistralConverter
 
     async def main():
         converter = MistralConverter()
