@@ -34,6 +34,24 @@ class VectorStoreBackend(ABC):
     """Low-level vector store interface for raw vector operations."""
 
     @abstractmethod
+    async def add_vector(
+        self,
+        vector: np.ndarray,
+        metadata: dict[str, Any],
+        id_: str | None = None,
+    ) -> str:
+        """Add single vector to store.
+
+        Args:
+            vector: Vector embedding to store
+            metadata: Metadata dictionary for the vector
+            id_: Optional ID (generated if not provided)
+
+        Returns:
+            ID of the stored vector
+        """
+
+    @abstractmethod
     async def add_vectors(
         self,
         vectors: list[np.ndarray],
@@ -49,6 +67,38 @@ class VectorStoreBackend(ABC):
 
         Returns:
             List of IDs for the stored vectors
+        """
+
+    @abstractmethod
+    async def get_vector(
+        self,
+        chunk_id: str,
+    ) -> tuple[np.ndarray, dict[str, Any]] | None:
+        """Get a vector and its metadata by ID.
+
+        Args:
+            chunk_id: ID of vector to retrieve
+
+        Returns:
+            Tuple of (vector, metadata) if found, None if not
+        """
+
+    @abstractmethod
+    async def update_vector(
+        self,
+        chunk_id: str,
+        vector: np.ndarray | None = None,
+        metadata: dict[str, Any] | None = None,
+    ) -> bool:
+        """Update an existing vector.
+
+        Args:
+            chunk_id: ID of vector to update
+            vector: New vector embedding (unchanged if None)
+            metadata: New metadata (unchanged if None)
+
+        Returns:
+            True if vector was updated, False if not found
         """
 
     @abstractmethod

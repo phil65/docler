@@ -1,4 +1,4 @@
-"""RAG-based tool registry for semantic tool discovery."""
+"""Qdrant vector store backend implementation."""
 
 from __future__ import annotations
 
@@ -70,6 +70,46 @@ class QdrantBackend(VectorStoreBackend):
                 ),
             )
 
+    async def add_vector(
+        self,
+        vector: np.ndarray,
+        metadata: dict[str, Any],
+        id_: str | None = None,
+    ) -> str:
+        """Add single vector to Qdrant.
+
+        Args:
+            vector: Vector embedding to store
+            metadata: Metadata dictionary
+            id_: Optional ID (generated if not provided)
+
+        Returns:
+            ID of the stored vector
+        """
+        import anyenv
+        from qdrant_client.http import models
+
+        # Generate ID if not provided
+        if id_ is None:
+            id_ = str(uuid.uuid4())
+
+        # Convert numpy array to float and then list
+        vector_list = vector.astype(float).tolist()
+
+        point = models.PointStruct(
+            id=id_,
+            vector=vector_list,
+            payload=metadata,
+        )
+
+        await anyenv.run_in_thread(
+            self._client.upsert,
+            collection_name=self._collection_name,
+            points=[point],
+        )
+
+        return id_
+
     async def add_vectors(
         self,
         vectors: list[np.ndarray],
@@ -109,6 +149,116 @@ class QdrantBackend(VectorStoreBackend):
         )
 
         return ids
+
+    async def get_vector(
+        self,
+        chunk_id: str,
+    ) -> tuple[np.ndarray, dict[str, Any]] | None:
+        """Get a vector and its metadata by ID.
+
+        Args:
+            chunk_id: ID of vector to retrieve
+
+        Returns:
+            Tuple of (vector, metadata) if found, None if not
+        """
+        import anyenv
+        import numpy as np
+
+        points = await anyenv.run_in_thread(
+            self._client.retrieve,
+            collection_name=self._collection_name,
+            ids=[chunk_id],
+            with_payload=True,
+            with_vectors=True,
+        )
+
+        if not points:
+            return None
+
+        point = points[0]
+        return np.array(point.vector), point.payload
+
+    async def update_vector(
+        self,
+        chunk_id: str,
+        vector: np.ndarray | None = None,
+        metadata: dict[str, Any] | None = None,
+    ) -> bool:
+        """Update an existing vector.
+
+        Args:
+            chunk_id: ID of vector to update
+            vector: New vector embedding (unchanged if None)
+            metadata: New metadata (unchanged if None)
+
+        Returns:
+            True if vector was updated, False if not found
+        """
+        import anyenv
+        from qdrant_client.http import models
+
+        # Get current vector if we need it
+        current = None
+        if vector is None or metadata is None:
+            current = await self.get_vector(chunk_id)
+            if current is None:
+                return False
+
+        # Use new values or keep current ones
+        current_vector, current_metadata = current if current else (None, {})
+        final_vector = vector if vector is not None else current_vector
+        final_metadata = metadata if metadata is not None else current_metadata
+        assert final_vector
+        # Create point for update
+        point = models.PointStruct(
+            id=chunk_id,
+            vector=final_vector.astype(float).tolist(),
+            payload=final_metadata,
+        )
+
+        try:
+            await anyenv.run_in_thread(
+                self._client.upsert,
+                collection_name=self._collection_name,
+                points=[point],
+            )
+        except Exception:  # noqa: BLE001
+            return False
+        else:
+            return True
+
+    async def delete(self, chunk_id: str) -> bool:
+        """Delete vector by ID.
+
+        Args:
+            chunk_id: ID of vector to delete
+
+        Returns:
+            True if vector was deleted, False if not found
+        """
+        import anyenv
+        from qdrant_client.http import models
+        from qdrant_client.http.exceptions import UnexpectedResponse
+
+        try:
+            # Create selector for the point ID
+            selector = models.PointIdsList(points=[chunk_id])
+
+            # Delete the point
+            await anyenv.run_in_thread(
+                self._client.delete,
+                collection_name=self._collection_name,
+                points_selector=selector,
+            )
+        except UnexpectedResponse:
+            # If point not found or other error
+            return False
+        except Exception:  # noqa: BLE001
+            # Any other exception
+            return False
+        else:
+            return True
 
     async def search_vectors(
         self,
@@ -171,44 +321,14 @@ class QdrantBackend(VectorStoreBackend):
         search_results = []
         for hit in results:
             payload = hit.payload or {}
+            text = payload.pop("text", None) if payload else None
+
             result = SearchResult(
                 doc_id=str(hit.id),
                 score=hit.score,
                 metadata=payload,
-                text=payload.get("text"),
+                text=str(text) if text is not None else None,
             )
             search_results.append(result)
 
         return search_results
-
-    async def delete(self, chunk_id: str) -> bool:
-        """Delete vector by ID.
-
-        Args:
-            chunk_id: ID of vector to delete
-
-        Returns:
-            True if vector was deleted, False otherwise
-        """
-        import anyenv
-        from qdrant_client.http import models
-        from qdrant_client.http.exceptions import UnexpectedResponse
-
-        try:
-            # Create selector for the point ID
-            selector = models.PointIdsList(points=[chunk_id])
-
-            # Delete the point
-            await anyenv.run_in_thread(
-                self._client.delete,
-                collection_name=self._collection_name,
-                points_selector=selector,
-            )
-        except UnexpectedResponse:
-            # If point not found or other error
-            return False
-        except Exception:  # noqa: BLE001
-            # Any other exception
-            return False
-        else:
-            return True
