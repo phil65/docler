@@ -55,7 +55,7 @@ class MarkItDownConverter(DocumentConverter):
         "https",
     }
 
-    def __init__(self, languages: list[SupportedLanguage] | None = None) -> None:
+    def __init__(self, languages: list[SupportedLanguage] | None = None):
         """Initialize the MarkItDown converter."""
         from markitdown import MarkItDown
 

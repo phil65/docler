@@ -19,7 +19,7 @@ PACKAGE_DIR = pathlib.Path(__file__).parent
 
 
 @cli.command()
-def serve() -> None:
+def serve():
     """Start the Streamlit web interface."""
     app_path = str(PACKAGE_DIR / "streamlit_app.py")
     try:
@@ -33,7 +33,7 @@ def serve() -> None:
 
 
 @cli.command("chunk_ui")
-def chunk_ui() -> None:
+def chunk_ui():
     """Start the Streamlit web interface."""
     app_path = str(PACKAGE_DIR / "streamlit_chunk_app.py")
     try:

@@ -37,7 +37,7 @@ class LlamaParseConverter(DocumentConverter):
         languages: list[SupportedLanguage] | None = None,
         *,
         api_key: str | None = None,
-    ) -> None:
+    ):
         """Initialize the LlamaParse converter.
 
         Args:

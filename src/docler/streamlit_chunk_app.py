@@ -28,7 +28,7 @@ Another block of text that demonstrates how chunking works.
 """
 
 
-def main() -> None:
+def main():
     """Main Streamlit app."""
     st.title("Markdown Chunker")
 

@@ -55,7 +55,7 @@ class KreuzbergConverter(DocumentConverter):
         *,
         force_ocr: bool = False,
         max_processes: int | None = None,
-    ) -> None:
+    ):
         """Initialize the Kreuzberg converter.
 
         Args:

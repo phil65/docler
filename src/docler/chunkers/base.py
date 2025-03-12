@@ -28,11 +28,7 @@ class TextChunk:
 class TextChunker(ABC):
     """Base class for text chunkers."""
 
-    def __init__(
-        self,
-        chunk_size: int = 500,
-        chunk_overlap: int = 50,
-    ) -> None:
+    def __init__(self, chunk_size: int = 500, chunk_overlap: int = 50):
         self.chunk_size = chunk_size
         self.chunk_overlap = chunk_overlap
 

@@ -64,7 +64,7 @@ def long_markdown_with_images(sample_images: list[Image]) -> Document:
     return Document(content=content, images=sample_images, source_path="test.md")
 
 
-async def test_header_based_image_splitting(markdown_with_images: Document) -> None:
+async def test_header_based_image_splitting(markdown_with_images: Document):
     """Test that images stay with their relevant sections in header-based splitting."""
     chunker = MarkdownChunker()
     chunks = await chunker.split(markdown_with_images)
@@ -88,7 +88,7 @@ async def test_header_based_image_splitting(markdown_with_images: Document) -> N
     assert "![img3](image3.png)" in chunks[2].text
 
 
-async def test_size_based_image_splitting(long_markdown_with_images: Document) -> None:
+async def test_size_based_image_splitting(long_markdown_with_images: Document):
     """Test that images are handled correctly in size-based splitting."""
     # Use smaller chunk size to force size-based splitting
     chunker = MarkdownChunker(max_chunk_size=500)
@@ -102,7 +102,7 @@ async def test_size_based_image_splitting(long_markdown_with_images: Document) -
             assert ref in chunk.text, f"Image reference {ref} not found in chunk"
 
 
-async def test_headerless_content_with_images() -> None:
+async def test_headerless_content_with_images():
     """Test handling of content without headers but with images."""
     content = (
         "This is a document without headers.\n"
@@ -129,7 +129,7 @@ async def test_headerless_content_with_images() -> None:
             assert ref in chunk.text, f"Image reference {ref} not found in chunk"
 
 
-async def test_image_metadata_preservation() -> None:
+async def test_image_metadata_preservation():
     """Test that image metadata is preserved correctly in chunks."""
     content = """\
 # Section with image

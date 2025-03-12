@@ -38,7 +38,7 @@ class DocumentConverter(ABC):
     Non-supported protocols will get handled using fsspec + a temporary file.
     """
 
-    def __init__(self, languages: list[SupportedLanguage] | None = None) -> None:
+    def __init__(self, languages: list[SupportedLanguage] | None = None):
         self.languages = languages
 
     async def convert_files(self, file_paths: Sequence[StrPath]) -> list[Document]:

@@ -24,7 +24,7 @@ class ChromaBackend(VectorStoreBackend):
         collection_name: str = "default",
         persist_directory: str | None = None,
         distance_metric: str = "cosine",
-    ) -> None:
+    ):
         """Initialize ChromaDB backend.
 
         Args:

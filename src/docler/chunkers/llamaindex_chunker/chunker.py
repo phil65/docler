@@ -33,7 +33,7 @@ class LlamaIndexChunker(TextChunker):
         chunk_overlap: int = 200,
         include_metadata: bool = True,
         include_prev_next_rel: bool = False,
-    ) -> None:
+    ):
         """Initialize the LlamaIndex chunker.
 
         Args:

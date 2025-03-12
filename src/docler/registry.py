@@ -20,7 +20,7 @@ class ConverterRegistry:
     Higher priority values mean higher precedence.
     """
 
-    def __init__(self) -> None:
+    def __init__(self):
         """Initialize an empty converter registry."""
         # Dict[mime_type, List[Tuple[priority, converter_cls]]]
         self._converters: dict[str, list[tuple[int, type[DocumentConverter]]]] = {}
@@ -45,7 +45,7 @@ class ConverterRegistry:
         mime_types: list[str] | None = None,
         *,
         priority: int = 0,
-    ) -> None:
+    ):
         """Register a converter for specific mime types.
 
         Args:

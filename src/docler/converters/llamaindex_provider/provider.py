@@ -34,7 +34,7 @@ class LlamaIndexConverter(DocumentConverter):
         *,
         llmsherpa_api_url: str = DEFAULT_URL,
         **parser_kwargs,
-    ) -> None:
+    ):
         """Initialize the LlamaIndex converter.
 
         Args:

@@ -23,7 +23,7 @@ class MarkdownChunker(TextChunker):
         min_chunk_size: int = 200,
         max_chunk_size: int = 1500,
         chunk_overlap: int = 50,
-    ) -> None:
+    ):
         """Initialize chunker.
 
         Args:

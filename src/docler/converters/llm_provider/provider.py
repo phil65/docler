@@ -41,7 +41,7 @@ class LLMConverter(DocumentConverter):
         user_prompt: str | None = None,
         temperature: float = 0.7,
         max_tokens: int | None = None,
-    ) -> None:
+    ):
         """Initialize the LiteLLM converter.
 
         Args:

@@ -73,7 +73,7 @@ class AIChunker:
         provider: Literal["pydantic_ai", "litellm"] = "pydantic_ai",
         min_chunk_size: int = 200,
         max_chunk_size: int = 1500,
-    ) -> None:
+    ):
         """Initialize the AI chunker.
 
         Args:

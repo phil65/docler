@@ -74,7 +74,7 @@ class AzureConverter(DocumentConverter):
         api_key: str | None = None,
         model: PrebuiltModel = "prebuilt-document",
         additional_features: Sequence[str] | None = None,
-    ) -> None:
+    ):
         """Initialize Azure Document Intelligence converter.
 
         Args:

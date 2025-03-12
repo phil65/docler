@@ -34,7 +34,7 @@ class OlmConverter(DocumentConverter):
         model_name: str = "allenai/olmOCR-7B-0225-preview",
         device: str | None = None,
         engine: PdfEngine = "pdfreport",
-    ) -> None:
+    ):
         """Initialize the OLM converter.
 
         Args:

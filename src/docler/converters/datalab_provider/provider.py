@@ -57,7 +57,7 @@ class DataLabConverter(DocumentConverter):
         force_ocr: bool = False,
         use_llm: bool = False,
         max_pages: int | None = None,
-    ) -> None:
+    ):
         """Initialize the DataLab converter.
 
         Args:

@@ -28,7 +28,7 @@ class UpstashBackend(VectorStoreBackend):
         url: str | None = None,
         token: str | None = None,
         collection_name: str = "default",
-    ) -> None:
+    ):
         """Initialize Upstash Vector backend.
 
         Args:
