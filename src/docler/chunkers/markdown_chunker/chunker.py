@@ -5,7 +5,7 @@ from __future__ import annotations
 import re
 from typing import TYPE_CHECKING, Any
 
-from docler.chunkers.base import TextChunk
+from docler.chunkers.base import TextChunk, TextChunker
 
 
 if TYPE_CHECKING:
@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from docler.models import Document, Image
 
 
-class MarkdownChunker:
+class MarkdownChunker(TextChunker):
     """Header-based markdown chunker with fallback to size-based chunks."""
 
     def __init__(

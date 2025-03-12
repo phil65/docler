@@ -14,6 +14,8 @@ from docler.vector_db.base import SearchResult, VectorStoreBackend
 if TYPE_CHECKING:
     import numpy as np
 
+    from docler.chunkers.base import TextChunk
+
 
 logger = logging.getLogger(__name__)
 
@@ -38,11 +40,7 @@ class UpstashBackend(VectorStoreBackend):
             ImportError: If upstash_vector is not installed
             ValueError: If URL or token is not provided
         """
-        try:
-            from upstash_vector import Index
-        except ImportError as e:
-            msg = "Upstash Vector is not installed."
-            raise ImportError(msg) from e
+        from upstash_vector import Index
 
         # Get configuration from params or env
         self.url = url or os.getenv("UPSTASH_ENDPOINT")
@@ -82,17 +80,10 @@ class UpstashBackend(VectorStoreBackend):
         import anyenv
         from upstash_vector import Vector
 
-        # Generate ID if not provided
         if id_ is None:
             id_ = str(uuid.uuid4())
-
-        # Extract text from metadata if present
         text = metadata.pop("text", None) if metadata else None
-
-        # Convert numpy array to list for JSON serialization
         vector_list = vector.tolist()
-
-        # Create Upstash Vector object
         upstash_vector = Vector(
             id=id_,
             vector=vector_list,  # Upstash expects list format
@@ -351,5 +342,146 @@ class UpstashBackend(VectorStoreBackend):
                 text=text,
             )
             search_results.append(res)
+
+        return search_results
+
+    async def add_texts(
+        self,
+        texts: list[str],
+        metadatas: list[dict[str, Any]] | None = None,
+        ids: list[str] | None = None,
+    ) -> list[str]:
+        """Add texts directly to Upstash using its data capability."""
+        import uuid
+
+        import anyenv
+        from upstash_vector import Vector
+
+        # Generate IDs if not provided
+        if ids is None:
+            ids = [str(uuid.uuid4()) for _ in texts]
+
+        # Use empty metadata if not provided
+        if metadatas is None:
+            metadatas = [{} for _ in texts]
+
+        if len(texts) != len(metadatas):
+            msg = "Number of texts and metadata entries must match"
+            raise ValueError(msg)
+
+        # Create list of Upstash Vector objects with data field
+        upstash_vectors = []
+        for id_, text, metadata in zip(ids, texts, metadatas):
+            vector_obj = Vector(
+                id=id_,
+                data=text,  # Using the data field for text
+                metadata=metadata,
+            )
+            upstash_vectors.append(vector_obj)
+
+        # Upload in batches if needed
+        batch_size = 100
+        for i in range(0, len(upstash_vectors), batch_size):
+            batch = upstash_vectors[i : i + batch_size]
+            await anyenv.run_in_thread(
+                self._client.upsert,
+                vectors=batch,
+                namespace=self.namespace,
+            )
+
+        return ids
+
+    async def add_chunks(
+        self,
+        chunks: list[TextChunk],
+    ) -> list[str]:
+        """Add text chunks directly to Upstash."""
+        # Prepare texts, metadata and IDs
+        texts = []
+        metadatas = []
+        ids = []
+
+        for chunk in chunks:
+            # Create chunk ID
+            chunk_id = f"{chunk.source_doc_id}_{chunk.chunk_index}"
+            ids.append(chunk_id)
+
+            # Get text content
+            texts.append(chunk.text)
+
+            # Prepare metadata
+            metadata = {
+                "source_doc_id": chunk.source_doc_id,
+                "chunk_index": chunk.chunk_index,
+            }
+
+            # Add page number if available
+            if chunk.page_number is not None:
+                metadata["page_number"] = chunk.page_number
+
+            # Add any additional metadata
+            metadata.update(chunk.metadata)
+
+            # Store image references if present
+            if chunk.images:
+                image_refs = [img.filename for img in chunk.images if img.filename]
+                if image_refs:
+                    metadata["image_references"] = image_refs
+
+            metadatas.append(metadata)
+
+        # Use the add_texts method to store everything
+        return await self.add_texts(texts, metadatas, ids)
+
+    async def search_text(
+        self,
+        query: str,
+        k: int = 4,
+        filters: dict[str, Any] | None = None,
+    ) -> list[SearchResult]:
+        """Search for similar texts using Upstash's direct text capability."""
+        import anyenv
+
+        # Prepare filter string if filters are provided
+        filter_str = ""
+        if filters:
+            # Convert filters dict to Upstash filter expression
+            conditions = []
+            for key, value in filters.items():
+                if isinstance(value, list):
+                    # Handle list values
+                    values_str = ", ".join([f'"{v}"' for v in value])
+                    conditions.append(f"{key} IN [{values_str}]")
+                else:
+                    # Handle single value
+                    conditions.append(f'{key} == "{value}"')
+
+            filter_str = " AND ".join(conditions)
+
+        # Execute search using text directly
+        results = await anyenv.run_in_thread(
+            self._client.query,
+            data=query,  # Use text directly, Upstash will embed it
+            top_k=k,
+            include_vectors=False,
+            include_metadata=True,
+            include_data=True,
+            filter=filter_str,
+            namespace=self.namespace,
+        )
+
+        search_results = []
+        for result in results:
+            # Prepare metadata
+            metadata = result.metadata or {}
+            # Add text data if present
+            text = result.data
+            result = SearchResult(
+                chunk_id=result.id,
+                score=result.score,
+                metadata=metadata,
+                text=text,
+            )
+            search_results.append(result)
 
         return search_results
