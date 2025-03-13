@@ -131,8 +131,91 @@ class VectorStoreBackend(ABC):
         """
 
 
-class VectorStore:
-    """High-level vector store that handles chunks and embeddings."""
+class VectorDB(ABC):
+    """Abstract interface for vector databases that handle both storage and retrieval."""
+
+    @abstractmethod
+    async def add_texts(
+        self,
+        texts: list[str],
+        metadatas: list[dict[str, Any]] | None = None,
+        ids: list[str] | None = None,
+    ) -> list[str]:
+        """Add simple text strings with metadata.
+
+        Args:
+            texts: List of texts to add
+            metadatas: Optional list of metadata dictionaries
+            ids: Optional list of IDs
+
+        Returns:
+            List of IDs for the stored texts
+        """
+
+    @abstractmethod
+    async def add_chunks(
+        self,
+        chunks: list[TextChunk],
+    ) -> list[str]:
+        """Add text chunks with metadata.
+
+        Args:
+            chunks: List of text chunks to add
+
+        Returns:
+            List of IDs for the stored chunks
+        """
+
+    @abstractmethod
+    async def similar_chunks(
+        self,
+        query: str,
+        k: int = 4,
+        filters: dict[str, Any] | None = None,
+    ) -> list[tuple[TextChunk, float]]:
+        """Find similar chunks for a query.
+
+        Args:
+            query: Query text to search for
+            k: Number of results to return
+            filters: Optional filters to apply to results
+
+        Returns:
+            List of (chunk, score) tuples
+        """
+
+    @abstractmethod
+    async def similar_texts(
+        self,
+        query: str,
+        k: int = 4,
+        filters: dict[str, Any] | None = None,
+    ) -> list[tuple[str, float, dict[str, Any]]]:
+        """Find similar texts for a query.
+
+        Args:
+            query: Query text to search for
+            k: Number of results to return
+            filters: Optional filters to apply to results
+
+        Returns:
+            List of (text, score, metadata) tuples
+        """
+
+    @abstractmethod
+    async def delete_chunk(self, chunk_id: str) -> bool:
+        """Delete a chunk by ID.
+
+        Args:
+            chunk_id: ID of chunk to delete
+
+        Returns:
+            True if chunk was deleted, False otherwise
+        """
+
+
+class CompositeVectorDB(VectorDB):
+    """Vector database that combines a backend with an embedding model."""
 
     def __init__(
         self,
@@ -147,6 +230,34 @@ class VectorStore:
         """
         self._backend = backend
         self._embeddings = embedding_model
+
+    async def add_texts(
+        self,
+        texts: list[str],
+        metadatas: list[dict[str, Any]] | None = None,
+        ids: list[str] | None = None,
+    ) -> list[str]:
+        """Add simple text strings with metadata.
+
+        Args:
+            texts: List of texts to add
+            metadatas: Optional list of metadata dictionaries
+            ids: Optional list of IDs
+
+        Returns:
+            List of IDs for the stored texts
+        """
+        # Handle default arguments
+        if metadatas is None:
+            metadatas = [{} for _ in texts]
+
+        # Convert to embeddings
+        embeddings = await self._embeddings.embed_texts(texts)
+
+        # Add text to metadata
+        for i, text in enumerate(texts):
+            metadatas[i]["text"] = text
+        return await self._backend.add_vectors(embeddings, metadatas, ids=ids)
 
     async def add_chunks(
         self,
@@ -196,34 +307,6 @@ class VectorStore:
         # Store in backend
         chunk_ids = [f"{chunk.source_doc_id}_{chunk.chunk_index}" for chunk in chunks]
         return await self._backend.add_vectors(embeddings, metadata, ids=chunk_ids)
-
-    async def add_texts(
-        self,
-        texts: list[str],
-        metadatas: list[dict[str, Any]] | None = None,
-        ids: list[str] | None = None,
-    ) -> list[str]:
-        """Add simple text strings with metadata.
-
-        Args:
-            texts: List of texts to add
-            metadatas: Optional list of metadata dictionaries
-            ids: Optional list of IDs
-
-        Returns:
-            List of IDs for the stored texts
-        """
-        # Handle default arguments
-        if metadatas is None:
-            metadatas = [{} for _ in texts]
-
-        # Convert to embeddings
-        embeddings = await self._embeddings.embed_texts(texts)
-
-        # Add text to metadata
-        for i, text in enumerate(texts):
-            metadatas[i]["text"] = text
-        return await self._backend.add_vectors(embeddings, metadatas, ids=ids)
 
     async def similar_chunks(
         self,
@@ -320,3 +403,45 @@ class VectorStore:
             True if chunk was deleted, False otherwise
         """
         return await self._backend.delete(chunk_id)
+
+
+class IntegratedVectorDB(VectorDB):
+    """Base class for vector databases with integrated embedding and storage."""
+
+    @abstractmethod
+    async def add_texts(
+        self,
+        texts: list[str],
+        metadatas: list[dict[str, Any]] | None = None,
+        ids: list[str] | None = None,
+    ) -> list[str]:
+        """Add simple text strings with metadata."""
+
+    @abstractmethod
+    async def add_chunks(
+        self,
+        chunks: list[TextChunk],
+    ) -> list[str]:
+        """Add text chunks with metadata."""
+
+    @abstractmethod
+    async def similar_chunks(
+        self,
+        query: str,
+        k: int = 4,
+        filters: dict[str, Any] | None = None,
+    ) -> list[tuple[TextChunk, float]]:
+        """Find similar chunks for a query."""
+
+    @abstractmethod
+    async def similar_texts(
+        self,
+        query: str,
+        k: int = 4,
+        filters: dict[str, Any] | None = None,
+    ) -> list[tuple[str, float, dict[str, Any]]]:
+        """Find similar texts for a query."""
+
+    @abstractmethod
+    async def delete_chunk(self, chunk_id: str) -> bool:
+        """Delete a chunk by ID."""

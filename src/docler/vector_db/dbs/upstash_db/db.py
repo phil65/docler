@@ -32,8 +32,8 @@ class UpstashBackend(VectorStoreBackend):
         """Initialize Upstash Vector backend.
 
         Args:
-            url: Upstash Vector REST API URL. Falls back to UPSTASH_ENDPOINT env var.
-            token: Upstash Vector API token. Falls back to UPSTASH_API_KEY env var.
+            url: Upstash Vector REST API URL. Falls back to UPSTASH_VECTOR_REST_URL.
+            token: Upstash Vector API token. Falls back to UPSTASH_VECTOR_REST_TOKEN.
             collection_name: Name to use as namespace for vectors.
 
         Raises:
@@ -43,15 +43,15 @@ class UpstashBackend(VectorStoreBackend):
         from upstash_vector import Index
 
         # Get configuration from params or env
-        self.url = url or os.getenv("UPSTASH_ENDPOINT")
-        self.token = token or os.getenv("UPSTASH_API_KEY")
+        self.url = url or os.getenv("UPSTASH_VECTOR_REST_URL")
+        self.token = token or os.getenv("UPSTASH_VECTOR_REST_TOKEN")
 
         if not self.url:
             msg = "Upstash Vector URL must be provided via 'url' parameter or UPSTASH_ENDPOINT env var"  # noqa: E501
             raise ValueError(msg)
 
         if not self.token:
-            msg = "Upstash Vector token must be provided via 'token' parameter or UPSTASH_API_KEY env var"  # noqa: E501
+            msg = "Upstash Vector token must be provided via 'token' parameter or UPSTASH_VECTOR_REST_TOKEN env var"  # noqa: E501
             raise ValueError(msg)
 
         self.namespace = collection_name
