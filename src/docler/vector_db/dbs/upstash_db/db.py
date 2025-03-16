@@ -13,6 +13,7 @@ from docler.vector_db.base import SearchResult, VectorStoreBackend
 
 if TYPE_CHECKING:
     import numpy as np
+    from upstash_vector import AsyncIndex
 
     from docler.chunkers.base import TextChunk
 
@@ -40,22 +41,29 @@ class UpstashBackend(VectorStoreBackend):
             ImportError: If upstash_vector is not installed
             ValueError: If URL or token is not provided
         """
-        from upstash_vector import Index
+        from upstash_vector import AsyncIndex
 
         # Get configuration from params or env
         self.url = url or os.getenv("UPSTASH_VECTOR_REST_URL")
         self.token = token or os.getenv("UPSTASH_VECTOR_REST_TOKEN")
 
         if not self.url:
-            msg = "Upstash Vector URL must be provided via 'url' parameter or UPSTASH_ENDPOINT env var"  # noqa: E501
+            msg = (
+                "Upstash Vector URL must be provided via 'url' parameter "
+                "or UPSTASH_VECTOR_REST_URL env var"
+            )
             raise ValueError(msg)
 
         if not self.token:
-            msg = "Upstash Vector token must be provided via 'token' parameter or UPSTASH_VECTOR_REST_TOKEN env var"  # noqa: E501
+            msg = (
+                "Upstash Vector token must be provided via 'token' parameter or "
+                "UPSTASH_VECTOR_REST_TOKEN env var"
+            )
             raise ValueError(msg)
 
+        # Store namespace/collection name
         self.namespace = collection_name
-        self._client = Index(url=self.url, token=self.token)
+        self._client: AsyncIndex = AsyncIndex(url=self.url, token=self.token)
 
         logger.info("Upstash Vector initialized with namespace: %s", self.namespace)
 
@@ -77,13 +85,15 @@ class UpstashBackend(VectorStoreBackend):
         """
         import uuid
 
-        import anyenv
         from upstash_vector import Vector
 
         if id_ is None:
             id_ = str(uuid.uuid4())
+
+        # Extract text from metadata if present
         text = metadata.pop("text", None) if metadata else None
-        vector_list = vector.tolist()
+        vector_list: list[float] = vector.tolist()  # type: ignore
+
         upstash_vector = Vector(
             id=id_,
             vector=vector_list,  # Upstash expects list format
@@ -91,9 +101,8 @@ class UpstashBackend(VectorStoreBackend):
             data=text,  # Store text in data field
         )
 
-        # Upload vector
-        await anyenv.run_in_thread(
-            self._client.upsert,
+        # Upload vector with namespace - now directly async
+        await self._client.upsert(
             vectors=[upstash_vector],
             namespace=self.namespace,
         )
@@ -118,7 +127,6 @@ class UpstashBackend(VectorStoreBackend):
         """
         import uuid
 
-        import anyenv
         from upstash_vector import Vector
 
         if len(vectors) != len(metadata):
@@ -136,7 +144,7 @@ class UpstashBackend(VectorStoreBackend):
             text = meta.pop("text", None) if meta else None
 
             # Convert numpy array to list
-            vector_list = vector.tolist()
+            vector_list: list[float] = vector.tolist()  # type: ignore
 
             # Create Upstash Vector object
             upstash_vector = Vector(
@@ -151,8 +159,8 @@ class UpstashBackend(VectorStoreBackend):
         batch_size = 100  # Adjust based on Upstash's limits
         for i in range(0, len(upstash_vectors), batch_size):
             batch = upstash_vectors[i : i + batch_size]
-            await anyenv.run_in_thread(
-                self._client.upsert,
+            # Directly async call
+            await self._client.upsert(
                 vectors=batch,
                 namespace=self.namespace,
             )
@@ -171,12 +179,10 @@ class UpstashBackend(VectorStoreBackend):
         Returns:
             Tuple of (vector, metadata) if found, None if not
         """
-        import anyenv
         import numpy as np
 
-        # Fetch vector from Upstash
-        results = await anyenv.run_in_thread(
-            self._client.fetch,
+        # Fetch vector from Upstash with namespace - directly async
+        results = await self._client.fetch(
             ids=[chunk_id],
             include_vectors=True,
             include_metadata=True,
@@ -216,8 +222,6 @@ class UpstashBackend(VectorStoreBackend):
         Returns:
             True if vector was updated, False if not found
         """
-        import anyenv
-
         # Get current vector if we need partial update
         if vector is None or metadata is None:
             current = await self.get_vector(chunk_id)
@@ -235,12 +239,11 @@ class UpstashBackend(VectorStoreBackend):
         text = metadata.pop("text", None) if metadata else None
 
         # Convert numpy array to list
-        vector_list = vector.tolist()
+        vector_list: list[float] = vector.tolist()  # type: ignore
 
         try:
-            # Update vector in Upstash
-            result = await anyenv.run_in_thread(
-                self._client.update,
+            # Update vector in Upstash with namespace - directly async
+            result = await self._client.update(
                 id=chunk_id,
                 vector=vector_list,
                 metadata=metadata,
@@ -263,11 +266,9 @@ class UpstashBackend(VectorStoreBackend):
         Returns:
             True if vector was deleted, False if not found
         """
-        import anyenv
-
         try:
-            result = await anyenv.run_in_thread(
-                self._client.delete,
+            # Directly async
+            result = await self._client.delete(
                 ids=[chunk_id],
                 namespace=self.namespace,
             )
@@ -294,10 +295,8 @@ class UpstashBackend(VectorStoreBackend):
         Returns:
             List of search results
         """
-        import anyenv
-
         # Convert numpy array to list
-        vector_list = query_vector.tolist()
+        vector_list: list[float] = query_vector.tolist()  # type: ignore
 
         # Prepare filter string if filters are provided
         filter_str = ""
@@ -315,9 +314,8 @@ class UpstashBackend(VectorStoreBackend):
 
             filter_str = " AND ".join(conditions)
 
-        # Execute search
-        results = await anyenv.run_in_thread(
-            self._client.query,
+        # Execute search with namespace - directly async
+        results = await self._client.query(
             vector=vector_list,
             top_k=k,
             include_vectors=False,
@@ -345,16 +343,84 @@ class UpstashBackend(VectorStoreBackend):
 
         return search_results
 
+    async def search_text(
+        self,
+        query: str,
+        k: int = 4,
+        filters: dict[str, Any] | None = None,
+    ) -> list[SearchResult]:
+        """Search for similar texts using Upstash's direct text capability.
+
+        Args:
+            query: Query text to search for
+            k: Number of results to return
+            filters: Optional filters to apply
+
+        Returns:
+            List of search results
+        """
+        # Prepare filter string if filters are provided
+        filter_str = ""
+        if filters:
+            # Convert filters dict to Upstash filter expression
+            conditions = []
+            for key, value in filters.items():
+                if isinstance(value, list):
+                    # Handle list values
+                    values_str = ", ".join([f'"{v}"' for v in value])
+                    conditions.append(f"{key} IN [{values_str}]")
+                else:
+                    # Handle single value
+                    conditions.append(f'{key} == "{value}"')
+
+            filter_str = " AND ".join(conditions)
+
+        # Execute search using text directly with namespace - directly async
+        results = await self._client.query(
+            data=query,  # Use text directly, Upstash will embed it
+            top_k=k,
+            include_vectors=False,
+            include_metadata=True,
+            include_data=True,
+            filter=filter_str,
+            namespace=self.namespace,
+        )
+
+        search_results = []
+        for result in results:
+            # Prepare metadata
+            metadata = result.metadata or {}
+            # Add text data if present
+            text = result.data
+            result = SearchResult(
+                chunk_id=result.id,
+                score=result.score,
+                metadata=metadata,
+                text=text,
+            )
+            search_results.append(result)
+
+        return search_results
+
+    # Additional helper methods for chunk operations
     async def add_texts(
         self,
         texts: list[str],
         metadatas: list[dict[str, Any]] | None = None,
         ids: list[str] | None = None,
     ) -> list[str]:
-        """Add texts directly to Upstash using its data capability."""
+        """Add texts directly to Upstash using its data capability.
+
+        Args:
+            texts: List of texts to add
+            metadatas: Optional list of metadata dictionaries
+            ids: Optional list of IDs
+
+        Returns:
+            List of IDs for the stored texts
+        """
         import uuid
 
-        import anyenv
         from upstash_vector import Vector
 
         # Generate IDs if not provided
@@ -383,8 +449,8 @@ class UpstashBackend(VectorStoreBackend):
         batch_size = 100
         for i in range(0, len(upstash_vectors), batch_size):
             batch = upstash_vectors[i : i + batch_size]
-            await anyenv.run_in_thread(
-                self._client.upsert,
+            # Directly async
+            await self._client.upsert(
                 vectors=batch,
                 namespace=self.namespace,
             )
@@ -395,7 +461,14 @@ class UpstashBackend(VectorStoreBackend):
         self,
         chunks: list[TextChunk],
     ) -> list[str]:
-        """Add text chunks directly to Upstash."""
+        """Add text chunks directly to Upstash.
+
+        Args:
+            chunks: List of text chunks to add
+
+        Returns:
+            List of IDs for the stored chunks
+        """
         # Prepare texts, metadata and IDs
         texts = []
         metadatas = []
@@ -432,56 +505,3 @@ class UpstashBackend(VectorStoreBackend):
 
         # Use the add_texts method to store everything
         return await self.add_texts(texts, metadatas, ids)
-
-    async def search_text(
-        self,
-        query: str,
-        k: int = 4,
-        filters: dict[str, Any] | None = None,
-    ) -> list[SearchResult]:
-        """Search for similar texts using Upstash's direct text capability."""
-        import anyenv
-
-        # Prepare filter string if filters are provided
-        filter_str = ""
-        if filters:
-            # Convert filters dict to Upstash filter expression
-            conditions = []
-            for key, value in filters.items():
-                if isinstance(value, list):
-                    # Handle list values
-                    values_str = ", ".join([f'"{v}"' for v in value])
-                    conditions.append(f"{key} IN [{values_str}]")
-                else:
-                    # Handle single value
-                    conditions.append(f'{key} == "{value}"')
-
-            filter_str = " AND ".join(conditions)
-
-        # Execute search using text directly
-        results = await anyenv.run_in_thread(
-            self._client.query,
-            data=query,  # Use text directly, Upstash will embed it
-            top_k=k,
-            include_vectors=False,
-            include_metadata=True,
-            include_data=True,
-            filter=filter_str,
-            namespace=self.namespace,
-        )
-
-        search_results = []
-        for result in results:
-            # Prepare metadata
-            metadata = result.metadata or {}
-            # Add text data if present
-            text = result.data
-            result = SearchResult(
-                chunk_id=result.id,
-                score=result.score,
-                metadata=metadata,
-                text=text,
-            )
-            search_results.append(result)
-
-        return search_results
