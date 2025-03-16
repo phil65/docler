@@ -300,9 +300,7 @@ class OpenAIVectorDB(IntegratedVectorDB):
         Returns:
             OpenAI-compatible filter object
         """
-        # Simple implementation that matches OpenAI's expected format
         filter_conditions = []
-
         for key, value in filters.items():
             if isinstance(value, list):
                 # Handle list of values (OR condition)
@@ -317,14 +315,10 @@ class OpenAIVectorDB(IntegratedVectorDB):
             elif isinstance(value, str | int | float | bool):
                 # Handle single value (equality)
                 filter_conditions.append({"key": key, "type": "eq", "value": value})  # type: ignore
-
-        # Combine with AND if multiple conditions
         if len(filter_conditions) > 1:
             return {"type": "and", "filters": filter_conditions}
         if filter_conditions:
-            # Just return the single filter
             return filter_conditions[0]
-        # No filters
         return {}
 
     async def close(self) -> None:

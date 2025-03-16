@@ -54,11 +54,7 @@ class OpenAIVectorManager:
         try:
             response = await self._client.vector_stores.list()
             return [
-                {
-                    "id": vs.id,
-                    "name": vs.name,
-                    "created_at": vs.created_at,
-                }
+                {"id": vs.id, "name": vs.name, "created_at": vs.created_at}
                 for vs in response.data
             ]
         except Exception:
@@ -132,15 +128,10 @@ class OpenAIVectorManager:
         Raises:
             ValueError: If store doesn't exist or connection fails
         """
-        # Check if we already have this store
         if vector_store_id in self._vector_stores:
             return self._vector_stores[vector_store_id]
-
         try:
-            # Verify the store exists
             await self._client.vector_stores.retrieve(vector_store_id=vector_store_id)
-
-            # Create and return a configured database instance
             db = OpenAIVectorDB(
                 vector_store_id=vector_store_id,
                 client=self._client,
@@ -148,8 +139,6 @@ class OpenAIVectorManager:
                 max_chunk_size=max_chunk_size,
                 chunk_overlap=chunk_overlap,
             )
-
-            # Store for tracking
             self._vector_stores[vector_store_id] = db
         except Exception as e:
             msg = f"Failed to connect to vector store {vector_store_id}: {e}"
@@ -168,10 +157,7 @@ class OpenAIVectorManager:
             True if successful, False if failed
         """
         try:
-            # Delete the store
             await self._client.vector_stores.delete(vector_store_id=vector_store_id)
-
-            # Remove from tracked stores if present
             if vector_store_id in self._vector_stores:
                 del self._vector_stores[vector_store_id]
         except Exception:
@@ -201,15 +187,12 @@ class OpenAIVectorManager:
         import upath
 
         try:
-            # First upload the file
             with upath.UPath(file_path).open("rb") as f:
                 upload_response = await self._client.files.create(
                     file=f,
                     purpose="user_data",
                 )
                 file_id = upload_response.id
-
-            # Prepare chunking config
             if chunking_strategy == "auto":
                 chunking_config: dict[str, Any] = {"type": "auto"}
             else:
@@ -221,7 +204,6 @@ class OpenAIVectorManager:
                     },
                 }
 
-            # Add file to vector store
             await self._client.vector_stores.files.create(
                 vector_store_id=vector_store_id,
                 file_id=file_id,
@@ -253,19 +235,11 @@ class OpenAIVectorManager:
             List of search results
         """
         try:
-            # Get or create the vector store instance
             vector_db = await self.get_vector_store(vector_store_id)
-
             results = await vector_db.similar_texts(query, k, filters)
-
-            # Convert to the desired format
             formatted_results = []
             for text, score, metadata in results:
-                result_obj = {
-                    "text": text,
-                    "score": score,
-                    **metadata,
-                }
+                result_obj = {"text": text, "score": score, **metadata}
                 formatted_results.append(result_obj)
         except Exception:
             logger.exception("Error searching vector store")
@@ -282,40 +256,25 @@ class OpenAIVectorManager:
         Returns:
             OpenAI-compatible filter object
         """
-        filter_conditions = []
+        filter_conditions: list[dict[str, Any]] = []
 
         for key, value in filters.items():
             if isinstance(value, list):
-                # Handle list of values (OR condition)
                 or_conditions = [
-                    {
-                        "key": key,
-                        "type": "eq",
-                        "value": item,
-                    }
+                    {"key": key, "type": "eq", "value": item}
                     for item in value
                     if isinstance(item, str | int | float | bool)
                 ]
-
                 if or_conditions:
-                    filter_conditions.append({  # type: ignore
-                        "type": "or",
-                        "filters": or_conditions,
-                    })
+                    filter_conditions.append({"type": "or", "filters": or_conditions})
             elif isinstance(value, str | int | float | bool):
                 # Handle single value (equality)
-                filter_conditions.append({
-                    "key": key,
-                    "type": "eq",
-                    "value": value,  # type: ignore
-                })
+                filter_ = {"key": key, "type": "eq", "value": value}
+                filter_conditions.append(filter_)
 
         # Combine with AND if multiple conditions
         if len(filter_conditions) > 1:
-            return {  # type: ignore
-                "type": "and",
-                "filters": filter_conditions,
-            }
+            return {"type": "and", "filters": filter_conditions}
         if filter_conditions:
             # Just return the single filter
             return filter_conditions[0]
