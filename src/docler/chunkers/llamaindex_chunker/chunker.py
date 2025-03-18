@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import importlib
 import logging
 from typing import TYPE_CHECKING, Any, ClassVar, Literal
 
@@ -25,7 +24,7 @@ class LlamaIndexChunker(TextChunker):
     allowing dynamic import to avoid a fixed dependency.
     """
 
-    REQUIRED_PACKAGES: ClassVar[list[str]] = ["llama-index"]
+    REQUIRED_PACKAGES: ClassVar = {"llama-index"}
 
     def __init__(
         self,
@@ -59,46 +58,39 @@ class LlamaIndexChunker(TextChunker):
         Raises:
             ImportError: If llama-index isn't installed
         """
-        try:
-            if self.chunker_type == "sentence":
-                from llama_index.core.node_parser import SentenceSplitter
+        if self.chunker_type == "sentence":
+            from llama_index.core.node_parser import SentenceSplitter
 
-                return SentenceSplitter(
-                    chunk_size=self.chunk_size,
-                    chunk_overlap=self.chunk_overlap,
-                    include_metadata=self.include_metadata,
-                    include_prev_next_rel=self.include_prev_next_rel,
-                )
-            if self.chunker_type == "token":
-                from llama_index.core.node_parser import TokenTextSplitter
-
-                return TokenTextSplitter(
-                    chunk_size=self.chunk_size,
-                    chunk_overlap=self.chunk_overlap,
-                    include_metadata=self.include_metadata,
-                    include_prev_next_rel=self.include_prev_next_rel,
-                )
-            if self.chunker_type == "fixed":
-                from llama_index.core.node_parser import SentenceWindowNodeParser
-
-                return SentenceWindowNodeParser.from_defaults(
-                    window_size=self.chunk_size,
-                    window_metadata_key="window",
-                    original_text_metadata_key="original_text",
-                )
-            # markdown as default
-            from llama_index.core.node_parser import MarkdownNodeParser
-
-            return MarkdownNodeParser(
+            return SentenceSplitter(
+                chunk_size=self.chunk_size,
+                chunk_overlap=self.chunk_overlap,
                 include_metadata=self.include_metadata,
                 include_prev_next_rel=self.include_prev_next_rel,
             )
-        except ImportError:
-            msg = (
-                "LlamaIndex is not installed. "
-                "Please install it with `pip install llama-index`"
+        if self.chunker_type == "token":
+            from llama_index.core.node_parser import TokenTextSplitter
+
+            return TokenTextSplitter(
+                chunk_size=self.chunk_size,
+                chunk_overlap=self.chunk_overlap,
+                include_metadata=self.include_metadata,
+                include_prev_next_rel=self.include_prev_next_rel,
             )
-            raise ImportError(msg) from None
+        if self.chunker_type == "fixed":
+            from llama_index.core.node_parser import SentenceWindowNodeParser
+
+            return SentenceWindowNodeParser.from_defaults(
+                window_size=self.chunk_size,
+                window_metadata_key="window",
+                original_text_metadata_key="original_text",
+            )
+        # markdown as default
+        from llama_index.core.node_parser import MarkdownNodeParser
+
+        return MarkdownNodeParser(
+            include_metadata=self.include_metadata,
+            include_prev_next_rel=self.include_prev_next_rel,
+        )
 
     def _find_images_for_chunk(self, doc: Document, chunk_text: str) -> list:
         """Find images that are referenced in the chunk.
@@ -129,56 +121,31 @@ class LlamaIndexChunker(TextChunker):
         Raises:
             ImportError: If llama-index isn't installed
         """
-        try:
-            # Convert our document to a LlamaIndex document
-            llama_index = importlib.import_module("llama_index.core")
-            llama_doc = llama_index.Document(
-                text=doc.content,
-                metadata={
-                    "source": doc.source_path or "",
-                    "title": doc.title or "",
-                    **(extra_metadata or {}),
-                },
+        from llama_index import core
+
+        meta = {
+            "source": doc.source_path or "",
+            "title": doc.title or "",
+            **(extra_metadata or {}),
+        }
+        llama_doc = core.Document(text=doc.content, metadata=meta)
+        chunker = self._get_llama_chunker()
+        nodes = chunker.get_nodes_from_documents([llama_doc])
+        chunks = []
+        for i, node in enumerate(nodes):
+            metadata = {**node.metadata}
+            metadata["relationships"] = node.relationships
+            chunk_images = self._find_images_for_chunk(doc, node.get_content())
+            chunk = TextChunk(
+                text=node.get_content(),
+                source_doc_id=doc.source_path or "",
+                chunk_index=i,
+                images=chunk_images,
+                metadata={**(extra_metadata or {}), **metadata},
             )
+            chunks.append(chunk)
 
-            # Get the appropriate chunker
-            chunker = self._get_llama_chunker()
-
-            # Parse the document into nodes
-            nodes = chunker.get_nodes_from_documents([llama_doc])
-
-            # Convert nodes to TextChunks
-            chunks = []
-            for i, node in enumerate(nodes):
-                # Extract metadata from node
-                metadata = {**node.metadata}
-                if hasattr(node, "relationships"):
-                    metadata["relationships"] = node.relationships
-
-                # Find images referenced in this chunk
-                chunk_images = self._find_images_for_chunk(doc, node.get_content())
-
-                # Create TextChunk
-                chunk = TextChunk(
-                    text=node.get_content(),
-                    source_doc_id=doc.source_path or "",
-                    chunk_index=i,
-                    images=chunk_images,
-                    metadata={
-                        **(extra_metadata or {}),
-                        **metadata,
-                    },
-                )
-                chunks.append(chunk)
-
-            return chunks  # noqa: TRY300
-
-        except ImportError:
-            msg = (
-                "LlamaIndex is not installed. "
-                "Please install it with `pip install llama-index`"
-            )
-            raise ImportError(msg) from None
+        return chunks
 
 
 if __name__ == "__main__":

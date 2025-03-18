@@ -48,13 +48,8 @@ class TextChunker(BaseProvider, ABC):
     ) -> list[TextChunk]:
         """Split multiple texts into chunks."""
         result: list[TextChunk] = []
-
         for item in texts:
-            if isinstance(item, tuple):
-                text, metadata = item
-            else:
-                text, metadata = item, None
+            text, metadata = item if isinstance(item, tuple) else (item, None)
             chunks = await self.split(text, metadata)
             result.extend(chunks)
-
         return result
