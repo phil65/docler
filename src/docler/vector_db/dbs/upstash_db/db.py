@@ -386,19 +386,19 @@ class UpstashBackend(VectorStoreBackend):
             namespace=self.namespace,
         )
 
-        search_results = []
+        search_results: list[SearchResult] = []
         for result in results:
             # Prepare metadata
             metadata = result.metadata or {}
             # Add text data if present
             text = result.data
-            result = SearchResult(
+            search_result = SearchResult(
                 chunk_id=result.id,
                 score=result.score,
                 metadata=metadata,
                 text=text,
             )
-            search_results.append(result)
+            search_results.append(search_result)
 
         return search_results
 
