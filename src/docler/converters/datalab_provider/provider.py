@@ -8,12 +8,12 @@ import os
 import time
 from typing import TYPE_CHECKING, ClassVar, Literal
 
-from docler.converters.base import DocumentConverter, SupportedLanguage
+from docler.converters.base import DocumentConverter
 from docler.models import Document, Image
 
 
 if TYPE_CHECKING:
-    from docler.common_types import StrPath
+    from docler.common_types import StrPath, SupportedLanguage
 
 
 logger = logging.getLogger(__name__)

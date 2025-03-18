@@ -10,8 +10,7 @@ from docler.models import Document
 
 
 if TYPE_CHECKING:
-    from docler.common_types import StrPath
-    from docler.converters.base import SupportedLanguage
+    from docler.common_types import StrPath, SupportedLanguage
 
 
 logger = logging.getLogger(__name__)

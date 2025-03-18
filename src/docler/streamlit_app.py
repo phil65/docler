@@ -21,7 +21,8 @@ from docler.converters.mistral_provider import MistralConverter
 
 
 if TYPE_CHECKING:
-    from docler.converters.base import DocumentConverter, SupportedLanguage
+    from docler.common_types import SupportedLanguage
+    from docler.converters.base import DocumentConverter
 
 
 # Setup logging

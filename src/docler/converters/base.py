@@ -5,7 +5,7 @@ from __future__ import annotations
 from abc import ABC
 import mimetypes
 import tempfile
-from typing import TYPE_CHECKING, ClassVar, Literal
+from typing import TYPE_CHECKING, ClassVar
 
 import anyenv
 from upathtools import read_path
@@ -14,11 +14,8 @@ from upathtools import read_path
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
-    from docler.common_types import StrPath
+    from docler.common_types import StrPath, SupportedLanguage
     from docler.models import Document
-
-
-SupportedLanguage = Literal["en", "de", "fr", "es", "zh"]
 
 
 class DocumentConverter(ABC):

@@ -6,14 +6,13 @@ import logging
 from typing import TYPE_CHECKING, ClassVar
 
 from docler.converters.base import DocumentConverter
-from docler.lang_code import TESSERACT_CODES, SupportedLanguage
 from docler.models import Document
 
 
 if TYPE_CHECKING:
     from datetime import datetime
 
-    from docler.common_types import StrPath
+    from docler.common_types import StrPath, SupportedLanguage
 
 
 logger = logging.getLogger(__name__)
@@ -63,6 +62,8 @@ class KreuzbergConverter(DocumentConverter):
             force_ocr: Whether to force OCR even on digital documents.
             max_processes: Maximum number of parallel processes.
         """
+        from docler.common_types import TESSERACT_CODES
+
         super().__init__(languages=languages)
         self.force_ocr = force_ocr
         if languages:

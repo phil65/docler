@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 
 
 if TYPE_CHECKING:
-    from docler.converters.base import SupportedLanguage
+    from docler.common_types import SupportedLanguage
 
 
 # Language options

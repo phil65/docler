@@ -4,6 +4,13 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from docler.common_types import (
+    MAC_CODES,
+    RAPID_CODES,
+    TESSERACT_CODES,
+    SupportedLanguage,
+)
+
 
 if TYPE_CHECKING:
     from docling.datamodel.pipeline_options import (
@@ -13,34 +20,6 @@ if TYPE_CHECKING:
         TesseractCliOcrOptions,
         TesseractOcrOptions,
     )
-
-    from docler.converters.base import SupportedLanguage
-
-
-# Mapping tables for different backends
-TESSERACT_CODES: dict[SupportedLanguage, str] = {
-    "en": "eng",
-    "de": "deu",
-    "fr": "fra",
-    "es": "spa",
-    "zh": "chi",
-}
-
-MAC_CODES: dict[SupportedLanguage, str] = {
-    "en": "en-US",
-    "de": "de-DE",
-    "fr": "fr-FR",
-    "es": "es-ES",
-    "zh": "zh-CN",
-}
-
-RAPID_CODES: dict[SupportedLanguage, str] = {
-    "en": "english",
-    "de": "german",
-    "fr": "french",
-    "es": "spanish",
-    "zh": "chinese",
-}
 
 
 def convert_languages(

@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from docler.converters.base import SupportedLanguage  # noqa: TC001
+from docler.common_types import SupportedLanguage  # noqa: TC001
 
 
 if TYPE_CHECKING:

@@ -10,8 +10,7 @@ from docler.utils import get_mime_from_pil, pil_to_bytes
 
 
 if TYPE_CHECKING:
-    from docler.common_types import StrPath
-    from docler.converters.base import SupportedLanguage
+    from docler.common_types import StrPath, SupportedLanguage
 
 
 ProviderType = Literal["gemini", "ollama", "vertex", "claude"]
