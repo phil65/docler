@@ -64,31 +64,19 @@ class MistralConverter(DocumentConverter):
         logger.debug("Processing with OCR model...")
         doc = DocumentURLChunk(document_url=signed_url.url)
         r = client.ocr.process(document=doc, model=self.model, include_image_base64=True)
-
-        # Convert response to our Document format
         images: list[Image] = []
         for page in r.pages:
             for img in page.images:
-                # Skip images without required data
                 if not img.id or not img.image_base64:
                     continue
-
-                image_data = img.image_base64
-                # Ensure proper base64 format
-                if image_data.startswith("data:image/"):
-                    image_data = image_data.split(",", 1)[1]
-
-                # Determine mime type from filename
+                data = img.image_base64
+                if data.startswith("data:image/"):
+                    data = data.split(",", 1)[1]
                 ext = img.id.split(".")[-1].lower() if "." in img.id else "jpeg"
-                image = Image(
-                    id=img.id,
-                    content=image_data,
-                    mime_type=f"image/{ext}",
-                    filename=img.id,
-                )
+                mime = f"image/{ext}"
+                image = Image(id=img.id, content=data, mime_type=mime, filename=img.id)
                 images.append(image)
 
-        # Combine markdown content from all pages
         content = "\n\n".join(page.markdown for page in r.pages)
         return Document(
             content=content,

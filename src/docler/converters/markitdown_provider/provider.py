@@ -84,7 +84,7 @@ class MarkItDownConverter(DocumentConverter):
             result = self.converter.convert(str(path))
             return Document(
                 content=result.text_content,
-                title=path.stem,
+                title=result.title or path.stem,
                 source_path=str(path),
                 mime_type=mime_type,
             )

@@ -225,3 +225,13 @@ class AzureConverter(DocumentConverter):
     #     import anyenv
 
     #     return await anyenv.run_in_thread(self._convert_path_sync, file_path, mime_type)
+
+
+if __name__ == "__main__":
+    import anyenv
+
+    pdf_path = "C:/Users/phili/Downloads/CustomCodeMigration_EndToEnd.pdf"
+
+    converter = AzureConverter()
+    result = anyenv.run_sync(converter.convert_file(pdf_path))
+    print(result)
