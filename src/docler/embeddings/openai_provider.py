@@ -5,8 +5,9 @@ from __future__ import annotations
 import importlib.util
 from typing import TYPE_CHECKING, ClassVar
 
-from llmling_agent.embeddings import EmbeddingProvider
 import numpy as np
+
+from docler.embeddings.base import EmbeddingProvider
 
 
 if TYPE_CHECKING:

@@ -5,7 +5,7 @@ from __future__ import annotations
 import asyncio
 from typing import TYPE_CHECKING, ClassVar
 
-from llmling_agent.embeddings import EmbeddingProvider
+from docler.embeddings.base import EmbeddingProvider
 
 
 if TYPE_CHECKING:

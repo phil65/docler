@@ -12,9 +12,8 @@ from docler.models import Image
 
 
 if TYPE_CHECKING:
+    from llmling_agent.embeddings import EmbeddingProvider
     import numpy as np
-
-    from docler.vector_db.embedding_model import EmbeddingModel
 
 
 Metric = Literal["cosine", "euclidean", "dot"]
@@ -220,7 +219,7 @@ class CompositeVectorDB(VectorDB):
     def __init__(
         self,
         backend: VectorStoreBackend,
-        embedding_model: EmbeddingModel,
+        embedding_model: EmbeddingProvider,
     ):
         """Initialize vector store.
 
