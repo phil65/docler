@@ -23,13 +23,46 @@ class LlamaParseConverter(DocumentConverter):
     NAME = "llamaparse"
     REQUIRED_PACKAGES: ClassVar = {"llama-parse"}
     SUPPORTED_MIME_TYPES: ClassVar[set[str]] = {
+        # PDF
         "application/pdf",
-        "application/msword",
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        "application/vnd.ms-powerpoint",
-        "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        # Office Documents
+        "application/msword",  # .doc
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",  # .docx  # noqa: E501
+        "application/vnd.ms-word.document.macroEnabled.12",  # .docm
+        "application/vnd.ms-powerpoint",  # .ppt
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation",  # .pptx # noqa: E501
+        "application/vnd.ms-powerpoint.presentation.macroEnabled.12",  # .pptm
+        "application/vnd.ms-excel",  # .xls
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",  # .xlsx
+        "application/vnd.ms-excel.sheet.macroEnabled.12",  # .xlsm
+        "application/vnd.ms-excel.sheet.binary.macroEnabled.12",  # .xlsb
+        # Open/Libre Office
+        "application/vnd.oasis.opendocument.text",  # .odt
+        "application/vnd.oasis.opendocument.spreadsheet",  # .ods
+        "application/vnd.oasis.opendocument.presentation",  # .odp
+        # Text formats
         "text/html",
         "text/markdown",
+        "text/plain",  # .txt
+        "text/rtf",  # .rtf
+        "text/csv",  # .csv
+        "text/tab-separated-values",  # .tsv
+        "application/xml",  # .xml
+        "application/epub+zip",  # .epub
+        # Images
+        "image/jpeg",  # .jpg, .jpeg
+        "image/png",  # .png
+        "image/gif",  # .gif
+        "image/bmp",  # .bmp
+        "image/svg+xml",  # .svg
+        "image/tiff",  # .tiff
+        "image/webp",  # .webp
+        # Audio
+        "audio/mpeg",  # .mp3
+        "audio/mp4",  # .mp4 audio
+        "audio/wav",  # .wav
+        "audio/webm",  # .webm audio
+        "audio/m4a",  # .m4a
     }
 
     def __init__(
