@@ -21,6 +21,7 @@ class LlamaParseConverter(DocumentConverter):
     """Document converter using LlamaParse."""
 
     NAME = "llamaparse"
+    REQUIRED_PACKAGES: ClassVar = {"llama-parse"}
     SUPPORTED_MIME_TYPES: ClassVar[set[str]] = {
         "application/pdf",
         "application/msword",

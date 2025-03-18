@@ -28,6 +28,8 @@ class DocumentConverter(ABC):
 
     NAME: str
     """Name of the converter."""
+    REQUIRED_PACKAGES: ClassVar[set[str]] = set()
+    """Packages required for this converter."""
     SUPPORTED_MIME_TYPES: ClassVar[set[str]] = set()
     """Mime types this converter can handle."""
     SUPPORTED_PROTOCOLS: ClassVar[set[str]] = {"file", ""}

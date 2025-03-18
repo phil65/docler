@@ -20,6 +20,7 @@ class MarkItDownConverter(DocumentConverter):
     """Document converter using MarkItDown."""
 
     NAME = "markitdown"
+    REQUIRED_PACKAGES: ClassVar = {"markitdown"}
     SUPPORTED_MIME_TYPES: ClassVar[set[str]] = {
         # PDFs
         "application/pdf",

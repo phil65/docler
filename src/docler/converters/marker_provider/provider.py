@@ -27,6 +27,7 @@ class MarkerConverter(DocumentConverter):
     """Document converter using Marker's PDF processing."""
 
     NAME = "marker"
+    REQUIRED_PACKAGES: ClassVar = {"marker-pdf"}
     SUPPORTED_MIME_TYPES: ClassVar = {
         # PDF
         "application/pdf",

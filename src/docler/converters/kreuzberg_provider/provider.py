@@ -22,6 +22,7 @@ class KreuzbergConverter(DocumentConverter):
     """Document converter using Kreuzberg's extraction."""
 
     NAME = "kreuzberg"
+    REQUIRED_PACKAGES: ClassVar = {"kreuzberg"}
     SUPPORTED_MIME_TYPES: ClassVar[set[str]] = {
         # PDFs
         "application/pdf",

@@ -22,6 +22,7 @@ class DoclingConverter(DocumentConverter):
     """Document converter using Docling's processing."""
 
     NAME = "docling"
+    REQUIRED_PACKAGES: ClassVar = {"docling"}
     SUPPORTED_MIME_TYPES: ClassVar[set[str]] = {"application/pdf"}
 
     def __init__(

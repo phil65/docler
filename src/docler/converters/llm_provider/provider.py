@@ -29,6 +29,7 @@ class LLMConverter(DocumentConverter):
     """Document converter using LLM providers that support PDF input."""
 
     NAME = "llm"
+    REQUIRED_PACKAGES: ClassVar = {"llmling-agent"}
     SUPPORTED_MIME_TYPES: ClassVar[set[str]] = {"application/pdf"}
 
     def __init__(

@@ -21,6 +21,7 @@ class MistralConverter(DocumentConverter):
     """Document converter using Mistral's OCR API."""
 
     NAME = "mistral"
+    REQUIRED_PACKAGES: ClassVar = {"mistralai"}
     SUPPORTED_MIME_TYPES: ClassVar[set[str]] = {"application/pdf"}
 
     def __init__(

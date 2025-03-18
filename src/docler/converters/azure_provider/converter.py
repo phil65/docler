@@ -6,11 +6,6 @@ import logging
 import os
 from typing import TYPE_CHECKING, ClassVar, Literal
 
-from azure.ai.documentintelligence import DocumentIntelligenceClient
-from azure.ai.documentintelligence.models import AnalyzeResult, DocumentAnalysisFeature
-from azure.core.credentials import AzureKeyCredential
-from azure.core.exceptions import HttpResponseError
-
 from docler.converters.base import DocumentConverter
 from docler.models import Document, Image
 
@@ -18,11 +13,11 @@ from docler.models import Document, Image
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
-    from docler.common_types import StrPath, SupportedLanguage
+    from azure.ai.documentintelligence.models import AnalyzeResult
 
+    from docler.common_types import StrPath, SupportedLanguage
 logger = logging.getLogger(__name__)
 
-# Supported pre-trained models
 PrebuiltModel = Literal[
     "prebuilt-read",
     "prebuilt-layout",
@@ -31,7 +26,6 @@ PrebuiltModel = Literal[
     "prebuilt-receipt",
 ]
 
-# Environment variable names
 ENV_ENDPOINT = "AZURE_DOC_INTELLIGENCE_ENDPOINT"
 ENV_API_KEY = "AZURE_DOC_INTELLIGENCE_KEY"
 
@@ -48,6 +42,7 @@ class AzureConverter(DocumentConverter):
     """Document converter using Azure Document Intelligence."""
 
     NAME = "azure"
+    REQUIRED_PACKAGES: ClassVar = {""}
     SUPPORTED_MIME_TYPES: ClassVar[set[str]] = {
         # PDF
         "application/pdf",
@@ -87,6 +82,9 @@ class AzureConverter(DocumentConverter):
         Raises:
             MissingConfigurationError: If endpoint or API key cannot be found
         """
+        from azure.ai.documentintelligence import DocumentIntelligenceClient
+        from azure.core.credentials import AzureKeyCredential
+
         super().__init__(languages=languages)
 
         # Get configuration
@@ -103,7 +101,6 @@ class AzureConverter(DocumentConverter):
         self.model = model
         self.features = list(additional_features) if additional_features else []
 
-        # Create client
         try:
             credential = AzureKeyCredential(self.api_key)
             self._client = DocumentIntelligenceClient(
@@ -128,11 +125,12 @@ class AzureConverter(DocumentConverter):
         Returns:
             List of extracted images
         """
+        from azure.core.exceptions import HttpResponseError
+
         images: list[Image] = []
 
         # Note: Regular document images aren't directly accessible in AnalyzeResult
         # We need to use the figures feature instead
-
         # Get extracted figures
         if result.figures:
             for i, figure in enumerate(result.figures):
@@ -146,20 +144,16 @@ class AzureConverter(DocumentConverter):
                         result_id=operation_id,
                         figure_id=figure.id,
                     )
-                    # Convert iterator to bytes
                     content = b"".join(response_iter)
-
                     image_id = f"figure-{i}"
                     filename = f"{image_id}.png"
-
-                    images.append(
-                        Image(
-                            id=image_id,
-                            content=content,
-                            mime_type="image/png",
-                            filename=filename,
-                        )
+                    image = Image(
+                        id=image_id,
+                        content=content,
+                        mime_type="image/png",
+                        filename=filename,
                     )
+                    images.append(image)
                 except HttpResponseError:
                     logger.warning("Failed to retrieve figure %s", figure.id)
                     continue
@@ -180,17 +174,16 @@ class AzureConverter(DocumentConverter):
             ValueError: If Azure configuration is missing
             HttpResponseError: If Azure API returns an error
         """
+        from azure.ai.documentintelligence.models import DocumentAnalysisFeature
+        from azure.core.exceptions import HttpResponseError
         import upath
 
         path = upath.UPath(file_path)
-
-        # Convert feature strings to enum values
         features = [
             getattr(DocumentAnalysisFeature, feature) for feature in self.features
         ]
 
         try:
-            # Submit document for analysis
             with path.open("rb") as f:
                 poller = self._client.begin_analyze_document(
                     model_id=self.model,
@@ -200,8 +193,6 @@ class AzureConverter(DocumentConverter):
                 )
             result = poller.result()
             operation_id = poller.details["operation_id"]
-
-            # Extract metadata
             metadata = {}
             if result.documents:
                 doc = result.documents[0]  # Get first document
@@ -211,9 +202,7 @@ class AzureConverter(DocumentConverter):
                         for name, field in doc.fields.items()
                     }
 
-            # Convert images
             images = self._convert_azure_images(result, operation_id)
-
             return Document(
                 content=result.content,
                 images=images,
