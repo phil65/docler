@@ -207,7 +207,7 @@ class UpstashVectorManager:
                 # Use "default" for empty string namespace
                 ns_name = namespace_name or "default"
 
-                stats["namespaces"][ns_name] = {
+                stats["namespaces"][ns_name] = {  # type: ignore
                     "vector_count": namespace_info.vector_count,
                     "pending_vector_count": namespace_info.pending_vector_count,
                 }

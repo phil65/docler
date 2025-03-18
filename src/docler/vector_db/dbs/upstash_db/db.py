@@ -6,8 +6,6 @@ import logging
 import os
 from typing import TYPE_CHECKING, Any
 
-from upstash_vector.core.index_operations import MetadataUpdateMode
-
 from docler.vector_db.base import SearchResult, VectorStoreBackend
 
 
@@ -222,6 +220,8 @@ class UpstashBackend(VectorStoreBackend):
         Returns:
             True if vector was updated, False if not found
         """
+        from upstash_vector.core.index_operations import MetadataUpdateMode
+
         # Get current vector if we need partial update
         if vector is None or metadata is None:
             current = await self.get_vector(chunk_id)

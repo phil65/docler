@@ -96,7 +96,7 @@ class AIChunker(TextChunker):
 
         import llmling_agent
 
-        agent = llmling_agent.Agent(
+        agent = llmling_agent.Agent[None](
             model=self.model,
             provider=self.provider,  # pyright: ignore
             system_prompt=SYS_PROMPT,

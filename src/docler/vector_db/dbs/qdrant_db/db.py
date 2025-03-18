@@ -2,20 +2,18 @@
 
 from __future__ import annotations
 
+import logging
 from typing import TYPE_CHECKING, Any
 import uuid
 
-from llmling_agent.log import get_logger
-from llmling_agent.vector_db import SearchResult
-
-from docler.vector_db.base import VectorStoreBackend
+from docler.vector_db.base import SearchResult, VectorStoreBackend
 
 
 if TYPE_CHECKING:
     import numpy as np
 
 
-logger = get_logger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class QdrantBackend(VectorStoreBackend):
@@ -324,7 +322,7 @@ class QdrantBackend(VectorStoreBackend):
             text = payload.pop("text", None) if payload else None
 
             result = SearchResult(
-                doc_id=str(hit.id),
+                chunk_id=str(hit.id),
                 score=hit.score,
                 metadata=payload,
                 text=str(text) if text is not None else None,
