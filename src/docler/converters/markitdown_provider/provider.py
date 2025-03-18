@@ -81,16 +81,13 @@ class MarkItDownConverter(DocumentConverter):
         path = upath.UPath(file_path)
 
         try:
-            # Convert using MarkItDown
             result = self.converter.convert(str(path))
-
             return Document(
                 content=result.text_content,
                 title=path.stem,
                 source_path=str(path),
                 mime_type=mime_type,
             )
-
         except Exception as e:
             msg = f"Failed to convert file {file_path}"
             logger.exception(msg)
@@ -98,11 +95,7 @@ class MarkItDownConverter(DocumentConverter):
 
 
 if __name__ == "__main__":
-    import logging
-
     import anyenv
-
-    logging.basicConfig(level=logging.INFO)
 
     pdf_path = "C:/Users/phili/Downloads/CustomCodeMigration_EndToEnd.pdf"
     converter = MarkItDownConverter()

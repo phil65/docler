@@ -153,14 +153,10 @@ class DataLabConverter(DocumentConverter):
 
 
 if __name__ == "__main__":
-    import logging
-
     import anyenv
 
-    logging.basicConfig(level=logging.DEBUG)
     pdf_path = "C:/Users/phili/Downloads/CustomCodeMigration_EndToEnd.pdf"
 
-    api_key = os.getenv("DATALAB_API_KEY")
-    converter = DataLabConverter(api_key=api_key)
+    converter = DataLabConverter()
     result = anyenv.run_sync(converter.convert_file(pdf_path))
     print(result)

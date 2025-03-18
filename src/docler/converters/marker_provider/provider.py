@@ -74,10 +74,7 @@ class MarkerConverter(DocumentConverter):
 
         super().__init__(languages=languages)
 
-        self.config = {
-            "output_format": "markdown",
-            "highres_image_dpi": dpi,
-        }
+        self.config = {"output_format": "markdown", "highres_image_dpi": dpi}
         if languages:
             self.config["languages"] = ",".join(languages)
         if llm_provider:
@@ -92,41 +89,26 @@ class MarkerConverter(DocumentConverter):
         import upath
 
         local_file = upath.UPath(file_path)
-
-        # Convert using Marker (CPU-intensive)
         rendered = self.converter(str(local_file))
         content, _, pil_images = text_from_rendered(rendered)
-
-        # Convert PIL images to our Image model with standardized IDs
         images: list[Image] = []
         image_replacements = {}
-
         for img_name, pil_img in pil_images.items():
             # Create standardized image ID and filename
             image_count = len(images)
-            image_id = f"img-{image_count}"
-            filename = f"{image_id}.png"
-
-            # Store old->new mapping for content replacement
-            image_replacements[img_name] = (image_id, filename)
-
-            # Create image object
+            id_ = f"img-{image_count}"
+            filename = f"{id_}.png"
+            image_replacements[img_name] = (id_, filename)
             image_data = pil_to_bytes(pil_img)
-            image = Image(
-                id=image_id,
-                content=image_data,
-                mime_type=get_mime_from_pil(pil_img),
-                filename=filename,
-            )
+            mime = get_mime_from_pil(pil_img)
+            image = Image(id=id_, content=image_data, mime_type=mime, filename=filename)
             images.append(image)
-
         # Replace image references in content
         # Match Marker's format: ![](_page_X_Picture_Y.jpeg)
         for old_name, (image_id, filename) in image_replacements.items():
             old_ref = f"![]({old_name})"
             new_ref = f"![{image_id}]({filename})"
             content = content.replace(old_ref, new_ref)
-
         return Document(
             content=content,
             images=images,
@@ -137,15 +119,10 @@ class MarkerConverter(DocumentConverter):
 
 
 if __name__ == "__main__":
-    import logging
-
     import anyenv
-
-    logging.basicConfig(level=logging.DEBUG)
 
     pdf_path = "C:/Users/phili/Downloads/CustomCodeMigration_EndToEnd.pdf"
     output_dir = "E:/markdown-test/"
     converter = MarkerConverter()
     result = anyenv.run_sync(converter.convert_file(pdf_path))
     print(result)
-    print("PDF processed successfully.")

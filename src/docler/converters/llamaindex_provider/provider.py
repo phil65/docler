@@ -63,7 +63,6 @@ class LlamaIndexConverter(DocumentConverter):
         import upath
 
         path = upath.UPath(file_path)
-
         try:
             loader = SmartPDFLoader(llmsherpa_api_url=self.api_url, **self.parser_kwargs)
             llama_docs = loader.load_data(str(path))
@@ -71,23 +70,16 @@ class LlamaIndexConverter(DocumentConverter):
             all_text_parts: list[str] = []
             all_images: list[Image] = []
             metadata = {}
-
             for i, doc in enumerate(llama_docs):
                 # Add text content
                 if doc.text:
                     all_text_parts.append(doc.text)
-
-                # Process images if present
                 if "images" in doc.metadata:
                     for img_data in doc.metadata["images"]:
                         if not img_data.get("image_base64"):
                             continue
-
-                        # Create standardized image ID
                         image_count = len(all_images)
                         image_id = f"img-{image_count}"
-
-                        # Get base64 data and remove prefix if present
                         img_content = img_data["image_base64"]
                         if "," in img_content:
                             img_content = img_content.split(",", 1)[1]
@@ -124,11 +116,7 @@ class LlamaIndexConverter(DocumentConverter):
 
 
 if __name__ == "__main__":
-    import logging
-
     import anyenv
-
-    logging.basicConfig(level=logging.DEBUG)
 
     pdf_path = "https://arxiv.org/pdf/1910.13461.pdf"
     converter = LlamaIndexConverter()

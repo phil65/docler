@@ -125,11 +125,7 @@ class KreuzbergConverter(DocumentConverter):
 
 
 if __name__ == "__main__":
-    import logging
-
     import anyenv
-
-    logging.basicConfig(level=logging.DEBUG)
 
     pdf_path = "C:/Users/phili/Downloads/CustomCodeMigration_EndToEnd.pdf"
     converter = KreuzbergConverter()

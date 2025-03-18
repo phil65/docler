@@ -150,11 +150,7 @@ class DoclingConverter(DocumentConverter):
 
 
 if __name__ == "__main__":
-    import logging
-
     import anyenv
-
-    logging.basicConfig(level=logging.INFO)
 
     pdf_path = "C:/Users/phili/Downloads/2402.079271.pdf"
     converter = DoclingConverter()

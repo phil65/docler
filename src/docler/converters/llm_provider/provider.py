@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import base64
 import logging
 from typing import TYPE_CHECKING, ClassVar
 
@@ -56,7 +57,6 @@ class LLMConverter(DocumentConverter):
             ValueError: If model doesn't support PDF input
         """
         super().__init__(languages=languages)
-
         self.model = model  # .replace(":", "/")
         self.system_prompt = system_prompt
         self.temperature = temperature
@@ -65,7 +65,6 @@ class LLMConverter(DocumentConverter):
         if languages:
             lang_str = ", ".join(languages)
             txt = f"The document may contain text in these languages: {lang_str}."
-
         self.user_prompt = user_prompt or USER_PROMPT.format(txt)
 
     def _convert_path_sync(self, file_path: StrPath, mime_type: str) -> Document:
@@ -78,21 +77,14 @@ class LLMConverter(DocumentConverter):
         Returns:
             Converted document
         """
-        import base64
-
-        import llmling_agent
+        from llmling_agent import Agent, ImageBase64Content
         import upath
 
         path = upath.UPath(file_path)
-
-        # Read and encode PDF
         pdf_bytes = path.read_bytes()
         pdf_b64 = base64.b64encode(pdf_bytes).decode()
-        content = llmling_agent.ImageBase64Content(
-            data=pdf_b64,
-            mime_type="application/pdf",
-        )
-        agent = llmling_agent.Agent[None](
+        content = ImageBase64Content(data=pdf_b64, mime_type="application/pdf")
+        agent = Agent[None](
             model=self.model,
             system_prompt=self.system_prompt,
             provider="litellm",  # (pydantic-ai does not work with pdfs yet)

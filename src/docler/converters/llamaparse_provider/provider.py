@@ -45,7 +45,7 @@ class LlamaParseConverter(DocumentConverter):
             api_key: LlamaParse API key, defaults to LLAMAPARSE_API_KEY env var
         """
         super().__init__(languages=languages)
-        self.api_key = api_key or os.getenv("LLAMAPARSE_API_KEY")
+        self.api_key = api_key or os.getenv("LLAMAPARSE_API_KEY") or ""
         if not self.api_key:
             msg = "LLAMAPARSE_API_KEY environment variable not set"
             raise ValueError(msg)
@@ -56,43 +56,23 @@ class LlamaParseConverter(DocumentConverter):
         import upath
 
         path = upath.UPath(file_path)
-
-        # Initialize parser with markdown output
-        assert self.api_key, "API key not set"
         parser = LlamaParse(api_key=self.api_key, result_type=ResultType.MD)
-
-        # Get structured result including images
         result = parser.get_json_result(str(path))
-        print(result)
         pages = result[0]["pages"]  # First document's pages
-
-        # Collect content and images across pages
         content_parts: list[str] = []
         images: list[Image] = []
 
         for page in pages:
-            # Add markdown content
             if page.get("md"):
                 content_parts.append(page["md"])
-
-            # Process images in this page
             for img in page.get("images", []):
-                # Create standardized image ID
                 image_count = len(images)
-                image_id = f"img-{image_count}"
-
-                # Get image data and metadata
+                id_ = f"img-{image_count}"
                 img_data = img["data"]  # Base64 encoded image
                 img_type = img.get("type", "png")
-                filename = f"{image_id}.{img_type}"
-
-                # Create image object
-                image = Image(
-                    id=image_id,
-                    content=img_data,  # Already base64 encoded
-                    mime_type=f"image/{img_type}",
-                    filename=filename,
-                )
+                filename = f"{id_}.{img_type}"
+                mime = f"image/{img_type}"
+                image = Image(id=id_, content=img_data, mime_type=mime, filename=filename)
                 images.append(image)
 
         return Document(
@@ -106,11 +86,7 @@ class LlamaParseConverter(DocumentConverter):
 
 
 if __name__ == "__main__":
-    import logging
-
     import anyenv
-
-    logging.basicConfig(level=logging.DEBUG)
 
     pdf_path = "C:/Users/phili/Downloads/CustomCodeMigration_EndToEnd.pdf"
     converter = LlamaParseConverter()
