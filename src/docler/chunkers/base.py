@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, ClassVar
 
 
 if TYPE_CHECKING:
@@ -27,6 +27,9 @@ class TextChunk:
 
 class TextChunker(ABC):
     """Base class for text chunkers."""
+
+    REQUIRED_PACKAGES: ClassVar[list[str]] = []
+    """Packages required for this chunker to function."""
 
     def __init__(self, chunk_size: int = 500, chunk_overlap: int = 50):
         self.chunk_size = chunk_size

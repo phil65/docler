@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import importlib
 import logging
-from typing import TYPE_CHECKING, Any, Literal
+from typing import TYPE_CHECKING, Any, ClassVar, Literal
 
 from docler.chunkers.base import TextChunk, TextChunker
 
@@ -24,6 +24,8 @@ class LlamaIndexChunker(TextChunker):
     This is a wrapper around LlamaIndex's chunking functionality,
     allowing dynamic import to avoid a fixed dependency.
     """
+
+    REQUIRED_PACKAGES: ClassVar[list[str]] = ["llama-index"]
 
     def __init__(
         self,

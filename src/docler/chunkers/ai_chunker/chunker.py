@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, ClassVar
 
 from pydantic import BaseModel, ConfigDict
 
@@ -66,6 +66,8 @@ Here's the text with line numbers:
 
 class AIChunker(TextChunker):
     """LLM-based document chunker."""
+
+    REQUIRED_PACKAGES: ClassVar[list[str]] = ["llmling-agent"]
 
     def __init__(
         self,
