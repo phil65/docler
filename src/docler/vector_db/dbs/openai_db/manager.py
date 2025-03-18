@@ -6,8 +6,6 @@ import logging
 import os
 from typing import TYPE_CHECKING, Any, Literal
 
-from openai import AsyncOpenAI
-
 from docler.vector_db.dbs.openai_db.db import ChunkingStrategy, OpenAIVectorDB
 
 
@@ -32,6 +30,8 @@ class OpenAIVectorManager:
             api_key: OpenAI API key (defaults to OPENAI_API_KEY env var)
             organization: OpenAI organization ID (defaults to OPENAI_ORG_ID env var)
         """
+        from openai import AsyncOpenAI
+
         self.api_key = api_key or os.getenv("OPENAI_API_KEY")
         if not self.api_key:
             msg = "OpenAI API key must be provided via parameter or OPENAI_API_KEY envvar"
