@@ -21,7 +21,7 @@ PACKAGE_DIR = pathlib.Path(__file__).parent
 @cli.command()
 def serve():
     """Start the Streamlit web interface."""
-    app_path = str(PACKAGE_DIR / "streamlit_app.py")
+    app_path = str(PACKAGE_DIR / "streamlit_app" / "app.py")
     try:
         cmd = [sys.executable, "-m", "streamlit", "run", app_path]
         subprocess.run(cmd, env=os.environ.copy(), check=True)
