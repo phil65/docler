@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Literal
+from typing import TYPE_CHECKING, Any
 
 from pydantic import BaseModel, ConfigDict
 
@@ -10,6 +10,8 @@ from docler.chunkers.base import TextChunk, TextChunker
 
 
 if TYPE_CHECKING:
+    from llmling_agent.agent.agent import AgentType
+
     from docler.models import Document
 
 
@@ -68,7 +70,7 @@ class AIChunker(TextChunker):
     def __init__(
         self,
         model: str = "openrouter:openai/o3-mini",  # google/gemini-2.0-flash-lite-001
-        provider: Literal["pydantic_ai", "litellm"] = "pydantic_ai",
+        provider: AgentType = "pydantic_ai",
         min_chunk_size: int = 200,
         max_chunk_size: int = 1500,
     ):
@@ -92,18 +94,15 @@ class AIChunker(TextChunker):
 
     async def _get_chunks(self, text: str) -> Chunks:
         """Get chunk definitions from LLM."""
-        numbered_text = self._add_line_numbers(text)
-
         import llmling_agent
 
+        numbered_text = self._add_line_numbers(text)
         agent: llmling_agent.StructuredAgent[None, Chunks] = llmling_agent.Agent(
             model=self.model,
             provider=self.provider,  # pyright: ignore
             system_prompt=SYS_PROMPT,
         ).to_structured(Chunks)
         prompt = CHUNKING_PROMPT.format(numbered_text=numbered_text)
-
-        # Get response from LLM
         response = await agent.run(prompt)
         return response.content
 
@@ -115,21 +114,12 @@ class AIChunker(TextChunker):
         extra_metadata: dict[str, Any] | None = None,
     ) -> TextChunk:
         """Create a TextChunk from chunk definition."""
-        # Get lines for this chunk
         lines = doc.content.splitlines()
         chunk_lines = lines[chunk.start_row - 1 : chunk.end_row]
         chunk_text = "\n".join(chunk_lines)
-
-        # Build metadata
-        metadata = {
-            **(extra_metadata or {}),
-            "keywords": chunk.keywords,
-            "references": chunk.references,
-        }
-
-        # Find images referenced in these lines
+        base = extra_metadata or {}
+        metadata = {**base, "keywords": chunk.keywords, "references": chunk.references}
         chunk_images = [i for i in doc.images if i.filename and i.filename in chunk_text]
-
         return TextChunk(
             text=chunk_text,
             source_doc_id=doc.source_path or "",
