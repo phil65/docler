@@ -11,7 +11,6 @@ from docler.converters.registry import ConverterRegistry
 from docler.converters.docling_provider import DoclingConverter
 from docler.converters.marker_provider import MarkerConverter
 from docler.converters.mistral_provider import MistralConverter
-from docler.converters.olmocr_provider import OlmConverter
 from docler.converters.llm_provider import LLMConverter
 from docler.converters.datalab_provider import DataLabConverter
 from docler.converters.llamaparse_provider import LlamaParseConverter
@@ -32,5 +31,4 @@ __all__ = [
     "LlamaParseConverter",
     "MarkerConverter",
     "MistralConverter",
-    "OlmConverter",
 ]
