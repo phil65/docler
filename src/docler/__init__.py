@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-from docler.base import DocumentConverter
+from docler.converters.base import DocumentConverter
 from docler.converters.dir_converter import Conversion, DirectoryConverter
 from docler.models import Document, Image, ImageReferenceFormat
-from docler.registry import ConverterRegistry
+from docler.converters.registry import ConverterRegistry
 
 # Import providers
 from docler.converters.docling_provider import DoclingConverter

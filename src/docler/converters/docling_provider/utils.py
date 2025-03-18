@@ -2,23 +2,20 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal
-
-from docling.datamodel.pipeline_options import (
-    OcrMacOptions,
-    RapidOcrOptions,
-    TesseractCliOcrOptions,
-    TesseractOcrOptions,
-)
+from typing import TYPE_CHECKING
 
 
 if TYPE_CHECKING:
     from docling.datamodel.pipeline_options import (
         EasyOcrOptions,
+        OcrMacOptions,
+        RapidOcrOptions,
+        TesseractCliOcrOptions,
+        TesseractOcrOptions,
     )
 
+    from docler.converters.base import SupportedLanguage
 
-SupportedLanguage = Literal["en", "de", "fr", "es", "zh"]
 
 # Mapping tables for different backends
 TESSERACT_CODES: dict[SupportedLanguage, str] = {
@@ -65,6 +62,13 @@ def convert_languages(
     Returns:
         List of language codes in the format expected by the backend
     """
+    from docling.datamodel.pipeline_options import (
+        OcrMacOptions,
+        RapidOcrOptions,
+        TesseractCliOcrOptions,
+        TesseractOcrOptions,
+    )
+
     if backend_type in (TesseractCliOcrOptions, TesseractOcrOptions):
         return [TESSERACT_CODES[lang] for lang in languages]
     if backend_type == OcrMacOptions:

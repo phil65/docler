@@ -5,7 +5,7 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING, ClassVar
 
-from docler.base import DocumentConverter
+from docler.converters.base import DocumentConverter
 from docler.lang_code import TESSERACT_CODES, SupportedLanguage
 from docler.models import Document
 

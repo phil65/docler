@@ -12,8 +12,8 @@ from upathtools import list_files
 if TYPE_CHECKING:
     from collections.abc import AsyncIterator
 
-    from docler.base import DocumentConverter
     from docler.common_types import StrPath
+    from docler.converters.base import DocumentConverter
     from docler.models import Document
 
 

@@ -11,7 +11,7 @@ from azure.ai.documentintelligence.models import AnalyzeResult, DocumentAnalysis
 from azure.core.credentials import AzureKeyCredential
 from azure.core.exceptions import HttpResponseError
 
-from docler.base import DocumentConverter
+from docler.converters.base import DocumentConverter
 from docler.models import Document, Image
 
 
@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     from collections.abc import Sequence
 
     from docler.common_types import StrPath
-    from docler.lang_code import SupportedLanguage
+    from docler.converters.base import SupportedLanguage
 
 logger = logging.getLogger(__name__)
 

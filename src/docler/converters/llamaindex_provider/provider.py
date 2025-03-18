@@ -6,13 +6,13 @@ import base64
 import logging
 from typing import TYPE_CHECKING, ClassVar
 
-from docler.base import DocumentConverter
+from docler.converters.base import DocumentConverter
 from docler.models import Document, Image
 
 
 if TYPE_CHECKING:
     from docler.common_types import StrPath
-    from docler.lang_code import SupportedLanguage
+    from docler.converters.base import SupportedLanguage
 
 
 logger = logging.getLogger(__name__)

@@ -4,14 +4,14 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, ClassVar, Literal
 
-from docler.base import DocumentConverter
+from docler.converters.base import DocumentConverter
 from docler.models import Document, Image
 from docler.utils import get_mime_from_pil, pil_to_bytes
 
 
 if TYPE_CHECKING:
     from docler.common_types import StrPath
-    from docler.lang_code import SupportedLanguage
+    from docler.converters.base import SupportedLanguage
 
 
 ProviderType = Literal["gemini", "ollama", "vertex", "claude"]

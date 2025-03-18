@@ -6,12 +6,10 @@ from typing import TYPE_CHECKING, Any, Literal
 
 from pydantic import BaseModel, ConfigDict
 
-from docler.chunkers.base import TextChunk
+from docler.chunkers.base import TextChunk, TextChunker
 
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence
-
     from docler.models import Document
 
 
@@ -64,7 +62,7 @@ Here's the text with line numbers:
 """
 
 
-class AIChunker:
+class AIChunker(TextChunker):
     """LLM-based document chunker."""
 
     def __init__(
@@ -144,7 +142,7 @@ class AIChunker:
         self,
         doc: Document,
         extra_metadata: dict[str, Any] | None = None,
-    ) -> Sequence[TextChunk]:
+    ) -> list[TextChunk]:
         """Split document into chunks using LLM analysis."""
         # Get chunk definitions from LLM
         chunks = await self._get_chunks(doc.content)

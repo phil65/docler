@@ -6,8 +6,8 @@ from io import BytesIO
 import logging
 from typing import TYPE_CHECKING, ClassVar
 
-from docler.base import DocumentConverter
-from docler.lang_code import SupportedLanguage, convert_languages
+from docler.converters.base import DocumentConverter, SupportedLanguage
+from docler.converters.docling_provider.utils import convert_languages
 from docler.models import Document, Image
 
 

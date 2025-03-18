@@ -7,9 +7,8 @@ from typing import TYPE_CHECKING
 
 
 if TYPE_CHECKING:
-    from docler.base import DocumentConverter
     from docler.common_types import StrPath
-    from docler.lang_code import SupportedLanguage
+    from docler.converters.base import DocumentConverter, SupportedLanguage
     from docler.models import Document
 
 

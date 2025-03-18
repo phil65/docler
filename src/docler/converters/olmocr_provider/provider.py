@@ -8,13 +8,13 @@ import json
 import logging
 from typing import TYPE_CHECKING, ClassVar, Literal
 
-from docler.base import DocumentConverter
+from docler.converters.base import DocumentConverter
 from docler.models import Document, Image as DoclerImage
 
 
 if TYPE_CHECKING:
     from docler.common_types import StrPath
-    from docler.lang_code import SupportedLanguage
+    from docler.converters.base import SupportedLanguage
 
 
 logger = logging.getLogger(__name__)
