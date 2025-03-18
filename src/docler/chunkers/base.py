@@ -4,7 +4,9 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any, ClassVar
+from typing import TYPE_CHECKING, Any
+
+from docler.provider import BaseProvider
 
 
 if TYPE_CHECKING:
@@ -25,11 +27,8 @@ class TextChunk:
     metadata: dict[str, Any] = field(default_factory=dict)
 
 
-class TextChunker(ABC):
+class TextChunker(BaseProvider, ABC):
     """Base class for text chunkers."""
-
-    REQUIRED_PACKAGES: ClassVar[list[str]] = []
-    """Packages required for this chunker to function."""
 
     def __init__(self, chunk_size: int = 500, chunk_overlap: int = 50):
         self.chunk_size = chunk_size

@@ -5,6 +5,8 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, ClassVar
 
+from docler.provider import BaseProvider
+
 
 if TYPE_CHECKING:
     from collections.abc import AsyncIterator
@@ -12,14 +14,11 @@ if TYPE_CHECKING:
     import numpy as np
 
 
-class EmbeddingProvider(ABC):
+class EmbeddingProvider(BaseProvider, ABC):
     """Base class for streaming embedding providers."""
 
     NAME: ClassVar[str]
     """Name of this embedding provider."""
-
-    REQUIRED_PACKAGES: ClassVar[list[str]] = []
-    """Packages required for this embedding provider to function."""
 
     @abstractmethod
     def embed_stream(

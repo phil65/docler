@@ -5,10 +5,11 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 import base64
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, ClassVar, Literal
+from typing import TYPE_CHECKING, Any, Literal
 
 from docler.chunkers.base import TextChunk
 from docler.models import Image
+from docler.provider import BaseProvider
 
 
 if TYPE_CHECKING:
@@ -29,11 +30,8 @@ class SearchResult:
     text: str | None = None
 
 
-class VectorStoreBackend(ABC):
+class VectorStoreBackend(BaseProvider, ABC):
     """Low-level vector store interface for raw vector operations."""
-
-    REQUIRED_PACKAGES: ClassVar[list[str]] = []
-    """Packages required for this vector store backend to function."""
 
     @abstractmethod
     async def add_vector(

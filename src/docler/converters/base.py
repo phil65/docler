@@ -10,6 +10,8 @@ from typing import TYPE_CHECKING, ClassVar
 import anyenv
 from upathtools import read_path
 
+from docler.provider import BaseProvider
+
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -18,7 +20,7 @@ if TYPE_CHECKING:
     from docler.models import Document
 
 
-class DocumentConverter(ABC):
+class DocumentConverter(BaseProvider, ABC):
     """Abstract base class for document converters.
 
     Implementation classes should override either:
@@ -28,8 +30,6 @@ class DocumentConverter(ABC):
 
     NAME: str
     """Name of the converter."""
-    REQUIRED_PACKAGES: ClassVar[set[str]] = set()
-    """Packages required for this converter."""
     SUPPORTED_MIME_TYPES: ClassVar[set[str]] = set()
     """Mime types this converter can handle."""
     SUPPORTED_PROTOCOLS: ClassVar[set[str]] = {"file", ""}
