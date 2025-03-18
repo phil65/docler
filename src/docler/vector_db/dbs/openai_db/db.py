@@ -48,6 +48,7 @@ class OpenAIVectorDB(IntegratedVectorDB):
     """Vector database using OpenAI's Vector Stores API."""
 
     NAME: ClassVar[str] = "openai"
+    REQUIRED_PACKAGES: ClassVar[list[str]] = ["openai"]
 
     def __init__(
         self,

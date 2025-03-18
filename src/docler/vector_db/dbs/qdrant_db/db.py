@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, ClassVar
 import uuid
 
 from docler.vector_db.base import SearchResult, VectorStoreBackend
@@ -18,6 +18,8 @@ logger = logging.getLogger(__name__)
 
 class QdrantBackend(VectorStoreBackend):
     """Qdrant implementation of vector store backend."""
+
+    REQUIRED_PACKAGES: ClassVar[list[str]] = ["qdrant-client"]
 
     def __init__(
         self,

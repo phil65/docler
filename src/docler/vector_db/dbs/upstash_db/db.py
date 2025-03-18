@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import logging
 import os
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, ClassVar
 
 from docler.vector_db.base import SearchResult, VectorStoreBackend
 
@@ -21,6 +21,8 @@ logger = logging.getLogger(__name__)
 
 class UpstashBackend(VectorStoreBackend):
     """Upstash Vector implementation of vector store backend."""
+
+    REQUIRED_PACKAGES: ClassVar[list[str]] = ["upstash-vector"]
 
     def __init__(
         self,

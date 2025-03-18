@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any, ClassVar, cast
 import uuid
 
 from docler.vector_db.base import SearchResult, VectorStoreBackend
@@ -18,6 +18,9 @@ logger = logging.getLogger(__name__)
 
 class ChromaBackend(VectorStoreBackend):
     """ChromaDB implementation of vector store backend."""
+
+    NAME = "ChromaDB"
+    REQUIRED_PACKAGES: ClassVar[list[str]] = ["chromadb"]
 
     def __init__(
         self,
