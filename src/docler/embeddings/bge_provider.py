@@ -18,6 +18,7 @@ class BGEEmbeddings(EmbeddingProvider):
     """Local embeddings using BGE models."""
 
     NAME = "BGE"
+    REQUIRED_PACKAGES: ClassVar[list[str]] = ["FlagEmbedding"]
     dimensions: ClassVar[int] = 1536  # OpenAI-compatible
 
     def __init__(self, model: str = "BAAI/bge-large-en-v1.5"):

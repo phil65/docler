@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import asyncio
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, ClassVar
 
 from docler.embeddings.base import EmbeddingProvider
 
@@ -16,6 +16,9 @@ if TYPE_CHECKING:
 
 class SentenceTransformerEmbeddings(EmbeddingProvider):
     """Local embeddings using sentence-transformers."""
+
+    NAME = "SentenceTransformers"
+    REQUIRED_PACKAGES: ClassVar[list[str]] = ["sentence-transformers"]
 
     def __init__(
         self,

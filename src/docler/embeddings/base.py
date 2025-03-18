@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, ClassVar
 
 
 if TYPE_CHECKING:
@@ -14,6 +14,12 @@ if TYPE_CHECKING:
 
 class EmbeddingProvider(ABC):
     """Base class for streaming embedding providers."""
+
+    NAME: ClassVar[str]
+    """Name of this embedding provider."""
+
+    REQUIRED_PACKAGES: ClassVar[list[str]] = []
+    """Packages required for this embedding provider to function."""
 
     @abstractmethod
     def embed_stream(

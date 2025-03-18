@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, ClassVar
 
 import numpy as np
 
@@ -17,6 +17,7 @@ class LiteLLMEmbeddings(EmbeddingProvider):
     """Embeddings provider using LiteLLM, supporting various model providers."""
 
     NAME = "LiteLLM"
+    REQUIRED_PACKAGES: ClassVar[list[str]] = ["litellm"]
 
     def __init__(
         self,
