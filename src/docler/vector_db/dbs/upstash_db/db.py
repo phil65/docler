@@ -5,6 +5,7 @@ from __future__ import annotations
 import logging
 import os
 from typing import TYPE_CHECKING, Any, ClassVar
+import uuid
 
 from docler.vector_db.base import SearchResult, VectorStoreBackend
 
@@ -43,10 +44,9 @@ class UpstashBackend(VectorStoreBackend):
         """
         from upstash_vector import AsyncIndex
 
-        # Get configuration from params or env
         self.url = url or os.getenv("UPSTASH_VECTOR_REST_URL")
         self.token = token or os.getenv("UPSTASH_VECTOR_REST_TOKEN")
-
+        self.batch_size = 100
         if not self.url:
             msg = (
                 "Upstash Vector URL must be provided via 'url' parameter "
@@ -61,7 +61,6 @@ class UpstashBackend(VectorStoreBackend):
             )
             raise ValueError(msg)
 
-        # Store namespace/collection name
         self.namespace = collection_name
         self._client: AsyncIndex = AsyncIndex(url=self.url, token=self.token)
 
@@ -83,25 +82,19 @@ class UpstashBackend(VectorStoreBackend):
         Returns:
             ID of the stored vector
         """
-        import uuid
-
         from upstash_vector import Vector
 
         if id_ is None:
             id_ = str(uuid.uuid4())
 
-        # Extract text from metadata if present
         text = metadata.pop("text", None) if metadata else None
         vector_list: list[float] = vector.tolist()  # type: ignore
-
         upstash_vector = Vector(
             id=id_,
             vector=vector_list,  # Upstash expects list format
             metadata=metadata,
             data=text,  # Store text in data field
         )
-
-        # Upload vector with namespace - now directly async
         await self._client.upsert(
             vectors=[upstash_vector],
             namespace=self.namespace,
@@ -125,28 +118,19 @@ class UpstashBackend(VectorStoreBackend):
         Returns:
             List of IDs for the stored vectors
         """
-        import uuid
-
         from upstash_vector import Vector
 
         if len(vectors) != len(metadata):
             msg = "Number of vectors and metadata entries must match"
             raise ValueError(msg)
 
-        # Generate IDs if not provided
         if ids is None:
             ids = [str(uuid.uuid4()) for _ in vectors]
 
-        # Create list of Upstash Vector objects
         upstash_vectors = []
         for id_, vector, meta in zip(ids, vectors, metadata):
-            # Extract text from metadata if present
             text = meta.pop("text", None) if meta else None
-
-            # Convert numpy array to list
             vector_list: list[float] = vector.tolist()  # type: ignore
-
-            # Create Upstash Vector object
             upstash_vector = Vector(
                 id=id_,
                 vector=vector_list,
@@ -154,12 +138,8 @@ class UpstashBackend(VectorStoreBackend):
                 data=text,
             )
             upstash_vectors.append(upstash_vector)
-
-        # Upload vectors (in batches if needed)
-        batch_size = 100  # Adjust based on Upstash's limits
-        for i in range(0, len(upstash_vectors), batch_size):
-            batch = upstash_vectors[i : i + batch_size]
-            # Directly async call
+        for i in range(0, len(upstash_vectors), self.batch_size):
+            batch = upstash_vectors[i : i + self.batch_size]
             await self._client.upsert(
                 vectors=batch,
                 namespace=self.namespace,
@@ -181,7 +161,6 @@ class UpstashBackend(VectorStoreBackend):
         """
         import numpy as np
 
-        # Fetch vector from Upstash with namespace - directly async
         results = await self._client.fetch(
             ids=[chunk_id],
             include_vectors=True,
@@ -190,20 +169,14 @@ class UpstashBackend(VectorStoreBackend):
             namespace=self.namespace,
         )
 
-        # Check if vector exists
         if not results or results[0] is None:
             return None
 
         result = results[0]
-
-        # Convert vector to numpy array
         vector = np.array(result.vector)
-
-        # Prepare metadata, including text if available
         metadata = result.metadata or {}
         if result.data:
             metadata["text"] = result.data
-
         return vector, metadata
 
     async def update_vector(
@@ -224,27 +197,19 @@ class UpstashBackend(VectorStoreBackend):
         """
         from upstash_vector.core.index_operations import MetadataUpdateMode
 
-        # Get current vector if we need partial update
         if vector is None or metadata is None:
             current = await self.get_vector(chunk_id)
             if current is None:
                 return False
 
             current_vector, current_metadata = current
-
             if vector is None:
                 vector = current_vector
             if metadata is None:
                 metadata = current_metadata
-
-        # Extract text from metadata if present
         text = metadata.pop("text", None) if metadata else None
-
-        # Convert numpy array to list
         vector_list: list[float] = vector.tolist()  # type: ignore
-
         try:
-            # Update vector in Upstash with namespace - directly async
             result = await self._client.update(
                 id=chunk_id,
                 vector=vector_list,
@@ -269,11 +234,7 @@ class UpstashBackend(VectorStoreBackend):
             True if vector was deleted, False if not found
         """
         try:
-            # Directly async
-            result = await self._client.delete(
-                ids=[chunk_id],
-                namespace=self.namespace,
-            )
+            result = await self._client.delete(ids=[chunk_id], namespace=self.namespace)
             # Check if any vectors were actually deleted
         except Exception:
             logger.exception("Failed to delete vector %s", chunk_id)
@@ -299,24 +260,17 @@ class UpstashBackend(VectorStoreBackend):
         """
         # Convert numpy array to list
         vector_list: list[float] = query_vector.tolist()  # type: ignore
-
-        # Prepare filter string if filters are provided
         filter_str = ""
         if filters:
-            # Convert filters dict to Upstash filter expression
             conditions = []
             for key, value in filters.items():
                 if isinstance(value, list):
-                    # Handle list values
                     values_str = ", ".join([f'"{v}"' for v in value])
                     conditions.append(f"{key} IN [{values_str}]")
                 else:
-                    # Handle single value
                     conditions.append(f'{key} == "{value}"')
 
             filter_str = " AND ".join(conditions)
-
-        # Execute search with namespace - directly async
         results = await self._client.query(
             vector=vector_list,
             top_k=k,
@@ -327,13 +281,9 @@ class UpstashBackend(VectorStoreBackend):
             namespace=self.namespace,
         )
 
-        # Format results
         search_results = []
         for result in results:
-            # Prepare metadata
             metadata = result.metadata or {}
-
-            # Add text data if present
             text = result.data
             res = SearchResult(
                 chunk_id=result.id,
@@ -361,23 +311,18 @@ class UpstashBackend(VectorStoreBackend):
         Returns:
             List of search results
         """
-        # Prepare filter string if filters are provided
         filter_str = ""
         if filters:
-            # Convert filters dict to Upstash filter expression
             conditions = []
             for key, value in filters.items():
                 if isinstance(value, list):
-                    # Handle list values
                     values_str = ", ".join([f'"{v}"' for v in value])
                     conditions.append(f"{key} IN [{values_str}]")
                 else:
-                    # Handle single value
                     conditions.append(f'{key} == "{value}"')
 
             filter_str = " AND ".join(conditions)
 
-        # Execute search using text directly with namespace - directly async
         results = await self._client.query(
             data=query,  # Use text directly, Upstash will embed it
             top_k=k,
@@ -421,23 +366,15 @@ class UpstashBackend(VectorStoreBackend):
         Returns:
             List of IDs for the stored texts
         """
-        import uuid
-
         from upstash_vector import Vector
 
-        # Generate IDs if not provided
         if ids is None:
             ids = [str(uuid.uuid4()) for _ in texts]
-
-        # Use empty metadata if not provided
         if metadatas is None:
             metadatas = [{} for _ in texts]
-
         if len(texts) != len(metadatas):
             msg = "Number of texts and metadata entries must match"
             raise ValueError(msg)
-
-        # Create list of Upstash Vector objects with data field
         upstash_vectors = []
         for id_, text, metadata in zip(ids, texts, metadatas):
             vector_obj = Vector(
@@ -446,12 +383,8 @@ class UpstashBackend(VectorStoreBackend):
                 metadata=metadata,
             )
             upstash_vectors.append(vector_obj)
-
-        # Upload in batches if needed
-        batch_size = 100
-        for i in range(0, len(upstash_vectors), batch_size):
-            batch = upstash_vectors[i : i + batch_size]
-            # Directly async
+        for i in range(0, len(upstash_vectors), self.batch_size):
+            batch = upstash_vectors[i : i + self.batch_size]
             await self._client.upsert(
                 vectors=batch,
                 namespace=self.namespace,
@@ -471,39 +404,23 @@ class UpstashBackend(VectorStoreBackend):
         Returns:
             List of IDs for the stored chunks
         """
-        # Prepare texts, metadata and IDs
         texts = []
         metadatas = []
         ids = []
-
         for chunk in chunks:
-            # Create chunk ID
             chunk_id = f"{chunk.source_doc_id}_{chunk.chunk_index}"
             ids.append(chunk_id)
-
-            # Get text content
             texts.append(chunk.text)
-
-            # Prepare metadata
             metadata = {
                 "source_doc_id": chunk.source_doc_id,
                 "chunk_index": chunk.chunk_index,
             }
-
-            # Add page number if available
             if chunk.page_number is not None:
                 metadata["page_number"] = chunk.page_number
-
-            # Add any additional metadata
             metadata.update(chunk.metadata)
-
-            # Store image references if present
             if chunk.images:
                 image_refs = [img.filename for img in chunk.images if img.filename]
                 if image_refs:
                     metadata["image_references"] = image_refs
-
             metadatas.append(metadata)
-
-        # Use the add_texts method to store everything
         return await self.add_texts(texts, metadatas, ids)
