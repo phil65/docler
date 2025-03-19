@@ -4,40 +4,13 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, ClassVar
 
-from pydantic import BaseModel, ConfigDict
-
+from docler.chunkers.ai_chunker.models import Chunk, Chunks
 from docler.chunkers.base import TextChunk, TextChunker
+from docler.common_types import DEFAULT_CHUNKER_MODEL
 
 
 if TYPE_CHECKING:
-    from llmling_agent.agent.agent import AgentType
-
     from docler.models import Document
-
-
-class Chunk(BaseModel):
-    """A chunk of text with semantic metadata."""
-
-    start_row: int
-    """Start line number (1-based)"""
-
-    end_row: int
-    """End line number (1-based)"""
-
-    keywords: list[str]
-    """Key terms and concepts in this chunk"""
-
-    references: list[int]
-    """Line numbers that this chunk references or depends on"""
-
-    model_config = ConfigDict(use_attribute_docstrings=True)
-
-
-class Chunks(BaseModel):
-    """Collection of chunks with their metadata."""
-
-    chunks: list[Chunk]
-    """A list of chunks to extract from the document."""
 
 
 SYS_PROMPT = """
@@ -71,10 +44,10 @@ class AIChunker(TextChunker):
 
     def __init__(
         self,
-        model: str = "openrouter:openai/o3-mini",  # google/gemini-2.0-flash-lite-001
-        provider: AgentType = "pydantic_ai",
+        model: str = DEFAULT_CHUNKER_MODEL,
         min_chunk_size: int = 200,
         max_chunk_size: int = 1500,
+        system_prompt: str = SYS_PROMPT,
     ):
         """Initialize the AI chunker.
 
@@ -83,11 +56,12 @@ class AIChunker(TextChunker):
             provider: LLM provider to use
             min_chunk_size: Minimum characters per chunk
             max_chunk_size: Maximum characters per chunk
+            system_prompt: System prompt to use
         """
         self.model = model
-        self.provider = provider
         self.min_chunk_size = min_chunk_size
         self.max_chunk_size = max_chunk_size
+        self.system_prompt = system_prompt
 
     def _add_line_numbers(self, text: str) -> str:
         """Add line numbers to text."""
@@ -101,8 +75,7 @@ class AIChunker(TextChunker):
         numbered_text = self._add_line_numbers(text)
         agent: llmling_agent.StructuredAgent[None, Chunks] = llmling_agent.Agent(
             model=self.model,
-            provider=self.provider,  # pyright: ignore
-            system_prompt=SYS_PROMPT,
+            system_prompt=self.system_prompt,
         ).to_structured(Chunks)
         prompt = CHUNKING_PROMPT.format(numbered_text=numbered_text)
         response = await agent.run(prompt)
@@ -136,10 +109,7 @@ class AIChunker(TextChunker):
         extra_metadata: dict[str, Any] | None = None,
     ) -> list[TextChunk]:
         """Split document into chunks using LLM analysis."""
-        # Get chunk definitions from LLM
         chunks = await self._get_chunks(doc.content)
-
-        # Convert to TextChunks
         return [
             self._create_text_chunk(doc, chunk, i, extra_metadata)
             for i, chunk in enumerate(chunks.chunks)

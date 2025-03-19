@@ -6,6 +6,8 @@ from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from docler.common_types import DEFAULT_CHUNKER_MODEL
+
 
 class BaseChunkerConfig(BaseModel):
     """Base configuration for text chunkers."""
@@ -59,7 +61,7 @@ class AiChunkerConfig(BaseChunkerConfig):
     type: Literal["ai"] = Field(default="ai", init=False)
     """Type discriminator for AI chunker."""
 
-    model: str = "openrouter:google/gemini-2.0-flash-lite-001"
+    model: str = DEFAULT_CHUNKER_MODEL
     """LLM model to use for chunking."""
 
     min_chunk_size: int = 200
@@ -68,13 +70,7 @@ class AiChunkerConfig(BaseChunkerConfig):
     max_chunk_size: int = 1500
     """Maximum characters per chunk."""
 
-    temperature: float = Field(default=0.7, ge=0.0, le=1.0)
-    """Sampling temperature for LLM."""
-
-    max_tokens: int | None = None
-    """Maximum tokens in model response."""
-
-    prompt: str | None = None
+    system_prompt: str | None = None
     """Custom prompt to override default chunk extraction prompt."""
 
 
