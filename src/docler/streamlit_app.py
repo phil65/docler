@@ -14,6 +14,7 @@ import streamlit as st
 from docler.converters.datalab_provider import DataLabConverter
 from docler.converters.docling_provider import DoclingConverter
 from docler.converters.kreuzberg_provider import KreuzbergConverter
+from docler.converters.llamaparse_provider import LlamaParseConverter
 from docler.converters.llm_provider import LLMConverter
 from docler.converters.marker_provider import MarkerConverter
 from docler.converters.markitdown_provider import MarkItDownConverter
@@ -37,6 +38,7 @@ CONVERTERS: dict[str, type[DocumentConverter]] = {
     "Marker": MarkerConverter,
     "MarkItDown": MarkItDownConverter,
     "Mistral": MistralConverter,
+    "LlamaParse": LlamaParseConverter,
     # "OLM": OlmConverter,
 }
 
