@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from importlib.util import find_spec
+import os
 from typing import TYPE_CHECKING, ClassVar
 
 from docler.embeddings.base import EmbeddingProvider
@@ -23,10 +24,11 @@ class OpenAIEmbeddings(EmbeddingProvider):
 
     def __init__(
         self,
-        api_key: str,
+        api_key: str | None = None,
         model: str = "text-embedding-ada-002",
     ):
-        self.api_key = api_key
+        self.api_key = api_key or os.getenv("OPENAI_API_KEY")
+        assert self.api_key, "OPENAI_API_KEY environment variable not set"
         self.model = model
         self.use_openai = find_spec("openai")
 
