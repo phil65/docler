@@ -14,20 +14,17 @@ if TYPE_CHECKING:
 
 
 SYS_PROMPT = """
-You are an expert at dividing text into meaningful chunks while preserving context and relationships.
+You are an expert at dividing text into meaningful chunks
+while preserving context and relationships.
 
-Analyze this text and split it into coherent chunks. For each chunk:
-1. Define its start and end line numbers (1-based)
-2. Extract key terms and concepts as keywords
-3. Note any line numbers it references or depends on
+The task is to act like a chunker in an RAG pipeline.
 
-Rules:
-- Each chunk should be semantically complete
-- Identify cross-references between different parts of the text
-- Keywords should be specific and relevant
-- Line numbers must be accurate
+Analyze the text and split it into coherent chunks.
 
-"""  # noqa: E501
+All indexes are 1-based. Be accurate with line numbers.
+Extract key terms and concepts as keywords
+If any block is related to another block, you can add that info.
+"""
 
 CHUNKING_PROMPT = """
 Here's the text with line numbers:
@@ -70,16 +67,19 @@ class AIChunker(TextChunker):
 
     async def _get_chunks(self, text: str) -> Chunks:
         """Get chunk definitions from LLM."""
-        import llmling_agent
+        from llmling_agent import Agent
 
         numbered_text = self._add_line_numbers(text)
-        agent: llmling_agent.StructuredAgent[None, Chunks] = llmling_agent.Agent(
-            model=self.model,
-            system_prompt=self.system_prompt,
-        ).to_structured(Chunks)
+        # agent: llmling_agent.StructuredAgent[None, Chunks] = llmling_agent.Agent(
+        #     model=self.model,
+        #     system_prompt=self.system_prompt,
+        # ).to_structured(Chunks)
+        # prompt = CHUNKING_PROMPT.format(numbered_text=numbered_text)
+        # response = await agent.run(prompt)
+        agent: Agent[None] = Agent(model=self.model, system_prompt=self.system_prompt)
         prompt = CHUNKING_PROMPT.format(numbered_text=numbered_text)
-        response = await agent.run(prompt)
-        return response.content
+        chunks = await agent.talk.extract_multiple(text, Chunk, prompt=prompt)
+        return Chunks(chunks=chunks)
 
     def _create_text_chunk(
         self,
