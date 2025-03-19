@@ -93,8 +93,6 @@ class DataLabConverter(DocumentConverter):
         from upathtools import read_path
 
         path = upath.UPath(file_path)
-
-        # Prepare form data
         form = {"output_format": "markdown"}
         data = await read_path(path, mode="rb")
         files = {"file": (path.name, data, mime_type)}
@@ -106,8 +104,6 @@ class DataLabConverter(DocumentConverter):
             form["use_llm"] = "true"
         if self.max_pages:
             form["max_pages"] = str(self.max_pages)
-
-        # Create synchronous client
         headers = {"X-Api-Key": self.api_key}
         url = f"{API_BASE}/{self.mode}"
         response = await anyenv.post(url, data=form, files=files, headers=headers)  # type: ignore
@@ -115,7 +111,6 @@ class DataLabConverter(DocumentConverter):
         if not json_data["success"]:
             msg = f"Failed to submit conversion: {json_data['error']}"
             raise ValueError(msg)
-        # Poll for results
         check_url = json_data["request_check_url"]
         for _ in range(MAX_POLLS):
             time.sleep(POLL_INTERVAL)
@@ -130,20 +125,30 @@ class DataLabConverter(DocumentConverter):
             msg = f"Conversion failed: {result['error']}"
             raise ValueError(msg)
 
-        # Convert images if present
         images: list[Image] = []
+        md_content = result["markdown"]
         if result.get("images"):
-            for fname, img_data in result["images"].items():
+            image_replacements = {}
+            for i, (original_name, img_data) in enumerate(result["images"].items()):
+                img_id = f"img-{i}"
+                ext = original_name.split(".")[-1].lower()
+                fname = f"{img_id}.{ext}"
+                image_replacements[original_name] = (img_id, fname)
                 if img_data.startswith("data:"):
                     img_data = img_data.split(",", 1)[1]
-                ext = fname.split(".")[-1].lower()
                 content = base64.b64decode(img_data)
                 mime = f"image/{ext}"
-                image = Image(id=fname, content=content, mime_type=mime, filename=fname)
+                image = Image(id=img_id, content=content, mime_type=mime, filename=fname)
                 images.append(image)
 
+            for original_name, (img_id, filename) in image_replacements.items():
+                md_content = md_content.replace(f"]({original_name})", f"]({filename})")
+                md_content = md_content.replace("![", f"![{img_id}").replace(
+                    f"![]({filename})", f"![{img_id}]({filename})"
+                )
+
         return Document(
-            content=result["markdown"],
+            content=md_content,
             images=images,
             title=path.stem,
             source_path=str(path),
