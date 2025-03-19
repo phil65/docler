@@ -77,3 +77,15 @@ def show_step_1():
             st.markdown(f"```markdown\n{st.session_state.document.content}\n```")
         with st.expander("Rendered Content", expanded=True):
             st.markdown(st.session_state.document.content)
+
+
+if __name__ == "__main__":
+    from streambricks import run
+
+    from docler.models import Document
+    from docler.streamlit_app import state
+
+    state.init_session_state()
+    st.session_state.document = Document(content="Sample content")
+    st.session_state.uploaded_file_name = "sample.txt"
+    run(show_step_1)
