@@ -24,7 +24,7 @@ class BGEEmbeddings(EmbeddingProvider):
     def __init__(self, model: str = "BAAI/bge-large-en-v1.5"):
         from FlagEmbedding import FlagModel
 
-        self.model = FlagModel(model, use_fp16=True)  # Half precision
+        self.model = FlagModel(model, use_fp16=True)  # pyright: ignore
 
     async def embed_stream(
         self,

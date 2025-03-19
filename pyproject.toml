@@ -43,6 +43,7 @@ dependencies = [
 [project.optional-dependencies]
 marker = ["marker-pdf"]
 mistralai = ["mistralai"]
+bge = ["FlagEmbedding"]
 docling = ["docling"]
 # olmocr = ["olmocr", "accelerate"]
 # markitdown = ["markitdown[all]"]
