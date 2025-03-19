@@ -10,6 +10,7 @@ import streambricks as sb
 import streamlit as st
 
 from docler.chunkers.ai_chunker import AIChunker
+from docler.chunkers.ai_chunker.chunker import SYS_PROMPT
 from docler.chunkers.base import TextChunk, TextChunker
 from docler.chunkers.llamaindex_chunker import LlamaIndexChunker
 from docler.chunkers.markdown_chunker import MarkdownChunker
@@ -30,20 +31,13 @@ def show_step_2():
     col1, col2 = st.columns([1, 5])
     with col1:
         st.button("← Back", on_click=prev_step)
-
-    # Check if we have a document to chunk
     if not st.session_state.document:
         st.warning("No document to chunk. Please go back and convert a document first.")
         return
-
     doc = cast(Document, st.session_state.document)
     st.subheader("Chunking Configuration")
-    chunker_type = st.selectbox(
-        "Select chunker",
-        options=list(CHUNKERS.keys()),
-        key="selected_chunker",
-    )
-
+    opts = list(CHUNKERS.keys())
+    chunker_type = st.selectbox("Select chunker", options=opts, key="selected_chunker")
     chunker: TextChunker | None = None
     if chunker_type == "Markdown":
         col1, col2, col3 = st.columns(3)
@@ -81,11 +75,8 @@ def show_step_2():
     elif chunker_type == "LlamaIndex":
         col1, col2 = st.columns(2)
         with col1:
-            chunker_subtype = st.selectbox(
-                "LlamaIndex chunker type",
-                options=["markdown", "sentence", "token", "fixed"],
-                index=0,
-            )
+            opts = ["markdown", "sentence", "token", "fixed"]
+            chunker_subtype = st.selectbox("Chunker type", options=opts, index=0)
         with col2:
             chunk_size = st.number_input(
                 "Chunk size",
@@ -94,11 +85,9 @@ def show_step_2():
                 value=1000,
                 step=100,
             )
-
+        typ = cast(Literal["sentence", "token", "fixed", "markdown"], chunker_subtype)
         chunker = LlamaIndexChunker(
-            chunker_type=cast(
-                Literal["sentence", "token", "fixed", "markdown"], chunker_subtype
-            ),
+            chunker_type=typ,
             chunk_size=chunk_size,
             chunk_overlap=int(chunk_size * 0.1),  # 10% overlap
         )
@@ -106,9 +95,8 @@ def show_step_2():
     elif chunker_type == "AI":
         model = sb.model_selector(providers=["openrouter"])
         model_name = model.pydantic_ai_id if model else None
-        chunker = AIChunker(model=model_name)
-
-    # Process button
+        sys_prompt = st.text_area("System prompt", value=SYS_PROMPT)
+        chunker = AIChunker(model=model_name, system_prompt=sys_prompt)
     if chunker and st.button("Chunk Document"):
         with st.spinner("Processing document..."):
             try:
@@ -119,28 +107,20 @@ def show_step_2():
                 st.error(f"Chunking failed: {e}")
                 logger.exception("Chunking failed")
 
-    # Display chunks if available
     if st.session_state.chunks:
         chunks = cast(list[TextChunk], st.session_state.chunks)
         st.subheader(f"Chunks ({len(chunks)})")
-
-        # Add filtering option
         filter_text = st.text_input("Filter chunks by content:", "")
-
-        # Display chunks
         for i, chunk in enumerate(chunks):
             # Skip if doesn't match filter
             if filter_text and filter_text.lower() not in chunk.text.lower():
                 continue
 
-            # Create expander for chunk
             header_text = f"Chunk {i + 1}"
             if chunk.metadata.get("header"):
                 header_text += f" - {chunk.metadata['header']}"
             header_text += f" ({len(chunk.text)} chars)"
-
             with st.expander(header_text, expanded=i == 0):
-                # Create tabs for different views
                 raw_tab, rendered_tab, debug_tab, images_tab = st.tabs([
                     "Raw",
                     "Rendered",
