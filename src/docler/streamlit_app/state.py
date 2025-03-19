@@ -34,20 +34,13 @@ def prev_step():
 
 def reset_app():
     """Reset the app to its initial state."""
-    # Keep certain settings like selected converter/chunker
     selected_converter = st.session_state.get("selected_converter")
     selected_chunker = st.session_state.get("selected_chunker")
-
-    # Reset state
     for key in list(st.session_state.keys()):
         if key not in ["selected_converter", "selected_chunker"]:
             del st.session_state[key]
-
-    # Restore settings
     if selected_converter:
         st.session_state.selected_converter = selected_converter
     if selected_chunker:
         st.session_state.selected_chunker = selected_chunker
-
-    # Initialize fresh state
     init_session_state()
