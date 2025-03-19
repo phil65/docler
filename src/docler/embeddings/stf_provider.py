@@ -20,14 +20,11 @@ class SentenceTransformerEmbeddings(EmbeddingProvider):
     NAME = "SentenceTransformers"
     REQUIRED_PACKAGES: ClassVar = {"sentence-transformers"}
 
-    def __init__(
-        self,
-        model: str = "all-MiniLM-L6-v2",
-    ):
+    def __init__(self, model: str = "all-MiniLM-L6-v2"):
         from sentence_transformers import SentenceTransformer
 
         self.model = SentenceTransformer(model)
-        self.dimensions: int = self.model.get_sentence_embedding_dimension()
+        self.dimensions = self.model.get_sentence_embedding_dimension()
 
     async def embed_stream(
         self,
