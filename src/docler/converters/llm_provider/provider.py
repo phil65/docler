@@ -6,6 +6,7 @@ import base64
 import logging
 from typing import TYPE_CHECKING, ClassVar
 
+from docler.common_types import DEFAULT_CONVERTER_MODEL
 from docler.configs.converter_configs import LLMConverterConfig
 from docler.converters.base import DocumentConverter
 from docler.models import Document
@@ -38,7 +39,7 @@ class LLMConverter(DocumentConverter[LLMConverterConfig]):
         self,
         languages: list[SupportedLanguage] | None = None,
         *,
-        model: str = "gemini/gemini-2.0-flash",
+        model: str = DEFAULT_CONVERTER_MODEL,
         system_prompt: str | None = None,
         user_prompt: str | None = None,
         temperature: float = 0.7,

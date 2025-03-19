@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from docler.common_types import SupportedLanguage  # noqa: TC001
+from docler.common_types import DEFAULT_CONVERTER_MODEL, SupportedLanguage
 
 
 if TYPE_CHECKING:
@@ -129,7 +129,7 @@ class LLMConverterConfig(BaseConverterConfig):
     type: Literal["llm"] = Field("llm", init=False)
     """Type discriminator for LLM converter."""
 
-    model: str = "gemini/gemini-2.0-flash"
+    model: str = DEFAULT_CONVERTER_MODEL
     """LLM model to use."""
 
     system_prompt: str | None = None
