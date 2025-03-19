@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, ClassVar
+from typing import TYPE_CHECKING, ClassVar
 
 import numpy as np
 
@@ -24,7 +24,7 @@ class LiteLLMEmbeddings(EmbeddingProvider):
         model: str,
         api_key: str | None = None,
         dimensions: int | None = None,
-        **litellm_kwargs: Any,
+        **litellm_kwargs: str | float | bool,
     ):
         """Initialize the LiteLLM embeddings provider.
 
@@ -35,14 +35,12 @@ class LiteLLMEmbeddings(EmbeddingProvider):
             dimensions: Optional number of dimensions for the embeddings
             **litellm_kwargs: Additional arguments passed to litellm.embedding()
         """
+        import litellm
+
         self.model = model
         self.api_key = api_key
         self.dimensions = dimensions
         self.litellm_kwargs = litellm_kwargs
-
-        # Import here to allow the class to be imported even without litellm installed
-        import litellm
-
         self._litellm = litellm
 
     async def embed_stream(

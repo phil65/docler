@@ -2,10 +2,8 @@
 
 from __future__ import annotations
 
-import importlib.util
+from importlib.util import find_spec
 from typing import TYPE_CHECKING, ClassVar
-
-import numpy as np
 
 from docler.embeddings.base import EmbeddingProvider
 
@@ -13,7 +11,7 @@ from docler.embeddings.base import EmbeddingProvider
 if TYPE_CHECKING:
     from collections.abc import AsyncIterator
 
-    import openai
+    import numpy as np
 
 
 class OpenAIEmbeddings(EmbeddingProvider):
@@ -30,15 +28,7 @@ class OpenAIEmbeddings(EmbeddingProvider):
     ):
         self.api_key = api_key
         self.model = model
-        self._client = self._init_client()
-
-    def _init_client(self) -> openai.AsyncClient | None:
-        """Try to initialize OpenAI client, return None if package not available."""
-        if importlib.util.find_spec("openai"):
-            import openai
-
-            return openai.AsyncClient(api_key=self.api_key)
-        return None
+        self.use_openai = find_spec("openai")
 
     async def embed_stream(
         self,
@@ -46,6 +36,8 @@ class OpenAIEmbeddings(EmbeddingProvider):
         batch_size: int = 8,
     ) -> AsyncIterator[np.ndarray]:
         """Embeddings iterator."""
+        import numpy as np
+
         batch: list[str] = []
 
         async for text in texts:
@@ -53,8 +45,8 @@ class OpenAIEmbeddings(EmbeddingProvider):
             if len(batch) >= batch_size:
                 embeddings = (
                     await self._get_embeddings_official(batch)
-                    if self._client
-                    else await self._get_embeddings_httpx(batch)
+                    if self.use_openai
+                    else await self._get_embeddings_rest(batch)
                 )
                 for embedding in embeddings:
                     yield np.array(embedding, dtype=np.float32)
@@ -63,8 +55,8 @@ class OpenAIEmbeddings(EmbeddingProvider):
         if batch:
             embeddings = (
                 await self._get_embeddings_official(batch)
-                if self._client
-                else await self._get_embeddings_httpx(batch)
+                if self.use_openai
+                else await self._get_embeddings_rest(batch)
             )
             for embedding in embeddings:
                 yield np.array(embedding, dtype=np.float32)
@@ -74,33 +66,32 @@ class OpenAIEmbeddings(EmbeddingProvider):
         texts: list[str],
     ) -> list[list[float]]:
         """Get embeddings using official OpenAI client."""
-        assert self._client
-        response = await self._client.embeddings.create(
+        import openai
+
+        client = openai.AsyncClient(api_key=self.api_key)
+        response = await client.embeddings.create(
             model=self.model,
             input=texts,
         )
         return [item.embedding for item in response.data]
 
-    async def _get_embeddings_httpx(
+    async def _get_embeddings_rest(
         self,
         texts: list[str],
     ) -> list[list[float]]:
         """Get embeddings using httpx."""
-        import httpx
+        import anyenv
 
         url = "https://api.openai.com/v1/embeddings"
         headers = {
             "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json",
         }
-        data = {
-            "input": texts,
-            "model": self.model,
-        }
-
-        async with httpx.AsyncClient() as client:
-            response = await client.post(url, json=data, headers=headers)
-            response.raise_for_status()
-            result = response.json()
-
+        data = {"input": texts, "model": self.model}
+        result = await anyenv.post_json(
+            url,
+            json_data=data,
+            headers=headers,
+            return_type=dict,
+        )
         return [item["embedding"] for item in result["data"]]
