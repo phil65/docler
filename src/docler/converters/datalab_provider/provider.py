@@ -5,6 +5,7 @@ from __future__ import annotations
 import base64
 import logging
 import os
+import re
 import time
 from typing import TYPE_CHECKING, ClassVar, Literal
 
@@ -23,6 +24,44 @@ MAX_POLLS = 300
 POLL_INTERVAL = 2
 
 Mode = Literal["marker", "table_rec", "ocr", "layout"]
+
+
+def normalize_markdown_images(
+    content: str, image_replacements: dict[str, tuple[str, str]]
+) -> str:
+    """Normalize image references in markdown content.
+
+    Args:
+        content: Original markdown content with image references
+        image_replacements: Map of original file names to (image_id, filename) tuples
+
+    Returns:
+        Markdown with normalized image references
+    """
+    # First replace file paths in markdown links
+    result = content
+    for original_name, (_, filename) in image_replacements.items():
+        result = result.replace(f"]({original_name})", f"]({filename})")
+
+    # Then fix image alt texts with proper IDs
+    def replace_image_alt(match):
+        """Replace image alt text with appropriate image ID."""
+        filename = match.group(2)
+        # Get the correct image ID for this filename
+        for orig_name, (img_id, new_filename) in image_replacements.items():
+            if filename in (new_filename, orig_name):
+                return f"![{img_id}]({filename})"
+        # If no match found, keep the alt text
+        return f"![{match.group(1)}]({filename})"
+
+    # Replace in all image patterns
+    result = re.sub(r"!\[(.*?)\]\((.*?)\)", replace_image_alt, result)
+
+    # Replace any remaining empty image refs with proper IDs
+    for img_id, filename in image_replacements.values():
+        result = result.replace(f"![]({filename})", f"![{img_id}]({filename})")
+
+    return result
 
 
 class DataLabConverter(DocumentConverter):
@@ -141,11 +180,7 @@ class DataLabConverter(DocumentConverter):
                 image = Image(id=img_id, content=content, mime_type=mime, filename=fname)
                 images.append(image)
 
-            for original_name, (img_id, filename) in image_replacements.items():
-                md_content = md_content.replace(f"]({original_name})", f"]({filename})")
-                md_content = md_content.replace("![", f"![{img_id}").replace(
-                    f"![]({filename})", f"![{img_id}]({filename})"
-                )
+            md_content = normalize_markdown_images(md_content, image_replacements)
 
         return Document(
             content=md_content,
