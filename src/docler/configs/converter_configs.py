@@ -202,6 +202,60 @@ class LlamaIndexConfig(BaseConverterConfig):
         return LlamaIndexConverter(**self.model_dump(exclude={"type"}))
 
 
+class AzureConfig(BaseConverterConfig):
+    """Configuration for Azure Document Intelligence converter."""
+
+    type: Literal["azure"] = Field("azure", init=False)
+    """Type discriminator for Azure converter."""
+
+    endpoint: str | None = None
+    """Azure endpoint URL. Falls back to AZURE_DOC_INTELLIGENCE_ENDPOINT envvar."""
+
+    api_key: str | None = None
+    """Azure API key. Falls back to AZURE_DOC_INTELLIGENCE_KEY env var."""
+
+    model: Literal[
+        "prebuilt-read",
+        "prebuilt-layout",
+        "prebuilt-document",
+        "prebuilt-idDocument",
+        "prebuilt-receipt",
+    ] = "prebuilt-document"
+    """Pre-trained model to use."""
+
+    additional_features: list[str] = Field(default_factory=list)
+    """Optional add-on capabilities like BARCODES, FORMULAS, OCR_HIGH_RESOLUTION etc."""
+
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
+    def get_converter(self) -> DocumentConverter:
+        """Get the converter instance."""
+        from docler.converters.azure_provider import AzureConverter
+
+        return AzureConverter(**self.model_dump(exclude={"type"}))
+
+
+class MarkerConfig(BaseConverterConfig):
+    """Configuration for Marker-based converter."""
+
+    type: Literal["marker"] = Field("marker", init=False)
+    """Type discriminator for Marker converter."""
+
+    dpi: int = 192
+    """DPI setting for image extraction."""
+
+    llm_provider: Literal["gemini", "ollama", "vertex", "claude"] | None = None
+    """Language model provider to use for OCR."""
+
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
+    def get_converter(self) -> DocumentConverter:
+        """Get the converter instance."""
+        from docler.converters.marker_provider import MarkerConverter
+
+        return MarkerConverter(**self.model_dump(exclude={"type"}))
+
+
 ConverterConfig = Annotated[
     DataLabConfig
     | DoclingConverterConfig
@@ -210,6 +264,8 @@ ConverterConfig = Annotated[
     | MarkItDownConfig
     | MistralConfig
     | LlamaParseConfig
-    | LlamaIndexConfig,
+    | LlamaIndexConfig
+    | AzureConfig
+    | MarkerConfig,
     Field(discriminator="type"),
 ]
