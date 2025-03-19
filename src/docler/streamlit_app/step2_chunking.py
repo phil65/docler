@@ -112,7 +112,6 @@ def show_step_2():
         st.subheader(f"Chunks ({len(chunks)})")
         filter_text = st.text_input("Filter chunks by content:", "")
         for i, chunk in enumerate(chunks):
-            # Skip if doesn't match filter
             if filter_text and filter_text.lower() not in chunk.text.lower():
                 continue
 
@@ -121,19 +120,12 @@ def show_step_2():
                 header_text += f" - {chunk.metadata['header']}"
             header_text += f" ({len(chunk.text)} chars)"
             with st.expander(header_text, expanded=i == 0):
-                raw_tab, rendered_tab, debug_tab, images_tab = st.tabs([
-                    "Raw",
-                    "Rendered",
-                    "Debug Info",
-                    "Images",
-                ])
-
+                tabs = ["Raw", "Rendered", "Debug Info", "Images"]
+                raw_tab, rendered_tab, debug_tab, images_tab = st.tabs(tabs)
                 with raw_tab:
                     st.code(chunk.text, language="markdown")
-
                 with rendered_tab:
                     st.markdown(chunk.text)
-
                 with debug_tab:
                     debug_info = {
                         "Chunk Index": chunk.chunk_index,

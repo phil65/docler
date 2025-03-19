@@ -29,8 +29,9 @@ If any block is related to another block, you can add that info.
 CHUNKING_PROMPT = """
 Here's the text with line numbers:
 
+<text>
 {numbered_text}
-
+</text>
 """
 
 
@@ -78,7 +79,12 @@ class AIChunker(TextChunker):
         # response = await agent.run(prompt)
         agent: Agent[None] = Agent(model=self.model, system_prompt=self.system_prompt)
         prompt = CHUNKING_PROMPT.format(numbered_text=numbered_text)
-        chunks = await agent.talk.extract_multiple(text, Chunk, prompt=prompt)
+        chunks = await agent.talk.extract_multiple(
+            text,
+            Chunk,
+            prompt=prompt,
+            mode="structured",  # tool_calls
+        )
         return Chunks(chunks=chunks)
 
     def _create_text_chunk(
