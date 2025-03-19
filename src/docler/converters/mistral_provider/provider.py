@@ -69,13 +69,13 @@ class MistralConverter(DocumentConverter):
             for img in page.images:
                 if not img.id or not img.image_base64:
                     continue
-                data = img.image_base64
-                if data.startswith("data:image/"):
-                    data = data.split(",", 1)[1]
+                img_data = img.image_base64
+                if img_data.startswith("data:image/"):
+                    img_data = img_data.split(",", 1)[1]
                 ext = img.id.split(".")[-1].lower() if "." in img.id else "jpeg"
                 mime = f"image/{ext}"
-                image = Image(id=img.id, content=data, mime_type=mime, filename=img.id)
-                images.append(image)
+                obj = Image(id=img.id, content=img_data, mime_type=mime, filename=img.id)
+                images.append(obj)
 
         content = "\n\n".join(page.markdown for page in r.pages)
         return Document(
