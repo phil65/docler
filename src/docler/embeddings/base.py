@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     import numpy as np
 
 
-class EmbeddingProvider(BaseProvider, ABC):
+class EmbeddingProvider[TConfig](BaseProvider[TConfig], ABC):
     """Base class for streaming embedding providers."""
 
     NAME: ClassVar[str]

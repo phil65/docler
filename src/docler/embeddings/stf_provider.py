@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 from typing import TYPE_CHECKING, ClassVar
 
+from docler.configs.embedding_configs import SentenceTransformerEmbeddingConfig
 from docler.embeddings.base import EmbeddingProvider
 
 
@@ -14,7 +15,9 @@ if TYPE_CHECKING:
     import numpy as np
 
 
-class SentenceTransformerEmbeddings(EmbeddingProvider):
+class SentenceTransformerEmbeddings(
+    EmbeddingProvider[SentenceTransformerEmbeddingConfig]
+):
     """Local embeddings using sentence-transformers."""
 
     NAME = "SentenceTransformers"

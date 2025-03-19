@@ -6,6 +6,7 @@ from importlib.util import find_spec
 import os
 from typing import TYPE_CHECKING, ClassVar
 
+from docler.configs.embedding_configs import OpenAIEmbeddingConfig
 from docler.embeddings.base import EmbeddingProvider
 
 
@@ -15,7 +16,7 @@ if TYPE_CHECKING:
     import numpy as np
 
 
-class OpenAIEmbeddings(EmbeddingProvider):
+class OpenAIEmbeddings(EmbeddingProvider[OpenAIEmbeddingConfig]):
     """OpenAI embeddings with fallback to httpx if openai package not available."""
 
     NAME = "OpenAI"

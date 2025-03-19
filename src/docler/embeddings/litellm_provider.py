@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, ClassVar
 
 import numpy as np
 
+from docler.configs.embedding_configs import LiteLLMEmbeddingConfig
 from docler.embeddings.base import EmbeddingProvider
 
 
@@ -13,7 +14,7 @@ if TYPE_CHECKING:
     from collections.abc import AsyncIterator
 
 
-class LiteLLMEmbeddings(EmbeddingProvider):
+class LiteLLMEmbeddings(EmbeddingProvider[LiteLLMEmbeddingConfig]):
     """Embeddings provider using LiteLLM, supporting various model providers."""
 
     NAME = "LiteLLM"
@@ -72,10 +73,7 @@ class LiteLLMEmbeddings(EmbeddingProvider):
             for embedding in embeddings:
                 yield embedding
 
-    async def _get_embeddings(
-        self,
-        texts: list[str],
-    ) -> list[np.ndarray]:
+    async def _get_embeddings(self, texts: list[str]) -> list[np.ndarray]:
         """Get embeddings for a batch of texts.
 
         Args:
@@ -85,23 +83,13 @@ class LiteLLMEmbeddings(EmbeddingProvider):
             List of numpy arrays containing embedding vectors
         """
         kwargs = self.litellm_kwargs.copy()
-
-        # Add API key if provided
         if self.api_key:
             kwargs["api_key"] = self.api_key
-
-        # Add dimensions if specified
         if self.dimensions:
             kwargs["dimensions"] = self.dimensions
-
-        # Call litellm's embedding function
         response = await self._litellm.aembedding(
             model=self.model,
             input=texts,
             **kwargs,
         )
-
-        # Extract and convert embeddings to numpy arrays
-        return [
-            np.array(item["embedding"], dtype=np.float32) for item in response["data"]
-        ]
+        return [np.array(i["embedding"], dtype=np.float32) for i in response["data"]]

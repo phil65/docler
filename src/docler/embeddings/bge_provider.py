@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 from typing import TYPE_CHECKING, ClassVar
 
+from docler.configs.embedding_configs import BGEEmbeddingConfig
 from docler.embeddings.base import EmbeddingProvider
 
 
@@ -14,7 +15,7 @@ if TYPE_CHECKING:
     import numpy as np
 
 
-class BGEEmbeddings(EmbeddingProvider):
+class BGEEmbeddings(EmbeddingProvider[BGEEmbeddingConfig]):
     """Local embeddings using BGE models."""
 
     NAME = "BGE"
