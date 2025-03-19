@@ -124,4 +124,6 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    from streambricks import run
+
+    run(main)

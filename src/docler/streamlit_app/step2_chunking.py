@@ -6,6 +6,7 @@ import logging
 from typing import Literal, cast
 
 import anyenv
+import streambricks as sb
 import streamlit as st
 
 from docler.chunkers.ai_chunker import AIChunker
@@ -36,19 +37,14 @@ def show_step_2():
         return
 
     doc = cast(Document, st.session_state.document)
-
-    # Chunker selection and configuration
     st.subheader("Chunking Configuration")
-
     chunker_type = st.selectbox(
         "Select chunker",
         options=list(CHUNKERS.keys()),
         key="selected_chunker",
     )
 
-    # Display chunker-specific settings
     chunker: TextChunker | None = None
-
     if chunker_type == "Markdown":
         col1, col2, col3 = st.columns(3)
         with col1:
@@ -108,16 +104,9 @@ def show_step_2():
         )
 
     elif chunker_type == "AI":
-        model = st.selectbox(
-            "LLM Model",
-            options=[
-                "openrouter:openai/o3-mini",
-                "openrouter:google/gemini-2.0-flash-lite-001",
-            ],
-            index=0,
-        )
-
-        chunker = AIChunker(model=model)
+        model = sb.model_selector(providers=["openrouter"])
+        model_name = model.pydantic_ai_id if model else None
+        chunker = AIChunker(model=model_name)
 
     # Process button
     if chunker and st.button("Chunk Document"):

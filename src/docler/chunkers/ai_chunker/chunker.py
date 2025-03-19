@@ -44,10 +44,10 @@ class AIChunker(TextChunker):
 
     def __init__(
         self,
-        model: str = DEFAULT_CHUNKER_MODEL,
+        model: str | None = None,
         min_chunk_size: int = 200,
         max_chunk_size: int = 1500,
-        system_prompt: str = SYS_PROMPT,
+        system_prompt: str | None = None,
     ):
         """Initialize the AI chunker.
 
@@ -58,10 +58,10 @@ class AIChunker(TextChunker):
             max_chunk_size: Maximum characters per chunk
             system_prompt: System prompt to use
         """
-        self.model = model
+        self.model = model or DEFAULT_CHUNKER_MODEL
         self.min_chunk_size = min_chunk_size
         self.max_chunk_size = max_chunk_size
-        self.system_prompt = system_prompt
+        self.system_prompt = system_prompt or SYS_PROMPT
 
     def _add_line_numbers(self, text: str) -> str:
         """Add line numbers to text."""

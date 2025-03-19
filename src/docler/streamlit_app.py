@@ -44,55 +44,35 @@ CONVERTERS: dict[str, type[DocumentConverter]] = {
 
 # Language options
 LANGUAGES: list[SupportedLanguage] = ["en", "de", "fr", "es", "zh"]
+ALLOWED_EXTENSIONS = ["pdf", "docx", "jpg", "png", "ppt", "pptx", "xls", "xlsx"]
 
 
-def format_image_content(image_content: bytes | str, mime_type: str) -> str:
+def format_image_content(data: bytes | str, mime_type: str) -> str:
     """Convert image content to base64 data URL."""
-    if isinstance(image_content, bytes):
-        # Convert bytes to base64
-        b64_content = base64.b64encode(image_content).decode()
+    if isinstance(data, bytes):
+        b64_content = base64.b64encode(data).decode()
     else:
-        # Already base64 string - ensure no data URL prefix
-        b64_content = (
-            image_content.split(",")[-1] if "," in image_content else image_content
-        )
-
+        b64_content = data.split(",")[-1] if "," in data else data
     return f"data:{mime_type};base64,{b64_content}"
 
 
 def main():
     """Main Streamlit app."""
     st.title("Document Converter")
-
-    # File upload
-    uploaded_file = st.file_uploader(
-        "Choose a file", type=["pdf", "docx", "jpg", "png", "ppt", "pptx", "xls", "xlsx"]
-    )
-
-    # Converter selection
+    uploaded_file = st.file_uploader("Choose a file", type=ALLOWED_EXTENSIONS)
     selected_converters = st.multiselect(
         "Select converters",
         options=list(CONVERTERS.keys()),
-        default=["MarkItDown"],
+        default=["DataLab"],
     )
-
-    # Language selection
-    language = st.selectbox(
-        "Select primary language",
-        options=LANGUAGES,
-        index=0,
-    )
+    language = st.selectbox("Select language", options=LANGUAGES, index=0)
 
     if uploaded_file and selected_converters and st.button("Convert"):
-        # Save uploaded file
         with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as temp_file:
             temp_file.write(uploaded_file.getvalue())
             temp_path = temp_file.name
 
-        # Create tabs for converters
         converter_tabs = st.tabs(selected_converters)
-
-        # Convert with each selected converter
         for tab, converter_name in zip(converter_tabs, selected_converters):
             with tab:
                 try:
@@ -100,23 +80,12 @@ def main():
                         converter_cls = CONVERTERS[converter_name]
                         converter = converter_cls(languages=[language])
                         doc = anyenv.run_sync(converter.convert_file(temp_path))
-
-                        # Create nested tabs
-                        raw_tab, rendered_tab, images_tab = st.tabs([
-                            "Raw Markdown",
-                            "Rendered",
-                            "Images",
-                        ])
-
-                        # Show raw markdown
+                        tabs = ["Raw Markdown", "Rendered", "Images"]
+                        raw_tab, rendered_tab, images_tab = st.tabs(tabs)
                         with raw_tab:
                             st.markdown(f"```markdown\n{doc.content}\n```")
-
-                        # Show rendered markdown
                         with rendered_tab:
                             st.markdown(doc.content)
-
-                        # Show images
                         with images_tab:
                             if not doc.images:
                                 st.info("No images extracted")
@@ -144,4 +113,6 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    from streambricks import run
+
+    run(main)

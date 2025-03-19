@@ -15,33 +15,24 @@ from docler.streamlit_app.utils import LANGUAGES, format_image_content
 
 
 logger = logging.getLogger(__name__)
+ALLOWED_EXTENSIONS = ["pdf", "docx", "jpg", "png", "ppt", "pptx", "xls", "xlsx"]
 
 
 def show_step_1():
     """Show document conversion screen (step 1)."""
     st.header("Step 1: Document Conversion")
-
-    # File upload
-    uploaded_file = st.file_uploader(
-        "Choose a file", type=["pdf", "docx", "jpg", "png", "ppt", "pptx", "xls", "xlsx"]
-    )
-
-    # Converter selection
+    uploaded_file = st.file_uploader("Choose a file", type=ALLOWED_EXTENSIONS)
     selected_converter = st.selectbox(
         "Select converter",
         options=list(CONVERTERS.keys()),
         index=0,
         key="selected_converter",
     )
-
-    # Language selection
     language = st.selectbox(
         "Select primary language",
         options=LANGUAGES,
         index=0,
     )
-
-    # Only show conversion button if a file is uploaded
     if uploaded_file and st.button("Convert Document"):
         with st.spinner(f"Converting with {selected_converter}..."):
             # Save uploaded file
