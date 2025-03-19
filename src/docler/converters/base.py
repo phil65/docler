@@ -20,7 +20,7 @@ if TYPE_CHECKING:
     from docler.models import Document
 
 
-class DocumentConverter(BaseProvider, ABC):
+class DocumentConverter[TConfig](BaseProvider[TConfig], ABC):
     """Abstract base class for document converters.
 
     Implementation classes should override either:

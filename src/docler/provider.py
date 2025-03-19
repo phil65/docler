@@ -3,10 +3,15 @@
 from __future__ import annotations
 
 import importlib.util
-from typing import ClassVar
+from typing import ClassVar, TypeVar
+
+from pydantic import BaseModel
 
 
-class BaseProvider:
+TConfig = TypeVar("TConfig", bound=BaseModel)
+
+
+class BaseProvider[TConfig]:
     """Represents an image within a document."""
 
     REQUIRED_PACKAGES: ClassVar[set[str]] = set()
@@ -23,3 +28,12 @@ class BaseProvider:
             if not importlib.util.find_spec(package.replace("-", "_")):
                 return False
         return True
+
+    @classmethod
+    def from_config(cls, config: TConfig) -> BaseProvider[TConfig]:
+        """Create an instance of the provider from a configuration object."""
+        raise NotImplementedError
+
+    def to_config(self) -> TConfig:
+        """Extract configuration from the provider instance."""
+        raise NotImplementedError

@@ -6,6 +6,7 @@ from io import BytesIO
 import logging
 from typing import TYPE_CHECKING, ClassVar
 
+from docler.configs.converter_configs import DoclingConverterConfig
 from docler.converters.base import DocumentConverter
 from docler.converters.docling_provider.utils import convert_languages
 from docler.models import Document, Image
@@ -18,7 +19,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class DoclingConverter(DocumentConverter):
+class DoclingConverter(DocumentConverter[DoclingConverterConfig]):
     """Document converter using Docling's processing."""
 
     NAME = "docling"

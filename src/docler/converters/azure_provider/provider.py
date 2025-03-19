@@ -6,6 +6,7 @@ import logging
 import os
 from typing import TYPE_CHECKING, ClassVar, Literal
 
+from docler.configs.converter_configs import AzureConfig
 from docler.converters.base import DocumentConverter
 from docler.models import Document, Image
 
@@ -38,7 +39,7 @@ class MissingConfigurationError(AzureConverterError):
     """Required Azure configuration is missing."""
 
 
-class AzureConverter(DocumentConverter):
+class AzureConverter(DocumentConverter[AzureConfig]):
     """Document converter using Azure Document Intelligence."""
 
     NAME = "azure"

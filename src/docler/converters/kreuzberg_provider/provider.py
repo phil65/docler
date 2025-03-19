@@ -5,6 +5,7 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING, ClassVar
 
+from docler.configs.converter_configs import KreuzbergConfig
 from docler.converters.base import DocumentConverter
 from docler.models import Document
 
@@ -18,7 +19,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class KreuzbergConverter(DocumentConverter):
+class KreuzbergConverter(DocumentConverter[KreuzbergConfig]):
     """Document converter using Kreuzberg's extraction."""
 
     NAME = "kreuzberg"

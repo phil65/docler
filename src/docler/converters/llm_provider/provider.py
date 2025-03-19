@@ -6,6 +6,7 @@ import base64
 import logging
 from typing import TYPE_CHECKING, ClassVar
 
+from docler.configs.converter_configs import LLMConverterConfig
 from docler.converters.base import DocumentConverter
 from docler.models import Document
 
@@ -26,7 +27,7 @@ Describe any images you see in brackets.
 """
 
 
-class LLMConverter(DocumentConverter):
+class LLMConverter(DocumentConverter[LLMConverterConfig]):
     """Document converter using LLM providers that support PDF input."""
 
     NAME = "llm"

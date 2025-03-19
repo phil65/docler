@@ -6,6 +6,7 @@ import base64
 import logging
 from typing import TYPE_CHECKING, ClassVar
 
+from docler.configs.converter_configs import LlamaIndexConfig
 from docler.converters.base import DocumentConverter
 from docler.models import Document, Image
 
@@ -20,7 +21,7 @@ DEFAULT_URL = (
 )
 
 
-class LlamaIndexConverter(DocumentConverter):
+class LlamaIndexConverter(DocumentConverter[LlamaIndexConfig]):
     """Document converter using LlamaIndex's SmartPDFLoader."""
 
     NAME = "llamaindex"

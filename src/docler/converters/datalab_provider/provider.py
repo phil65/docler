@@ -9,6 +9,7 @@ import re
 import time
 from typing import TYPE_CHECKING, ClassVar, Literal
 
+from docler.configs.converter_configs import DataLabConfig
 from docler.converters.base import DocumentConverter
 from docler.models import Document, Image
 
@@ -64,7 +65,7 @@ def normalize_markdown_images(
     return result
 
 
-class DataLabConverter(DocumentConverter):
+class DataLabConverter(DocumentConverter[DataLabConfig]):
     """Document converter using DataLab's API."""
 
     NAME = "datalab"

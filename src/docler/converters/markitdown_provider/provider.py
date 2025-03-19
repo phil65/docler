@@ -5,6 +5,7 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING, ClassVar
 
+from docler.configs.converter_configs import MarkItDownConfig
 from docler.converters.base import DocumentConverter
 from docler.models import Document
 
@@ -16,7 +17,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class MarkItDownConverter(DocumentConverter):
+class MarkItDownConverter(DocumentConverter[MarkItDownConfig]):
     """Document converter using MarkItDown."""
 
     NAME = "markitdown"

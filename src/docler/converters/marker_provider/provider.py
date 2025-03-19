@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, ClassVar, Literal
 
+from docler.configs.converter_configs import MarkerConfig
 from docler.converters.base import DocumentConverter
 from docler.models import Document, Image
 from docler.utils import get_mime_from_pil, pil_to_bytes
@@ -23,7 +24,7 @@ PROVIDERS: dict[ProviderType, str] = {
 }
 
 
-class MarkerConverter(DocumentConverter):
+class MarkerConverter(DocumentConverter[MarkerConfig]):
     """Document converter using Marker's PDF processing."""
 
     NAME = "marker"

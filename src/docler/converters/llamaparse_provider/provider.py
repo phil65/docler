@@ -6,6 +6,7 @@ import logging
 import os
 from typing import TYPE_CHECKING, ClassVar
 
+from docler.configs.converter_configs import LlamaParseConfig
 from docler.converters.base import DocumentConverter
 from docler.models import Document, Image
 
@@ -17,7 +18,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class LlamaParseConverter(DocumentConverter):
+class LlamaParseConverter(DocumentConverter[LlamaParseConfig]):
     """Document converter using LlamaParse."""
 
     NAME = "llamaparse"
