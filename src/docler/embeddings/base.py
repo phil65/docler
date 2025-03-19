@@ -37,18 +37,12 @@ class EmbeddingProvider[TConfig](BaseProvider[TConfig], ABC):
         Returns:
             List of embedding vectors
         """
-        results: list[np.ndarray] = []
 
-        # Create an async iterator from the list
         async def text_iterator():
             for text in texts:
                 yield text
 
-        # Use embed_stream internally
-        async for embedding in self.embed_stream(text_iterator()):
-            results.append(embedding)  # noqa: PERF401
-
-        return results
+        return [i async for i in self.embed_stream(text_iterator())]
 
     async def embed_query(self, query: str) -> np.ndarray:
         """Convert a single query to an embedding.

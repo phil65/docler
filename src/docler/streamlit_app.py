@@ -26,7 +26,6 @@ if TYPE_CHECKING:
     from docler.converters.base import DocumentConverter
 
 
-# Setup logging
 logging.basicConfig(level=logging.INFO)
 
 # Available converters with their configs
@@ -39,7 +38,6 @@ CONVERTERS: dict[str, type[DocumentConverter]] = {
     "MarkItDown": MarkItDownConverter,
     "Mistral": MistralConverter,
     "LlamaParse": LlamaParseConverter,
-    # "OLM": OlmConverter,
 }
 
 # Language options
@@ -91,7 +89,6 @@ def main():
                                 st.info("No images extracted")
                             else:
                                 for image in doc.images:
-                                    # Create image data URL
                                     data_url = format_image_content(
                                         image.content,
                                         image.mime_type,
@@ -108,7 +105,6 @@ def main():
                 except Exception as e:  # noqa: BLE001
                     st.error(f"Conversion failed: {e!s}")
 
-        # Cleanup
         Path(temp_path).unlink()
 
 
