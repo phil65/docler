@@ -18,7 +18,7 @@ class SentenceTransformerEmbeddings(EmbeddingProvider):
     """Local embeddings using sentence-transformers."""
 
     NAME = "SentenceTransformers"
-    REQUIRED_PACKAGES: ClassVar[list[str]] = ["sentence-transformers"]
+    REQUIRED_PACKAGES: ClassVar = {"sentence-transformers"}
 
     def __init__(
         self,

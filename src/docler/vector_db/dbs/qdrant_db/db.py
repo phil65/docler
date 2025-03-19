@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 class QdrantBackend(VectorStoreBackend):
     """Qdrant implementation of vector store backend."""
 
-    REQUIRED_PACKAGES: ClassVar[list[str]] = ["qdrant-client"]
+    REQUIRED_PACKAGES: ClassVar = {"qdrant-client"}
 
     def __init__(
         self,

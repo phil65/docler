@@ -17,7 +17,7 @@ class LiteLLMEmbeddings(EmbeddingProvider):
     """Embeddings provider using LiteLLM, supporting various model providers."""
 
     NAME = "LiteLLM"
-    REQUIRED_PACKAGES: ClassVar[list[str]] = ["litellm"]
+    REQUIRED_PACKAGES: ClassVar = {"litellm"}
 
     def __init__(
         self,

@@ -67,7 +67,7 @@ Here's the text with line numbers:
 class AIChunker(TextChunker):
     """LLM-based document chunker."""
 
-    REQUIRED_PACKAGES: ClassVar[list[str]] = ["llmling-agent"]
+    REQUIRED_PACKAGES: ClassVar = {"llmling-agent"}
 
     def __init__(
         self,

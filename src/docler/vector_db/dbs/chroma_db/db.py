@@ -20,7 +20,7 @@ class ChromaBackend(VectorStoreBackend):
     """ChromaDB implementation of vector store backend."""
 
     NAME = "ChromaDB"
-    REQUIRED_PACKAGES: ClassVar[list[str]] = ["chromadb"]
+    REQUIRED_PACKAGES: ClassVar = {"chromadb"}
 
     def __init__(
         self,

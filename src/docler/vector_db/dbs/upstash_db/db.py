@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 class UpstashBackend(VectorStoreBackend):
     """Upstash Vector implementation of vector store backend."""
 
-    REQUIRED_PACKAGES: ClassVar[list[str]] = ["upstash-vector"]
+    REQUIRED_PACKAGES: ClassVar = {"upstash-vector"}
 
     def __init__(
         self,
