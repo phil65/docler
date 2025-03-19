@@ -84,11 +84,7 @@ class LLMConverter(DocumentConverter):
         pdf_bytes = path.read_bytes()
         pdf_b64 = base64.b64encode(pdf_bytes).decode()
         content = ImageBase64Content(data=pdf_b64, mime_type="application/pdf")
-        agent = Agent[None](
-            model=self.model,
-            system_prompt=self.system_prompt,
-            provider="litellm",  # (pydantic-ai does not work with pdfs yet)
-        )
+        agent = Agent[None](model=self.model, system_prompt=self.system_prompt)
         response = agent.run_sync(self.user_prompt, content)
         return Document(
             content=response.content,

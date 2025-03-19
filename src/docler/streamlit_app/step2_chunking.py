@@ -108,27 +108,16 @@ def show_step_2():
         )
 
     elif chunker_type == "AI":
-        col1, col2 = st.columns(2)
-        with col1:
-            model = st.selectbox(
-                "LLM Model",
-                options=[
-                    "openrouter:openai/o3-mini",
-                    "openrouter:google/gemini-2.0-flash-lite-001",
-                ],
-                index=0,
-            )
-        with col2:
-            provider = st.selectbox(
-                "Provider",
-                options=["pydantic_ai", "litellm"],
-                index=0,
-            )
-
-        chunker = AIChunker(
-            model=model,
-            provider=cast(Literal["pydantic_ai", "litellm"], provider),
+        model = st.selectbox(
+            "LLM Model",
+            options=[
+                "openrouter:openai/o3-mini",
+                "openrouter:google/gemini-2.0-flash-lite-001",
+            ],
+            index=0,
         )
+
+        chunker = AIChunker(model=model)
 
     # Process button
     if chunker and st.button("Chunk Document"):
