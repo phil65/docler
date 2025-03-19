@@ -170,28 +170,36 @@ class MistralConfig(BaseConverterConfig):
         return MistralConverter(**self.model_dump(exclude={"type"}))
 
 
-class OlmConfig(BaseConverterConfig):
-    """Configuration for OLM-based converter."""
+class LlamaParseConfig(BaseConverterConfig):
+    """Configuration for LlamaParse-based converter."""
 
-    type: Literal["olm"] = Field("olm", init=False)
-    """Type discriminator for OLM converter."""
+    type: Literal["llamaparse"] = Field("llamaparse", init=False)
+    """Type discriminator for LlamaParse converter."""
 
-    model_name: str = "ollm/ollm-ocr-v1.0"
-    """Name of the OLM model to use."""
-
-    device: str | None = None
-    """Device to run model on. If None, will use CUDA if available."""
-
-    engine: Literal["pdftotext", "pdfium", "pypdf", "topcoherency", "pdfreport"] = (
-        "pdfreport"
-    )
-    """PDF engine to use."""
+    api_key: str | None = None
+    """LlamaParse API key. Falls back to LLAMAPARSE_API_KEY env var."""
 
     def get_converter(self) -> DocumentConverter:
         """Get the converter instance."""
-        from docler.converters.olmocr_provider import OlmConverter
+        from docler.converters.llamaparse_provider import LlamaParseConverter
 
-        return OlmConverter(**self.model_dump(exclude={"type"}))
+        return LlamaParseConverter(**self.model_dump(exclude={"type"}))
+
+
+class LlamaIndexConfig(BaseConverterConfig):
+    """Configuration for LlamaIndex document converter."""
+
+    type: Literal["llamaindex"] = Field("llamaindex", init=False)
+    """Type discriminator for LlamaIndex converter."""
+
+    llmsherpa_api_url: str = "https://readers.llmsherpa.com/api/document/developer/parseDocument?renderFormat=all"
+    """API endpoint for LLMSherpa PDF parser."""
+
+    def get_converter(self) -> DocumentConverter:
+        """Get the converter instance."""
+        from docler.converters.llamaindex_provider import LlamaIndexConverter
+
+        return LlamaIndexConverter(**self.model_dump(exclude={"type"}))
 
 
 ConverterConfig = Annotated[
@@ -201,6 +209,7 @@ ConverterConfig = Annotated[
     | LLMConverterConfig
     | MarkItDownConfig
     | MistralConfig
-    | OlmConfig,
+    | LlamaParseConfig
+    | LlamaIndexConfig,
     Field(discriminator="type"),
 ]
