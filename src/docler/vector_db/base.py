@@ -13,8 +13,9 @@ from docler.provider import BaseProvider
 
 
 if TYPE_CHECKING:
-    from llmling_agent.embeddings import EmbeddingProvider
     import numpy as np
+
+    from docler.embeddings.base import EmbeddingProvider
 
 
 Metric = Literal["cosine", "euclidean", "dot"]
