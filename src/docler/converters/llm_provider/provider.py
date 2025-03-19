@@ -42,8 +42,6 @@ class LLMConverter(DocumentConverter[LLMConverterConfig]):
         model: str = DEFAULT_CONVERTER_MODEL,
         system_prompt: str | None = None,
         user_prompt: str | None = None,
-        temperature: float = 0.7,
-        max_tokens: int | None = None,
     ):
         """Initialize the LiteLLM converter.
 
@@ -52,8 +50,6 @@ class LLMConverter(DocumentConverter[LLMConverterConfig]):
             model: LLM model to use for conversion
             system_prompt: Optional system prompt to guide conversion
             user_prompt: Custom prompt for the conversion task
-            temperature: Sampling temperature (0-1)
-            max_tokens: Maximum tokens in response
 
         Raises:
             ValueError: If model doesn't support PDF input
@@ -61,8 +57,6 @@ class LLMConverter(DocumentConverter[LLMConverterConfig]):
         super().__init__(languages=languages)
         self.model = model  # .replace(":", "/")
         self.system_prompt = system_prompt
-        self.temperature = temperature
-        self.max_tokens = max_tokens
         txt = ""
         if languages:
             lang_str = ", ".join(languages)

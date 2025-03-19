@@ -138,12 +138,6 @@ class LLMConverterConfig(BaseConverterConfig):
     user_prompt: str | None = None
     """Custom prompt for the conversion task."""
 
-    temperature: float = Field(default=0.7, ge=0.0, le=1.0)
-    """Sampling temperature."""
-
-    max_tokens: int | None = None
-    """Maximum tokens in response."""
-
     def get_converter(self) -> DocumentConverter:
         """Get the converter instance."""
         from docler.converters.llm_provider import LLMConverter
