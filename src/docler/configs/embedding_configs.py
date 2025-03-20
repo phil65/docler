@@ -29,7 +29,7 @@ class OpenAIEmbeddingConfig(BaseEmbeddingConfig):
     api_key: SecretStr
     """OpenAI API key."""
 
-    model: str = "text-embedding-ada-002"
+    model: str = "text-embedding-3-small"
     """Model identifier for embeddings."""
 
     def get_embedding_provider(self):
@@ -80,7 +80,7 @@ class LiteLLMEmbeddingConfig(BaseEmbeddingConfig):
     """Type discriminator for LiteLLM embedding provider."""
 
     model: str
-    """Model identifier (e.g., "text-embedding-ada-002", "mistral/mistral-embed")."""
+    """Model identifier (e.g., "text-embedding-3-small", "mistral/mistral-embed")."""
 
     api_key: SecretStr | None = None
     """Optional API key for the provider."""

@@ -23,7 +23,7 @@ class OpenAIEmbeddings(EmbeddingProvider[OpenAIEmbeddingConfig]):
     REQUIRED_PACKAGES: ClassVar = {"openai", "httpx"}
     dimensions: ClassVar[int] = 1536
 
-    def __init__(self, api_key: str | None = None, model: str = "text-embedding-ada-002"):
+    def __init__(self, api_key: str | None = None, model: str = "text-embedding-3-small"):
         self.api_key = api_key or os.getenv("OPENAI_API_KEY")
         assert self.api_key, "OPENAI_API_KEY environment variable not set"
         self.model = model

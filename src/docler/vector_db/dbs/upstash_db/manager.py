@@ -15,11 +15,7 @@ logger = logging.getLogger(__name__)
 class UpstashVectorManager:
     """Manager for Upstash Vector API with namespace support."""
 
-    def __init__(
-        self,
-        url: str | None = None,
-        token: str | None = None,
-    ):
+    def __init__(self, url: str | None = None, token: str | None = None):
         """Initialize the Upstash Vector manager.
 
         Args:

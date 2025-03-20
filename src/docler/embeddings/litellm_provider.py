@@ -30,7 +30,7 @@ class LiteLLMEmbeddings(EmbeddingProvider[LiteLLMEmbeddingConfig]):
         """Initialize the LiteLLM embeddings provider.
 
         Args:
-            model: The model identifier (e.g., "text-embedding-ada-002",
+            model: The model identifier (e.g., "openai/text-embedding-3-small",
                   "mistral/mistral-embed", "gemini/text-embedding-004")
             api_key: Optional API key for the provider
             dimensions: Optional number of dimensions for the embeddings
