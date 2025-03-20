@@ -40,11 +40,7 @@ class OpenAIVectorManager:
             raise ValueError(msg)
 
         self.organization = organization or os.getenv("OPENAI_ORG_ID")
-
-        # Create API client
         self._client = AsyncOpenAI(api_key=self.api_key, organization=self.organization)
-
-        # Track created vector stores
         self._vector_stores: dict[str, OpenAIVectorDB] = {}
 
     @property
@@ -190,15 +186,15 @@ class OpenAIVectorManager:
         Returns:
             File ID if successful, None if failed
         """
-        import upath
+        import upathtools
 
         try:
-            with upath.UPath(file_path).open("rb") as f:
-                upload_response = await self._client.files.create(
-                    file=f,
-                    purpose="user_data",
-                )
-                file_id = upload_response.id
+            data = await upathtools.read_path(file_path, mode="rb")
+            upload_response = await self._client.files.create(
+                file=(file_path, data),
+                purpose="user_data",
+            )
+            file_id = upload_response.id
             if chunking_strategy == "auto":
                 chunking_config: dict[str, Any] = {"type": "auto"}
             else:
