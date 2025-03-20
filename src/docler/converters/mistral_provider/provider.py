@@ -92,7 +92,7 @@ class MistralConverter(DocumentConverter[MistralConfig]):
 if __name__ == "__main__":
     import anyenv
 
-    pdf_path = "C:/Users/phili/Downloads/CustomCodeMigration_EndToEnd.pdf"
+    pdf_path = "src/docler/resources/pdf_sample.pdf"
     output_dir = "E:/markdown-test/"
     converter = MistralConverter()
     result = anyenv.run_sync(converter.convert_file(pdf_path))

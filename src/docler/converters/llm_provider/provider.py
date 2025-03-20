@@ -97,7 +97,7 @@ if __name__ == "__main__":
 
     logging.basicConfig(level=logging.INFO)
 
-    pdf_path = "C:/Users/phili/Downloads/CustomCodeMigration_EndToEnd.pdf"
+    pdf_path = "src/docler/resources/pdf_sample.pdf"
     converter = LLMConverter(
         languages=["en", "de"],
         user_prompt="Convert this PDF to markdown, focusing on technical details.",

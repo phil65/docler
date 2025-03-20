@@ -146,7 +146,7 @@ class LlamaParseConverter(DocumentConverter[LlamaParseConfig]):
 if __name__ == "__main__":
     import anyenv
 
-    pdf_path = "C:/Users/phili/Downloads/CustomCodeMigration_EndToEnd.pdf"
+    pdf_path = "src/docler/resources/pdf_sample.pdf"
     converter = LlamaParseConverter()
     result = anyenv.run_sync(converter.convert_file(pdf_path))
     print(result)

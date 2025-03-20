@@ -122,7 +122,7 @@ class MarkerConverter(DocumentConverter[MarkerConfig]):
 if __name__ == "__main__":
     import anyenv
 
-    pdf_path = "C:/Users/phili/Downloads/CustomCodeMigration_EndToEnd.pdf"
+    pdf_path = "src/docler/resources/pdf_sample.pdf"
     output_dir = "E:/markdown-test/"
     converter = MarkerConverter()
     result = anyenv.run_sync(converter.convert_file(pdf_path))
