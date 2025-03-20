@@ -121,30 +121,6 @@ class PineconeConfig(BaseVectorStoreConfig):
     """Distance metric for similarity search."""
 
 
-class UpstashVectorConfig(BaseVectorStoreConfig):
-    """Configuration for Upstash Vector store."""
-
-    type: Literal["upstash"] = Field(default="upstash", init=False)
-    """Type identifier for Upstash Vector."""
-
-    url: str | None = None
-    """Upstash Vector REST API URL."""
-
-    token: SecretStr | None = None
-    """Upstash Vector API token."""
-
-    namespace: str = "default"
-    """Default namespace to use."""
-
-    @model_validator(mode="after")
-    def validate_config(self) -> UpstashVectorConfig:
-        """Validate configuration."""
-        if not self.url and not self.token:
-            msg = "Must specify both url and token"
-            raise ValueError(msg)
-        return self
-
-
 class OpenAIVectorConfig(BaseVectorStoreConfig):
     """Configuration for OpenAI Vector store."""
 
@@ -180,11 +156,6 @@ class OpenAIVectorConfig(BaseVectorStoreConfig):
 
 # Complete VectorStoreConfig union type with all implemented configurations
 VectorStoreConfig = Annotated[
-    ChromaConfig
-    | QdrantConfig
-    | KdbAiConfig
-    | PineconeConfig
-    | UpstashVectorConfig
-    | OpenAIVectorConfig,
+    ChromaConfig | QdrantConfig | KdbAiConfig | PineconeConfig | OpenAIVectorConfig,
     Field(discriminator="type"),
 ]

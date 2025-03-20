@@ -54,7 +54,6 @@ llama-index = ["llama-index"]
 llama-parse = ["llama-parse"]
 smart-pdf = ["llmsherpa", "llama-index-readers-smart-pdf-loader"]
 chromadb = ["chromadb>=0.6.3"]
-upstash = ["upstash-vector"]
 openai = ["openai"]
 pinecone = ["pinecone[asyncio]"]
 all = [
