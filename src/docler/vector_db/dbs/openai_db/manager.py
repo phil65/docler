@@ -19,6 +19,8 @@ logger = logging.getLogger(__name__)
 class OpenAIVectorManager:
     """Manager for OpenAI Vector Stores API."""
 
+    NAME = "openai"
+
     def __init__(
         self,
         api_key: str | None = None,
@@ -44,6 +46,10 @@ class OpenAIVectorManager:
 
         # Track created vector stores
         self._vector_stores: dict[str, OpenAIVectorDB] = {}
+
+    @property
+    def name(self) -> str:
+        return self.NAME
 
     async def list_vector_stores(self) -> list[dict[str, Any]]:
         """List all vector stores available in the OpenAI account.
