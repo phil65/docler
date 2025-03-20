@@ -87,19 +87,11 @@ class QdrantBackend(VectorStoreBackend):
         """
         from qdrant_client.http import models
 
-        # Generate ID if not provided
         if id_ is None:
             id_ = str(uuid.uuid4())
 
-        # Convert numpy array to float and then list
         vector_list = vector.astype(float).tolist()
-
-        point = models.PointStruct(
-            id=id_,
-            vector=vector_list,
-            payload=metadata,
-        )
-
+        point = models.PointStruct(id=id_, vector=vector_list, payload=metadata)
         await self._client.upsert(
             collection_name=self._collection_name,
             points=[point],

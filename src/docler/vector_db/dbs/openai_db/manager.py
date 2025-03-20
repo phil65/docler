@@ -18,6 +18,28 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
+# class VectorStore(BaseModel):
+#     id: str
+#     """The identifier, which can be referenced in API endpoints."""
+#     created_at: int
+#     """The Unix timestamp (in seconds) for when the vector store was created."""
+#     file_counts: FileCounts
+#     last_active_at: Optional[int] = None
+#     """The Unix timestamp (in seconds) for when the vector store was last active."""
+#     metadata: Optional[Metadata] = None
+#     """Set of 16 key-value pairs that can be attached to an object."""
+#     name: str
+#     """The name of the vector store."""
+#     status: Literal["expired", "in_progress", "completed"]
+#     """Status of the vector db,`completed` indicates that the vector store is ready."""
+#     usage_bytes: int
+#     """The total number of bytes used by the files in the vector store."""
+#     expires_after: Optional[ExpiresAfter] = None
+#     """The expiration policy for a vector store."""
+#     expires_at: Optional[int] = None
+#     """The Unix timestamp (in seconds) for when the vector store will expire."""
+
+
 class OpenAIVectorManager(VectorManagerBase[OpenAIVectorConfig]):
     """Manager for OpenAI Vector Stores API."""
 

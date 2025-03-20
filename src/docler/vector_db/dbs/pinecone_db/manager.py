@@ -17,6 +17,28 @@ Metric = Literal["cosine", "euclidean", "dotproduct"]
 logger = logging.getLogger(__name__)
 
 
+# {'deletion_protection': 'disabled',
+#  'dimension': 1024,
+#  'embed': {'dimension': 1024,
+#            'field_map': {'text': 'text'},
+#            'metric': 'cosine',
+#            'model': 'llama-text-embed-v2',
+#            'read_parameters': {'dimension': 1024.0,
+#                                'input_type': 'query',
+#                                'truncate': 'END'},
+#            'vector_type': 'dense',
+#            'write_parameters': {'dimension': 1024.0,
+#                                 'input_type': 'passage',
+#                                 'truncate': 'END'}},
+#  'host': 'testxyu-y8nq1hj.svc.aped-4627-b74a.pinecone.io',
+#  'metric': 'cosine',
+#  'name': 'testxyu',
+#  'spec': {'serverless': {'cloud': 'aws', 'region': 'us-east-1'}},
+#  'status': {'ready': True, 'state': 'Ready'},
+#  'tags': None,
+#  'vector_type': 'dense'}
+
+
 class PineconeVectorManager(VectorManagerBase[PineconeConfig]):
     """Manager for Pinecone Vector Stores with asyncio support."""
 
