@@ -93,8 +93,98 @@ class KdbAiConfig(BaseVectorStoreConfig):
         return self
 
 
-# Update VectorStoreConfig to include KdbAiConfig
+class PineconeConfig(BaseVectorStoreConfig):
+    """Configuration for Pinecone vector store."""
+
+    type: Literal["pinecone"] = Field(default="pinecone", init=False)
+    """Type identifier for Pinecone."""
+
+    api_key: SecretStr | None = None
+    """Pinecone API key."""
+
+    environment: str = "us-west1-gcp"
+    """Pinecone environment."""
+
+    cloud: str = "aws"
+    """Cloud provider (aws, gcp, azure)."""
+
+    region: str = "us-west-2"
+    """Cloud region."""
+
+    namespace: str = "default"
+    """Default namespace to use."""
+
+    dimension: int = 1536
+    """Vector dimension."""
+
+    metric: Literal["cosine", "euclidean", "dotproduct"] = "cosine"
+    """Distance metric for similarity search."""
+
+
+class UpstashVectorConfig(BaseVectorStoreConfig):
+    """Configuration for Upstash Vector store."""
+
+    type: Literal["upstash"] = Field(default="upstash", init=False)
+    """Type identifier for Upstash Vector."""
+
+    url: str | None = None
+    """Upstash Vector REST API URL."""
+
+    token: SecretStr | None = None
+    """Upstash Vector API token."""
+
+    namespace: str = "default"
+    """Default namespace to use."""
+
+    @model_validator(mode="after")
+    def validate_config(self) -> UpstashVectorConfig:
+        """Validate configuration."""
+        if not self.url and not self.token:
+            msg = "Must specify both url and token"
+            raise ValueError(msg)
+        return self
+
+
+class OpenAIVectorConfig(BaseVectorStoreConfig):
+    """Configuration for OpenAI Vector store."""
+
+    type: Literal["openai"] = Field(default="openai", init=False)
+    """Type identifier for OpenAI Vector."""
+
+    api_key: SecretStr | None = None
+    """OpenAI API key."""
+
+    organization: str | None = None
+    """OpenAI organization ID."""
+
+    chunking_strategy: Literal["auto", "static"] = "auto"
+    """Strategy for chunking text."""
+
+    max_chunk_size: int = 1000
+    """Maximum chunk size in tokens (fixed strategy)."""
+
+    chunk_overlap: int = 200
+    """Overlap between chunks in tokens (fixed strategy)."""
+
+    @model_validator(mode="after")
+    def validate_config(self) -> OpenAIVectorConfig:
+        """Validate configuration."""
+        if not self.api_key:
+            import os
+
+            if not os.getenv("OPENAI_API_KEY"):
+                msg = "Must specify api_key or set OPENAI_API_KEY environment variable"
+                raise ValueError(msg)
+        return self
+
+
+# Complete VectorStoreConfig union type with all implemented configurations
 VectorStoreConfig = Annotated[
-    ChromaConfig | QdrantConfig | KdbAiConfig,
+    ChromaConfig
+    | QdrantConfig
+    | KdbAiConfig
+    | PineconeConfig
+    | UpstashVectorConfig
+    | OpenAIVectorConfig,
     Field(discriminator="type"),
 ]
