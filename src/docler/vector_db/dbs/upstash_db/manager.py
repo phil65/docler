@@ -42,11 +42,9 @@ class UpstashVectorManager:
             )
             raise ValueError(msg)
 
-        # Initialize client (will be shared across all namespaces)
         from upstash_vector import AsyncIndex
 
-        self._client = AsyncIndex(url=self.url, token=self.token)
-
+        self._client = AsyncIndex(url=self.url, token=self.token, allow_telemetry=False)
         self._vector_stores: dict[str, UpstashBackend] = {}
 
     async def list_namespaces(self) -> list[str]:
@@ -56,7 +54,6 @@ class UpstashVectorManager:
             List of namespace names
         """
         try:
-            # Direct async call
             return await self._client.list_namespaces()
         except Exception:
             logger.exception("Error listing Upstash namespaces")
@@ -92,7 +89,6 @@ class UpstashVectorManager:
                 collection_name=name,
             )
 
-            # Store for tracking
             self._vector_stores[name] = db
         except Exception as e:
             msg = f"Failed to create vector store: {e}"
@@ -113,19 +109,10 @@ class UpstashVectorManager:
         Raises:
             ValueError: If connection fails
         """
-        # Check if we already have this store
         if name in self._vector_stores:
             return self._vector_stores[name]
-
         try:
-            # Create and return a configured database instance
-            db = UpstashBackend(
-                url=self.url,
-                token=self.token,
-                collection_name=name,
-            )
-
-            # Store for tracking
+            db = UpstashBackend(url=self.url, token=self.token, collection_name=name)
             self._vector_stores[name] = db
         except Exception as e:
             msg = f"Failed to connect to vector store '{name}': {e}"
@@ -144,10 +131,7 @@ class UpstashVectorManager:
             True if successful, False if failed
         """
         try:
-            # We can only delete vectors within a namespace - direct async call
             await self._client.delete_namespace(name)
-
-            # Remove from tracked stores if present
             if name in self._vector_stores:
                 del self._vector_stores[name]
         except Exception:
@@ -171,10 +155,7 @@ class UpstashVectorManager:
             - namespaces: Per-namespace statistics
         """
         try:
-            # Call the info method from Upstash API - direct async call
             info = await self._client.info()
-
-            # Format the result into a more usable structure
             stats = {
                 "vector_count": info.vector_count,
                 "pending_vector_count": info.pending_vector_count,
@@ -184,7 +165,6 @@ class UpstashVectorManager:
                 "namespaces": {},
             }
 
-            # Add dense index information if available
             if info.dense_index:
                 stats["dense_index"] = {
                     "dimension": info.dense_index.dimension,
@@ -192,17 +172,13 @@ class UpstashVectorManager:
                     "embedding_model": info.dense_index.embedding_model,
                 }
 
-            # Add sparse index information if available
             if info.sparse_index:
                 stats["sparse_index"] = {
                     "embedding_model": info.sparse_index.embedding_model,
                 }
 
-            # Add per-namespace statistics
             for namespace_name, namespace_info in info.namespaces.items():
-                # Use "default" for empty string namespace
                 ns_name = namespace_name or "default"
-
                 stats["namespaces"][ns_name] = {  # type: ignore
                     "vector_count": namespace_info.vector_count,
                     "pending_vector_count": namespace_info.pending_vector_count,
@@ -240,13 +216,8 @@ class UpstashVectorManager:
             List of search results
         """
         try:
-            # Get or create the vector store instance
             vector_db = await self.get_vector_store(namespace)
-
-            # Use the native search_text method if available
             results = await vector_db.search_text(query, k, filters)
-
-            # Format results
             formatted_results = []
             for result in results:
                 result_obj = {
@@ -275,19 +246,12 @@ if __name__ == "__main__":
     async def main():
         manager = UpstashVectorManager()
 
-        # List namespaces
         namespaces = await manager.list_namespaces()
         print(f"Available namespaces: {namespaces}")
-
-        # Create a vector store and add some sample texts
         db = await manager.create_vector_store("my_namespace")
         await db.add_texts(["Hello", "World"])
-
-        # Get statistics
         stats = await manager.get_statistics()
         print(f"Vector statistics: {stats}")
-
-        # Search for similar texts
         results = await manager.search("my_namespace", "Hello", k=1)
         print(f"Search results: {results}")
 

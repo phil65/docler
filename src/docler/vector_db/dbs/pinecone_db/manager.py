@@ -4,13 +4,17 @@ from __future__ import annotations
 
 import logging
 import os
-from typing import Any, Literal, cast
+from typing import TYPE_CHECKING, Any, Literal, cast
 
 import anyio
 
 from docler.vector_db.base import VectorDB
 from docler.vector_db.base_manager import VectorManagerBase
 from docler.vector_db.dbs.pinecone_db.db import PineconeBackend
+
+
+if TYPE_CHECKING:
+    from pinecone import IndexModel
 
 
 Metric = Literal["cosine", "euclidean", "dotproduct"]
@@ -200,7 +204,9 @@ class PineconeVectorManager(VectorManagerBase):
         else:
             return True
 
-    async def _get_backend(self, index_info: dict[str, Any]) -> PineconeBackend:
+    async def _get_backend(
+        self, index_info: dict[str, Any] | IndexModel
+    ) -> PineconeBackend:
         """Create a backend instance for an index.
 
         Args:

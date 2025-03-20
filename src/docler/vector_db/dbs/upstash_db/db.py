@@ -12,7 +12,6 @@ from docler.vector_db.base import SearchResult, VectorStoreBackend
 
 if TYPE_CHECKING:
     import numpy as np
-    from upstash_vector import AsyncIndex
 
     from docler.chunkers.base import TextChunk
 
@@ -62,7 +61,7 @@ class UpstashBackend(VectorStoreBackend):
             raise ValueError(msg)
 
         self.namespace = collection_name
-        self._client: AsyncIndex = AsyncIndex(url=self.url, token=self.token)
+        self._client = AsyncIndex(url=self.url, token=self.token, allow_telemetry=False)
 
         logger.info("Upstash Vector initialized with namespace: %s", self.namespace)
 
