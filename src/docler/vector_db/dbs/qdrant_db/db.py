@@ -40,7 +40,7 @@ class QdrantBackend(VectorStoreBackend):
             vector_size: Size of vectors to store
             prefer_grpc: Whether to prefer gRPC over HTTP
         """
-        import qdrant_client
+        from qdrant_client import AsyncQdrantClient, QdrantClient
         from qdrant_client.http import models
 
         # Create client based on configuration
@@ -53,17 +53,16 @@ class QdrantBackend(VectorStoreBackend):
             client_kwargs["location"] = location
         else:
             client_kwargs["location"] = ":memory:"
-
-        self._client = qdrant_client.QdrantClient(**client_kwargs)
+        self._client = AsyncQdrantClient(**client_kwargs)
         self._collection_name = collection_name
 
-        # Check if collection exists
-        collections = self._client.get_collections().collections
+        # temp client to check for existence
+        temp_client = QdrantClient(**client_kwargs)
+        collections = temp_client.get_collections().collections
         collection_names = [c.name for c in collections]
 
-        # Create collection if it doesn't exist
         if self._collection_name not in collection_names:
-            self._client.create_collection(
+            temp_client.create_collection(
                 collection_name=self._collection_name,
                 vectors_config=models.VectorParams(
                     size=vector_size, distance=models.Distance.COSINE
@@ -86,7 +85,6 @@ class QdrantBackend(VectorStoreBackend):
         Returns:
             ID of the stored vector
         """
-        import anyenv
         from qdrant_client.http import models
 
         # Generate ID if not provided
@@ -102,8 +100,7 @@ class QdrantBackend(VectorStoreBackend):
             payload=metadata,
         )
 
-        await anyenv.run_in_thread(
-            self._client.upsert,
+        await self._client.upsert(
             collection_name=self._collection_name,
             points=[point],
         )
@@ -126,7 +123,6 @@ class QdrantBackend(VectorStoreBackend):
         Returns:
             List of IDs for stored vectors
         """
-        import anyenv
         from qdrant_client.http import models
 
         # Generate IDs if not provided
@@ -144,9 +140,7 @@ class QdrantBackend(VectorStoreBackend):
             )
 
         # Upsert vectors
-        await anyenv.run_in_thread(
-            self._client.upsert, collection_name=self._collection_name, points=points
-        )
+        await self._client.upsert(collection_name=self._collection_name, points=points)
 
         return ids
 
@@ -162,11 +156,9 @@ class QdrantBackend(VectorStoreBackend):
         Returns:
             Tuple of (vector, metadata) if found, None if not
         """
-        import anyenv
         import numpy as np
 
-        points = await anyenv.run_in_thread(
-            self._client.retrieve,
+        points = await self._client.retrieve(
             collection_name=self._collection_name,
             ids=[chunk_id],
             with_payload=True,
@@ -195,7 +187,6 @@ class QdrantBackend(VectorStoreBackend):
         Returns:
             True if vector was updated, False if not found
         """
-        import anyenv
         from qdrant_client.http import models
 
         # Get current vector if we need it
@@ -210,6 +201,7 @@ class QdrantBackend(VectorStoreBackend):
         final_vector = vector if vector is not None else current_vector
         final_metadata = metadata if metadata is not None else current_metadata
         assert final_vector
+
         # Create point for update
         point = models.PointStruct(
             id=chunk_id,
@@ -218,8 +210,7 @@ class QdrantBackend(VectorStoreBackend):
         )
 
         try:
-            await anyenv.run_in_thread(
-                self._client.upsert,
+            await self._client.upsert(
                 collection_name=self._collection_name,
                 points=[point],
             )
@@ -237,7 +228,6 @@ class QdrantBackend(VectorStoreBackend):
         Returns:
             True if vector was deleted, False if not found
         """
-        import anyenv
         from qdrant_client.http import models
         from qdrant_client.http.exceptions import UnexpectedResponse
 
@@ -246,8 +236,7 @@ class QdrantBackend(VectorStoreBackend):
             selector = models.PointIdsList(points=[chunk_id])
 
             # Delete the point
-            await anyenv.run_in_thread(
-                self._client.delete,
+            await self._client.delete(
                 collection_name=self._collection_name,
                 points_selector=selector,
             )
@@ -276,7 +265,6 @@ class QdrantBackend(VectorStoreBackend):
         Returns:
             List of search results
         """
-        import anyenv
         from qdrant_client.http import models
 
         # Convert numpy to list
@@ -308,8 +296,7 @@ class QdrantBackend(VectorStoreBackend):
                 filter_query = models.Filter(must=conditions)
 
         # Execute search
-        results = await anyenv.run_in_thread(
-            self._client.search,
+        results = await self._client.search(
             collection_name=self._collection_name,
             query_vector=vector_list,
             limit=k,
@@ -332,3 +319,7 @@ class QdrantBackend(VectorStoreBackend):
             search_results.append(result)
 
         return search_results
+
+    async def close(self):
+        """Close the Qdrant connection."""
+        await self._client.close()
