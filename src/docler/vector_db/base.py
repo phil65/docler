@@ -135,6 +135,9 @@ class VectorStoreBackend(BaseProvider, ABC):
 class VectorDB(ABC):
     """Abstract interface for vector databases that handle both storage and retrieval."""
 
+    def __init__(self, vector_store_id: str):
+        self.vector_store_id = vector_store_id
+
     @abstractmethod
     async def add_texts(
         self,

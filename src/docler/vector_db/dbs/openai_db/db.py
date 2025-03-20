@@ -74,6 +74,7 @@ class OpenAIVectorDB(IntegratedVectorDB):
         """
         from openai import AsyncOpenAI
 
+        super().__init__(vector_store_id)
         if client is not None:
             self._client = client
         else:
@@ -84,9 +85,6 @@ class OpenAIVectorDB(IntegratedVectorDB):
 
             organization = organization or os.getenv("OPENAI_ORG_ID")
             self._client = AsyncOpenAI(api_key=api_key, organization=organization)
-
-        # Store configuration
-        self.vector_store_id = vector_store_id
         self.chunking_config = to_chunking_config(
             chunking_strategy, max_chunk_size, chunk_overlap
         )

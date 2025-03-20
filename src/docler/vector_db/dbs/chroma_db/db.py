@@ -24,14 +24,14 @@ class ChromaBackend(VectorStoreBackend):
 
     def __init__(
         self,
-        collection_name: str = "default",
+        vector_store_id: str = "default",
         persist_directory: str | None = None,
         distance_metric: str = "cosine",
     ):
         """Initialize ChromaDB backend.
 
         Args:
-            collection_name: Name of collection to use
+            vector_store_id: Name of collection to use
             persist_directory: Directory for persistent storage (memory if None)
             distance_metric: Distance metric to use for similarity search
 
@@ -52,14 +52,14 @@ class ChromaBackend(VectorStoreBackend):
 
         # Get or create collection without embedding function
         self._collection = self._client.get_or_create_collection(
-            name=collection_name,
+            name=vector_store_id,
             metadata={"hnsw:space": distance_metric},
             embedding_function=None,  # We provide embeddings directly
         )
 
         logger.info(
             "ChromaDB initialized - collection: %s, persistent: %s",
-            collection_name,
+            vector_store_id,
             bool(persist_directory),
         )
 
