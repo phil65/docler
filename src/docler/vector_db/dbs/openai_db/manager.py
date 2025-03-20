@@ -6,6 +6,8 @@ import logging
 import os
 from typing import TYPE_CHECKING, Any, Literal
 
+from docler.configs.vector_db_configs import OpenAIVectorConfig
+from docler.vector_db.base_manager import VectorManagerBase
 from docler.vector_db.dbs.openai_db.db import ChunkingStrategy, OpenAIVectorDB
 
 
@@ -16,7 +18,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class OpenAIVectorManager:
+class OpenAIVectorManager(VectorManagerBase[OpenAIVectorConfig]):
     """Manager for OpenAI Vector Stores API."""
 
     NAME = "openai"
@@ -70,6 +72,7 @@ class OpenAIVectorManager:
         chunking_strategy: ChunkingStrategy = "auto",
         max_chunk_size: int = 1000,
         chunk_overlap: int = 200,
+        **_kwargs: Any,
     ) -> VectorDB:
         """Create a new vector store.
 
@@ -110,16 +113,17 @@ class OpenAIVectorManager:
 
     async def get_vector_store(
         self,
-        vector_store_id: str,
+        name: str,
         *,
         chunking_strategy: ChunkingStrategy = "auto",
         max_chunk_size: int = 1000,
         chunk_overlap: int = 200,
+        **_kwargs: Any,
     ) -> VectorDB:
         """Get a connection to an existing vector store.
 
         Args:
-            vector_store_id: ID of the existing vector store
+            name: ID of the existing vector store
             chunking_strategy: Strategy for chunking text
             max_chunk_size: Maximum chunk size in tokens (for static strategy)
             chunk_overlap: Overlap between chunks in tokens (for static strategy)
@@ -130,20 +134,20 @@ class OpenAIVectorManager:
         Raises:
             ValueError: If store doesn't exist or connection fails
         """
-        if vector_store_id in self._vector_stores:
-            return self._vector_stores[vector_store_id]
+        if name in self._vector_stores:
+            return self._vector_stores[name]
         try:
-            await self._client.vector_stores.retrieve(vector_store_id=vector_store_id)
+            await self._client.vector_stores.retrieve(vector_store_id=name)
             db = OpenAIVectorDB(
-                vector_store_id=vector_store_id,
+                vector_store_id=name,
                 client=self._client,
                 chunking_strategy=chunking_strategy,
                 max_chunk_size=max_chunk_size,
                 chunk_overlap=chunk_overlap,
             )
-            self._vector_stores[vector_store_id] = db
+            self._vector_stores[name] = db
         except Exception as e:
-            msg = f"Failed to connect to vector store {vector_store_id}: {e}"
+            msg = f"Failed to connect to vector store {name}: {e}"
             logger.exception(msg)
             raise ValueError(msg) from e
         else:

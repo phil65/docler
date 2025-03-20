@@ -5,12 +5,14 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any
 
+from docler.provider import BaseProvider
+
 
 if TYPE_CHECKING:
     from docler.vector_db.base import VectorDB
 
 
-class VectorManagerBase(ABC):
+class VectorManagerBase[TConfig](BaseProvider[TConfig], ABC):
     """Abstract base class for vector database managers."""
 
     @property

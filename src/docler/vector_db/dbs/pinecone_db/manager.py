@@ -17,7 +17,7 @@ Metric = Literal["cosine", "euclidean", "dotproduct"]
 logger = logging.getLogger(__name__)
 
 
-class PineconeVectorManager(VectorManagerBase):
+class PineconeVectorManager(VectorManagerBase[PineconeConfig]):
     """Manager for Pinecone Vector Stores with asyncio support."""
 
     NAME = "pinecone"

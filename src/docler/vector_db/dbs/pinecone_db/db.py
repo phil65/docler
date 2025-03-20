@@ -240,7 +240,7 @@ class PineconeBackend(VectorStoreBackend):
             return []
 
         search_results = []
-        for match in results.matches:
+        for match in results.matches:  # pyright: ignore
             raw_metadata = match.metadata or {}
             metadata = self._restore_metadata(raw_metadata)
             score = match.score or 0.0
