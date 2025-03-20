@@ -13,7 +13,7 @@ from docler.vector_db.base import SearchResult, VectorStoreBackend
 if TYPE_CHECKING:
     import numpy as np
 
-    from docler.chunkers.base import TextChunk
+    from docler.models import TextChunk
 
 
 logger = logging.getLogger(__name__)

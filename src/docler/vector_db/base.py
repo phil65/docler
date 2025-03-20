@@ -7,8 +7,7 @@ import base64
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Literal
 
-from docler.chunkers.base import TextChunk
-from docler.models import Image
+from docler.models import Image, TextChunk
 from docler.provider import BaseProvider
 
 

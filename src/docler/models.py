@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass, field
 from datetime import datetime  # noqa: TC003
-from typing import Literal
+from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -60,3 +61,15 @@ class Document(BaseModel):
     """Number of pages in the source document if available."""
 
     model_config = ConfigDict(use_attribute_docstrings=True)
+
+
+@dataclass
+class TextChunk:
+    """Chunk of text with associated metadata and images."""
+
+    text: str
+    source_doc_id: str
+    chunk_index: int
+    page_number: int | None = None
+    images: list[Image] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)

@@ -9,7 +9,7 @@ from typing import cast
 import anyenv
 import streamlit as st
 
-from docler.chunkers.base import TextChunk
+from docler.models import TextChunk
 from docler.streamlit_app.state import prev_step
 from docler.vector_db.dbs.openai_db.manager import OpenAIVectorManager
 

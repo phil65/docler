@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any
 
 from docler.provider import BaseProvider
@@ -12,19 +11,7 @@ from docler.provider import BaseProvider
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
-    from docler.models import Document, Image
-
-
-@dataclass
-class TextChunk:
-    """Chunk of text with associated metadata and images."""
-
-    text: str
-    source_doc_id: str
-    chunk_index: int
-    page_number: int | None = None
-    images: list[Image] = field(default_factory=list)
-    metadata: dict[str, Any] = field(default_factory=dict)
+    from docler.models import Document, TextChunk
 
 
 class TextChunker(BaseProvider, ABC):

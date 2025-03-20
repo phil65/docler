@@ -5,7 +5,8 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING, Any, ClassVar, Literal
 
-from docler.chunkers.base import TextChunk, TextChunker
+from docler.chunkers.base import TextChunker
+from docler.models import TextChunk
 
 
 if TYPE_CHECKING:

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import logging
-from typing import Literal, cast
+from typing import TYPE_CHECKING, Literal, cast
 
 import anyenv
 import streambricks as sb
@@ -11,13 +11,16 @@ import streamlit as st
 
 from docler.chunkers.ai_chunker import AIChunker
 from docler.chunkers.ai_chunker.chunker import SYS_PROMPT
-from docler.chunkers.base import TextChunk, TextChunker
 from docler.chunkers.llamaindex_chunker import LlamaIndexChunker
 from docler.chunkers.markdown_chunker import MarkdownChunker
-from docler.models import Document
+from docler.models import Document, TextChunk
 from docler.streamlit_app.chunkers import CHUNKERS
 from docler.streamlit_app.state import next_step, prev_step
 from docler.streamlit_app.utils import format_image_content
+
+
+if TYPE_CHECKING:
+    from docler.chunkers.base import TextChunker
 
 
 logger = logging.getLogger(__name__)

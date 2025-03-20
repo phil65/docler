@@ -7,7 +7,7 @@ import logging
 import os
 from typing import TYPE_CHECKING, Any, ClassVar, Literal
 
-from docler.chunkers.base import TextChunk
+from docler.models import TextChunk
 from docler.vector_db.base import IntegratedVectorDB
 
 

@@ -5,8 +5,9 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, ClassVar
 
 from docler.chunkers.ai_chunker.models import Chunk, Chunks
-from docler.chunkers.base import TextChunk, TextChunker
+from docler.chunkers.base import TextChunker
 from docler.common_types import DEFAULT_CHUNKER_MODEL
+from docler.models import TextChunk
 
 
 if TYPE_CHECKING:
