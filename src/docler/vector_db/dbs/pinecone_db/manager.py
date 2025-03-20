@@ -1,20 +1,15 @@
-"""Pinecone Vector Store manager."""
+"""Pinecone Vector Store manager with asyncio support."""
 
 from __future__ import annotations
 
 import logging
 import os
-from typing import TYPE_CHECKING, Any, Literal, cast
+from typing import Any, Literal, cast
 
-import anyio
-
+from docler.configs.vector_db_configs import PineconeConfig
 from docler.vector_db.base import VectorDB
 from docler.vector_db.base_manager import VectorManagerBase
 from docler.vector_db.dbs.pinecone_db.db import PineconeBackend
-
-
-if TYPE_CHECKING:
-    from pinecone import IndexModel
 
 
 Metric = Literal["cosine", "euclidean", "dotproduct"]
@@ -23,7 +18,9 @@ logger = logging.getLogger(__name__)
 
 
 class PineconeVectorManager(VectorManagerBase):
-    """Manager for Pinecone Vector Stores."""
+    """Manager for Pinecone Vector Stores with asyncio support."""
+
+    NAME = "pinecone"
 
     def __init__(self, api_key: str | None = None):
         """Initialize the Pinecone Vector Store manager.
@@ -40,49 +37,59 @@ class PineconeVectorManager(VectorManagerBase):
             raise ValueError(msg)
 
         try:
-            from pinecone import Pinecone
+            from pinecone import PineconeAsyncio
         except ImportError as e:
-            msg = 'Pinecone is not installed. Please install "pinecone[asyncio]"'
+            msg = 'Pinecone is not installed. Please install "pinecone-client"'
             raise ImportError(msg) from e
-        self._client = Pinecone(api_key=self.api_key)
+
+        self._client = PineconeAsyncio(api_key=self.api_key)
         self._vector_stores: dict[str, PineconeBackend] = {}
+
+    @classmethod
+    def from_config(cls, config: PineconeConfig) -> PineconeVectorManager:
+        """Create instance from configuration."""
+        key = config.api_key.get_secret_value() if config.api_key else None
+        return cls(api_key=key)
+
+    def to_config(self) -> PineconeConfig:
+        """Extract configuration from instance."""
+        from pydantic import SecretStr
+
+        return PineconeConfig(api_key=SecretStr(self.api_key) if self.api_key else None)
 
     @property
     def name(self) -> str:
         """Name of this vector database provider."""
-        return "pinecone"
+        return self.NAME
 
     async def list_vector_stores(self) -> list[dict[str, Any]]:
         """List all available vector stores for this provider."""
         try:
-            indexes = self._client.list_indexes()
-            return [
-                {
-                    "name": idx["name"],
-                    "dimension": idx.get("dimension"),
-                    "metric": idx.get("metric"),
-                    "status": idx.get("status", {}).get("state"),
-                    "ready": idx.get("status", {}).get("ready", False),
-                    "host": idx.get("host"),
-                }
-                for idx in indexes.get("indexes", [])
-            ]
+            async with self._client as client:
+                indexes = await client.list_indexes()
+                return [
+                    {
+                        "name": idx.name,
+                        "dimension": idx.dimension,
+                        "metric": idx.metric,
+                        "status": idx.status.state if idx.status else None,
+                        "ready": idx.status.ready if idx.status else False,
+                        "host": idx.host,
+                    }
+                    for idx in indexes
+                ]
         except Exception:
             logger.exception("Error listing Pinecone indexes")
             return []
 
-    # Keep the list_indexes method as a convenience alias
-    async def list_indexes(self) -> list[dict[str, Any]]:
-        """List all indexes available in the Pinecone account."""
-        return await self.list_vector_stores()
-
-    async def create_vector_store(  # type: ignore
+    async def create_vector_store(
         self,
         name: str,
         dimension: int = 1536,
         metric: Metric = "cosine",
         cloud: str = "aws",
         region: str = "us-west-2",
+        **kwargs,
     ) -> VectorDB:
         """Create a new vector store.
 
@@ -92,6 +99,7 @@ class PineconeVectorManager(VectorManagerBase):
             metric: Distance metric for similarity search
             cloud: Cloud provider (aws, gcp, azure)
             region: Cloud region
+            **kwargs: Additional parameters
 
         Returns:
             Configured vector database instance
@@ -100,49 +108,65 @@ class PineconeVectorManager(VectorManagerBase):
             ValueError: If creation fails
         """
         try:
-            from pinecone import ServerlessSpec
+            import anyio
+            from pinecone import CloudProvider, ServerlessSpec
 
-            indexes = self._client.list_indexes()
-            index_names = [idx["name"] for idx in indexes.get("indexes", [])]
-            if name not in index_names:
-                self._client.create_index(
-                    name=name,
-                    dimension=dimension,
-                    metric=metric,
-                    spec=ServerlessSpec(cloud=cloud, region=region),
-                )
-                index_info = None
-                for _ in range(30):  # Wait up to 30 seconds
+            cloud_map = {
+                "aws": CloudProvider.AWS,
+                "gcp": CloudProvider.GCP,
+                "azure": CloudProvider.AZURE,
+            }
+            cloud_provider = cloud_map.get(cloud.lower(), CloudProvider.AWS)
+
+            async with self._client as client:
+                # Check if index exists
+                indexes = await client.list_indexes()
+                index_names = [idx.name for idx in indexes]
+
+                if name in index_names:
+                    msg = f"Index {name!r} already exists"
+                    raise ValueError(msg)  # noqa: TRY301
+
+                spec = ServerlessSpec(cloud=cloud_provider, region=region)
+                await client.create_index(name, spec, dimension=dimension, metric=metric)
+
+                for _ in range(30):
                     try:
-                        index_info = self._client.describe_index(name)
-                        if index_info["status"]["ready"]:
+                        index_info = await client.describe_index(name)
+                        if index_info.status and index_info.status.ready:
                             break
                     except Exception:  # noqa: BLE001
                         pass
                     await anyio.sleep(1)
 
-                if not index_info or not index_info["status"]["ready"]:
-                    msg = f"Index {name} creation timed out or failed"
+                # Get index info
+                index_info = await client.describe_index(name)
+                if not index_info.host:
+                    msg = f"Index {name} created but host information missing"
                     raise ValueError(msg)  # noqa: TRY301
-            else:
-                index_info = self._client.describe_index(name)
 
-            db = await self._get_backend(index_info)
+                db = PineconeBackend(
+                    pinecone_client=self._client,
+                    host=index_info.host,
+                    dimension=dimension,
+                    namespace=kwargs.get("namespace", "default"),
+                )
+                self._vector_stores[name] = db
 
-            self._vector_stores[name] = db
+                # The type system is confused because we're overriding the return type
+                return cast(VectorDB, db)  # type: ignore[override]
+
         except Exception as e:
             msg = f"Failed to create vector store: {e}"
             logger.exception(msg)
             raise ValueError(msg) from e
-        else:
-            return cast(VectorDB, db)  # type: ignore[override]  # type: ignore[override]
 
     async def get_vector_store(self, name: str, **kwargs) -> VectorDB:
         """Get a connection to an existing vector store.
 
         Args:
             name: Name of the existing index
-            kwargs: Additional keyword arguments for the vector store
+            **kwargs: Additional parameters for the vector store
 
         Returns:
             Configured vector database instance
@@ -155,16 +179,26 @@ class PineconeVectorManager(VectorManagerBase):
 
         try:
             # Check if index exists
-            indexes = self._client.list_indexes()
-            index_names = [idx["name"] for idx in indexes.get("indexes", [])]
+            async with self._client as client:
+                indexes = await client.list_indexes()
+                index_names = [idx.name for idx in indexes]
 
-            if name not in index_names:
-                msg = f"Index {name} does not exist"
-                raise ValueError(msg)  # noqa: TRY301
+                if name not in index_names:
+                    msg = f"Index {name} does not exist"
+                    raise ValueError(msg)  # noqa: TRY301
 
-            index_info = self._client.describe_index(name)
-            db = await self._get_backend(index_info)
+                index_info = await client.describe_index(name)
+
+            # Create backend
+            namespace = kwargs.get("namespace", "default")
+            db = PineconeBackend(
+                pinecone_client=self._client,
+                host=index_info.host,
+                dimension=index_info.dimension,
+                namespace=namespace,
+            )
             self._vector_stores[name] = db
+
         except Exception as e:
             msg = f"Failed to connect to vector store {name}: {e}"
             logger.exception(msg)
@@ -182,18 +216,24 @@ class PineconeVectorManager(VectorManagerBase):
             True if successful, False if failed
         """
         try:
-            indexes = self._client.list_indexes()
-            index_names = [idx["name"] for idx in indexes.get("indexes", [])]
-            if name not in index_names:
-                return False
+            async with self._client as client:
+                # Check if index exists
+                indexes = await client.list_indexes()
+                index_names = [idx.name for idx in indexes]
+                if name not in index_names:
+                    return False
 
-            # Check if deletion protection is enabled
-            index_info = self._client.describe_index(name)
-            if index_info.get("deletion_protection", "") == "enabled":
-                # Disable deletion protection
-                self._client.configure_index(name=name, deletion_protection="disabled")
+                # Get index info to check if deletion protection is enabled
+                index_info = await client.describe_index(name)
 
-            self._client.delete_index(name)
+                # Disable deletion protection if needed
+                if index_info.deletion_protection == "enabled":
+                    await client.configure_index(name, deletion_protection="disabled")
+
+                # Delete the index
+                await client.delete_index(name)
+
+            # Clean up the stored backend
             if name in self._vector_stores:
                 await self._vector_stores[name].close()
                 del self._vector_stores[name]
@@ -204,31 +244,9 @@ class PineconeVectorManager(VectorManagerBase):
         else:
             return True
 
-    async def _get_backend(
-        self, index_info: dict[str, Any] | IndexModel
-    ) -> PineconeBackend:
-        """Create a backend instance for an index.
-
-        Args:
-            index_info: Index information from describe_index
-
-        Returns:
-            Configured vector database backend
-        """
-        host = index_info.get("host")
-        if not host:
-            msg = "Index host not found in index information"
-            raise ValueError(msg)
-
-        return PineconeBackend(
-            pinecone_client=self._client,
-            host=host,
-            dimension=index_info.get("dimension", 1536),
-            namespace="default",
-        )
-
     async def close(self) -> None:
         """Close all vector store connections."""
+        # Close all stored backends
         for db in self._vector_stores.values():
             await db.close()
         self._vector_stores.clear()
@@ -239,7 +257,7 @@ if __name__ == "__main__":
 
     async def main():
         manager = PineconeVectorManager()
-        indexes = await manager.list_indexes()
+        indexes = await manager.list_vector_stores()
         print(indexes)
         await manager.close()
 

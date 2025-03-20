@@ -12,7 +12,8 @@ from docler.vector_db.base import SearchResult, VectorStoreBackend
 
 if TYPE_CHECKING:
     import numpy as np
-    from pinecone import Pinecone
+    from pinecone import PineconeAsyncio
+    from pinecone.control.pinecone_asyncio import _IndexAsyncio as IndexAsyncio
 
 
 logger = logging.getLogger(__name__)
@@ -26,32 +27,34 @@ class PineconeBackend(VectorStoreBackend):
 
     def __init__(
         self,
-        pinecone_client: Pinecone,
         host: str,
+        pinecone_client: PineconeAsyncio,
         dimension: int = 1536,
         namespace: str = "default",
     ):
         """Initialize Pinecone backend.
 
         Args:
-            pinecone_client: Pinecone client
             host: Host URL for the index
+            pinecone_client: Pinecone asyncio client
             dimension: Dimension of vectors to store
             namespace: Namespace to use for vectors
         """
         self._pinecone = pinecone_client
         self._host = host
-        self._index = None
+        self._index: IndexAsyncio | None = None
         self.dimension = dimension
         self.namespace = namespace
-        self._initialized = False
         self.batch_size = 100
 
-    async def _ensure_initialized(self):
-        """Ensure the index client is initialized."""
-        if not self._initialized:
+    async def _get_index(self) -> IndexAsyncio:
+        """Get the asyncio index client.
+
+        Returns:
+            IndexAsyncio instance
+        """
+        if not self._index:
             self._index = self._pinecone.IndexAsyncio(host=self._host)
-            self._initialized = True
         return self._index
 
     async def add_vector(
@@ -74,8 +77,8 @@ class PineconeBackend(VectorStoreBackend):
             id_ = str(uuid.uuid4())
         vector_list: list[float] = vector.tolist()  # pyright: ignore
         metadata_copy = self._prepare_metadata(metadata)
-        index = await self._ensure_initialized()
-        assert index
+
+        index = await self._get_index()
         async with index:
             vector_tuple = (id_, vector_list, metadata_copy)
             await index.upsert(vectors=[vector_tuple], namespace=self.namespace)
@@ -105,8 +108,8 @@ class PineconeBackend(VectorStoreBackend):
             vector_list: list[float] = vector.tolist()  # pyright: ignore
             meta_copy = self._prepare_metadata(meta)
             vectors_data.append((ids[i], vector_list, meta_copy))
-        index = await self._ensure_initialized()
-        assert index
+
+        index = await self._get_index()
         async with index:
             for i in range(0, len(vectors_data), self.batch_size):
                 batch = vectors_data[i : i + self.batch_size]
@@ -128,15 +131,16 @@ class PineconeBackend(VectorStoreBackend):
         """
         import numpy as np
 
-        index = await self._ensure_initialized()
-        assert index
+        index = await self._get_index()
         async with index:
             result = await index.fetch(ids=[chunk_id], namespace=self.namespace)
+
         vectors = result.vectors
         if chunk_id not in vectors:
             return None
+
         vector_data = vectors[chunk_id]
-        vector = np.array(vector_data["values"])
+        vector = np.array(vector_data.values)
         metadata = self._restore_metadata(vector_data.metadata or {})
 
         return vector, metadata
@@ -167,8 +171,8 @@ class PineconeBackend(VectorStoreBackend):
 
         vector_list: list[float] = vector.tolist()  # pyright: ignore
         prepared_metadata = self._prepare_metadata(metadata)
-        index = await self._ensure_initialized()
-        assert index
+
+        index = await self._get_index()
         try:
             async with index:
                 vectors = [(chunk_id, vector_list, prepared_metadata)]
@@ -188,8 +192,7 @@ class PineconeBackend(VectorStoreBackend):
         Returns:
             True if vector was deleted, False if not found
         """
-        index = await self._ensure_initialized()
-        assert index
+        index = await self._get_index()
         try:
             async with index:
                 await index.delete(ids=[chunk_id], namespace=self.namespace)
@@ -217,6 +220,7 @@ class PineconeBackend(VectorStoreBackend):
         """
         vector_list: list[float] = query_vector.tolist()  # pyright: ignore
         filter_obj = self._convert_filters(filters) if filters else None
+
         query_params = {
             "vector": vector_list,
             "top_k": k,
@@ -226,8 +230,8 @@ class PineconeBackend(VectorStoreBackend):
 
         if filter_obj:
             query_params["filter"] = filter_obj
-        index = await self._ensure_initialized()
-        assert index
+
+        index = await self._get_index()
         try:
             async with index:
                 results = await index.query(**query_params)
@@ -236,13 +240,13 @@ class PineconeBackend(VectorStoreBackend):
             return []
 
         search_results = []
-        for match in results.get("matches", []):
-            raw_metadata = match.get("metadata", {})
+        for match in results.matches:
+            raw_metadata = match.metadata or {}
             metadata = self._restore_metadata(raw_metadata)
-            score = match.get("score", 0.0)
+            score = match.score or 0.0
             text = metadata.pop("text", None) if isinstance(metadata, dict) else None
             result = SearchResult(
-                chunk_id=match["id"],
+                chunk_id=match.id,
                 score=score,
                 metadata=metadata,
                 text=text,
@@ -269,16 +273,7 @@ class PineconeBackend(VectorStoreBackend):
         return pinecone_filter
 
     def _prepare_metadata(self, metadata: dict[str, Any]) -> dict[str, Any]:
-        """Prepare metadata for Pinecone storage.
-
-        Pinecone has metadata limitations, so we encode complex objects.
-
-        Args:
-            metadata: Original metadata dictionary
-
-        Returns:
-            Pinecone-compatible metadata
-        """
+        """Prepare metadata for Pinecone storage."""
         import anyenv
 
         prepared = {}
@@ -308,14 +303,7 @@ class PineconeBackend(VectorStoreBackend):
         return prepared
 
     def _restore_metadata(self, metadata: dict[str, Any]) -> dict[str, Any]:
-        """Restore encoded metadata fields.
-
-        Args:
-            metadata: Metadata from Pinecone
-
-        Returns:
-            Restored metadata with decoded fields
-        """
+        """Restore encoded metadata fields."""
         import json
 
         restored = metadata.copy()
@@ -345,12 +333,4 @@ class PineconeBackend(VectorStoreBackend):
 
     async def close(self):
         """Close the Pinecone connection."""
-        # Close the index client
-        if self._initialized and self._index:
-            try:
-                # With the updated context manager approach,
-                # the client handles closing automatically
-                self._initialized = False
-                self._index = None
-            except Exception:
-                logger.exception("Error closing Pinecone index connection")
+        self._index = None
