@@ -25,6 +25,8 @@ class LiteLLMEmbeddings(EmbeddingProvider[LiteLLMEmbeddingConfig]):
         model: str,
         api_key: str | None = None,
         dimensions: int | None = None,
+        input_type: str | None = None,
+        base_url: str | None = None,
         **litellm_kwargs: str | float | bool,
     ):
         """Initialize the LiteLLM embeddings provider.
@@ -34,6 +36,8 @@ class LiteLLMEmbeddings(EmbeddingProvider[LiteLLMEmbeddingConfig]):
                   "mistral/mistral-embed", "gemini/text-embedding-004")
             api_key: Optional API key for the provider
             dimensions: Optional number of dimensions for the embeddings
+            input_type: Optional input type for the embeddings
+            base_url: Optional base URL for the provider
             **litellm_kwargs: Additional arguments passed to litellm.embedding()
         """
         import litellm
@@ -41,6 +45,8 @@ class LiteLLMEmbeddings(EmbeddingProvider[LiteLLMEmbeddingConfig]):
         self.model = model
         self.api_key = api_key
         self.dimensions = dimensions
+        self.input_type = input_type
+        self.base_url = base_url
         self.litellm_kwargs = litellm_kwargs
         self._litellm = litellm
 
@@ -87,6 +93,13 @@ class LiteLLMEmbeddings(EmbeddingProvider[LiteLLMEmbeddingConfig]):
             kwargs["api_key"] = self.api_key
         if self.dimensions:
             kwargs["dimensions"] = self.dimensions
+
+        if self.base_url:
+            kwargs["base_url"] = self.base_url
+
+        if self.input_type:
+            kwargs["input_type"] = self.input_type
+
         response = await self._litellm.aembedding(
             model=self.model,
             input=texts,

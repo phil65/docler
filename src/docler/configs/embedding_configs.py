@@ -88,6 +88,12 @@ class LiteLLMEmbeddingConfig(BaseEmbeddingConfig):
     dimensions: int | None = None
     """Optional number of dimensions for the embeddings."""
 
+    input_type: str | None = None
+    """Optional input type for the embeddings."""
+
+    base_url: str | None = None
+    """Optional base URL for the provider."""
+
     extra_params: dict[str, str | float | bool | None] = Field(default_factory=dict)
     """Additional parameters to pass to LiteLLM."""
 
