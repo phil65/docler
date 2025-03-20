@@ -92,11 +92,7 @@ class QdrantBackend(VectorStoreBackend):
 
         vector_list = vector.astype(float).tolist()
         point = models.PointStruct(id=id_, vector=vector_list, payload=metadata)
-        await self._client.upsert(
-            collection_name=self._collection_name,
-            points=[point],
-        )
-
+        _result = await self._client.upsert(self._collection_name, points=[point])
         return id_
 
     async def add_vectors(
@@ -117,23 +113,17 @@ class QdrantBackend(VectorStoreBackend):
         """
         from qdrant_client.http import models
 
-        # Generate IDs if not provided
         if ids is None:
             ids = [str(uuid.uuid4()) for _ in vectors]
 
-        # Convert numpy arrays to lists and create points
         points = []
         for i, vector in enumerate(vectors):
             # Convert to float64 then to list to ensure compatibility
-            vector_list = vector.astype(float).tolist()
+            vector_ls = vector.astype(float).tolist()
+            struct = models.PointStruct(id=ids[i], vector=vector_ls, payload=metadata[i])
+            points.append(struct)
 
-            points.append(
-                models.PointStruct(id=ids[i], vector=vector_list, payload=metadata[i])
-            )
-
-        # Upsert vectors
         await self._client.upsert(collection_name=self._collection_name, points=points)
-
         return ids
 
     async def get_vector(
@@ -224,19 +214,11 @@ class QdrantBackend(VectorStoreBackend):
         from qdrant_client.http.exceptions import UnexpectedResponse
 
         try:
-            # Create selector for the point ID
             selector = models.PointIdsList(points=[chunk_id])
-
-            # Delete the point
-            await self._client.delete(
-                collection_name=self._collection_name,
-                points_selector=selector,
-            )
+            await self._client.delete(self._collection_name, points_selector=selector)
         except UnexpectedResponse:
-            # If point not found or other error
             return False
         except Exception:  # noqa: BLE001
-            # Any other exception
             return False
         else:
             return True
@@ -259,10 +241,8 @@ class QdrantBackend(VectorStoreBackend):
         """
         from qdrant_client.http import models
 
-        # Convert numpy to list
         vector_list = query_vector.astype(float).tolist()
 
-        # Build filter if needed
         filter_query = None
         if filters:
             conditions = []
@@ -287,7 +267,6 @@ class QdrantBackend(VectorStoreBackend):
             if conditions:
                 filter_query = models.Filter(must=conditions)
 
-        # Execute search
         results = await self._client.search(
             collection_name=self._collection_name,
             query_vector=vector_list,
@@ -296,7 +275,6 @@ class QdrantBackend(VectorStoreBackend):
             filter=filter_query,
         )
 
-        # Format results
         search_results = []
         for hit in results:
             payload = hit.payload or {}
