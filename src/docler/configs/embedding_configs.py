@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, SecretStr
 
 
 class BaseEmbeddingConfig(BaseModel):
@@ -26,7 +26,7 @@ class OpenAIEmbeddingConfig(BaseEmbeddingConfig):
     type: Literal["openai"] = Field(default="openai", init=False)
     """Type discriminator for OpenAI embedding provider."""
 
-    api_key: str
+    api_key: SecretStr
     """OpenAI API key."""
 
     model: str = "text-embedding-ada-002"
@@ -82,7 +82,7 @@ class LiteLLMEmbeddingConfig(BaseEmbeddingConfig):
     model: str
     """Model identifier (e.g., "text-embedding-ada-002", "mistral/mistral-embed")."""
 
-    api_key: str | None = None
+    api_key: SecretStr | None = None
     """Optional API key for the provider."""
 
     dimensions: int | None = None

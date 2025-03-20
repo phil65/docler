@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, SecretStr
 
 from docler.common_types import DEFAULT_CONVERTER_MODEL, SupportedLanguage
 
@@ -101,7 +101,7 @@ class DataLabConfig(BaseConverterConfig):
     type: Literal["datalab"] = Field("datalab", init=False)
     """Type discriminator for DataLab converter."""
 
-    api_key: str | None = None
+    api_key: SecretStr | None = None
     """DataLab API key. If None, will try env var DATALAB_API_KEY."""
 
     mode: Literal["marker", "table_rec", "ocr", "layout"] = "marker"
@@ -151,7 +151,7 @@ class MistralConfig(BaseConverterConfig):
     type: Literal["mistral"] = Field("mistral", init=False)
     """Type discriminator for Mistral converter."""
 
-    api_key: str | None = None
+    api_key: SecretStr | None = None
     """Mistral API key. If None, will try env var MISTRAL_API_KEY."""
 
     ocr_model: str = "mistral-ocr-latest"
@@ -170,7 +170,7 @@ class LlamaParseConfig(BaseConverterConfig):
     type: Literal["llamaparse"] = Field("llamaparse", init=False)
     """Type discriminator for LlamaParse converter."""
 
-    api_key: str | None = None
+    api_key: SecretStr | None = None
     """LlamaParse API key. Falls back to LLAMAPARSE_API_KEY env var."""
 
     def get_converter(self) -> DocumentConverter:
@@ -205,7 +205,7 @@ class AzureConfig(BaseConverterConfig):
     endpoint: str | None = None
     """Azure endpoint URL. Falls back to AZURE_DOC_INTELLIGENCE_ENDPOINT envvar."""
 
-    api_key: str | None = None
+    api_key: SecretStr | None = None
     """Azure API key. Falls back to AZURE_DOC_INTELLIGENCE_KEY env var."""
 
     model: Literal[
