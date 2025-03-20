@@ -16,7 +16,7 @@ from docler.chunkers.llamaindex_chunker import LlamaIndexChunker
 from docler.chunkers.markdown_chunker import MarkdownChunker
 from docler.models import Document
 from docler.streamlit_app.chunkers import CHUNKERS
-from docler.streamlit_app.state import prev_step
+from docler.streamlit_app.state import next_step, prev_step
 from docler.streamlit_app.utils import format_image_content
 
 
@@ -108,6 +108,7 @@ def show_step_2():
                 logger.exception("Chunking failed")
 
     if st.session_state.chunks:
+        st.button("Proceed to Vector Store Upload", on_click=next_step)
         chunks = cast(list[TextChunk], st.session_state.chunks)
         st.subheader(f"Chunks ({len(chunks)})")
         filter_text = st.text_input("Filter chunks by content:", "")
