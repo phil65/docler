@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, ClassVar
 
 from docler.chunkers.ai_chunker.models import Chunk, Chunks
+from docler.chunkers.ai_chunker.utils import add_line_numbers, create_text_chunk
 from docler.chunkers.base import TextChunker
 from docler.common_types import DEFAULT_CHUNKER_MODEL
 from docler.models import TextChunk
@@ -62,16 +63,11 @@ class AIChunker(TextChunker):
         self.max_chunk_size = max_chunk_size
         self.system_prompt = system_prompt or SYS_PROMPT
 
-    def _add_line_numbers(self, text: str) -> str:
-        """Add line numbers to text."""
-        lines = text.splitlines()
-        return "\n".join(f"{i + 1:3d} | {line}" for i, line in enumerate(lines))
-
     async def _get_chunks(self, text: str) -> Chunks:
         """Get chunk definitions from LLM."""
         from llmling_agent import Agent
 
-        numbered_text = self._add_line_numbers(text)
+        numbered_text = add_line_numbers(text)
         # agent: llmling_agent.StructuredAgent[None, Chunks] = llmling_agent.Agent(
         #     model=self.model,
         #     system_prompt=self.system_prompt,
@@ -88,28 +84,6 @@ class AIChunker(TextChunker):
         )
         return Chunks(chunks=chunks)
 
-    def _create_text_chunk(
-        self,
-        doc: Document,
-        chunk: Chunk,
-        chunk_idx: int,
-        extra_metadata: dict[str, Any] | None = None,
-    ) -> TextChunk:
-        """Create a TextChunk from chunk definition."""
-        lines = doc.content.splitlines()
-        chunk_lines = lines[chunk.start_row - 1 : chunk.end_row]
-        chunk_text = "\n".join(chunk_lines)
-        base = extra_metadata or {}
-        metadata = {**base, "keywords": chunk.keywords, "references": chunk.references}
-        chunk_images = [i for i in doc.images if i.filename and i.filename in chunk_text]
-        return TextChunk(
-            text=chunk_text,
-            source_doc_id=doc.source_path or "",
-            chunk_index=chunk_idx,
-            images=chunk_images,
-            metadata=metadata,
-        )
-
     async def split(
         self,
         doc: Document,
@@ -118,7 +92,7 @@ class AIChunker(TextChunker):
         """Split document into chunks using LLM analysis."""
         chunks = await self._get_chunks(doc.content)
         return [
-            self._create_text_chunk(doc, chunk, i, extra_metadata)
+            create_text_chunk(doc, chunk, i, extra_metadata)
             for i, chunk in enumerate(chunks.chunks)
         ]
 

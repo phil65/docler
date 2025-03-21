@@ -7,9 +7,4 @@ from docler.chunkers.llamaindex_chunker import LlamaIndexChunker
 from docler.chunkers.markdown_chunker import MarkdownChunker
 
 
-# Available chunkers
-CHUNKERS = {
-    "Markdown": MarkdownChunker,
-    "LlamaIndex": LlamaIndexChunker,
-    "AI": AIChunker,
-}
+CHUNKERS = {"Markdown": MarkdownChunker, "LlamaIndex": LlamaIndexChunker, "AI": AIChunker}

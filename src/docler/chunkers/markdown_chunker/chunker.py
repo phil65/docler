@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-import re
 from typing import TYPE_CHECKING, Any
 
 from docler.chunkers.base import TextChunker
+from docler.chunkers.markdown_chunker.utils import assign_images, split_by_headers
 from docler.models import TextChunk
 
 
@@ -36,55 +36,6 @@ class MarkdownChunker(TextChunker):
         self.max_chunk_size = max_chunk_size
         self.chunk_overlap = chunk_overlap
 
-    def _split_by_headers(self, text: str) -> Iterator[tuple[str, str, int]]:
-        """Split text by markdown headers.
-
-        Returns:
-            Iterator of (header, content, level) tuples
-        """
-        # Matches markdown headers (# to ######)
-        header_pattern = r"^(#{1,6})\s+(.+)$"
-
-        current_header = ""
-        current_level = 0
-        current_content: list[str] = []
-
-        for line in text.splitlines():
-            if match := re.match(header_pattern, line):
-                # Yield previous section if exists
-                if current_content:
-                    yield current_header, "\n".join(current_content), current_level
-                    current_content = []
-
-                current_level = len(match.group(1))
-                current_header = match.group(2)
-            else:
-                current_content.append(line)
-
-        # Yield final section
-        if current_content:
-            yield current_header, "\n".join(current_content), current_level
-
-    def _assign_images(
-        self, content: str, all_images: list[Image]
-    ) -> tuple[str, list[Image]]:
-        """Find images referenced in content and assign them to chunk.
-
-        Returns:
-            Tuple of (content, chunk_images)
-        """
-        chunk_images: list[Image] = []
-        image_pattern = r"!\[([^\]]*)\]\(([^)]+)\)"
-
-        for match in re.finditer(image_pattern, content):
-            image_path = match.group(2)
-            for image in all_images:
-                if image.filename == image_path:
-                    chunk_images.append(image)
-                    break
-
-        return content, chunk_images
-
     def _fallback_split(
         self, content: str, images: list[Image]
     ) -> Iterator[tuple[str, list[Image]]]:
@@ -92,7 +43,7 @@ class MarkdownChunker(TextChunker):
         start = 0
         while start < len(content):
             chunk_content = content[start : start + self.max_chunk_size]
-            chunk_content, chunk_images = self._assign_images(chunk_content, images)
+            chunk_content, chunk_images = assign_images(chunk_content, images)
             yield chunk_content, chunk_images
             start += self.max_chunk_size - self.chunk_overlap
 
@@ -106,7 +57,7 @@ class MarkdownChunker(TextChunker):
         chunk_idx = 0
 
         # Try header-based splitting first
-        header_sections = list(self._split_by_headers(doc.content))
+        header_sections = list(split_by_headers(doc.content))
         if not header_sections:
             # Fallback to size-based if no headers
             for content, images in self._fallback_split(doc.content, doc.images):
@@ -123,10 +74,9 @@ class MarkdownChunker(TextChunker):
 
         # Process header sections
         for header, content, level in header_sections:
+            meta = {**(extra_metadata or {}), "header": header, "level": level}
             if len(content) > self.max_chunk_size:
-                # Split large sections
                 for sub_content, images in self._fallback_split(content, doc.images):
-                    meta = {**(extra_metadata or {}), "header": header, "level": level}
                     chunk = TextChunk(
                         text=f"{header}\n\n{sub_content}",
                         source_doc_id=doc.source_path or "",
@@ -137,9 +87,7 @@ class MarkdownChunker(TextChunker):
                     chunks.append(chunk)
                     chunk_idx += 1
             else:
-                # Use section as-is
-                content, images = self._assign_images(content, doc.images)
-                meta = {**(extra_metadata or {}), "header": header, "level": level}
+                content, images = assign_images(content, doc.images)
                 chunk = TextChunk(
                     text=f"{header}\n\n{content}",
                     source_doc_id=doc.source_path or "",

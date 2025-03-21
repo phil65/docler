@@ -101,7 +101,7 @@ class SearchResult:
 
 @dataclass
 class Vector:
-    """A single vector search result."""
+    """A single vector."""
 
     id: str
     data: np.ndarray

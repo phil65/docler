@@ -36,10 +36,8 @@ def show_step_3():
             "Please set this environment variable before proceeding."
         )
         return
-    option = st.radio(
-        "Vector Store Action", ["Create new store", "Use existing store"], index=0
-    )
-
+    opts = ["Create new store", "Use existing store"]
+    option = st.radio("Vector Store Action", opts, index=0)
     vector_store_id = None
     if option == "Create new store":
         store_name = st.text_input(
@@ -73,9 +71,8 @@ def show_step_3():
                         manager = OpenAIVectorManager()
                         vector_db = anyenv.run_sync(manager.get_vector_store(existing_id))
                         st.session_state.vector_store_id = vector_db.vector_store_id
-                        st.success(
-                            f"Connected to vector store {existing_id!r} successfully!"
-                        )
+                        msg = f"Connected to vector store {existing_id!r} successfully!"
+                        st.success(msg)
                         vector_store_id = vector_db.vector_store_id
                 except Exception as e:
                     st.error(f"Failed to connect to vector store: {e}")
@@ -92,10 +89,8 @@ def show_step_3():
                     vector_db = anyenv.run_sync(manager.get_vector_store(vector_store_id))
                     chunk_ids = anyenv.run_sync(vector_db.add_chunks(chunks))
                     st.session_state.uploaded_chunks = len(chunk_ids)
-                    st.success(
-                        f"Successfully uploaded {len(chunk_ids)} chunks to vector store!"
-                    )
-
+                    msg = f"Successfully uploaded {len(chunk_ids)} chunks to the db!"
+                    st.success(msg)
                 except Exception as e:
                     st.error(f"Upload failed: {e}")
                     logger.exception("Chunk upload failed")

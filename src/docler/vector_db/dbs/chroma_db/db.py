@@ -51,19 +51,13 @@ class ChromaBackend(VectorStoreBackend):
             self._client = chromadb.PersistentClient(path=persist_directory)
         else:
             self._client = chromadb.Client()
-
-        # Get or create collection without embedding function
         self._collection = self._client.get_or_create_collection(
             name=vector_store_id,
             metadata={"hnsw:space": distance_metric},
-            embedding_function=None,  # We provide embeddings directly
+            embedding_function=None,
         )
-
-        logger.info(
-            "ChromaDB initialized - collection: %s, persistent: %s",
-            vector_store_id,
-            bool(persist_directory),
-        )
+        msg = "ChromaDB initialized - collection: %s, persistent: %s"
+        logger.info(msg, vector_store_id, bool(persist_directory))
 
     async def add_vector(
         self,
@@ -113,13 +107,9 @@ class ChromaBackend(VectorStoreBackend):
             msg = "Number of vectors and metadata entries must match"
             raise ValueError(msg)
 
-        # Generate IDs if not provided
         if ids is None:
             ids = [str(uuid.uuid4()) for _ in vectors]
-
-        # Convert numpy arrays to lists for JSON serialization
         vector_lists = [v.tolist() for v in vectors]
-
         try:
             # Try to add new vectors
             await anyenv.run_in_thread(
@@ -150,15 +140,11 @@ class ChromaBackend(VectorStoreBackend):
             include=["embeddings", "metadatas"],
         )
 
-        # Check if vector exists and has results
         if not result["ids"] or not result["embeddings"] or not result["metadatas"]:
             return None
 
-        # Convert list to numpy array
         vector = np.array(result["embeddings"][0])
-        # Cast metadata to dict[str, Any]
         metadata = cast(dict[str, Any], result["metadatas"][0])
-
         return Vector(data=vector, metadata=metadata, id=chunk_id)
 
     async def delete(self, chunk_id: str) -> bool:
@@ -181,10 +167,7 @@ class ChromaBackend(VectorStoreBackend):
         """Search ChromaDB for similar vectors."""
         import anyenv
 
-        # Convert query vector to list
         query_list = [query_vector.tolist()]
-
-        # Execute search
         results = await anyenv.run_in_thread(
             self._collection.query,
             query_embeddings=query_list,
@@ -193,7 +176,6 @@ class ChromaBackend(VectorStoreBackend):
             include=["metadatas", "distances"],
         )
 
-        # Format results
         search_results: list[Any] = []
         if not results or not results["ids"] or not results["ids"][0]:
             return search_results

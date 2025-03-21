@@ -61,9 +61,7 @@ def restore_metadata(metadata: dict[str, Any]) -> dict[str, Any]:
 
     restored = metadata.copy()
 
-    # Process encoded fields
     for key in list(restored.keys()):
-        # Restore JSON encoded fields
         if key.endswith("_json") and key[:-5] not in restored:
             try:
                 base_key = key[:-5]
@@ -72,7 +70,6 @@ def restore_metadata(metadata: dict[str, Any]) -> dict[str, Any]:
             except Exception:  # noqa: BLE001
                 pass
 
-        # Restore base64 encoded fields
         elif key.endswith("_b64") and key[:-4] not in restored:
             try:
                 base_key = key[:-4]
