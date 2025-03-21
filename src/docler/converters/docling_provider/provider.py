@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from io import BytesIO
 import logging
 from typing import TYPE_CHECKING, ClassVar
 
@@ -10,6 +9,7 @@ from docler.configs.converter_configs import DoclingConverterConfig
 from docler.converters.base import DocumentConverter
 from docler.converters.docling_provider.utils import convert_languages
 from docler.models import Document, Image
+from docler.utils import pil_to_bytes
 
 
 if TYPE_CHECKING:
@@ -109,11 +109,7 @@ class DoclingConverter(DocumentConverter[DoclingConverterConfig]):
         import upath
 
         pdf_path = upath.UPath(file_path)
-
-        # Convert using Docling
         doc_result = self.converter.convert(str(pdf_path))
-
-        # Get markdown with placeholders
         mk_content = doc_result.document.export_to_markdown(
             image_mode=ImageRefMode.REFERENCED,
             delim=self.delim,
@@ -122,8 +118,6 @@ class DoclingConverter(DocumentConverter[DoclingConverterConfig]):
             escaping_underscores=self.escaping_underscores,
             strict_text=self.strict_text,
         )
-
-        # Process actual images from the document
         images: list[Image] = []
         for i, picture in enumerate(doc_result.document.pictures):
             if not picture.image or not picture.image.pil_image:
@@ -132,10 +126,7 @@ class DoclingConverter(DocumentConverter[DoclingConverterConfig]):
             filename = f"{image_id}.png"
             mk_link = f"![{image_id}]({filename})"
             mk_content = mk_content.replace("<!-- image -->", mk_link, 1)
-            # Convert PIL image to bytes
-            img_bytes = BytesIO()
-            picture.image.pil_image.save(img_bytes, format="PNG")
-            content = img_bytes.getvalue()
+            content = pil_to_bytes(picture.image.pil_image)
             mime = "image/png"
             image = Image(id=image_id, content=content, mime_type=mime, filename=filename)
             images.append(image)

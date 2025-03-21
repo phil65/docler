@@ -61,7 +61,6 @@ class MarkItDownConverter(DocumentConverter[MarkItDownConfig]):
         from markitdown import MarkItDown
 
         super().__init__(languages=languages)
-
         self.converter = MarkItDown()
 
     def _convert_path_sync(self, file_path: StrPath, mime_type: str) -> Document:

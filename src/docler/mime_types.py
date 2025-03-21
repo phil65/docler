@@ -155,6 +155,7 @@ EXT_TO_MIME_TYPE: Final[Mapping[str, str]] = {
     ".rtf": "application/rtf",
     ".odt": "application/vnd.oasis.opendocument.text",
     ".docx": DOCX_MIME_TYPE,
+    ".doc": "application/msword",
     ".bib": "application/x-bibtex",
     ".ipynb": "application/x-ipynb+json",
     ".tex": "application/x-latex",
