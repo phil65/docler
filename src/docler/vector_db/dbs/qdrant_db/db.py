@@ -153,45 +153,6 @@ class QdrantBackend(VectorStoreBackend):
         point = points[0]
         return np.array(point.vector), point.payload
 
-    async def update_vector(
-        self,
-        chunk_id: str,
-        vector: np.ndarray | None = None,
-        metadata: dict[str, Any] | None = None,
-    ) -> bool:
-        """Update an existing vector.
-
-        Args:
-            chunk_id: ID of vector to update
-            vector: New vector embedding (unchanged if None)
-            metadata: New metadata (unchanged if None)
-
-        Returns:
-            True if vector was updated, False if not found
-        """
-        from qdrant_client.http import models
-
-        # Get current vector if we need it
-        current = None
-        if vector is None or metadata is None:
-            current = await self.get_vector(chunk_id)
-            if current is None:
-                return False
-
-        current_vector, current_metadata = current if current else (None, {})
-        final_vector = vector if vector is not None else current_vector
-        final_metadata = metadata if metadata is not None else current_metadata
-        assert final_vector
-        vec = final_vector.astype(float).tolist()
-        point = models.PointStruct(id=chunk_id, vector=vec, payload=final_metadata)
-
-        try:
-            await self._client.upsert(self._collection_name, points=[point])
-        except Exception:  # noqa: BLE001
-            return False
-        else:
-            return True
-
     async def delete(self, chunk_id: str) -> bool:
         """Delete vector by ID.
 

@@ -163,41 +163,6 @@ class ChromaBackend(VectorStoreBackend):
 
         return vector, metadata
 
-    async def update_vector(
-        self,
-        chunk_id: str,
-        vector: np.ndarray | None = None,
-        metadata: dict[str, Any] | None = None,
-    ) -> bool:
-        """Update vector in ChromaDB."""
-        import anyenv
-
-        # Get current vector if it exists
-        current = await self.get_vector(chunk_id)
-        if current is None:
-            return False
-
-        current_vector, current_metadata = current
-
-        # Use new values or keep current ones
-        update_vector = vector if vector is not None else current_vector
-        update_metadata = metadata if metadata is not None else current_metadata
-
-        # Convert numpy array to list
-        vector_list = update_vector.tolist()
-
-        try:
-            await anyenv.run_in_thread(
-                self._collection.update,
-                ids=[chunk_id],
-                embeddings=[vector_list],
-                metadatas=[update_metadata],
-            )
-        except Exception:  # noqa: BLE001
-            return False
-        else:
-            return True
-
     async def delete(self, chunk_id: str) -> bool:
         """Delete vector from ChromaDB."""
         import anyenv

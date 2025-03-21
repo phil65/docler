@@ -146,44 +146,6 @@ class PineconeBackend(VectorStoreBackend):
 
         return vector, metadata
 
-    async def update_vector(
-        self,
-        chunk_id: str,
-        vector: np.ndarray | None = None,
-        metadata: dict[str, Any] | None = None,
-    ) -> bool:
-        """Update vector in Pinecone.
-
-        Args:
-            chunk_id: ID of vector to update
-            vector: New vector embedding (unchanged if None)
-            metadata: New metadata (unchanged if None)
-
-        Returns:
-            True if vector was updated, False if not found
-        """
-        if vector is None or metadata is None:
-            current = await self.get_vector(chunk_id)
-            if current is None:
-                return False
-            current_vector, current_metadata = current
-            vector = vector if vector is not None else current_vector
-            metadata = metadata if metadata is not None else current_metadata
-
-        vector_list: list[float] = vector.tolist()  # pyright: ignore
-        prepared_metadata = self._prepare_metadata(metadata)
-
-        index = await self._get_index()
-        try:
-            async with index:
-                vectors = [(chunk_id, vector_list, prepared_metadata)]
-                await index.upsert(vectors=vectors, namespace=self.namespace)
-        except Exception:
-            logger.exception("Failed to update vector %s", chunk_id)
-            return False
-        else:
-            return True
-
     async def delete(self, chunk_id: str) -> bool:
         """Delete vector by ID.
 

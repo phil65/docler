@@ -73,24 +73,6 @@ class VectorStoreBackend(BaseProvider, ABC):
         """
 
     @abstractmethod
-    async def update_vector(
-        self,
-        chunk_id: str,
-        vector: np.ndarray | None = None,
-        metadata: dict[str, Any] | None = None,
-    ) -> bool:
-        """Update an existing vector.
-
-        Args:
-            chunk_id: ID of vector to update
-            vector: New vector embedding (unchanged if None)
-            metadata: New metadata (unchanged if None)
-
-        Returns:
-            True if vector was updated, False if not found
-        """
-
-    @abstractmethod
     async def search_vectors(
         self,
         query_vector: np.ndarray,
