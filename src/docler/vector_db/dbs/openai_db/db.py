@@ -8,7 +8,7 @@ import os
 from typing import TYPE_CHECKING, Any, ClassVar, Literal
 
 from docler.models import TextChunk
-from docler.vector_db.base import IntegratedVectorDB
+from docler.vector_db.base import VectorDB
 
 
 if TYPE_CHECKING:
@@ -44,7 +44,7 @@ def to_chunking_config(
     raise ValueError(msg)
 
 
-class OpenAIVectorDB(IntegratedVectorDB):
+class OpenAIVectorDB(VectorDB):
     """Vector database using OpenAI's Vector Stores API."""
 
     NAME: ClassVar[str] = "openai"
@@ -89,41 +89,6 @@ class OpenAIVectorDB(IntegratedVectorDB):
             chunking_strategy, max_chunk_size, chunk_overlap
         )
 
-    async def add_texts(
-        self,
-        texts: list[str],
-        metadatas: list[dict[str, Any]] | None = None,
-        ids: list[str] | None = None,
-    ) -> list[str]:
-        """Add simple text strings with metadata.
-
-        Args:
-            texts: List of texts to add
-            metadatas: Optional list of metadata dictionaries
-            ids: Optional list of IDs (ignored, OpenAI assigns its own IDs)
-
-        Returns:
-            List of file IDs for the stored texts
-        """
-        if metadatas is None:
-            metadatas = [{} for _ in texts]
-        file_ids = []
-        for text, metadata in zip(texts, metadatas):
-            text_bytes = text.encode("utf-8")
-            file_obj = io.BytesIO(text_bytes)
-            r = await self._client.files.create(file=file_obj, purpose="user_data")
-            file_id = r.id
-            await self._client.vector_stores.files.create(
-                vector_store_id=self.vector_store_id,
-                file_id=file_id,
-                attributes=metadata,
-                chunking_strategy=self.chunking_config,
-            )
-
-            file_ids.append(file_id)
-
-        return file_ids
-
     async def add_chunks(self, chunks: list[TextChunk]) -> list[str]:
         """Add text chunks with metadata.
 
@@ -161,7 +126,6 @@ class OpenAIVectorDB(IntegratedVectorDB):
                 )
 
                 batch_ids.append(file_id)
-
             # Add batch IDs to overall results
             file_ids.extend(batch_ids)
 
@@ -183,7 +147,9 @@ class OpenAIVectorDB(IntegratedVectorDB):
         Returns:
             List of (chunk, score) tuples
         """
-        filter_obj = self._convert_filters(filters) if filters else None
+        from docler.vector_db.dbs.openai_db.utils import convert_filters
+
+        filter_obj = convert_filters(filters) if filters else None
         extra = {"filters": filter_obj} if filter_obj else {}
         try:
             response = await self._client.vector_stores.search(
@@ -239,7 +205,9 @@ class OpenAIVectorDB(IntegratedVectorDB):
         Returns:
             List of (text, score, metadata) tuples
         """
-        filter_obj = self._convert_filters(filters) if filters else None
+        from docler.vector_db.dbs.openai_db.utils import convert_filters
+
+        filter_obj = convert_filters(filters) if filters else None
         extra = {"filters": filter_obj} if filter_obj else {}
 
         try:
@@ -255,17 +223,13 @@ class OpenAIVectorDB(IntegratedVectorDB):
 
         results = []
         for result in response.data:
-            # Extract text content
             content_text = ""
             for content_item in result.content:
                 if content_item.type == "text":
                     content_text += content_item.text + "\n"
             meta = dict[str, Any](file_id=result.file_id, filename=result.filename)
-            if result.attributes:
-                meta.update(result.attributes)
-
+            meta.update(result.attributes or {})
             results.append((content_text.strip(), float(result.score), meta))
-
         return results
 
     async def delete_chunk(self, chunk_id: str) -> bool:
@@ -289,36 +253,6 @@ class OpenAIVectorDB(IntegratedVectorDB):
             return False
         else:
             return True
-
-    def _convert_filters(self, filters: dict[str, Any]) -> Any:  # type: ignore
-        """Convert standard filters to OpenAI's filter format.
-
-        Args:
-            filters: Dictionary of filters
-
-        Returns:
-            OpenAI-compatible filter object
-        """
-        filter_conditions = []
-        for key, value in filters.items():
-            if isinstance(value, list):
-                # Handle list of values (OR condition)
-                or_conditions = [
-                    {"key": key, "type": "eq", "value": item}
-                    for item in value
-                    if isinstance(item, str | int | float | bool)
-                ]
-
-                if or_conditions:
-                    filter_conditions.append({"type": "or", "filters": or_conditions})
-            elif isinstance(value, str | int | float | bool):
-                # Handle single value (equality)
-                filter_conditions.append({"key": key, "type": "eq", "value": value})  # type: ignore
-        if len(filter_conditions) > 1:
-            return {"type": "and", "filters": filter_conditions}
-        if filter_conditions:
-            return filter_conditions[0]
-        return {}
 
     async def close(self) -> None:
         """Close resources."""

@@ -8,6 +8,7 @@ import uuid
 
 from docler.models import SearchResult
 from docler.vector_db.base import VectorStoreBackend
+from docler.vector_db.dbs.qdrant_db.utils import get_query
 
 
 if TYPE_CHECKING:
@@ -191,28 +192,13 @@ class QdrantBackend(VectorStoreBackend):
         Returns:
             List of search results
         """
-        from qdrant_client.http import models
-
         vector_list = query_vector.astype(float).tolist()
-        filter_query = None
-        if filters:
-            conditions = []
-            for field_name, value in filters.items():
-                if isinstance(value, list):
-                    match = models.MatchAny(any=value)
-                else:
-                    match = models.MatchValue(value=value)
-                cond = models.FieldCondition(key=field_name, match=match)
-                conditions.append(cond)
-            if conditions:
-                filter_query = models.Filter(must=conditions)
-
         results = await self._client.search(
             collection_name=self._collection_name,
             query_vector=vector_list,
             limit=k,
             with_payload=True,
-            filter=filter_query,
+            filter=get_query(filters),
         )
 
         search_results = []

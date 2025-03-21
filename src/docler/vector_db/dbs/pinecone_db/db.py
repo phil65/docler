@@ -2,13 +2,17 @@
 
 from __future__ import annotations
 
-import base64
 import logging
 from typing import TYPE_CHECKING, Any, ClassVar
 import uuid
 
 from docler.models import SearchResult
 from docler.vector_db.base import VectorStoreBackend
+from docler.vector_db.dbs.pinecone_db.utils import (
+    convert_filters,
+    prepare_metadata,
+    restore_metadata,
+)
 
 
 if TYPE_CHECKING:
@@ -77,7 +81,7 @@ class PineconeBackend(VectorStoreBackend):
         if id_ is None:
             id_ = str(uuid.uuid4())
         vector_list: list[float] = vector.tolist()  # pyright: ignore
-        metadata_copy = self._prepare_metadata(metadata)
+        metadata_copy = prepare_metadata(metadata)
 
         index = await self._get_index()
         async with index:
@@ -107,7 +111,7 @@ class PineconeBackend(VectorStoreBackend):
         vectors_data = []
         for i, (vector, meta) in enumerate(zip(vectors, metadata)):
             vector_list: list[float] = vector.tolist()  # pyright: ignore
-            meta_copy = self._prepare_metadata(meta)
+            meta_copy = prepare_metadata(meta)
             vectors_data.append((ids[i], vector_list, meta_copy))
 
         index = await self._get_index()
@@ -142,7 +146,7 @@ class PineconeBackend(VectorStoreBackend):
 
         vector_data = vectors[chunk_id]
         vector = np.array(vector_data.values)
-        metadata = self._restore_metadata(vector_data.metadata or {})
+        metadata = restore_metadata(vector_data.metadata or {})
 
         return vector, metadata
 
@@ -182,7 +186,7 @@ class PineconeBackend(VectorStoreBackend):
             List of search results
         """
         vector_list: list[float] = query_vector.tolist()  # pyright: ignore
-        filter_obj = self._convert_filters(filters) if filters else None
+        filter_obj = convert_filters(filters) if filters else None
 
         query_params = {
             "vector": vector_list,
@@ -205,7 +209,7 @@ class PineconeBackend(VectorStoreBackend):
         search_results = []
         for match in results.matches:  # pyright: ignore
             raw_metadata = match.metadata or {}
-            metadata = self._restore_metadata(raw_metadata)
+            metadata = restore_metadata(raw_metadata)
             score = match.score or 0.0
             text = metadata.pop("text", None) if isinstance(metadata, dict) else None
             result = SearchResult(
@@ -217,82 +221,6 @@ class PineconeBackend(VectorStoreBackend):
             search_results.append(result)
 
         return search_results
-
-    def _convert_filters(self, filters: dict[str, Any]) -> dict:
-        """Convert standard filters to Pinecone filter format.
-
-        Args:
-            filters: Dictionary of filters
-
-        Returns:
-            Pinecone-compatible filter object
-        """
-        if not filters:
-            return {}
-
-        pinecone_filter = {}
-        for key, value in filters.items():
-            pinecone_filter[key] = {"$in": value} if isinstance(value, list) else value
-        return pinecone_filter
-
-    def _prepare_metadata(self, metadata: dict[str, Any]) -> dict[str, Any]:
-        """Prepare metadata for Pinecone storage."""
-        import anyenv
-
-        prepared = {}
-        for key, value in metadata.items():
-            if isinstance(value, str | int | float | bool):
-                prepared[key] = value
-            elif isinstance(value, list | dict):
-                # Convert complex types to JSON strings
-                try:
-                    # First try to store it directly if simple enough
-                    if isinstance(value, list) and all(
-                        isinstance(x, str | int | float | bool) for x in value
-                    ):
-                        prepared[key] = value  # type: ignore
-                    else:
-                        prepared[f"{key}_json"] = anyenv.dump_json(value)
-                except (TypeError, ValueError):
-                    dumped = anyenv.dump_json(str(value)).encode()
-                    prepared[f"{key}_b64"] = base64.b64encode(dumped).decode()
-            elif value is not None:
-                prepared[key] = str(value)
-
-        # Ensure text field is preserved
-        if "text" in metadata:
-            prepared["text"] = str(metadata["text"])
-
-        return prepared
-
-    def _restore_metadata(self, metadata: dict[str, Any]) -> dict[str, Any]:
-        """Restore encoded metadata fields."""
-        import json
-
-        restored = metadata.copy()
-
-        # Process encoded fields
-        for key in list(restored.keys()):
-            # Restore JSON encoded fields
-            if key.endswith("_json") and key[:-5] not in restored:
-                try:
-                    base_key = key[:-5]
-                    restored[base_key] = json.loads(restored[key])
-                    del restored[key]
-                except Exception:  # noqa: BLE001
-                    pass
-
-            # Restore base64 encoded fields
-            elif key.endswith("_b64") and key[:-4] not in restored:
-                try:
-                    base_key = key[:-4]
-                    json_str = base64.b64decode(restored[key]).decode()
-                    restored[base_key] = json.loads(json_str)
-                    del restored[key]
-                except Exception:  # noqa: BLE001
-                    pass
-
-        return restored
 
     async def close(self):
         """Close the Pinecone connection."""

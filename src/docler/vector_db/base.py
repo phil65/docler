@@ -5,8 +5,6 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any, Literal
 
-from docler.provider import BaseProvider
-
 
 if TYPE_CHECKING:
     import numpy as np
@@ -17,7 +15,7 @@ if TYPE_CHECKING:
 Metric = Literal["cosine", "euclidean", "dot"]
 
 
-class VectorStoreBackend(BaseProvider, ABC):
+class VectorStoreBackend(ABC):
     """Low-level vector store interface for raw vector operations."""
 
     @abstractmethod
@@ -107,24 +105,6 @@ class VectorDB(ABC):
         self.vector_store_id = vector_store_id
 
     @abstractmethod
-    async def add_texts(
-        self,
-        texts: list[str],
-        metadatas: list[dict[str, Any]] | None = None,
-        ids: list[str] | None = None,
-    ) -> list[str]:
-        """Add simple text strings with metadata.
-
-        Args:
-            texts: List of texts to add
-            metadatas: Optional list of metadata dictionaries
-            ids: Optional list of IDs
-
-        Returns:
-            List of IDs for the stored texts
-        """
-
-    @abstractmethod
     async def add_chunks(
         self,
         chunks: list[TextChunk],
@@ -184,45 +164,3 @@ class VectorDB(ABC):
         Returns:
             True if chunk was deleted, False otherwise
         """
-
-
-class IntegratedVectorDB(VectorDB):
-    """Base class for vector databases with integrated embedding and storage."""
-
-    @abstractmethod
-    async def add_texts(
-        self,
-        texts: list[str],
-        metadatas: list[dict[str, Any]] | None = None,
-        ids: list[str] | None = None,
-    ) -> list[str]:
-        """Add simple text strings with metadata."""
-
-    @abstractmethod
-    async def add_chunks(
-        self,
-        chunks: list[TextChunk],
-    ) -> list[str]:
-        """Add text chunks with metadata."""
-
-    @abstractmethod
-    async def similar_chunks(
-        self,
-        query: str,
-        k: int = 4,
-        filters: dict[str, Any] | None = None,
-    ) -> list[tuple[TextChunk, float]]:
-        """Find similar chunks for a query."""
-
-    @abstractmethod
-    async def similar_texts(
-        self,
-        query: str,
-        k: int = 4,
-        filters: dict[str, Any] | None = None,
-    ) -> list[tuple[str, float, dict[str, Any]]]:
-        """Find similar texts for a query."""
-
-    @abstractmethod
-    async def delete_chunk(self, chunk_id: str) -> bool:
-        """Delete a chunk by ID."""
