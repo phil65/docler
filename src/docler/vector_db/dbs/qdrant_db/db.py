@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Any, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar, Literal
 import uuid
 
 from docler.models import SearchResult, Vector
@@ -16,6 +16,7 @@ if TYPE_CHECKING:
 
 
 logger = logging.getLogger(__name__)
+Metric = Literal["cosine", "euclidean", "dotproduct", "manhattan"]
 
 
 class QdrantBackend(VectorStoreBackend):
@@ -26,6 +27,7 @@ class QdrantBackend(VectorStoreBackend):
     def __init__(
         self,
         collection_name: str = "default",
+        metric: Metric = "cosine",
         location: str | None = None,
         url: str | None = None,
         api_key: str | None = None,
@@ -36,6 +38,7 @@ class QdrantBackend(VectorStoreBackend):
 
         Args:
             collection_name: Name of collection to use
+            metric: Metric to use for similarity search
             location: Path to local storage (memory if None)
             url: URL of Qdrant server (overrides location)
             api_key: API key for Qdrant cloud
@@ -61,14 +64,15 @@ class QdrantBackend(VectorStoreBackend):
         temp_client = QdrantClient(**client_kwargs)
         collections = temp_client.get_collections().collections
         collection_names = [c.name for c in collections]
-
+        metric_map = dict(
+            cosine=models.Distance.COSINE,
+            euclidean=models.Distance.EUCLID,
+            dotproduct=models.Distance.DOT,
+            manhattan=models.Distance.MANHATTAN,
+        )
         if self._collection_name not in collection_names:
-            temp_client.create_collection(
-                collection_name=self._collection_name,
-                vectors_config=models.VectorParams(
-                    size=vector_size, distance=models.Distance.COSINE
-                ),
-            )
+            cfg = models.VectorParams(size=vector_size, distance=metric_map[metric])
+            temp_client.create_collection(self._collection_name, vectors_config=cfg)
 
     async def add_vector(
         self,
