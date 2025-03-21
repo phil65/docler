@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from io import BytesIO
 import logging
 from typing import TYPE_CHECKING, ClassVar
 
@@ -106,10 +107,13 @@ class DoclingConverter(DocumentConverter[DoclingConverterConfig]):
             ValueError: If the file is not a PDF.
         """
         from docling_core.types.doc.base import ImageRefMode
+        from docling_core.types.io import DocumentStream
         import upath
 
         pdf_path = upath.UPath(file_path)
-        doc_result = self.converter.convert(str(pdf_path))
+        stream = BytesIO(pdf_path.read_bytes())
+        source = DocumentStream(name=pdf_path.name, stream=stream)
+        doc_result = self.converter.convert(source)
         mk_content = doc_result.document.export_to_markdown(
             image_mode=ImageRefMode.REFERENCED,
             delim=self.delim,
@@ -144,7 +148,7 @@ class DoclingConverter(DocumentConverter[DoclingConverterConfig]):
 if __name__ == "__main__":
     import anyenv
 
-    pdf_path = "C:/Users/phili/Downloads/2402.079271.pdf"
+    pdf_path = "src/docler/resources/pdf_sample.pdf"
     converter = DoclingConverter()
     result = anyenv.run_sync(converter.convert_file(pdf_path))
     print(result)
