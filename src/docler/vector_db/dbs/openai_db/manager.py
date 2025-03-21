@@ -114,8 +114,6 @@ class OpenAIVectorManager(VectorManagerBase[OpenAIVectorConfig]):
             # Create the vector store
             response = await self._client.vector_stores.create(name=name)
             vector_store_id = response.id
-
-            # Create and return a configured database instance
             db = OpenAIVectorDB(
                 vector_store_id=vector_store_id,
                 client=self._client,
@@ -123,8 +121,6 @@ class OpenAIVectorManager(VectorManagerBase[OpenAIVectorConfig]):
                 max_chunk_size=max_chunk_size,
                 chunk_overlap=chunk_overlap,
             )
-
-            # Store for tracking
             self._vector_stores[name] = db
         except Exception as e:
             msg = f"Failed to create vector store: {e}"
