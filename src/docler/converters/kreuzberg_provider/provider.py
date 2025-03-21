@@ -7,6 +7,15 @@ from typing import TYPE_CHECKING, ClassVar
 
 from docler.configs.converter_configs import KreuzbergConfig
 from docler.converters.base import DocumentConverter
+from docler.mime_types import (
+    HTML_MIME_TYPE,
+    IMAGE_MIME_TYPES,
+    PANDOC_SUPPORTED_MIME_TYPES,
+    PDF_MIME_TYPE,
+    PLAIN_TEXT_MIME_TYPES,
+    POWER_POINT_MIME_TYPE,
+    SPREADSHEET_MIME_TYPES,
+)
 from docler.models import Document
 
 
@@ -24,31 +33,13 @@ class KreuzbergConverter(DocumentConverter[KreuzbergConfig]):
 
     NAME = "kreuzberg"
     REQUIRED_PACKAGES: ClassVar = {"kreuzberg"}
-    SUPPORTED_MIME_TYPES: ClassVar[set[str]] = {
-        # PDFs
-        "application/pdf",
-        # Office documents
-        "application/msword",
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        "application/vnd.ms-powerpoint",
-        "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-        "application/vnd.oasis.opendocument.text",
-        "application/rtf",
-        # Ebooks and markup
-        "application/epub+zip",
-        "text/html",
-        "text/markdown",
-        "text/plain",
-        "text/x-rst",
-        "text/org",
-        # Images for OCR
-        "image/jpeg",
-        "image/png",
-        "image/tiff",
-        "image/bmp",
-        "image/webp",
-        "image/gif",
-    }
+    SUPPORTED_MIME_TYPES: ClassVar[set[str]] = (
+        PLAIN_TEXT_MIME_TYPES
+        | IMAGE_MIME_TYPES
+        | PANDOC_SUPPORTED_MIME_TYPES
+        | SPREADSHEET_MIME_TYPES
+        | {PDF_MIME_TYPE, POWER_POINT_MIME_TYPE, HTML_MIME_TYPE}
+    )
 
     def __init__(
         self,
@@ -90,8 +81,6 @@ class KreuzbergConverter(DocumentConverter[KreuzbergConfig]):
         import upath
 
         local_file = upath.UPath(file_path)
-
-        # Extract content using Kreuzberg
         result = anyenv.run_sync(
             extract_file(
                 str(local_file),
@@ -101,10 +90,7 @@ class KreuzbergConverter(DocumentConverter[KreuzbergConfig]):
             )
         )
 
-        # Convert metadata
         metadata = result.metadata
-
-        # Parse date if present
         created: datetime | None = None
         if date_str := metadata.get("date"):
             try:
