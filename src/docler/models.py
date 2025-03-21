@@ -73,3 +73,23 @@ class TextChunk:
     page_number: int | None = None
     images: list[Image] = field(default_factory=list)
     metadata: dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class VectorStoreInfo:
+    """A single vector search result."""
+
+    db_id: str
+    name: str
+    created_at: int | None = None
+    metadata: dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class SearchResult:
+    """A single vector search result."""
+
+    chunk_id: str
+    score: float  # similarity score between 0-1
+    metadata: dict[str, Any]
+    text: str | None = None

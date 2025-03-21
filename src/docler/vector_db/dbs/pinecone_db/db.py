@@ -7,7 +7,8 @@ import logging
 from typing import TYPE_CHECKING, Any, ClassVar
 import uuid
 
-from docler.vector_db.base import SearchResult, VectorStoreBackend
+from docler.models import SearchResult
+from docler.vector_db.base import VectorStoreBackend
 
 
 if TYPE_CHECKING:

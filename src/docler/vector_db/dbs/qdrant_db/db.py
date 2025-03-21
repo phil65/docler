@@ -6,7 +6,8 @@ import logging
 from typing import TYPE_CHECKING, Any, ClassVar
 import uuid
 
-from docler.vector_db.base import SearchResult, VectorStoreBackend
+from docler.models import SearchResult
+from docler.vector_db.base import VectorStoreBackend
 
 
 if TYPE_CHECKING:
@@ -43,7 +44,6 @@ class QdrantBackend(VectorStoreBackend):
         from qdrant_client import AsyncQdrantClient, QdrantClient
         from qdrant_client.http import models
 
-        # Create client based on configuration
         client_kwargs: dict[str, Any] = {"prefer_grpc": prefer_grpc}
         if url:
             client_kwargs["url"] = url
@@ -178,24 +178,15 @@ class QdrantBackend(VectorStoreBackend):
             if current is None:
                 return False
 
-        # Use new values or keep current ones
         current_vector, current_metadata = current if current else (None, {})
         final_vector = vector if vector is not None else current_vector
         final_metadata = metadata if metadata is not None else current_metadata
         assert final_vector
-
-        # Create point for update
-        point = models.PointStruct(
-            id=chunk_id,
-            vector=final_vector.astype(float).tolist(),
-            payload=final_metadata,
-        )
+        vec = final_vector.astype(float).tolist()
+        point = models.PointStruct(id=chunk_id, vector=vec, payload=final_metadata)
 
         try:
-            await self._client.upsert(
-                collection_name=self._collection_name,
-                points=[point],
-            )
+            await self._client.upsert(self._collection_name, points=[point])
         except Exception:  # noqa: BLE001
             return False
         else:
@@ -242,28 +233,16 @@ class QdrantBackend(VectorStoreBackend):
         from qdrant_client.http import models
 
         vector_list = query_vector.astype(float).tolist()
-
         filter_query = None
         if filters:
             conditions = []
             for field_name, value in filters.items():
                 if isinstance(value, list):
-                    # Handle list values
-                    conditions.append(
-                        models.FieldCondition(
-                            key=field_name,
-                            match=models.MatchAny(any=value),
-                        )
-                    )
+                    match = models.MatchAny(any=value)
                 else:
-                    # Handle single values
-                    conditions.append(
-                        models.FieldCondition(
-                            key=field_name,
-                            match=models.MatchValue(value=value),
-                        )
-                    )
-
+                    match = models.MatchValue(value=value)
+                cond = models.FieldCondition(key=field_name, match=match)
+                conditions.append(cond)
             if conditions:
                 filter_query = models.Filter(must=conditions)
 
@@ -279,7 +258,6 @@ class QdrantBackend(VectorStoreBackend):
         for hit in results:
             payload = hit.payload or {}
             text = payload.pop("text", None) if payload else None
-
             result = SearchResult(
                 chunk_id=str(hit.id),
                 score=hit.score,

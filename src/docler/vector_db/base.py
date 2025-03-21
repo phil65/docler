@@ -4,10 +4,9 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 import base64
-from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Literal
 
-from docler.models import Image, TextChunk
+from docler.models import Image, SearchResult, TextChunk
 from docler.provider import BaseProvider
 
 
@@ -18,16 +17,6 @@ if TYPE_CHECKING:
 
 
 Metric = Literal["cosine", "euclidean", "dot"]
-
-
-@dataclass
-class SearchResult:
-    """A single vector search result."""
-
-    chunk_id: str
-    score: float  # similarity score between 0-1
-    metadata: dict[str, Any]
-    text: str | None = None
 
 
 class VectorStoreBackend(BaseProvider, ABC):
