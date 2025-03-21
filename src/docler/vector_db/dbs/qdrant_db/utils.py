@@ -10,15 +10,12 @@ if TYPE_CHECKING:
 
 
 def get_query(filters: dict[str, Any] | None = None) -> models.Filter | None:
-    from qdrant_client.http import models
+    from qdrant_client.http.models import FieldCondition, Filter, MatchAny, MatchValue
 
     filters = filters or {}
     conditions = []
-    for field_name, value in filters.items():
-        if isinstance(value, list):
-            match = models.MatchAny(any=value)
-        else:
-            match = models.MatchValue(value=value)
-        cond = models.FieldCondition(key=field_name, match=match)
+    for field_name, val in filters.items():
+        match = MatchAny(any=val) if isinstance(val, list) else MatchValue(value=val)
+        cond = FieldCondition(key=field_name, match=match)
         conditions.append(cond)
-    return models.Filter(must=conditions) if conditions else None
+    return Filter(must=conditions) if conditions else None
