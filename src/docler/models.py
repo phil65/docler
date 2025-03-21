@@ -4,9 +4,13 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from datetime import datetime  # noqa: TC003
-from typing import Any, Literal
+from typing import TYPE_CHECKING, Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
+
+
+if TYPE_CHECKING:
+    import numpy as np
 
 
 ImageReferenceFormat = Literal["inline_base64", "file_paths", "keep_internal"]
@@ -93,3 +97,12 @@ class SearchResult:
     score: float  # similarity score between 0-1
     metadata: dict[str, Any]
     text: str | None = None
+
+
+@dataclass
+class Vector:
+    """A single vector search result."""
+
+    id: str
+    data: np.ndarray
+    metadata: dict[str, Any] = field(default_factory=dict)

@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING, Any, Literal
 if TYPE_CHECKING:
     import numpy as np
 
-    from docler.models import SearchResult, TextChunk
+    from docler.models import SearchResult, TextChunk, Vector
 
 
 Metric = Literal["cosine", "euclidean", "dot"]
@@ -55,10 +55,7 @@ class VectorStoreBackend(ABC):
         """
 
     @abstractmethod
-    async def get_vector(
-        self,
-        chunk_id: str,
-    ) -> tuple[np.ndarray, dict[str, Any]] | None:
+    async def get_vector(self, chunk_id: str) -> Vector | None:
         """Get a vector and its metadata by ID.
 
         Args:

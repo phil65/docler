@@ -6,7 +6,7 @@ import logging
 from typing import TYPE_CHECKING, Any, ClassVar
 import uuid
 
-from docler.models import SearchResult
+from docler.models import SearchResult, Vector
 from docler.vector_db.base import VectorStoreBackend
 from docler.vector_db.dbs.qdrant_db.utils import get_query
 
@@ -127,10 +127,7 @@ class QdrantBackend(VectorStoreBackend):
         await self._client.upsert(collection_name=self._collection_name, points=points)
         return ids
 
-    async def get_vector(
-        self,
-        chunk_id: str,
-    ) -> tuple[np.ndarray, dict[str, Any]] | None:
+    async def get_vector(self, chunk_id: str) -> Vector | None:
         """Get a vector and its metadata by ID.
 
         Args:
@@ -150,9 +147,9 @@ class QdrantBackend(VectorStoreBackend):
 
         if not points:
             return None
-
         point = points[0]
-        return np.array(point.vector), point.payload
+        data = np.array(point.vector)
+        return Vector(data=data, metadata=point.payload or {}, id=str(point.id))
 
     async def delete(self, chunk_id: str) -> bool:
         """Delete vector by ID.
@@ -203,14 +200,11 @@ class QdrantBackend(VectorStoreBackend):
 
         search_results = []
         for hit in results:
-            payload = hit.payload or {}
-            text = payload.pop("text", None) if payload else None
-            result = SearchResult(
-                chunk_id=str(hit.id),
-                score=hit.score,
-                metadata=payload,
-                text=str(text) if text is not None else None,
-            )
+            data = hit.payload or {}
+            text = data.pop("text", None) if data else None
+            txt = str(text) if text is not None else None
+            id_ = str(hit.id)
+            result = SearchResult(chunk_id=id_, score=hit.score, metadata=data, text=txt)
             search_results.append(result)
 
         return search_results
@@ -218,3 +212,7 @@ class QdrantBackend(VectorStoreBackend):
     async def close(self):
         """Close the Qdrant connection."""
         await self._client.close()
+
+
+if __name__ == "__main__":
+    db = QdrantBackend(url="http://localhost:6333", collection_name="test")

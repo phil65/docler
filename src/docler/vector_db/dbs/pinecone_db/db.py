@@ -6,7 +6,7 @@ import logging
 from typing import TYPE_CHECKING, Any, ClassVar
 import uuid
 
-from docler.models import SearchResult
+from docler.models import SearchResult, Vector
 from docler.vector_db.base import VectorStoreBackend
 from docler.vector_db.dbs.pinecone_db.utils import (
     convert_filters,
@@ -122,10 +122,7 @@ class PineconeBackend(VectorStoreBackend):
 
         return ids
 
-    async def get_vector(
-        self,
-        chunk_id: str,
-    ) -> tuple[np.ndarray, dict[str, Any]] | None:
+    async def get_vector(self, chunk_id: str) -> Vector | None:
         """Get vector and metadata from Pinecone.
 
         Args:
@@ -147,8 +144,7 @@ class PineconeBackend(VectorStoreBackend):
         vector_data = vectors[chunk_id]
         vector = np.array(vector_data.values)
         metadata = restore_metadata(vector_data.metadata or {})
-
-        return vector, metadata
+        return Vector(data=vector, metadata=metadata, id=chunk_id)
 
     async def delete(self, chunk_id: str) -> bool:
         """Delete vector by ID.

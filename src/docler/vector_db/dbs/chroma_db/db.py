@@ -3,10 +3,10 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Any, ClassVar, cast
+from typing import TYPE_CHECKING, Any, ClassVar, Literal, cast
 import uuid
 
-from docler.models import SearchResult
+from docler.models import SearchResult, Vector
 from docler.vector_db.base import VectorStoreBackend
 
 
@@ -15,6 +15,7 @@ if TYPE_CHECKING:
 
 
 logger = logging.getLogger(__name__)
+Metric = Literal["cosine", "l2", "ip"]
 
 
 class ChromaBackend(VectorStoreBackend):
@@ -27,7 +28,7 @@ class ChromaBackend(VectorStoreBackend):
         self,
         vector_store_id: str = "default",
         persist_directory: str | None = None,
-        distance_metric: str = "cosine",
+        distance_metric: Metric = "cosine",
     ):
         """Initialize ChromaDB backend.
 
@@ -138,10 +139,7 @@ class ChromaBackend(VectorStoreBackend):
 
         return ids
 
-    async def get_vector(
-        self,
-        chunk_id: str,
-    ) -> tuple[np.ndarray, dict[str, Any]] | None:
+    async def get_vector(self, chunk_id: str) -> Vector | None:
         """Get vector and metadata from ChromaDB."""
         import anyenv
         import numpy as np
@@ -161,7 +159,7 @@ class ChromaBackend(VectorStoreBackend):
         # Cast metadata to dict[str, Any]
         metadata = cast(dict[str, Any], result["metadatas"][0])
 
-        return vector, metadata
+        return Vector(data=vector, metadata=metadata, id=chunk_id)
 
     async def delete(self, chunk_id: str) -> bool:
         """Delete vector from ChromaDB."""
