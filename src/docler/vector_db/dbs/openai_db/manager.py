@@ -216,11 +216,9 @@ class OpenAIVectorManager(VectorManagerBase[OpenAIVectorConfig]):
 
         try:
             data = await upathtools.read_path(file_path, mode="rb")
-            upload_response = await self._client.files.create(
-                file=(file_path, data),
-                purpose="user_data",
-            )
-            file_id = upload_response.id
+            file = (file_path, data)
+            response = await self._client.files.create(file=file, purpose="user_data")
+            file_id = response.id
             if chunking_strategy == "auto":
                 chunking_config: dict[str, Any] = {"type": "auto"}
             else:
@@ -274,40 +272,6 @@ class OpenAIVectorManager(VectorManagerBase[OpenAIVectorConfig]):
             return []
         else:
             return formatted_results
-
-    def _convert_filters(self, filters: dict[str, Any]) -> Any:  # type: ignore
-        """Convert standard filters to OpenAI's filter format.
-
-        Args:
-            filters: Dictionary of filters
-
-        Returns:
-            OpenAI-compatible filter object
-        """
-        filter_conditions: list[dict[str, Any]] = []
-
-        for key, value in filters.items():
-            if isinstance(value, list):
-                or_conditions = [
-                    {"key": key, "type": "eq", "value": item}
-                    for item in value
-                    if isinstance(item, str | int | float | bool)
-                ]
-                if or_conditions:
-                    filter_conditions.append({"type": "or", "filters": or_conditions})
-            elif isinstance(value, str | int | float | bool):
-                # Handle single value (equality)
-                filter_ = {"key": key, "type": "eq", "value": value}
-                filter_conditions.append(filter_)
-
-        # Combine with AND if multiple conditions
-        if len(filter_conditions) > 1:
-            return {"type": "and", "filters": filter_conditions}
-        if filter_conditions:
-            # Just return the single filter
-            return filter_conditions[0]
-        # No filters
-        return {}
 
     async def close(self) -> None:
         """Close all vector store connections."""
