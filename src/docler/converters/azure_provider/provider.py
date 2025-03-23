@@ -6,6 +6,8 @@ import logging
 import os
 from typing import TYPE_CHECKING, ClassVar, Literal
 
+from azure.ai.documentintelligence.models import AnalyzeOutputOption
+
 from docler.configs.converter_configs import AzureConfig
 from docler.converters.base import DocumentConverter
 from docler.models import Document, Image
@@ -22,7 +24,6 @@ logger = logging.getLogger(__name__)
 PrebuiltModel = Literal[
     "prebuilt-read",
     "prebuilt-layout",
-    "prebuilt-document",
     "prebuilt-idDocument",
     "prebuilt-receipt",
 ]
@@ -67,7 +68,7 @@ class AzureConverter(DocumentConverter[AzureConfig]):
         *,
         endpoint: str | None = None,
         api_key: str | None = None,
-        model: PrebuiltModel = "prebuilt-document",
+        model: PrebuiltModel = "prebuilt-layout",
         additional_features: Sequence[str] | None = None,
     ):
         """Initialize Azure Document Intelligence converter.
@@ -126,38 +127,26 @@ class AzureConverter(DocumentConverter[AzureConfig]):
         Returns:
             List of extracted images
         """
-        from azure.core.exceptions import HttpResponseError
-
         images: list[Image] = []
-
-        # Note: Regular document images aren't directly accessible in AnalyzeResult
-        # We need to use the figures feature instead
-        # Get extracted figures
         if result.figures:
             for i, figure in enumerate(result.figures):
                 if not figure.id:
                     continue
-
-                try:
-                    # Get figure content
-                    response_iter = self._client.get_analyze_result_figure(
-                        model_id=result.model_id,
-                        result_id=operation_id,
-                        figure_id=figure.id,
-                    )
-                    content = b"".join(response_iter)
-                    image_id = f"figure-{i}"
-                    filename = f"{image_id}.png"
-                    image = Image(
-                        id=image_id,
-                        content=content,
-                        mime_type="image/png",
-                        filename=filename,
-                    )
-                    images.append(image)
-                except HttpResponseError:
-                    logger.warning("Failed to retrieve figure %s", figure.id)
-                    continue
+                response_iter = self._client.get_analyze_result_figure(
+                    model_id=result.model_id,
+                    result_id=operation_id,
+                    figure_id=figure.id,
+                )
+                content = b"".join(response_iter)
+                image_id = f"img-{i}"
+                filename = f"{image_id}.png"
+                image = Image(
+                    id=image_id,
+                    content=content,
+                    mime_type="image/png",
+                    filename=filename,
+                )
+                images.append(image)
 
         return images
 
@@ -187,9 +176,10 @@ class AzureConverter(DocumentConverter[AzureConfig]):
         try:
             with path.open("rb") as f:
                 poller = self._client.begin_analyze_document(
-                    model_id=self.model,
+                    model_id="prebuilt-layout",
                     body=f,
                     features=features,
+                    output=[AnalyzeOutputOption.FIGURES],
                     locale=self.languages[0] if self.languages else "en",
                 )
             result = poller.result()
@@ -215,17 +205,10 @@ class AzureConverter(DocumentConverter[AzureConfig]):
             )
 
         except HttpResponseError as e:
-            # Add more context to Azure errors
             msg = f"Azure Document Intelligence failed: {e.message}"
             if e.error:
                 msg = f"{msg} (Error code: {e.error.code})"
             raise ValueError(msg) from e
-
-    # async def _convert_path_async(self, file_path: StrPath, mime_type: str) -> Document:
-    #     """Convert a document file asynchronously - falls back to sync."""
-    #     import anyenv
-
-    #     return await anyenv.run_in_thread(self._convert_path_sync, file_path, mime_type)
 
 
 if __name__ == "__main__":
@@ -235,4 +218,4 @@ if __name__ == "__main__":
 
     converter = AzureConverter()
     result = anyenv.run_sync(converter.convert_file(pdf_path))
-    print(result)
+    print(result.content)
