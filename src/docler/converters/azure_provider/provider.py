@@ -6,8 +6,6 @@ import logging
 import os
 from typing import TYPE_CHECKING, ClassVar, Literal
 
-from azure.ai.documentintelligence.models import AnalyzeOutputOption
-
 from docler.configs.converter_configs import AzureConfig
 from docler.converters.base import DocumentConverter
 from docler.models import Document, Image
@@ -19,6 +17,7 @@ if TYPE_CHECKING:
     from azure.ai.documentintelligence.models import AnalyzeResult
 
     from docler.common_types import StrPath, SupportedLanguage
+
 logger = logging.getLogger(__name__)
 
 PrebuiltModel = Literal[
@@ -151,20 +150,13 @@ class AzureConverter(DocumentConverter[AzureConfig]):
         return images
 
     def _convert_path_sync(self, file_path: StrPath, mime_type: str) -> Document:
-        """Convert a document file synchronously using Azure Document Intelligence.
+        """Convert a document file synchronously using Azure Document Intelligence."""
+        import re
 
-        Args:
-            file_path: Path to the file to process
-            mime_type: MIME type of the file
-
-        Returns:
-            Converted document with extracted text/metadata
-
-        Raises:
-            ValueError: If Azure configuration is missing
-            HttpResponseError: If Azure API returns an error
-        """
-        from azure.ai.documentintelligence.models import DocumentAnalysisFeature
+        from azure.ai.documentintelligence.models import (
+            AnalyzeOutputOption,
+            DocumentAnalysisFeature,
+        )
         from azure.core.exceptions import HttpResponseError
         import upath
 
@@ -181,9 +173,11 @@ class AzureConverter(DocumentConverter[AzureConfig]):
                     features=features,
                     output=[AnalyzeOutputOption.FIGURES],
                     locale=self.languages[0] if self.languages else "en",
+                    output_content_format="markdown",
                 )
             result = poller.result()
             operation_id = poller.details["operation_id"]
+
             metadata = {}
             if result.documents:
                 doc = result.documents[0]  # Get first document
@@ -193,9 +187,27 @@ class AzureConverter(DocumentConverter[AzureConfig]):
                         for name, field in doc.fields.items()
                     }
 
+            # Get all images first
             images = self._convert_azure_images(result, operation_id)
+
+            # Process content to replace <figure> tags with markdown image references
+            content = result.content
+            if images:
+                # Find all figure tags in content
+                figure_pattern = r"<figure>(.*?)</figure>"
+                figure_blocks = re.findall(figure_pattern, content, re.DOTALL)
+
+                # Replace each figure block with a markdown image reference
+                for i, block in enumerate(figure_blocks):
+                    if i < len(images):
+                        image = images[i]
+                        # Create markdown image reference
+                        img_ref = f"\n\n![{image.id}]({image.filename})\n\n"
+                        # Replace the figure block with the markdown reference
+                        content = content.replace(f"<figure>{block}</figure>", img_ref, 1)
+
             return Document(
-                content=result.content,
+                content=content,
                 images=images,
                 title=path.stem,
                 source_path=str(path),
@@ -214,8 +226,10 @@ class AzureConverter(DocumentConverter[AzureConfig]):
 if __name__ == "__main__":
     import anyenv
 
+    logging.basicConfig(level=logging.DEBUG)
     pdf_path = "src/docler/resources/pdf_sample.pdf"
 
     converter = AzureConverter()
     result = anyenv.run_sync(converter.convert_file(pdf_path))
     print(result.content)
+    print(result.images)
