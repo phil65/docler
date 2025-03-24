@@ -13,7 +13,7 @@ from docler.chunkers.ai_chunker import AIChunker
 from docler.chunkers.ai_chunker.chunker import SYS_PROMPT
 from docler.chunkers.llamaindex_chunker import LlamaIndexChunker
 from docler.chunkers.markdown_chunker import MarkdownChunker
-from docler.models import Document, TextChunk
+from docler.models import ChunkedDocument, Document
 from docler.streamlit_app.chunkers import CHUNKERS
 from docler.streamlit_app.state import next_step, prev_step
 from docler.streamlit_app.utils import format_image_content
@@ -104,7 +104,7 @@ def show_step_2():
         with st.spinner("Processing document..."):
             try:
                 chunked = anyenv.run_sync(chunker.chunk(doc))
-                st.session_state.chunks = chunked.chunks
+                st.session_state.chunked_doc = chunked
                 st.success(
                     f"Document successfully chunked into {len(chunked.chunks)} chunks!"
                 )
@@ -112,9 +112,10 @@ def show_step_2():
                 st.error(f"Chunking failed: {e}")
                 logger.exception("Chunking failed")
 
-    if st.session_state.chunks:
+    if st.session_state.chunked_doc:
         st.button("Proceed to Vector Store Upload", on_click=next_step)
-        chunks = cast(list[TextChunk], st.session_state.chunks)
+        chunked = cast(ChunkedDocument, st.session_state.chunked_doc)
+        chunks = chunked.chunks
         st.subheader(f"Chunks ({len(chunks)})")
         filter_text = st.text_input("Filter chunks by content:", "")
         for i, chunk in enumerate(chunks):

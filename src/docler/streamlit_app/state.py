@@ -18,8 +18,8 @@ def init_session_state():
         st.session_state.uploaded_file_name = None
 
     # Chunking-related states
-    if "chunks" not in st.session_state:
-        st.session_state.chunks = None
+    if "chunked_doc" not in st.session_state:
+        st.session_state.chunked_doc = None
 
 
 def next_step():
