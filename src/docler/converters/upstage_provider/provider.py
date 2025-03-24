@@ -49,7 +49,7 @@ class UpstageConverter(DocumentConverter[MistralConfig]):
         model: str = DOCUMENT_PARSE_DEFAULT_MODEL,
         ocr: OCRType = "auto",
         output_format: OutputFormat = "markdown",
-        base64_categories: list[Category] | None = None,
+        base64_categories: set[Category] | None = None,
     ):
         """Initialize the Upstage converter.
 
@@ -66,7 +66,7 @@ class UpstageConverter(DocumentConverter[MistralConfig]):
             ValueError: If API key is not provided or found in environment
         """
         if base64_categories is None:
-            base64_categories = ["figure", "chart", "table"]
+            base64_categories = {"figure", "chart"}
         super().__init__(languages=languages)
         self.api_key = api_key or os.getenv("UPSTAGE_API_KEY")
         if not self.api_key:
@@ -101,7 +101,7 @@ class UpstageConverter(DocumentConverter[MistralConfig]):
 
         headers = {"Authorization": f"Bearer {self.api_key}"}
         files = {"document": (path.name, file_content, mime_type)}
-        categories_str = str(self.base64_categories).replace("'", "'")
+        categories_str = str(list(self.base64_categories)).replace("'", "'")
         data = {
             "ocr": self.ocr,
             "model": self.model,
@@ -187,7 +187,7 @@ if __name__ == "__main__":
     pdf_path = "src/docler/resources/pdf_sample.pdf"
 
     # Initialize converter with custom base64 categories
-    converter = UpstageConverter(base64_categories=["figure", "chart", "table"])
+    converter = UpstageConverter()
 
     # Convert document
     result = anyenv.run_sync(converter.convert_file(pdf_path))
