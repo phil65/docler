@@ -5,8 +5,6 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING, ClassVar
 
-from kreuzberg import ExtractionConfig
-
 from docler.configs.converter_configs import KreuzbergConfig
 from docler.converters.base import DocumentConverter
 from docler.mime_types import (
@@ -78,7 +76,7 @@ class KreuzbergConverter(DocumentConverter[KreuzbergConfig]):
             Converted document.
         """
         import anyenv
-        from kreuzberg import extract_file
+        from kreuzberg import ExtractionConfig, extract_file
         import upath
 
         local_file = upath.UPath(file_path)
