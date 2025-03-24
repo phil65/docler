@@ -67,6 +67,28 @@ class Document(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
 
 
+class ChunkedDocument(Document):
+    """Document with derived chunks.
+
+    Extends the Document model to include chunks derived from the original content.
+    """
+
+    chunks: list[TextChunk] = Field(default_factory=list)
+    """List of chunks derived from this document."""
+
+    @classmethod
+    def from_document(
+        cls, document: Document, chunks: list[TextChunk]
+    ) -> ChunkedDocument:
+        """Create a ChunkedDocument from an existing Document and its chunks.
+
+        Args:
+            document: The source document
+            chunks: List of chunks derived from the document
+        """
+        return cls(**document.model_dump(), chunks=chunks)
+
+
 @dataclass
 class TextChunk:
     """Chunk of text with associated metadata and images."""
