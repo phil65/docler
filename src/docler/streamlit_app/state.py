@@ -5,12 +5,8 @@ from __future__ import annotations
 from pydantic import Field
 from streambricks import State
 
-from docler.configs.vector_db_configs import (  # noqa: TC001
-    ChromaConfig,
-    OpenAIVectorConfig,
-    PineconeConfig,
-    QdrantConfig,
-)
+from docler.configs.converter_configs import BaseConverterConfig  # noqa: TC001
+from docler.configs.vector_db_configs import BaseVectorStoreConfig  # noqa: TC001
 from docler.models import ChunkedDocument, Document  # noqa: TC001
 
 
@@ -23,9 +19,8 @@ class SessionState(State):
     vector_provider: str | None = None
     uploaded_chunks: int | None = None
     chunks: list[str] | None = None
-    vector_configs: dict[
-        str, ChromaConfig | OpenAIVectorConfig | PineconeConfig | QdrantConfig
-    ] = Field(default_factory=dict)
+    vector_configs: dict[str, BaseVectorStoreConfig] = Field(default_factory=dict)
+    converter_configs: dict[str, BaseConverterConfig] = Field(default_factory=dict)
 
     def next_step(self):
         """Move to the next step in the workflow."""

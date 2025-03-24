@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 # from docler.converters.kreuzberg_provider import KreuzbergConverter
 # from docler.converters.llm_provider import LLMConverter
 # from docler.converters.markitdown_provider import MarkItDownConverter
@@ -14,16 +16,18 @@ from docler.converters.mistral_provider import MistralConverter
 from docler.converters.upstage_provider import UpstageConverter
 
 
-# Available converters with their configs
-CONVERTERS = {
-    "DataLab": DataLabConverter,
-    "Docling": DoclingConverter,
-    # "Kreuzberg": KreuzbergConverter,
-    # "LLM": LLMConverter,
-    "Marker": MarkerConverter,
-    # "MarkItDown": MarkItDownConverter,
-    "Mistral": MistralConverter,
-    "LlamaParse": LlamaParseConverter,
-    "azure": AzureConverter,
-    "upstage": UpstageConverter,
-}
+if TYPE_CHECKING:
+    from docler.converters.base import DocumentConverter
+
+ls: list[type[DocumentConverter]] = [
+    DataLabConverter,
+    DoclingConverter,
+    MarkerConverter,
+    MistralConverter,
+    LlamaParseConverter,
+    AzureConverter,
+    # KreuzbergConverter,
+    # MarkItDownConverter
+    UpstageConverter,
+]
+CONVERTERS = {cls.NAME: cls for cls in ls}
