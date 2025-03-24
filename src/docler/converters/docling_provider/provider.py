@@ -59,6 +59,7 @@ class DoclingConverter(DocumentConverter[DoclingConverterConfig]):
         from docling.datamodel.pipeline_options import (
             EasyOcrOptions,
             OcrMacOptions,
+            OcrOptions,
             PdfPipelineOptions,
             RapidOcrOptions,
             TesseractCliOcrOptions,
@@ -75,7 +76,7 @@ class DoclingConverter(DocumentConverter[DoclingConverterConfig]):
         self.escaping_underscores = escaping_underscores
         self.indent = indent
         self.text_width = text_width
-        opts = dict(
+        opts: dict[DoclingEngine, type[OcrOptions]] = dict(
             easy_ocr=EasyOcrOptions,
             tesseract_cli_ocr=TesseractCliOcrOptions,
             tesseract_ocr=TesseractOcrOptions,
