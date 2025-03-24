@@ -17,7 +17,6 @@ from docler.vector_db.dbs.pinecone_db.utils import (
 
 if TYPE_CHECKING:
     import numpy as np
-    from pinecone import PineconeAsyncio
     from pinecone.control.pinecone_asyncio import _IndexAsyncio as IndexAsyncio
 
 
@@ -33,7 +32,7 @@ class PineconeBackend(VectorStoreBackend):
     def __init__(
         self,
         host: str,
-        pinecone_client: PineconeAsyncio,
+        api_key: str,
         dimension: int = 1536,
         namespace: str = "default",
     ):
@@ -41,16 +40,25 @@ class PineconeBackend(VectorStoreBackend):
 
         Args:
             host: Host URL for the index
-            pinecone_client: Pinecone asyncio client
+            api_key: Pinecone API key
             dimension: Dimension of vectors to store
             namespace: Namespace to use for vectors
         """
-        self._pinecone = pinecone_client
+        self.api_key = api_key
         self._host = host
         self._index: IndexAsyncio | None = None
         self.dimension = dimension
         self.namespace = namespace
         self.batch_size = 100
+
+    @property
+    def vector_store_id(self) -> str:
+        """Get the vector store ID.
+
+        Returns:
+            Vector store ID
+        """
+        return self._host
 
     async def _get_index(self) -> IndexAsyncio:
         """Get the asyncio index client.
@@ -58,8 +66,12 @@ class PineconeBackend(VectorStoreBackend):
         Returns:
             IndexAsyncio instance
         """
+        from pinecone import PineconeAsyncio
+
         if not self._index:
-            self._index = self._pinecone.IndexAsyncio(host=self._host)
+            self._index = PineconeAsyncio(api_key=self.api_key).IndexAsyncio(
+                host=self._host
+            )
         return self._index
 
     async def add_vector(
