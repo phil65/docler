@@ -17,8 +17,8 @@ FormatterType = Literal["text", "json", "vtt", "srt"]
 GoogleSpeechEncoding = Literal["LINEAR16", "FLAC", "MP3"]
 
 
-def default_languages() -> list[SupportedLanguage]:
-    return ["en"]
+def default_languages() -> set[SupportedLanguage]:
+    return {"en"}
 
 
 class BaseConverterConfig(BaseModel):
@@ -27,7 +27,7 @@ class BaseConverterConfig(BaseModel):
     type: str = Field(init=False)
     """Type discriminator for converter configs."""
 
-    languages: list[SupportedLanguage] = Field(default_factory=default_languages)
+    languages: set[SupportedLanguage] = Field(default_factory=default_languages)
     """List of supported languages for the converter."""
 
     model_config = ConfigDict(frozen=True, use_attribute_docstrings=True, extra="forbid")
