@@ -5,6 +5,8 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING, ClassVar
 
+from kreuzberg import ExtractionConfig
+
 from docler.configs.converter_configs import KreuzbergConfig
 from docler.converters.base import DocumentConverter
 from docler.mime_types import (
@@ -77,18 +79,11 @@ class KreuzbergConverter(DocumentConverter[KreuzbergConfig]):
         """
         import anyenv
         from kreuzberg import extract_file
-        from kreuzberg._constants import DEFAULT_MAX_PROCESSES
         import upath
 
         local_file = upath.UPath(file_path)
-        result = anyenv.run_sync(
-            extract_file(
-                str(local_file),
-                force_ocr=self.force_ocr,
-                language=self.language or "eng",
-                max_processes=self.max_processes or DEFAULT_MAX_PROCESSES,
-            )
-        )
+        config = ExtractionConfig(force_ocr=self.force_ocr)
+        result = anyenv.run_sync(extract_file(str(local_file), config=config))
 
         metadata = result.metadata
         created: datetime | None = None
@@ -115,6 +110,6 @@ if __name__ == "__main__":
     import anyenv
 
     pdf_path = "src/docler/resources/pdf_sample.pdf"
-    converter = KreuzbergConverter()
+    converter = KreuzbergConverter(force_ocr=True)
     result = anyenv.run_sync(converter.convert_file(pdf_path))
     print(result)
