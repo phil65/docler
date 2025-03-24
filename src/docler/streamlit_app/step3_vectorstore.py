@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING
 
 import anyenv
+import streambricks as sb
 import streamlit as st
 
 from docler.models import ChunkedDocument
@@ -15,67 +16,17 @@ from docler.vector_db.dbs import chroma_db, openai_db, pinecone_db
 
 if TYPE_CHECKING:
     from docler.vector_db.base import VectorDB
+    from docler.vector_db.base_manager import VectorManagerBase
 
 
 logger = logging.getLogger(__name__)
 
-VECTOR_STORES = {
+VECTOR_STORES: dict[str, type[VectorManagerBase]] = {
     "OpenAI": openai_db.OpenAIVectorManager,
     "Pinecone": pinecone_db.PineconeVectorManager,
     # "Qdrant": qdrant_db.QdrantVectorManager,
     "Chroma": chroma_db.ChromaVectorManager,
 }
-
-
-def show_provider_config(provider: str) -> dict:  # noqa: PLR0911
-    """Show configuration options for the selected provider.
-
-    Args:
-        provider: Name of the vector store provider
-
-    Returns:
-        Dictionary of configuration options
-    """
-    if provider == "OpenAI":
-        chunking_strategy = st.selectbox(
-            "Chunking Strategy",
-            options=["auto", "static"],
-            help="How OpenAI should chunk documents",
-        )
-        return {"chunking_strategy": chunking_strategy}
-
-    if provider == "Pinecone":
-        cols = st.columns(2)
-        with cols[0]:
-            cloud = st.selectbox("Cloud Provider", options=["aws", "gcp", "azure"])
-        with cols[1]:
-            region = st.text_input("Region", value="us-west-2")
-
-        return {"cloud": cloud, "region": region}
-
-    if provider == "Qdrant":
-        cols = st.columns(2)
-        with cols[0]:
-            location_type = st.radio(
-                "Location Type", ["Memory", "Local Path", "Server URL"]
-            )
-
-        if location_type == "Memory":
-            return {"location": None}
-        if location_type == "Local Path":
-            path = st.text_input("Local Storage Path")
-            return {"location": path}
-        # Server URL
-        url = st.text_input("Qdrant Server URL", value="http://localhost:6333")
-        return {"url": url}
-
-    if provider == "Chroma":
-        persist_dir = st.text_input(
-            "Persistence Directory (optional)", help="Leave empty for in-memory storage"
-        )
-        return {"persist_directory": persist_dir or None}
-
-    return {}
 
 
 def show_step_3():
@@ -90,7 +41,7 @@ def show_step_3():
         st.warning("No chunks to upload. Please go back and chunk a document first.")
         return
 
-    chunked_doc = cast(ChunkedDocument, state.chunked_doc)
+    chunked_doc = state.chunked_doc
     chunks = chunked_doc.chunks
 
     # Vector DB Provider Selection
@@ -101,11 +52,18 @@ def show_step_3():
         key="selected_vector_provider",
     )
 
-    config_options = show_provider_config(provider)
+    # Get the manager class for the selected provider
+    manager_cls = VECTOR_STORES[provider]
+
+    # Initialize config in the dictionary if not exists
+    if provider not in state.vector_configs:
+        state.vector_configs[provider] = manager_cls.Config()
+
     st.divider()
     opts = ["Create new store", "Use existing store"]
     action = st.radio("Vector Store Action", opts, index=0)
     vector_db: VectorDB | None = None
+
     if action == "Create new store":
         store_name = st.text_input(
             "New Vector Store Name",
@@ -113,12 +71,21 @@ def show_step_3():
             help=f"Name for the new {provider} vector store",
         )
 
+        # Use model_edit to generate the configuration form
+        with st.expander("Advanced Configuration", expanded=False):
+            state.vector_configs[provider] = sb.model_edit(state.vector_configs[provider])
+
         if st.button("Create Vector Store"):
             with st.spinner(f"Creating {provider} vector store..."):
                 try:
-                    manager = VECTOR_STORES[provider]()
+                    manager = manager_cls()
+                    config = state.vector_configs[provider]
+                    config.collection_name = store_name
+
                     vector_db = anyenv.run_sync(
-                        manager.create_vector_store(store_name, **config_options)
+                        manager.create_vector_store(
+                            store_name, **config.model_dump(exclude={"type"})
+                        )
                     )
                     assert vector_db is not None, "Vector store creation failed"
                     state.vector_store_id = vector_db.vector_store_id
@@ -131,7 +98,7 @@ def show_step_3():
                     logger.exception("Vector store creation failed")
     else:
         try:
-            manager = VECTOR_STORES[provider]()
+            manager = manager_cls()
             stores = anyenv.run_sync(manager.list_vector_stores())
 
             if not stores:
@@ -141,7 +108,7 @@ def show_step_3():
                     help=f"ID of an existing {provider} vector store",
                 )
             else:
-                store_options = {f"{s['name']} ({s['id']})": s["id"] for s in stores}
+                store_options = {f"{s.name} ({s.db_id})": s.db_id for s in stores}
                 store_display = st.selectbox(
                     "Select Vector Store",
                     options=list(store_options.keys()),
@@ -149,14 +116,23 @@ def show_step_3():
                 )
                 store_id = store_options.get(store_display, "")
 
+            # Use model_edit to generate the configuration form for connection options
+            with st.expander("Connection Options", expanded=False):
+                state.vector_configs[provider] = sb.model_edit(
+                    state.vector_configs[provider]
+                )
+
             if store_id and st.button("Connect to Vector Store"):
                 with st.spinner(f"Connecting to {provider} vector store..."):
                     try:
-                        manager = VECTOR_STORES[provider]()
+                        manager = manager_cls()
+                        config = state.vector_configs[provider]
                         vector_db = anyenv.run_sync(
-                            manager.get_vector_store(store_id, **config_options)
+                            manager.get_vector_store(
+                                store_id, **config.model_dump(exclude={"type"})
+                            )
                         )
-                        assert vector_db is not None, "Vector store creation failed"
+                        assert vector_db is not None, "Vector store connection failed"
                         state.vector_store_id = vector_db.vector_store_id
                         state.vector_provider = provider
                         msg = f"Connected to {provider} vector store {store_id!r}!"
@@ -170,12 +146,22 @@ def show_step_3():
                 f"{provider} Vector Store ID",
                 help=f"ID of an existing {provider} vector store",
             )
+
+            # Use model_edit to generate the configuration form for connection options
+            with st.expander("Connection Options", expanded=False):
+                state.vector_configs[provider] = sb.model_edit(
+                    state.vector_configs[provider]
+                )
+
             if store_id and st.button("Connect to Vector Store"):
                 with st.spinner(f"Connecting to {provider} vector store..."):
                     try:
-                        manager = VECTOR_STORES[provider]()
+                        manager = manager_cls()
+                        config = state.vector_configs[provider]
                         vector_db = anyenv.run_sync(
-                            manager.get_vector_store(store_id, **config_options)
+                            manager.get_vector_store(
+                                store_id, **config.model_dump(exclude={"type"})
+                            )
                         )
                         assert vector_db is not None
                         state.vector_store_id = vector_db.vector_store_id
@@ -196,9 +182,13 @@ def show_step_3():
             with st.spinner("Uploading chunks..."):
                 try:
                     provider = state.vector_provider or provider
-                    manager = VECTOR_STORES[provider]()
+                    manager_cls = VECTOR_STORES[provider]
+                    manager = manager_cls()
+                    config = state.vector_configs[provider]
                     vector_db = anyenv.run_sync(
-                        manager.get_vector_store(store_id, **config_options)
+                        manager.get_vector_store(
+                            store_id, **config.model_dump(exclude={"type"})
+                        )
                     )
                     assert vector_db is not None, "Vector store not found"
                     chunk_ids = anyenv.run_sync(vector_db.add_chunks(chunks))
@@ -221,9 +211,12 @@ def show_step_3():
             if query:
                 with st.spinner("Searching..."):
                     try:
-                        manager = VECTOR_STORES[provider]()
+                        manager_cls = VECTOR_STORES[provider]
+                        manager = manager_cls()
+                        config = state.vector_configs[provider]
+                        cfg = config.model_dump(exclude={"type"})
                         vector_db = anyenv.run_sync(
-                            manager.get_vector_store(store_id, **config_options)
+                            manager.get_vector_store(store_id, **cfg)
                         )
                         assert vector_db is not None, "Vector store not found"
                         results = anyenv.run_sync(vector_db.similar_chunks(query, k=3))

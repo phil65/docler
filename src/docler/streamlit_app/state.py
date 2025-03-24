@@ -2,21 +2,16 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 from pydantic import Field
 from streambricks import State
 
+from docler.configs.vector_db_configs import (  # noqa: TC001
+    ChromaConfig,
+    OpenAIVectorConfig,
+    PineconeConfig,
+    QdrantConfig,
+)
 from docler.models import ChunkedDocument, Document  # noqa: TC001
-
-
-if TYPE_CHECKING:
-    from docler.configs.vector_db_configs import (
-        ChromaConfig,
-        OpenAIVectorConfig,
-        PineconeConfig,
-        QdrantConfig,
-    )
 
 
 class SessionState(State):

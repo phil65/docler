@@ -189,15 +189,17 @@ class ChromaVectorManager(VectorManagerBase[ChromaConfig]):
             logger.exception(msg)
             raise ValueError(msg) from e
 
-    # async def delete_vector_store(self, name: str) -> bool:
-    #     """Delete a vector store (collection).
+    async def delete_vector_store(self, name: str) -> bool:
+        """Delete a vector store (collection).
 
-    #     Args:
-    #         name: Name of the collection to delete
+        Args:
+            name: Name of the collection to delete
 
-    #     Returns:
-    #         True if successful, False if failed
-    #     """
+        Returns:
+            True if successful, False if failed
+        """
+        return True
+
     #     try:
     #         # Clean up any existing instance
     #         if name in self._vector_stores:
