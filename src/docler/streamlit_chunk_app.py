@@ -77,9 +77,9 @@ def main():
         )
         if st.button("Chunk Markdown"):
             with st.spinner("Processing..."):
-                chunks = anyenv.run_sync(chunker.split(doc))
+                chunked = anyenv.run_sync(chunker.chunk(doc))
                 st.subheader("Chunks")
-                for i, chunk in enumerate(chunks):
+                for i, chunk in enumerate(chunked.chunks):
                     header_text = f"Chunk {i + 1}"
                     if chunk.metadata.get("header"):
                         header_text += f" - {chunk.metadata['header']}"

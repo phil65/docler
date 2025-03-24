@@ -103,9 +103,11 @@ def show_step_2():
     if chunker and st.button("Chunk Document"):
         with st.spinner("Processing document..."):
             try:
-                chunks = anyenv.run_sync(chunker.split(doc))
-                st.session_state.chunks = chunks
-                st.success(f"Document successfully chunked into {len(chunks)} chunks!")
+                chunked = anyenv.run_sync(chunker.chunk(doc))
+                st.session_state.chunks = chunked.chunks
+                st.success(
+                    f"Document successfully chunked into {len(chunked.chunks)} chunks!"
+                )
             except Exception as e:
                 st.error(f"Chunking failed: {e}")
                 logger.exception("Chunking failed")
