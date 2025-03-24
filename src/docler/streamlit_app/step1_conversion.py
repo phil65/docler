@@ -10,7 +10,7 @@ import anyenv
 import streamlit as st
 
 from docler.streamlit_app.converters import CONVERTERS
-from docler.streamlit_app.state import next_step
+from docler.streamlit_app.state import SessionState
 from docler.streamlit_app.utils import LANGUAGES, format_image_content
 
 
@@ -19,6 +19,7 @@ ALLOWED_EXTENSIONS = ["pdf", "docx", "jpg", "png", "ppt", "pptx", "xls", "xlsx"]
 
 
 def show_step_1():
+    state = SessionState.get()
     """Show document conversion screen (step 1)."""
     st.header("Step 1: Document Conversion")
     uploaded_file = st.file_uploader("Choose a file", type=ALLOWED_EXTENSIONS)
@@ -40,10 +41,10 @@ def show_step_1():
                 converter_cls = CONVERTERS[selected_converter]
                 converter = converter_cls(languages=[language])
                 doc = anyenv.run_sync(converter.convert_file(temp_path))
-                st.session_state.document = doc
-                st.session_state.uploaded_file_name = uploaded_file.name
+                state.document = doc
+                state.uploaded_file_name = uploaded_file.name
                 st.success("Document converted successfully!")
-                st.button("Proceed to Chunking", on_click=next_step)
+                st.button("Proceed to Chunking", on_click=state.next_step)
                 st.subheader("Document Preview")
                 with st.expander("Markdown Content", expanded=False):
                     st.markdown(f"```markdown\n{doc.content}\n```")
@@ -69,23 +70,17 @@ def show_step_1():
                 Path(temp_path).unlink()
 
     # If document already converted, show preview and navigation
-    elif st.session_state.document:
-        st.success(f"Document '{st.session_state.uploaded_file_name}' already converted!")
-        st.button("Proceed to Chunking", on_click=next_step)
+    elif state.document:
+        st.success(f"Document {state.uploaded_file_name!r} already converted!")
+        st.button("Proceed to Chunking", on_click=state.next_step)
         st.subheader("Document Preview")
         with st.expander("Markdown Content", expanded=False):
-            st.markdown(f"```markdown\n{st.session_state.document.content}\n```")
+            st.markdown(f"```markdown\n{state.document.content}\n```")
         with st.expander("Rendered Content", expanded=True):
-            st.markdown(st.session_state.document.content)
+            st.markdown(state.document.content)
 
 
 if __name__ == "__main__":
     from streambricks import run
 
-    from docler.models import Document
-    from docler.streamlit_app import state
-
-    state.init_session_state()
-    st.session_state.document = Document(content="Sample content")
-    st.session_state.uploaded_file_name = "sample.txt"
     run(show_step_1)

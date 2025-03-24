@@ -2,45 +2,25 @@
 
 from __future__ import annotations
 
-import streamlit as st
+from streambricks import State
+
+from docler.models import ChunkedDocument, Document  # noqa: TC001
 
 
-def init_session_state():
-    """Initialize session state variables if they don't exist."""
-    # General app state
-    if "step" not in st.session_state:
-        st.session_state.step = 1
+class SessionState(State):
+    step: int = 1
+    document: Document | None = None
+    uploaded_file_name: str | None = None
+    chunked_doc: ChunkedDocument | None = None
+    vector_store_id: str | None = None
+    vector_provider: str | None = None
+    uploaded_chunks: int | None = None
+    chunks: list[str] | None = None
 
-    # Document-related states
-    if "document" not in st.session_state:
-        st.session_state.document = None
-    if "uploaded_file_name" not in st.session_state:
-        st.session_state.uploaded_file_name = None
+    def next_step(self):
+        """Move to the next step in the workflow."""
+        self.step += 1
 
-    # Chunking-related states
-    if "chunked_doc" not in st.session_state:
-        st.session_state.chunked_doc = None
-
-
-def next_step():
-    """Move to the next step in the workflow."""
-    st.session_state.step += 1
-
-
-def prev_step():
-    """Move to the previous step in the workflow."""
-    st.session_state.step -= 1
-
-
-def reset_app():
-    """Reset the app to its initial state."""
-    selected_converter = st.session_state.get("selected_converter")
-    selected_chunker = st.session_state.get("selected_chunker")
-    for key in list(st.session_state.keys()):
-        if key not in ["selected_converter", "selected_chunker"]:
-            del st.session_state[key]
-    if selected_converter:
-        st.session_state.selected_converter = selected_converter
-    if selected_chunker:
-        st.session_state.selected_chunker = selected_chunker
-    init_session_state()
+    def prev_step(self):
+        """Move to the previous step in the workflow."""
+        self.step -= 1

@@ -13,9 +13,8 @@ from docler.chunkers.ai_chunker import AIChunker
 from docler.chunkers.ai_chunker.chunker import SYS_PROMPT
 from docler.chunkers.llamaindex_chunker import LlamaIndexChunker
 from docler.chunkers.markdown_chunker import MarkdownChunker
-from docler.models import ChunkedDocument, Document
 from docler.streamlit_app.chunkers import CHUNKERS
-from docler.streamlit_app.state import next_step, prev_step
+from docler.streamlit_app.state import SessionState
 from docler.streamlit_app.utils import format_image_content
 
 
@@ -29,15 +28,15 @@ logger = logging.getLogger(__name__)
 def show_step_2():
     """Show document chunking screen (step 2)."""
     st.header("Step 2: Document Chunking")
-
+    state = SessionState.get()
+    doc = state.document
     # Navigation buttons at the top
     col1, col2 = st.columns([1, 5])
     with col1:
-        st.button("← Back", on_click=prev_step)
-    if not st.session_state.document:
+        st.button("← Back", on_click=state.prev_step)
+    if not doc:
         st.warning("No document to chunk. Please go back and convert a document first.")
         return
-    doc = cast(Document, st.session_state.document)
     st.subheader("Chunking Configuration")
     opts = list(CHUNKERS.keys())
     chunker_type = st.selectbox("Select chunker", options=opts, key="selected_chunker")
@@ -104,7 +103,7 @@ def show_step_2():
         with st.spinner("Processing document..."):
             try:
                 chunked = anyenv.run_sync(chunker.chunk(doc))
-                st.session_state.chunked_doc = chunked
+                state.chunked_doc = chunked
                 st.success(
                     f"Document successfully chunked into {len(chunked.chunks)} chunks!"
                 )
@@ -112,9 +111,9 @@ def show_step_2():
                 st.error(f"Chunking failed: {e}")
                 logger.exception("Chunking failed")
 
-    if st.session_state.chunked_doc:
-        st.button("Proceed to Vector Store Upload", on_click=next_step)
-        chunked = cast(ChunkedDocument, st.session_state.chunked_doc)
+    if state.chunked_doc:
+        st.button("Proceed to Vector Store Upload", on_click=state.next_step)
+        chunked = state.chunked_doc
         chunks = chunked.chunks
         st.subheader(f"Chunks ({len(chunks)})")
         filter_text = st.text_input("Filter chunks by content:", "")
