@@ -10,6 +10,7 @@ from docler.configs.chunker_configs import ChunkerConfig  # noqa: TC001
 from docler.configs.converter_configs import ConverterConfig  # noqa: TC001
 from docler.configs.embedding_configs import EmbeddingConfig  # noqa: TC001
 from docler.configs.vector_db_configs import VectorStoreConfig  # noqa: TC001
+from docler.utils import get_api_key
 
 
 # Shorthand literals for common configurations
@@ -125,7 +126,7 @@ class ComponentBasedConfig(FileDatabaseConfig):
             match self.embeddings:
                 case "openai":
                     return OpenAIEmbeddingConfig(
-                        api_key=SecretStr(self._get_api_key("OPENAI_API_KEY"))
+                        api_key=SecretStr(get_api_key("OPENAI_API_KEY"))
                     )
                 case "bge":
                     return BGEEmbeddingConfig()
@@ -134,7 +135,7 @@ class ComponentBasedConfig(FileDatabaseConfig):
                 case "mistral-embed":
                     return LiteLLMEmbeddingConfig(
                         model="mistral/mistral-embed",
-                        api_key=SecretStr(self._get_api_key("MISTRAL_API_KEY")),
+                        api_key=SecretStr(get_api_key("MISTRAL_API_KEY")),
                     )
         return self.embeddings
 
@@ -156,23 +157,13 @@ class ComponentBasedConfig(FileDatabaseConfig):
                 case "pinecone":
                     return PineconeConfig(
                         namespace=self.store_name,
-                        api_key=SecretStr(self._get_api_key("PINECONE_API_KEY")),
+                        api_key=SecretStr(get_api_key("PINECONE_API_KEY")),
                     )
                 case "openai":
                     return OpenAIVectorConfig(
-                        api_key=SecretStr(self._get_api_key("OPENAI_API_KEY")),
+                        api_key=SecretStr(get_api_key("OPENAI_API_KEY")),
                     )
         return self.vector_store
-
-    def _get_api_key(self, env_var: str) -> str:
-        """Get API key from environment variable."""
-        import os
-
-        key = os.getenv(env_var)
-        if not key:
-            msg = f"Required environment variable {env_var} not set"
-            raise ValueError(msg)
-        return key
 
     def resolve(self) -> ComponentBasedConfig:
         """Resolve all shorthand configurations."""

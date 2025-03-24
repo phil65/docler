@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, ClassVar, Literal
 
 from docler.configs.converter_configs import AzureConfig
 from docler.converters.base import DocumentConverter
+from docler.converters.exceptions import MissingConfigurationError
 from docler.models import Document, Image
 
 
@@ -38,14 +39,6 @@ OcrFeatureFlag = Literal[
 ]
 ENV_ENDPOINT = "AZURE_DOC_INTELLIGENCE_ENDPOINT"
 ENV_API_KEY = "AZURE_DOC_INTELLIGENCE_KEY"
-
-
-class AzureConverterError(Exception):
-    """Base exception for Azure converter errors."""
-
-
-class MissingConfigurationError(AzureConverterError):
-    """Required Azure configuration is missing."""
 
 
 class AzureConverter(DocumentConverter[AzureConfig]):

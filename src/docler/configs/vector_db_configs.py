@@ -7,6 +7,11 @@ from typing import Annotated, Literal
 from pydantic import BaseModel, ConfigDict, Field, SecretStr
 from pydantic.functional_validators import model_validator
 
+from docler.utils import get_api_key
+
+
+Metric = Literal["cosine", "euclidean", "dotproduct"]
+
 
 class BaseVectorStoreConfig(BaseModel):
     """Base configuration for vector stores."""
@@ -117,7 +122,7 @@ class PineconeConfig(BaseVectorStoreConfig):
     dimension: int = 1536
     """Vector dimension."""
 
-    metric: Literal["cosine", "euclidean", "dotproduct"] = "cosine"
+    metric: Metric = "cosine"
     """Distance metric for similarity search."""
 
 
@@ -146,11 +151,7 @@ class OpenAIVectorConfig(BaseVectorStoreConfig):
     def validate_config(self) -> OpenAIVectorConfig:
         """Validate configuration."""
         if not self.api_key:
-            import os
-
-            if not os.getenv("OPENAI_API_KEY"):
-                msg = "Must specify api_key or set OPENAI_API_KEY environment variable"
-                raise ValueError(msg)
+            get_api_key("OPENAI_API_KEY")
         return self
 
 
