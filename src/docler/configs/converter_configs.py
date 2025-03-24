@@ -180,22 +180,6 @@ class LlamaParseConfig(BaseConverterConfig):
         return LlamaParseConverter(**self.model_dump(exclude={"type"}))
 
 
-class LlamaIndexConfig(BaseConverterConfig):
-    """Configuration for LlamaIndex document converter."""
-
-    type: Literal["llamaindex"] = Field("llamaindex", init=False)
-    """Type discriminator for LlamaIndex converter."""
-
-    llmsherpa_api_url: str = "https://readers.llmsherpa.com/api/document/developer/parseDocument?renderFormat=all"
-    """API endpoint for LLMSherpa PDF parser."""
-
-    def get_converter(self) -> DocumentConverter:
-        """Get the converter instance."""
-        from docler.converters.llamaindex_provider import LlamaIndexConverter
-
-        return LlamaIndexConverter(**self.model_dump(exclude={"type"}))
-
-
 class AzureConfig(BaseConverterConfig):
     """Configuration for Azure Document Intelligence converter."""
 
@@ -250,6 +234,39 @@ class MarkerConfig(BaseConverterConfig):
         return MarkerConverter(**self.model_dump(exclude={"type"}))
 
 
+class UpstageConfig(BaseConverterConfig):
+    """Configuration for Upstage Document AI converter."""
+
+    type: Literal["upstage"] = Field("upstage", init=False)
+    """Type discriminator for Upstage converter."""
+
+    api_key: SecretStr | None = None
+    """Upstage API key. Falls back to UPSTAGE_API_KEY env var."""
+
+    base_url: str = "https://api.upstage.ai/v1/document-ai/document-parse"
+    """API endpoint URL."""
+
+    model: str = "document-parse"
+    """Model name for document parsing."""
+
+    ocr: Literal["auto", "force"] = "auto"
+    """OCR mode ('auto' or 'force')."""
+
+    output_format: Literal["markdown", "text", "html"] = "markdown"
+    """Output format ('markdown', 'text', or 'html')."""
+
+    base64_categories: list[str] = Field(default_factory=lambda: ["figure", "chart"])
+    """Element categories to encode in base64."""
+
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
+    def get_converter(self) -> DocumentConverter:
+        """Get the converter instance."""
+        from docler.converters.upstage_provider import UpstageConverter
+
+        return UpstageConverter(**self.model_dump(exclude={"type"}))
+
+
 ConverterConfig = Annotated[
     DataLabConfig
     | DoclingConverterConfig
@@ -258,8 +275,8 @@ ConverterConfig = Annotated[
     | MarkItDownConfig
     | MistralConfig
     | LlamaParseConfig
-    | LlamaIndexConfig
     | AzureConfig
+    | UpstageConfig
     | MarkerConfig,
     Field(discriminator="type"),
 ]
