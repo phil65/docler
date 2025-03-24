@@ -81,7 +81,7 @@ class MarkItDownConverter(DocumentConverter[MarkItDownConfig]):
         path = upath.UPath(file_path)
 
         try:
-            result = self.converter.convert(str(path))
+            result = self.converter.convert(str(path), keep_data_uris=True)
             return Document(
                 content=result.text_content,
                 title=result.title or path.stem,
