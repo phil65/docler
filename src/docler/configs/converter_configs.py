@@ -157,8 +157,9 @@ class MistralConfig(BaseConverterConfig):
     api_key: SecretStr | None = None
     """Mistral API key. If None, will try env var MISTRAL_API_KEY."""
 
-    ocr_model: str = "mistral-ocr-latest"
-    """Mistral OCR model to use."""
+    # right now there only is one model
+    # ocr_model: str = "mistral-ocr-latest"
+    # """Mistral OCR model to use."""
 
     def get_converter(self) -> DocumentConverter:
         """Get the converter instance."""
