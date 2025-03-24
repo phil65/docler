@@ -11,6 +11,11 @@ from docler.utils import get_api_key
 
 
 Metric = Literal["cosine", "euclidean", "dotproduct"]
+PineconeRegion = Literal[
+    "us-east-1", "us-west-2", "eu-west-1", "europe-west4", "us-central1", "eastus2"
+]
+PineconeCloud = Literal["aws", "gcp", "azure"]
+OpenAIChunkingStrategy = Literal["auto", "static"]
 
 
 class BaseVectorStoreConfig(BaseModel):
@@ -104,10 +109,10 @@ class PineconeConfig(BaseVectorStoreConfig):
     environment: str = "us-west1-gcp"
     """Pinecone environment."""
 
-    cloud: str = "aws"
+    cloud: PineconeCloud = "aws"
     """Cloud provider (aws, gcp, azure)."""
 
-    region: str = "us-west-2"
+    region: PineconeRegion = "us-east-1"
     """Cloud region."""
 
     dimension: int = 1536
@@ -129,7 +134,7 @@ class OpenAIVectorConfig(BaseVectorStoreConfig):
     organization: str | None = None
     """OpenAI organization ID."""
 
-    chunking_strategy: Literal["auto", "static"] = "auto"
+    chunking_strategy: OpenAIChunkingStrategy = "auto"
     """Strategy for chunking text."""
 
     max_chunk_size: int = 1000
