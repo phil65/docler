@@ -105,6 +105,11 @@ class AzureConverter(DocumentConverter[AzureConfig]):
             msg = "Failed to create Azure client"
             raise MissingConfigurationError(msg) from e
 
+    @property
+    def price_per_page(self) -> float:
+        """Price per page in USD."""
+        return 0.00958
+
     def _convert_azure_images(
         self,
         result: AnalyzeResult,

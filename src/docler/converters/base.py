@@ -41,6 +41,11 @@ class DocumentConverter[TConfig](BaseProvider[TConfig], ABC):
     def __init__(self, languages: list[SupportedLanguage] | None = None):
         self.languages = languages
 
+    @property
+    def price_per_page(self) -> float | None:
+        """Price per page in USD."""
+        return None
+
     async def convert_files(self, file_paths: Sequence[StrPath]) -> list[Document]:
         """Convert multiple document files in parallel.
 

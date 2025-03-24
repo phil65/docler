@@ -77,6 +77,11 @@ class UpstageConverter(DocumentConverter[MistralConfig]):
         self.output_format = output_format
         self.base64_categories = base64_categories
 
+    @property
+    def price_per_page(self) -> float:
+        """Price per page in USD."""
+        return 0.01
+
     def _convert_path_sync(self, file_path: StrPath, mime_type: str) -> Document:
         """Convert a document using Upstage's Document AI API.
 

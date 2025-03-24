@@ -83,6 +83,11 @@ class LlamaParseConverter(DocumentConverter[LlamaParseConfig]):
         super().__init__(languages=languages)
         self.api_key = api_key or get_api_key("LLAMAPARSE_API_KEY")
 
+    @property
+    def price_per_page(self) -> float:
+        """Price per page in USD."""
+        return 0.0045
+
     def _convert_path_sync(self, file_path: StrPath, mime_type: str) -> Document:
         """Convert a document using LlamaParse."""
         import base64
