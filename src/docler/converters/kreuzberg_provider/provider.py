@@ -48,14 +48,12 @@ class KreuzbergConverter(DocumentConverter[KreuzbergConfig]):
         languages: list[SupportedLanguage] | None = None,
         *,
         force_ocr: bool = False,
-        max_processes: int | None = None,
     ):
         """Initialize the Kreuzberg converter.
 
         Args:
             languages: Language codes for OCR.
             force_ocr: Whether to force OCR even on digital documents.
-            max_processes: Maximum number of parallel processes.
         """
         from docler.common_types import TESSERACT_CODES
 
@@ -65,7 +63,6 @@ class KreuzbergConverter(DocumentConverter[KreuzbergConfig]):
             self.language = TESSERACT_CODES.get(languages[0])
         else:
             self.language = "eng"
-        self.max_processes = max_processes
 
     def _convert_path_sync(self, file_path: StrPath, mime_type: str) -> Document:
         """Convert a file using Kreuzberg.

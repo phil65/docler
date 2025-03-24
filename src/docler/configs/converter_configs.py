@@ -117,9 +117,6 @@ class KreuzbergConfig(BaseConverterConfig):
     force_ocr: bool = False
     """Whether to force OCR for all documents."""
 
-    max_processes: int = Field(default=1, ge=1)
-    """Maximum number of concurrent processes."""
-
     def get_converter(self) -> DocumentConverter:
         """Get the converter instance."""
         from docler.converters.kreuzberg_provider import KreuzbergConverter
