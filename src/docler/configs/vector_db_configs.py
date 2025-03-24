@@ -19,6 +19,9 @@ class BaseVectorStoreConfig(BaseModel):
     type: str = Field(init=False)
     """Type identifier for the vector store."""
 
+    collection_name: str = "default"
+    """Name of the collection to use."""
+
     model_config = ConfigDict(frozen=True, use_attribute_docstrings=True)
 
 
@@ -29,9 +32,6 @@ class ChromaConfig(BaseVectorStoreConfig):
 
     persist_directory: str | None = None
     """Where to persist the database."""
-
-    collection_name: str = "default"
-    """Name of the collection to use."""
 
 
 class QdrantConfig(BaseVectorStoreConfig):
@@ -47,9 +47,6 @@ class QdrantConfig(BaseVectorStoreConfig):
 
     api_key: SecretStr | None = None
     """API key for Qdrant cloud."""
-
-    collection_name: str = "default"
-    """Name of the collection to use."""
 
     prefer_grpc: bool = True
     """Whether to prefer gRPC over HTTP."""
@@ -79,9 +76,6 @@ class KdbAiConfig(BaseVectorStoreConfig):
 
     mode: Literal["rest", "qipc"] | None = None
     """Implementation method used for the session."""
-
-    database_name: str = "vector_store"
-    """Name of the database to use."""
 
     table_name: str = "vectors"
     """Name of the table to store vectors."""
@@ -115,9 +109,6 @@ class PineconeConfig(BaseVectorStoreConfig):
 
     region: str = "us-west-2"
     """Cloud region."""
-
-    namespace: str = "default"
-    """Default namespace to use."""
 
     dimension: int = 1536
     """Vector dimension."""
