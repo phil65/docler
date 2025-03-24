@@ -37,3 +37,11 @@ RAPID_CODES: dict[SupportedLanguage, str] = {
     "es": "spanish",
     "zh": "chinese",
 }
+
+# https://github.com/Goldziher/kreuzberg/blob/main/kreuzberg/_ocr/_paddleocr.py
+PADDLE_OCR_CODES: dict[SupportedLanguage, str] = {
+    "en": "en",
+    "de": "german",
+    "fr": "french",
+    "zh": "ch",
+}
