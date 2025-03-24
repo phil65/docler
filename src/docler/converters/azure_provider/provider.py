@@ -27,6 +27,15 @@ PrebuiltModel = Literal[
     "prebuilt-receipt",
 ]
 
+OcrFeatureFlag = Literal[
+    "ocrHighResolution",
+    "languages",
+    "barcodes",
+    "formulas",
+    "keyValuePairs",
+    "styleFont",
+    "queryFields",
+]
 ENV_ENDPOINT = "AZURE_DOC_INTELLIGENCE_ENDPOINT"
 ENV_API_KEY = "AZURE_DOC_INTELLIGENCE_KEY"
 
@@ -68,7 +77,7 @@ class AzureConverter(DocumentConverter[AzureConfig]):
         endpoint: str | None = None,
         api_key: str | None = None,
         model: PrebuiltModel = "prebuilt-layout",
-        additional_features: Sequence[str] | None = None,
+        additional_features: Sequence[OcrFeatureFlag] | None = None,
     ):
         """Initialize Azure Document Intelligence converter.
 
@@ -104,10 +113,7 @@ class AzureConverter(DocumentConverter[AzureConfig]):
 
         try:
             credential = AzureKeyCredential(self.api_key)
-            self._client = DocumentIntelligenceClient(
-                endpoint=self.endpoint,
-                credential=credential,
-            )
+            self._client = DocumentIntelligenceClient(self.endpoint, credential)
         except Exception as e:
             msg = "Failed to create Azure client"
             raise MissingConfigurationError(msg) from e
@@ -187,23 +193,16 @@ class AzureConverter(DocumentConverter[AzureConfig]):
                         for name, field in doc.fields.items()
                     }
 
-            # Get all images first
             images = self._convert_azure_images(result, operation_id)
-
             # Process content to replace <figure> tags with markdown image references
             content = result.content
             if images:
-                # Find all figure tags in content
                 figure_pattern = r"<figure>(.*?)</figure>"
                 figure_blocks = re.findall(figure_pattern, content, re.DOTALL)
-
-                # Replace each figure block with a markdown image reference
                 for i, block in enumerate(figure_blocks):
                     if i < len(images):
                         image = images[i]
-                        # Create markdown image reference
                         img_ref = f"\n\n![{image.id}]({image.filename})\n\n"
-                        # Replace the figure block with the markdown reference
                         content = content.replace(f"<figure>{block}</figure>", img_ref, 1)
 
             return Document(
