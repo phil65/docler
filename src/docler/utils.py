@@ -75,7 +75,7 @@ def png_to_webp(content: str) -> str:
 
 
 def get_api_key(env_var: str) -> str:
-    """Get API key from environment variable."""
+    """Get environment variable, throw if not set."""
     import os
 
     key = os.getenv(env_var)

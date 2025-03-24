@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import base64
 import logging
-import os
 import time
 from typing import TYPE_CHECKING, ClassVar, Literal
 
@@ -12,6 +11,7 @@ from docler.configs.converter_configs import DataLabConfig
 from docler.converters.base import DocumentConverter
 from docler.converters.datalab_provider.utils import normalize_markdown_images
 from docler.models import Document, Image
+from docler.utils import get_api_key
 
 
 if TYPE_CHECKING:
@@ -70,8 +70,7 @@ class DataLabConverter(DocumentConverter[DataLabConfig]):
             max_pages: Maximum number of pages to process.
         """
         super().__init__(languages=languages)
-        self.api_key = api_key or os.getenv("DATALAB_API_KEY")
-        assert self.api_key, "API key is required"
+        self.api_key = api_key or get_api_key("DATALAB_API_KEY")
         self.mode = mode
         self.force_ocr = force_ocr
         self.use_llm = use_llm

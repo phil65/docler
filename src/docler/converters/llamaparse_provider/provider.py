@@ -3,12 +3,12 @@
 from __future__ import annotations
 
 import logging
-import os
 from typing import TYPE_CHECKING, ClassVar
 
 from docler.configs.converter_configs import LlamaParseConfig
 from docler.converters.base import DocumentConverter
 from docler.models import Document, Image
+from docler.utils import get_api_key
 
 
 if TYPE_CHECKING:
@@ -79,10 +79,7 @@ class LlamaParseConverter(DocumentConverter[LlamaParseConfig]):
             api_key: LlamaParse API key, defaults to LLAMAPARSE_API_KEY env var
         """
         super().__init__(languages=languages)
-        self.api_key = api_key or os.getenv("LLAMAPARSE_API_KEY") or ""
-        if not self.api_key:
-            msg = "LLAMAPARSE_API_KEY environment variable not set"
-            raise ValueError(msg)
+        self.api_key = api_key or get_api_key("LLAMAPARSE_API_KEY")
 
     def _convert_path_sync(self, file_path: StrPath, mime_type: str) -> Document:
         """Convert a document using LlamaParse."""

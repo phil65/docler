@@ -3,13 +3,13 @@
 from __future__ import annotations
 
 import logging
-import os
 from typing import TYPE_CHECKING, ClassVar, Literal
 
 from docler.configs.converter_configs import AzureConfig
 from docler.converters.base import DocumentConverter
 from docler.converters.exceptions import MissingConfigurationError
 from docler.models import Document, Image
+from docler.utils import get_api_key
 
 
 if TYPE_CHECKING:
@@ -90,16 +90,8 @@ class AzureConverter(DocumentConverter[AzureConfig]):
 
         super().__init__(languages=languages)
 
-        # Get configuration
-        self.endpoint = endpoint or os.getenv(ENV_ENDPOINT)
-        self.api_key = api_key or os.getenv(ENV_API_KEY)
-
-        if not self.endpoint:
-            msg = f"Azure endpoint not provided and {ENV_ENDPOINT} env var not set"
-            raise MissingConfigurationError(msg)
-        if not self.api_key:
-            msg = f"Azure API key not provided and {ENV_API_KEY} env var not set"
-            raise MissingConfigurationError(msg)
+        self.endpoint = endpoint or get_api_key(ENV_ENDPOINT)
+        self.api_key = api_key or get_api_key(ENV_API_KEY)
 
         self.model = model
         self.features = list(additional_features) if additional_features else []

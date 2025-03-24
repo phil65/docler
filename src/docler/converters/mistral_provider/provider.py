@@ -3,12 +3,12 @@
 from __future__ import annotations
 
 import logging
-import os
 from typing import TYPE_CHECKING, ClassVar
 
 from docler.configs.converter_configs import MistralConfig
 from docler.converters.base import DocumentConverter
 from docler.models import Document, Image
+from docler.utils import get_api_key
 
 
 if TYPE_CHECKING:
@@ -43,10 +43,7 @@ class MistralConverter(DocumentConverter[MistralConfig]):
             ValueError: If MISTRAL_API_KEY environment variable is not set.
         """
         super().__init__(languages=languages)
-        self.api_key = api_key or os.getenv("MISTRAL_API_KEY")
-        if not self.api_key:
-            msg = "MISTRAL_API_KEY environment variable is not set"
-            raise ValueError(msg)
+        self.api_key = api_key or get_api_key("MISTRAL_API_KEY")
         self.model = ocr_model
 
     def _convert_path_sync(self, file_path: StrPath, mime_type: str) -> Document:

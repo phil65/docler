@@ -3,12 +3,12 @@
 from __future__ import annotations
 
 import logging
-import os
 from typing import TYPE_CHECKING, ClassVar, Literal
 
 from docler.configs.converter_configs import MistralConfig
 from docler.converters.base import DocumentConverter
 from docler.models import Document, Image
+from docler.utils import get_api_key
 
 
 if TYPE_CHECKING:
@@ -68,11 +68,7 @@ class UpstageConverter(DocumentConverter[MistralConfig]):
         if base64_categories is None:
             base64_categories = {"figure", "chart"}
         super().__init__(languages=languages)
-        self.api_key = api_key or os.getenv("UPSTAGE_API_KEY")
-        if not self.api_key:
-            msg = "UPSTAGE_API_KEY environment variable is not set"
-            raise ValueError(msg)
-
+        self.api_key = api_key or get_api_key("UPSTAGE_API_KEY")
         self.base_url = base_url
         self.model = model
         self.ocr = ocr
