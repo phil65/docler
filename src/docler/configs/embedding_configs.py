@@ -7,6 +7,42 @@ from typing import Annotated, Literal
 from pydantic import BaseModel, ConfigDict, Field, SecretStr
 
 
+LiteLLMInputType = Literal[
+    "sentence-similarity",
+    "search_document",
+    "search_query",
+    "classification",
+    "clustering",
+]
+SentenceTransformerModel = Literal[
+    # Multilingual models
+    "paraphrase-multilingual-mpnet-base-v2",
+    "paraphrase-multilingual-MiniLM-L12-v2",
+    # Paraphrase models
+    "paraphrase-albert-small-v2",
+    "paraphrase-MiniLM-L3-v2",
+    # Multi-QA models
+    "multi-qa-mpnet-base-dot-v1",
+    "multi-qa-distilbert-cos-v1",
+    "multi-qa-MiniLM-L6-cos-v1",
+    # Multilingual distil models
+    "distiluse-base-multilingual-cased-v2",
+    "distiluse-base-multilingual-cased-v1",
+    # General purpose models
+    "all-mpnet-base-v2",
+    "all-distilroberta-v1",
+    "all-MiniLM-L6-v2",
+    "all-MiniLM-L12-v2",
+]
+
+OpenAIEmbeddingModel = Literal[
+    "text-embedding-ada-002",
+    "text-embedding-3-small",
+    # "text-embedding-3-medium",
+    "text-embedding-3-large",
+]
+
+
 class BaseEmbeddingConfig(BaseModel):
     """Base configuration for embedding providers."""
 
@@ -29,7 +65,7 @@ class OpenAIEmbeddingConfig(BaseEmbeddingConfig):
     api_key: SecretStr
     """OpenAI API key."""
 
-    model: str = "text-embedding-3-small"
+    model: OpenAIEmbeddingModel = "text-embedding-3-small"
     """Model identifier for embeddings."""
 
     def get_embedding_provider(self):
@@ -63,7 +99,7 @@ class SentenceTransformerEmbeddingConfig(BaseEmbeddingConfig):
     )
     """Type discriminator for Sentence Transformer embedding provider."""
 
-    model: str = "all-MiniLM-L6-v2"
+    model: SentenceTransformerModel = "all-MiniLM-L6-v2"
     """Model name or path."""
 
     def get_embedding_provider(self):
@@ -88,7 +124,7 @@ class LiteLLMEmbeddingConfig(BaseEmbeddingConfig):
     dimensions: int | None = None
     """Optional number of dimensions for the embeddings."""
 
-    input_type: str | None = None
+    input_type: LiteLLMInputType | None = None
     """Optional input type for the embeddings."""
 
     base_url: str | None = None

@@ -5,7 +5,7 @@ from __future__ import annotations
 import logging
 from typing import ClassVar, Literal, cast
 
-from docler.configs.vector_db_configs import PineconeConfig
+from docler.configs.vector_db_configs import PineconeCloud, PineconeConfig, PineconeRegion
 from docler.models import VectorStoreInfo
 from docler.utils import get_api_key
 from docler.vector_db.base import VectorDB
@@ -106,8 +106,8 @@ class PineconeVectorManager(VectorManagerBase[PineconeConfig]):
         name: str,
         dimension: int = 1536,
         metric: Metric = "cosine",
-        cloud: str = "aws",
-        region: str = "us-west-2",
+        cloud: PineconeCloud = "aws",
+        region: PineconeRegion = "us-east-1",
         **kwargs,
     ) -> VectorDB:
         """Create a new vector store.
