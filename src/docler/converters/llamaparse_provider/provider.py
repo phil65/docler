@@ -21,6 +21,8 @@ logger = logging.getLogger(__name__)
 class LlamaParseConverter(DocumentConverter[LlamaParseConfig]):
     """Document converter using LlamaParse."""
 
+    Config = LlamaParseConfig
+
     NAME = "llamaparse"
     REQUIRED_PACKAGES: ClassVar = {"llama-parse"}
     SUPPORTED_MIME_TYPES: ClassVar[set[str]] = {

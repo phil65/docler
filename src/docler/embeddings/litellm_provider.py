@@ -17,6 +17,8 @@ if TYPE_CHECKING:
 class LiteLLMEmbeddings(EmbeddingProvider[LiteLLMEmbeddingConfig]):
     """Embeddings provider using LiteLLM, supporting various model providers."""
 
+    Config = LiteLLMEmbeddingConfig
+
     NAME = "LiteLLM"
     REQUIRED_PACKAGES: ClassVar = {"litellm"}
 

@@ -20,6 +20,8 @@ logger = logging.getLogger(__name__)
 class MarkItDownConverter(DocumentConverter[MarkItDownConfig]):
     """Document converter using MarkItDown."""
 
+    Config = MarkItDownConfig
+
     NAME = "markitdown"
     REQUIRED_PACKAGES: ClassVar = {"markitdown"}
     SUPPORTED_MIME_TYPES: ClassVar[set[str]] = {

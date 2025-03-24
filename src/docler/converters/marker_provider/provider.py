@@ -27,6 +27,8 @@ PROVIDERS: dict[ProviderType, str] = {
 class MarkerConverter(DocumentConverter[MarkerConfig]):
     """Document converter using Marker's PDF processing."""
 
+    Config = MarkerConfig
+
     NAME = "marker"
     REQUIRED_PACKAGES: ClassVar = {"marker-pdf"}
     SUPPORTED_MIME_TYPES: ClassVar = {

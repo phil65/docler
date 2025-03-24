@@ -31,6 +31,8 @@ Describe any images you see in brackets.
 class LLMConverter(DocumentConverter[LLMConverterConfig]):
     """Document converter using LLM providers that support PDF input."""
 
+    Config = LLMConverterConfig
+
     NAME = "llm"
     REQUIRED_PACKAGES: ClassVar = {"llmling-agent"}
     SUPPORTED_MIME_TYPES: ClassVar[set[str]] = {"application/pdf"}

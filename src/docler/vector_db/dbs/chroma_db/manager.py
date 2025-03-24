@@ -18,6 +18,7 @@ logger = logging.getLogger(__name__)
 class ChromaVectorManager(VectorManagerBase[ChromaConfig]):
     """Manager for ChromaDB vector stores with fully async implementation."""
 
+    Config = ChromaConfig
     NAME = "chroma"
     REQUIRED_PACKAGES: ClassVar = {"chromadb"}
 

@@ -23,6 +23,8 @@ logger = logging.getLogger(__name__)
 class DoclingConverter(DocumentConverter[DoclingConverterConfig]):
     """Document converter using Docling's processing."""
 
+    Config = DoclingConverterConfig
+
     NAME = "docling"
     REQUIRED_PACKAGES: ClassVar = {"docling"}
     SUPPORTED_MIME_TYPES: ClassVar[set[str]] = {"application/pdf"}

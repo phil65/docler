@@ -20,6 +20,8 @@ class SentenceTransformerEmbeddings(
 ):
     """Local embeddings using sentence-transformers."""
 
+    Config = SentenceTransformerEmbeddingConfig
+
     NAME = "SentenceTransformers"
     REQUIRED_PACKAGES: ClassVar = {"sentence-transformers"}
 

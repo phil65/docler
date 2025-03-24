@@ -29,6 +29,8 @@ DOCUMENT_PARSE_DEFAULT_MODEL = "document-parse"
 class UpstageConverter(DocumentConverter[MistralConfig]):
     """Document converter using Upstage's Document AI API."""
 
+    Config = MistralConfig
+
     NAME = "upstage"
     REQUIRED_PACKAGES: ClassVar = {"requests"}
     SUPPORTED_MIME_TYPES: ClassVar[set[str]] = {

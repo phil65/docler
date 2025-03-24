@@ -18,6 +18,8 @@ if TYPE_CHECKING:
 class BGEEmbeddings(EmbeddingProvider[BGEEmbeddingConfig]):
     """Local embeddings using BGE models."""
 
+    Config = BGEEmbeddingConfig
+
     NAME = "BGE"
     REQUIRED_PACKAGES: ClassVar = {"FlagEmbedding"}
     dimensions: ClassVar[int] = 1536  # OpenAI-compatible

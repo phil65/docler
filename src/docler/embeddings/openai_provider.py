@@ -19,6 +19,8 @@ if TYPE_CHECKING:
 class OpenAIEmbeddings(EmbeddingProvider[OpenAIEmbeddingConfig]):
     """OpenAI embeddings with fallback to httpx if openai package not available."""
 
+    Config = OpenAIEmbeddingConfig
+
     NAME = "OpenAI"
     REQUIRED_PACKAGES: ClassVar = {"openai", "httpx"}
     dimensions: ClassVar[int] = 1536

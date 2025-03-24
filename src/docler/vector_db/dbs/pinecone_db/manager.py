@@ -43,6 +43,7 @@ logger = logging.getLogger(__name__)
 class PineconeVectorManager(VectorManagerBase[PineconeConfig]):
     """Manager for Pinecone Vector Stores with asyncio support."""
 
+    Config = PineconeConfig
     NAME = "pinecone"
 
     def __init__(self, api_key: str | None = None):
@@ -278,12 +279,14 @@ class PineconeVectorManager(VectorManagerBase[PineconeConfig]):
 
 
 if __name__ == "__main__":
-    import anyenv
+    # import anyenv
 
-    async def main():
-        manager = PineconeVectorManager()
-        indexes = await manager.list_vector_stores()
-        print(indexes)
-        await manager.close()
+    # async def main():
+    #     manager = PineconeVectorManager()
+    #     indexes = await manager.list_vector_stores()
+    #     print(indexes)
+    #     await manager.close()
 
-    anyenv.run_sync(main())
+    # anyenv.run_sync(main())
+    a = PineconeVectorManager.__bases__
+    print(a)

@@ -45,6 +45,7 @@ class OpenAIVectorManager(VectorManagerBase[OpenAIVectorConfig]):
     """Manager for OpenAI Vector Stores API."""
 
     NAME = "openai"
+    Config = OpenAIVectorConfig
 
     def __init__(
         self,

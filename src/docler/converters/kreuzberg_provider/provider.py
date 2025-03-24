@@ -31,6 +31,8 @@ logger = logging.getLogger(__name__)
 class KreuzbergConverter(DocumentConverter[KreuzbergConfig]):
     """Document converter using Kreuzberg's extraction."""
 
+    Config = KreuzbergConfig
+
     NAME = "kreuzberg"
     REQUIRED_PACKAGES: ClassVar = {"kreuzberg"}
     SUPPORTED_MIME_TYPES: ClassVar[set[str]] = (

@@ -44,6 +44,8 @@ ENV_API_KEY = "AZURE_DOC_INTELLIGENCE_KEY"
 class AzureConverter(DocumentConverter[AzureConfig]):
     """Document converter using Azure Document Intelligence."""
 
+    Config = AzureConfig
+
     NAME = "azure"
     REQUIRED_PACKAGES: ClassVar = {""}
     SUPPORTED_MIME_TYPES: ClassVar[set[str]] = {

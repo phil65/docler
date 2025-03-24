@@ -21,6 +21,8 @@ logger = logging.getLogger(__name__)
 class MistralConverter(DocumentConverter[MistralConfig]):
     """Document converter using Mistral's OCR API."""
 
+    Config = MistralConfig
+
     NAME = "mistral"
     REQUIRED_PACKAGES: ClassVar = {"mistralai"}
     SUPPORTED_MIME_TYPES: ClassVar[set[str]] = {"application/pdf"}

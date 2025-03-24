@@ -30,6 +30,8 @@ Mode = Literal["marker", "table_rec", "ocr", "layout"]
 class DataLabConverter(DocumentConverter[DataLabConfig]):
     """Document converter using DataLab's API."""
 
+    Config = DataLabConfig
+
     NAME = "datalab"
     SUPPORTED_MIME_TYPES: ClassVar[set[str]] = {
         # PDF
