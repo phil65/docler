@@ -3,11 +3,11 @@
 from __future__ import annotations
 
 import logging
-import os
-from typing import Literal, cast
+from typing import ClassVar, Literal, cast
 
 from docler.configs.vector_db_configs import PineconeConfig
 from docler.models import VectorStoreInfo
+from docler.utils import get_api_key
 from docler.vector_db.base import VectorDB
 from docler.vector_db.base_manager import VectorManagerBase
 from docler.vector_db.dbs.pinecone_db.db import PineconeBackend
@@ -45,6 +45,7 @@ class PineconeVectorManager(VectorManagerBase[PineconeConfig]):
 
     Config = PineconeConfig
     NAME = "pinecone"
+    REQUIRED_PACKAGES: ClassVar = {"pinecone-client"}
 
     def __init__(self, api_key: str | None = None):
         """Initialize the Pinecone Vector Store manager.
@@ -55,17 +56,9 @@ class PineconeVectorManager(VectorManagerBase[PineconeConfig]):
         Raises:
             ValueError: If API key is not provided or found in environment
         """
-        self.api_key = api_key or os.getenv("PINECONE_API_KEY")
-        if not self.api_key:
-            msg = "Pinecone API key must be provided via param or PINECONE_API_KEY envvar"
-            raise ValueError(msg)
+        from pinecone import PineconeAsyncio
 
-        try:
-            from pinecone import PineconeAsyncio
-        except ImportError as e:
-            msg = 'Pinecone is not installed. Please install "pinecone-client"'
-            raise ImportError(msg) from e
-
+        self.api_key = api_key or get_api_key("PINECONE_API_KEY")
         self._client = PineconeAsyncio(api_key=self.api_key)
         self._vector_stores: dict[str, PineconeBackend] = {}
 

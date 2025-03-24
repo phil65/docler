@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, Any, Literal
 
 from docler.configs.vector_db_configs import OpenAIVectorConfig
 from docler.models import VectorStoreInfo
+from docler.utils import get_api_key
 from docler.vector_db.base_manager import VectorManagerBase
 from docler.vector_db.dbs.openai_db.db import ChunkingStrategy, OpenAIVectorDB
 
@@ -47,11 +48,7 @@ class OpenAIVectorManager(VectorManagerBase[OpenAIVectorConfig]):
     NAME = "openai"
     Config = OpenAIVectorConfig
 
-    def __init__(
-        self,
-        api_key: str | None = None,
-        organization: str | None = None,
-    ):
+    def __init__(self, api_key: str | None = None, organization: str | None = None):
         """Initialize the OpenAI Vector Store manager.
 
         Args:
@@ -60,11 +57,7 @@ class OpenAIVectorManager(VectorManagerBase[OpenAIVectorConfig]):
         """
         from openai import AsyncOpenAI
 
-        self.api_key = api_key or os.getenv("OPENAI_API_KEY")
-        if not self.api_key:
-            msg = "OpenAI API key must be provided via parameter or OPENAI_API_KEY envvar"
-            raise ValueError(msg)
-
+        self.api_key = api_key or get_api_key("OPENAI_API_KEY")
         self.organization = organization or os.getenv("OPENAI_ORG_ID")
         self._client = AsyncOpenAI(api_key=self.api_key, organization=self.organization)
         self._vector_stores: dict[str, OpenAIVectorDB] = {}
@@ -220,14 +213,8 @@ class OpenAIVectorManager(VectorManagerBase[OpenAIVectorConfig]):
             if chunking_strategy == "auto":
                 chunking_config: dict[str, Any] = {"type": "auto"}
             else:
-                chunking_config = {
-                    "type": "static",
-                    "static": {
-                        "max_chunk_size_tokens": 1000,
-                        "chunk_overlap_tokens": 200,
-                    },
-                }
-
+                cfg = {"max_chunk_size_tokens": 1000, "chunk_overlap_tokens": 200}
+                chunking_config = {"type": "static", "static": cfg}
             await self._client.vector_stores.files.create(
                 vector_store_id=vector_store_id,
                 file_id=file_id,
