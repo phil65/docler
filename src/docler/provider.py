@@ -14,7 +14,7 @@ TConfig = TypeVar("TConfig", bound=BaseModel)
 class BaseProvider[TConfig]:
     """Represents an image within a document."""
 
-    Config: type[TConfig]
+    Config: ClassVar[type[BaseModel]]
 
     REQUIRED_PACKAGES: ClassVar[set[str]] = set()
     """Packages required for this converter."""
