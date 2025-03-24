@@ -3,13 +3,12 @@
 from __future__ import annotations
 
 import logging
-import os
 from typing import cast
 
 import anyenv
 import streamlit as st
 
-from docler.models import TextChunk
+from docler.models import ChunkedDocument
 from docler.streamlit_app.state import prev_step
 from docler.vector_db.dbs.openai_db.manager import OpenAIVectorManager
 
@@ -24,18 +23,14 @@ def show_step_3():
     with col1:
         st.button("← Back", on_click=prev_step)
 
-    if not st.session_state.chunks:
+    if not st.session_state.chunked_doc:
         st.warning("No chunks to upload. Please go back and chunk a document first.")
         return
 
-    chunks = cast(list[TextChunk], st.session_state.chunks)
+    chunked_doc = cast(ChunkedDocument, st.session_state.chunked_doc)
+    chunks = chunked_doc.chunks
     st.subheader("Vector Store Configuration")
-    if not os.environ.get("OPENAI_API_KEY"):
-        st.error(
-            "OPENAI_API_KEY environment variable not set. "
-            "Please set this environment variable before proceeding."
-        )
-        return
+
     opts = ["Create new store", "Use existing store"]
     option = st.radio("Vector Store Action", opts, index=0)
     vector_store_id = None
@@ -112,3 +107,15 @@ def show_step_3():
                                 st.markdown(chunk.text)
                     else:
                         st.info("No results found.")
+
+
+if __name__ == "__main__":
+    from streambricks import run
+
+    from docler.models import ChunkedDocument
+    from docler.streamlit_app import state
+
+    state.init_session_state()
+    st.session_state.chunked_doc = ChunkedDocument(content="Sample content", chunks=[])
+    st.session_state.uploaded_file_name = "sample.txt"
+    run(show_step_3)
