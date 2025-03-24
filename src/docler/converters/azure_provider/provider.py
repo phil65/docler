@@ -3,9 +3,9 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, ClassVar, Literal
+from typing import TYPE_CHECKING, ClassVar
 
-from docler.configs.converter_configs import AzureConfig
+from docler.configs.converter_configs import AzureConfig, AzureFeatureFlag, AzureModel
 from docler.converters.base import DocumentConverter
 from docler.converters.exceptions import MissingConfigurationError
 from docler.models import Document, Image
@@ -13,30 +13,12 @@ from docler.utils import get_api_key
 
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence
-
     from azure.ai.documentintelligence.models import AnalyzeResult
 
     from docler.common_types import StrPath, SupportedLanguage
 
 logger = logging.getLogger(__name__)
 
-PrebuiltModel = Literal[
-    "prebuilt-read",
-    "prebuilt-layout",
-    "prebuilt-idDocument",
-    "prebuilt-receipt",
-]
-
-OcrFeatureFlag = Literal[
-    "ocrHighResolution",
-    "languages",
-    "barcodes",
-    "formulas",
-    "keyValuePairs",
-    "styleFont",
-    "queryFields",
-]
 ENV_ENDPOINT = "AZURE_DOC_INTELLIGENCE_ENDPOINT"
 ENV_API_KEY = "AZURE_DOC_INTELLIGENCE_KEY"
 
@@ -71,8 +53,8 @@ class AzureConverter(DocumentConverter[AzureConfig]):
         *,
         endpoint: str | None = None,
         api_key: str | None = None,
-        model: PrebuiltModel = "prebuilt-layout",
-        additional_features: Sequence[OcrFeatureFlag] | None = None,
+        model: AzureModel = "prebuilt-layout",
+        additional_features: set[AzureFeatureFlag] | None = None,
     ):
         """Initialize Azure Document Intelligence converter.
 

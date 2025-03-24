@@ -4,6 +4,13 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Annotated, Literal
 
+from docling.datamodel.pipeline_options import (  # noqa: TC002
+    EasyOcrOptions,
+    OcrMacOptions,
+    RapidOcrOptions,
+    TesseractCliOcrOptions,
+    TesseractOcrOptions,
+)
 from pydantic import BaseModel, ConfigDict, Field, SecretStr
 
 from docler.common_types import DEFAULT_CONVERTER_MODEL, SupportedLanguage
@@ -13,10 +20,25 @@ if TYPE_CHECKING:
     from docler.converters.base import DocumentConverter
 
 
-FormatterType = Literal["text", "json", "vtt", "srt"]
-GoogleSpeechEncoding = Literal["LINEAR16", "FLAC", "MP3"]
 DoclingEngine = Literal[
     "easy_ocr", "tesseract_cli_ocr", "tesseract_ocr", "ocr_mac", "rapid_ocr"
+]
+
+AzureModel = Literal[
+    "prebuilt-read",
+    "prebuilt-layout",
+    "prebuilt-idDocument",
+    "prebuilt-receipt",
+]
+
+AzureFeatureFlag = Literal[
+    "ocrHighResolution",
+    "languages",
+    "barcodes",
+    "formulas",
+    "keyValuePairs",
+    "styleFont",
+    "queryFields",
 ]
 
 
@@ -52,7 +74,14 @@ class DoclingConverterConfig(BaseConverterConfig):
     generate_images: bool = True
     """Whether to generate images."""
 
-    ocr_engine: DoclingEngine = "easy_ocr"
+    ocr_engine: (
+        DoclingEngine
+        | EasyOcrOptions
+        | TesseractCliOcrOptions
+        | TesseractOcrOptions
+        | OcrMacOptions
+        | RapidOcrOptions
+    ) = "easy_ocr"
     """OCR engine to use."""
 
     def get_converter(self) -> DocumentConverter:
@@ -196,16 +225,10 @@ class AzureConfig(BaseConverterConfig):
     api_key: SecretStr | None = None
     """Azure API key. Falls back to AZURE_DOC_INTELLIGENCE_KEY env var."""
 
-    model: Literal[
-        "prebuilt-read",
-        "prebuilt-layout",
-        "prebuilt-document",
-        "prebuilt-idDocument",
-        "prebuilt-receipt",
-    ] = "prebuilt-document"
+    model: AzureModel = "prebuilt-layout"
     """Pre-trained model to use."""
 
-    additional_features: list[str] = Field(default_factory=list)
+    additional_features: set[AzureFeatureFlag] = Field(default_factory=set)
     """Optional add-on capabilities like BARCODES, FORMULAS, OCR_HIGH_RESOLUTION etc."""
 
     model_config = ConfigDict(use_attribute_docstrings=True)
