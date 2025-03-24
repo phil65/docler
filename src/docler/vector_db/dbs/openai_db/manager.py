@@ -7,6 +7,7 @@ import os
 from typing import TYPE_CHECKING, Any, Literal
 
 from docler.configs.vector_db_configs import OpenAIVectorConfig
+from docler.models import VectorStoreInfo
 from docler.vector_db.base_manager import VectorManagerBase
 from docler.vector_db.dbs.openai_db.db import ChunkingStrategy, OpenAIVectorDB
 
@@ -71,7 +72,7 @@ class OpenAIVectorManager(VectorManagerBase[OpenAIVectorConfig]):
     def name(self) -> str:
         return self.NAME
 
-    async def list_vector_stores(self) -> list[dict[str, Any]]:
+    async def list_vector_stores(self) -> list[VectorStoreInfo]:
         """List all vector stores available in the OpenAI account.
 
         Returns:
@@ -80,7 +81,7 @@ class OpenAIVectorManager(VectorManagerBase[OpenAIVectorConfig]):
         try:
             response = await self._client.vector_stores.list()
             return [
-                {"id": vs.id, "name": vs.name, "created_at": vs.created_at}
+                VectorStoreInfo(db_id=vs.id, name=vs.name, created_at=vs.created_at)
                 for vs in response.data
             ]
         except Exception:

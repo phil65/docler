@@ -115,10 +115,13 @@ class OpenAIVectorDB(VectorDB):
                 for key, value in chunk.metadata.items():
                     if isinstance(value, str | bool | int | float):
                         metadata[key] = value  # noqa: PERF403
-                file_obj = io.BytesIO(chunk.text.encode("utf-8"))
+                file_obj = (
+                    f"{chunk.source_doc_id}_{chunk.chunk_index}",
+                    io.BytesIO(chunk.text.encode("utf-8")),
+                )
                 r = await self._client.files.create(file=file_obj, purpose="user_data")
                 file_id = r.id
-                await self._client.vector_stores.files.create(
+                _file = await self._client.vector_stores.files.create(
                     vector_store_id=self.vector_store_id,
                     file_id=file_id,
                     attributes=metadata,

@@ -4,9 +4,10 @@ from __future__ import annotations
 
 import logging
 import os
-from typing import Any, Literal, cast
+from typing import Literal, cast
 
 from docler.configs.vector_db_configs import PineconeConfig
+from docler.models import VectorStoreInfo
 from docler.vector_db.base import VectorDB
 from docler.vector_db.base_manager import VectorManagerBase
 from docler.vector_db.dbs.pinecone_db.db import PineconeBackend
@@ -84,20 +85,22 @@ class PineconeVectorManager(VectorManagerBase[PineconeConfig]):
         """Name of this vector database provider."""
         return self.NAME
 
-    async def list_vector_stores(self) -> list[dict[str, Any]]:
+    async def list_vector_stores(self) -> list[VectorStoreInfo]:
         """List all available vector stores for this provider."""
         try:
             async with self._client as client:
                 indexes = await client.list_indexes()
                 return [
-                    {
-                        "name": idx.name,
-                        "dimension": idx.dimension,
-                        "metric": idx.metric,
-                        "status": idx.status.state if idx.status else None,
-                        "ready": idx.status.ready if idx.status else False,
-                        "host": idx.host,
-                    }
+                    VectorStoreInfo(
+                        db_id=idx.host,
+                        name=idx.name,
+                        metadata=dict(
+                            dimension=idx.dimension,
+                            metric=idx.metric,
+                            status=idx.status.state if idx.status else None,
+                            ready=idx.status.ready if idx.status else False,
+                        ),
+                    )
                     for idx in indexes
                 ]
         except Exception:

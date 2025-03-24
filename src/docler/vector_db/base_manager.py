@@ -3,12 +3,13 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from docler.provider import BaseProvider
 
 
 if TYPE_CHECKING:
+    from docler.models import VectorStoreInfo
     from docler.vector_db.base import VectorDB
 
 
@@ -21,7 +22,7 @@ class VectorManagerBase[TConfig](BaseProvider[TConfig], ABC):
         """Name of this vector database provider."""
 
     @abstractmethod
-    async def list_vector_stores(self) -> list[dict[str, Any]]:
+    async def list_vector_stores(self) -> list[VectorStoreInfo]:
         """List all available vector stores for this provider."""
 
     @abstractmethod
