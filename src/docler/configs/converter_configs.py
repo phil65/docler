@@ -15,6 +15,9 @@ if TYPE_CHECKING:
 
 FormatterType = Literal["text", "json", "vtt", "srt"]
 GoogleSpeechEncoding = Literal["LINEAR16", "FLAC", "MP3"]
+DoclingEngine = Literal[
+    "easy_ocr", "tesseract_cli_ocr", "tesseract_ocr", "ocr_mac", "rapid_ocr"
+]
 
 
 def default_languages() -> set[SupportedLanguage]:
@@ -49,7 +52,7 @@ class DoclingConverterConfig(BaseConverterConfig):
     generate_images: bool = True
     """Whether to generate images."""
 
-    ocr_engine: str = "easy_ocr"
+    ocr_engine: DoclingEngine = "easy_ocr"
     """OCR engine to use."""
 
     def get_converter(self) -> DocumentConverter:

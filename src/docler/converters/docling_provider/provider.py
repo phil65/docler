@@ -6,7 +6,7 @@ from io import BytesIO
 import logging
 from typing import TYPE_CHECKING, ClassVar
 
-from docler.configs.converter_configs import DoclingConverterConfig
+from docler.configs.converter_configs import DoclingConverterConfig, DoclingEngine
 from docler.converters.base import DocumentConverter
 from docler.converters.docling_provider.utils import convert_languages
 from docler.models import Document, Image
@@ -40,7 +40,7 @@ class DoclingConverter(DocumentConverter[DoclingConverterConfig]):
         escaping_underscores: bool = True,
         indent: int = 4,
         text_width: int = -1,
-        ocr_engine: str = "easy_ocr",
+        ocr_engine: DoclingEngine = "easy_ocr",
     ):
         """Initialize the Docling converter.
 
