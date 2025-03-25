@@ -49,7 +49,7 @@ def show_step_1():
 
             try:
                 # Create converter from config
-                converter = config.get_converter()
+                converter = config.get_provider()
                 doc = anyenv.run_sync(converter.convert_file(temp_path))
                 state.document = doc
                 state.uploaded_file_name = uploaded_file.name

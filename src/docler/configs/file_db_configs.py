@@ -4,12 +4,13 @@ from __future__ import annotations
 
 from typing import Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict, Field, SecretStr
+from pydantic import Field, SecretStr
 
 from docler.configs.chunker_configs import ChunkerConfig  # noqa: TC001
 from docler.configs.converter_configs import ConverterConfig  # noqa: TC001
 from docler.configs.embedding_configs import EmbeddingConfig  # noqa: TC001
 from docler.configs.vector_db_configs import VectorStoreConfig  # noqa: TC001
+from docler.provider import ProviderConfig
 from docler.utils import get_api_key
 
 
@@ -25,16 +26,11 @@ ConverterShorthand = Literal[
 ]
 
 
-class FileDatabaseConfig(BaseModel):
+class FileDatabaseConfig(ProviderConfig):
     """Base configuration for file databases."""
-
-    type: str = Field(init=False)
-    """Type discriminator for file database configs."""
 
     store_name: str = "default"
     """Name identifier for this file database."""
-
-    model_config = ConfigDict(frozen=True, use_attribute_docstrings=True)
 
     def resolve(self) -> FileDatabaseConfig:
         """Resolve any shorthand configurations to full configurations.

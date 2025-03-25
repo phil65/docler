@@ -4,27 +4,23 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import Field
 
 from docler.common_types import DEFAULT_CHUNKER_MODEL
+from docler.provider import ProviderConfig
 
 
 if TYPE_CHECKING:
     from docler.chunkers.base import TextChunker
 
 
-class BaseChunkerConfig(BaseModel):
+class BaseChunkerConfig(ProviderConfig):
     """Base configuration for text chunkers."""
-
-    type: str = Field(init=False)
-    """Type identifier for the chunker."""
 
     chunk_overlap: int = 200
     """Number of characters to overlap between chunks."""
 
-    model_config = ConfigDict(frozen=True, use_attribute_docstrings=True)
-
-    def get_chunker(self) -> TextChunker:
+    def get_provider(self) -> TextChunker:
         """Get the chunker instance."""
         raise NotImplementedError
 
@@ -46,7 +42,7 @@ class LlamaIndexChunkerConfig(BaseChunkerConfig):
     include_prev_next_rel: bool = False
     """Whether to track relationships between chunks."""
 
-    def get_chunker(self) -> TextChunker:
+    def get_provider(self) -> TextChunker:
         """Get the chunker instance."""
         from docler.chunkers.llamaindex_chunker import LlamaIndexChunker
 
@@ -70,7 +66,7 @@ class MarkdownChunkerConfig(BaseChunkerConfig):
     max_chunk_size: int = 1500
     """Maximum characters per chunk."""
 
-    def get_chunker(self) -> TextChunker:
+    def get_provider(self) -> TextChunker:
         """Get the chunker instance."""
         from docler.chunkers.markdown_chunker import MarkdownChunker
 
@@ -98,7 +94,7 @@ class AiChunkerConfig(BaseChunkerConfig):
     system_prompt: str | None = None
     """Custom prompt to override default chunk extraction prompt."""
 
-    def get_chunker(self) -> TextChunker:
+    def get_provider(self) -> TextChunker:
         """Get the chunker instance."""
         from docler.chunkers.ai_chunker import AIChunker
 

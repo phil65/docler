@@ -4,7 +4,9 @@ from __future__ import annotations
 
 from typing import Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict, Field, SecretStr
+from pydantic import Field, SecretStr
+
+from docler.provider import ProviderConfig
 
 
 LiteLLMInputType = Literal[
@@ -43,15 +45,10 @@ OpenAIEmbeddingModel = Literal[
 ]
 
 
-class BaseEmbeddingConfig(BaseModel):
+class BaseEmbeddingConfig(ProviderConfig):
     """Base configuration for embedding providers."""
 
-    type: str = Field(init=False)
-    """Type identifier for the embedding provider."""
-
-    model_config = ConfigDict(frozen=True, use_attribute_docstrings=True)
-
-    def get_embedding_provider(self):
+    def get_provider(self):
         """Get the embedding provider instance."""
         raise NotImplementedError
 
@@ -68,11 +65,11 @@ class OpenAIEmbeddingConfig(BaseEmbeddingConfig):
     model: OpenAIEmbeddingModel = "text-embedding-3-small"
     """Model identifier for embeddings."""
 
-    def get_embedding_provider(self):
+    def get_provider(self):
         """Get the embedding provider instance."""
         from docler.embeddings.openai_provider import OpenAIEmbeddings
 
-        return OpenAIEmbeddings(**self.model_dump(exclude={"type"}))
+        return OpenAIEmbeddings(**self.get_config_fields())
 
 
 class BGEEmbeddingConfig(BaseEmbeddingConfig):
@@ -84,11 +81,11 @@ class BGEEmbeddingConfig(BaseEmbeddingConfig):
     model: str = "BAAI/bge-large-en-v1.5"
     """Model name or path."""
 
-    def get_embedding_provider(self):
+    def get_provider(self):
         """Get the embedding provider instance."""
         from docler.embeddings.bge_provider import BGEEmbeddings
 
-        return BGEEmbeddings(**self.model_dump(exclude={"type"}))
+        return BGEEmbeddings(**self.get_config_fields())
 
 
 class SentenceTransformerEmbeddingConfig(BaseEmbeddingConfig):
@@ -102,11 +99,11 @@ class SentenceTransformerEmbeddingConfig(BaseEmbeddingConfig):
     model: SentenceTransformerModel = "all-MiniLM-L6-v2"
     """Model name or path."""
 
-    def get_embedding_provider(self):
+    def get_provider(self):
         """Get the embedding provider instance."""
         from docler.embeddings.stf_provider import SentenceTransformerEmbeddings
 
-        return SentenceTransformerEmbeddings(**self.model_dump(exclude={"type"}))
+        return SentenceTransformerEmbeddings(**self.get_config_fields())
 
 
 class LiteLLMEmbeddingConfig(BaseEmbeddingConfig):
@@ -133,7 +130,7 @@ class LiteLLMEmbeddingConfig(BaseEmbeddingConfig):
     extra_params: dict[str, str | float | bool | None] = Field(default_factory=dict)
     """Additional parameters to pass to LiteLLM."""
 
-    def get_embedding_provider(self):
+    def get_provider(self):
         """Get the embedding provider instance."""
         from docler.embeddings.litellm_provider import LiteLLMEmbeddings
 

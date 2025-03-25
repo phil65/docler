@@ -4,9 +4,10 @@ from __future__ import annotations
 
 from typing import Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict, Field, SecretStr
+from pydantic import Field, SecretStr
 from pydantic.functional_validators import model_validator
 
+from docler.provider import ProviderConfig
 from docler.utils import get_api_key
 
 
@@ -18,16 +19,11 @@ PineconeCloud = Literal["aws", "gcp", "azure"]
 OpenAIChunkingStrategy = Literal["auto", "static"]
 
 
-class BaseVectorStoreConfig(BaseModel):
+class BaseVectorStoreConfig(ProviderConfig):
     """Base configuration for vector stores."""
-
-    type: str = Field(init=False)
-    """Type identifier for the vector store."""
 
     collection_name: str = "default"
     """Name of the collection to use."""
-
-    model_config = ConfigDict(frozen=True, use_attribute_docstrings=True)
 
 
 class ChromaConfig(BaseVectorStoreConfig):

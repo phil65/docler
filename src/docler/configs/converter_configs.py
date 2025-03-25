@@ -11,10 +11,11 @@ from docling.datamodel.pipeline_options import (  # noqa: TC002
     TesseractCliOcrOptions,
     TesseractOcrOptions,
 )
-from pydantic import Field, SecretStr, field_serializer
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import Field, SecretStr
+from pydantic_settings import SettingsConfigDict
 
 from docler.common_types import DEFAULT_CONVERTER_MODEL, SupportedLanguage
+from docler.provider import ProviderConfig
 
 
 if TYPE_CHECKING:
@@ -56,30 +57,10 @@ def default_languages() -> set[SupportedLanguage]:
     return {"en"}
 
 
-class BaseConverterConfig(BaseSettings):
+class BaseConverterConfig(ProviderConfig):
     """Base configuration for document converters."""
 
-    type: str = Field(init=False)
-    """Type discriminator for converter configs."""
-
-    languages: set[SupportedLanguage] = Field(default_factory=default_languages)
-    """List of supported languages for the converter."""
-
-    model_config = SettingsConfigDict(
-        frozen=True,
-        use_attribute_docstrings=True,
-        extra="forbid",
-        env_file=".env",
-        env_file_encoding="utf-8",
-    )
-
-    @field_serializer("*", when_used="json-unless-none")
-    def serialize_secrets(self, v, _info):
-        if isinstance(v, SecretStr):
-            return v.get_secret_value()
-        return v
-
-    def get_converter(self) -> DocumentConverter:
+    def get_provider(self) -> DocumentConverter:
         """Get the converter instance."""
         raise NotImplementedError
 
@@ -89,6 +70,9 @@ class DoclingConverterConfig(BaseConverterConfig):
 
     type: Literal["docling"] = Field("docling", init=False)
     """Type discriminator for docling converter."""
+
+    languages: set[SupportedLanguage] = Field(default_factory=default_languages)
+    """List of supported languages for the converter."""
 
     image_scale: float = 2.0
     """Scale factor for image resizing."""
@@ -108,11 +92,11 @@ class DoclingConverterConfig(BaseConverterConfig):
 
     model_config = SettingsConfigDict(env_prefix="DOCLING_")
 
-    def get_converter(self) -> DocumentConverter:
+    def get_provider(self) -> DocumentConverter:
         """Get the converter instance."""
         from docler.converters.docling_provider import DoclingConverter
 
-        return DoclingConverter(**self.model_dump(exclude={"type"}, mode="json"))
+        return DoclingConverter(**self.get_config_fields())
 
 
 class MarkItDownConfig(BaseConverterConfig):
@@ -121,11 +105,14 @@ class MarkItDownConfig(BaseConverterConfig):
     type: Literal["markitdown"] = Field("markitdown", init=False)
     """Type discriminator for MarkItDown converter."""
 
-    def get_converter(self) -> DocumentConverter:
+    languages: set[SupportedLanguage] = Field(default_factory=default_languages)
+    """List of supported languages for the converter."""
+
+    def get_provider(self) -> DocumentConverter:
         """Get the converter instance."""
         from docler.converters.markitdown_provider import MarkItDownConverter
 
-        return MarkItDownConverter(**self.model_dump(exclude={"type"}, mode="json"))
+        return MarkItDownConverter(**self.get_config_fields())
 
 
 class KreuzbergConfig(BaseConverterConfig):
@@ -138,14 +125,17 @@ class KreuzbergConfig(BaseConverterConfig):
     type: Literal["kreuzberg"] = Field("kreuzberg", init=False)
     """Type identifier for this converter."""
 
+    languages: set[SupportedLanguage] = Field(default_factory=default_languages)
+    """List of supported languages for the converter."""
+
     force_ocr: bool = False
     """Whether to force OCR for all documents."""
 
-    def get_converter(self) -> DocumentConverter:
+    def get_provider(self) -> DocumentConverter:
         """Get the converter instance."""
         from docler.converters.kreuzberg_provider import KreuzbergConverter
 
-        return KreuzbergConverter(**self.model_dump(exclude={"type"}, mode="json"))
+        return KreuzbergConverter(**self.get_config_fields())
 
 
 class DataLabConfig(BaseConverterConfig):
@@ -153,6 +143,9 @@ class DataLabConfig(BaseConverterConfig):
 
     type: Literal["datalab"] = Field("datalab", init=False)
     """Type discriminator for DataLab converter."""
+
+    languages: set[SupportedLanguage] = Field(default_factory=default_languages)
+    """List of supported languages for the converter."""
 
     api_key: SecretStr | None = None
     """DataLab API key. If None, will try env var DATALAB_API_KEY."""
@@ -168,11 +161,11 @@ class DataLabConfig(BaseConverterConfig):
 
     model_config = SettingsConfigDict(env_prefix="DATALAB_")
 
-    def get_converter(self) -> DocumentConverter:
+    def get_provider(self) -> DocumentConverter:
         """Get the converter instance."""
         from docler.converters.datalab_provider import DataLabConverter
 
-        return DataLabConverter(**self.model_dump(exclude={"type"}, mode="json"))
+        return DataLabConverter(**self.get_config_fields())
 
 
 class LLMConverterConfig(BaseConverterConfig):
@@ -180,6 +173,9 @@ class LLMConverterConfig(BaseConverterConfig):
 
     type: Literal["llm"] = Field("llm", init=False)
     """Type discriminator for LLM converter."""
+
+    languages: set[SupportedLanguage] = Field(default_factory=default_languages)
+    """List of supported languages for the converter."""
 
     model: str = DEFAULT_CONVERTER_MODEL
     """LLM model to use."""
@@ -190,11 +186,11 @@ class LLMConverterConfig(BaseConverterConfig):
     user_prompt: str | None = None
     """Custom prompt for the conversion task."""
 
-    def get_converter(self) -> DocumentConverter:
+    def get_provider(self) -> DocumentConverter:
         """Get the converter instance."""
         from docler.converters.llm_provider import LLMConverter
 
-        return LLMConverter(**self.model_dump(exclude={"type"}, mode="json"))
+        return LLMConverter(**self.get_config_fields())
 
 
 class MistralConfig(BaseConverterConfig):
@@ -202,6 +198,9 @@ class MistralConfig(BaseConverterConfig):
 
     type: Literal["mistral"] = Field("mistral", init=False)
     """Type discriminator for Mistral converter."""
+
+    languages: set[SupportedLanguage] = Field(default_factory=default_languages)
+    """List of supported languages for the converter."""
 
     api_key: SecretStr | None = None
     """Mistral API key. If None, will try env var MISTRAL_API_KEY."""
@@ -212,11 +211,11 @@ class MistralConfig(BaseConverterConfig):
     # ocr_model: str = "mistral-ocr-latest"
     # """Mistral OCR model to use."""
 
-    def get_converter(self) -> DocumentConverter:
+    def get_provider(self) -> DocumentConverter:
         """Get the converter instance."""
         from docler.converters.mistral_provider import MistralConverter
 
-        return MistralConverter(**self.model_dump(exclude={"type"}, mode="json"))
+        return MistralConverter(**self.get_config_fields())
 
 
 class LlamaParseConfig(BaseConverterConfig):
@@ -224,6 +223,9 @@ class LlamaParseConfig(BaseConverterConfig):
 
     type: Literal["llamaparse"] = Field("llamaparse", init=False)
     """Type discriminator for LlamaParse converter."""
+
+    languages: set[SupportedLanguage] = Field(default_factory=default_languages)
+    """List of supported languages for the converter."""
 
     api_key: SecretStr | None = None
     """LlamaParse API key. Falls back to LLAMAPARSE_API_KEY env var."""
@@ -236,11 +238,11 @@ class LlamaParseConfig(BaseConverterConfig):
 
     model_config = SettingsConfigDict(env_prefix="LLAMAPARSE_")
 
-    def get_converter(self) -> DocumentConverter:
+    def get_provider(self) -> DocumentConverter:
         """Get the converter instance."""
         from docler.converters.llamaparse_provider import LlamaParseConverter
 
-        return LlamaParseConverter(**self.model_dump(exclude={"type"}, mode="json"))
+        return LlamaParseConverter(**self.get_config_fields())
 
 
 class AzureConfig(BaseConverterConfig):
@@ -248,6 +250,9 @@ class AzureConfig(BaseConverterConfig):
 
     type: Literal["azure"] = Field("azure", init=False)
     """Type discriminator for Azure converter."""
+
+    languages: set[SupportedLanguage] = Field(default_factory=default_languages)
+    """List of supported languages for the converter."""
 
     endpoint: str | None = None
     """Azure endpoint URL. Falls back to AZURE_DOC_INTELLIGENCE_ENDPOINT envvar."""
@@ -263,11 +268,11 @@ class AzureConfig(BaseConverterConfig):
 
     model_config = SettingsConfigDict(env_prefix="LLAMAPARSE_")
 
-    def get_converter(self) -> DocumentConverter:
+    def get_provider(self) -> DocumentConverter:
         """Get the converter instance."""
         from docler.converters.azure_provider import AzureConverter
 
-        return AzureConverter(**self.model_dump(exclude={"type"}, mode="json"))
+        return AzureConverter(**self.get_config_fields())
 
 
 class MarkerConfig(BaseConverterConfig):
@@ -282,11 +287,11 @@ class MarkerConfig(BaseConverterConfig):
     llm_provider: Literal["gemini", "ollama", "vertex", "claude"] | None = None
     """Language model provider to use for OCR."""
 
-    def get_converter(self) -> DocumentConverter:
+    def get_provider(self) -> DocumentConverter:
         """Get the converter instance."""
         from docler.converters.marker_provider import MarkerConverter
 
-        return MarkerConverter(**self.model_dump(exclude={"type"}, mode="json"))
+        return MarkerConverter(**self.get_config_fields())
 
 
 class UpstageConfig(BaseConverterConfig):
@@ -315,11 +320,11 @@ class UpstageConfig(BaseConverterConfig):
 
     model_config = SettingsConfigDict(env_prefix="UPSTAGE_")
 
-    def get_converter(self) -> DocumentConverter:
+    def get_provider(self) -> DocumentConverter:
         """Get the converter instance."""
         from docler.converters.upstage_provider import UpstageConverter
 
-        return UpstageConverter(**self.model_dump(exclude={"type"}, mode="json"))
+        return UpstageConverter(**self.get_config_fields())
 
 
 ConverterConfig = Annotated[
