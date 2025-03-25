@@ -11,7 +11,7 @@ from docling.datamodel.pipeline_options import (  # noqa: TC002
     TesseractCliOcrOptions,
     TesseractOcrOptions,
 )
-from pydantic import Field, SecretStr
+from pydantic import Field, SecretStr, field_serializer
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from docler.common_types import DEFAULT_CONVERTER_MODEL, SupportedLanguage
@@ -64,6 +64,12 @@ class BaseConverterConfig(BaseSettings):
         env_file_encoding="utf-8",
     )
 
+    @field_serializer("*", when_used="json-unless-none")
+    def serialize_secrets(self, v, _info):
+        if isinstance(v, SecretStr):
+            return v.get_secret_value()
+        return v
+
     def get_converter(self) -> DocumentConverter:
         """Get the converter instance."""
         raise NotImplementedError
@@ -97,7 +103,7 @@ class DoclingConverterConfig(BaseConverterConfig):
         """Get the converter instance."""
         from docler.converters.docling_provider import DoclingConverter
 
-        return DoclingConverter(**self.model_dump(exclude={"type"}))
+        return DoclingConverter(**self.model_dump(exclude={"type"}, mode="json"))
 
 
 class MarkItDownConfig(BaseConverterConfig):
@@ -110,7 +116,7 @@ class MarkItDownConfig(BaseConverterConfig):
         """Get the converter instance."""
         from docler.converters.markitdown_provider import MarkItDownConverter
 
-        return MarkItDownConverter(**self.model_dump(exclude={"type"}))
+        return MarkItDownConverter(**self.model_dump(exclude={"type"}, mode="json"))
 
 
 class KreuzbergConfig(BaseConverterConfig):
@@ -130,7 +136,7 @@ class KreuzbergConfig(BaseConverterConfig):
         """Get the converter instance."""
         from docler.converters.kreuzberg_provider import KreuzbergConverter
 
-        return KreuzbergConverter(**self.model_dump(exclude={"type"}))
+        return KreuzbergConverter(**self.model_dump(exclude={"type"}, mode="json"))
 
 
 class DataLabConfig(BaseConverterConfig):
@@ -157,7 +163,7 @@ class DataLabConfig(BaseConverterConfig):
         """Get the converter instance."""
         from docler.converters.datalab_provider import DataLabConverter
 
-        return DataLabConverter(**self.model_dump(exclude={"type"}))
+        return DataLabConverter(**self.model_dump(exclude={"type"}, mode="json"))
 
 
 class LLMConverterConfig(BaseConverterConfig):
@@ -179,7 +185,7 @@ class LLMConverterConfig(BaseConverterConfig):
         """Get the converter instance."""
         from docler.converters.llm_provider import LLMConverter
 
-        return LLMConverter(**self.model_dump(exclude={"type"}))
+        return LLMConverter(**self.model_dump(exclude={"type"}, mode="json"))
 
 
 class MistralConfig(BaseConverterConfig):
@@ -201,7 +207,7 @@ class MistralConfig(BaseConverterConfig):
         """Get the converter instance."""
         from docler.converters.mistral_provider import MistralConverter
 
-        return MistralConverter(**self.model_dump(exclude={"type"}))
+        return MistralConverter(**self.model_dump(exclude={"type"}, mode="json"))
 
 
 class LlamaParseConfig(BaseConverterConfig):
@@ -219,7 +225,7 @@ class LlamaParseConfig(BaseConverterConfig):
         """Get the converter instance."""
         from docler.converters.llamaparse_provider import LlamaParseConverter
 
-        return LlamaParseConverter(**self.model_dump(exclude={"type"}))
+        return LlamaParseConverter(**self.model_dump(exclude={"type"}, mode="json"))
 
 
 class AzureConfig(BaseConverterConfig):
@@ -246,7 +252,7 @@ class AzureConfig(BaseConverterConfig):
         """Get the converter instance."""
         from docler.converters.azure_provider import AzureConverter
 
-        return AzureConverter(**self.model_dump(exclude={"type"}))
+        return AzureConverter(**self.model_dump(exclude={"type"}, mode="json"))
 
 
 class MarkerConfig(BaseConverterConfig):
@@ -265,7 +271,7 @@ class MarkerConfig(BaseConverterConfig):
         """Get the converter instance."""
         from docler.converters.marker_provider import MarkerConverter
 
-        return MarkerConverter(**self.model_dump(exclude={"type"}))
+        return MarkerConverter(**self.model_dump(exclude={"type"}, mode="json"))
 
 
 class UpstageConfig(BaseConverterConfig):
@@ -298,7 +304,7 @@ class UpstageConfig(BaseConverterConfig):
         """Get the converter instance."""
         from docler.converters.upstage_provider import UpstageConverter
 
-        return UpstageConverter(**self.model_dump(exclude={"type"}))
+        return UpstageConverter(**self.model_dump(exclude={"type"}, mode="json"))
 
 
 ConverterConfig = Annotated[
