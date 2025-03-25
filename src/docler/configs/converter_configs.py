@@ -43,6 +43,15 @@ AzureFeatureFlag = Literal[
 ]
 
 
+LlamaParseMode = Literal[
+    "parse_page_without_llm",
+    "parse_page_with_llm",
+    "parse_page_with_lvm",
+    "parse_page_with_agent",
+    "parse_document_with_llm",
+]
+
+
 def default_languages() -> set[SupportedLanguage]:
     return {"en"}
 
@@ -218,6 +227,12 @@ class LlamaParseConfig(BaseConverterConfig):
 
     api_key: SecretStr | None = None
     """LlamaParse API key. Falls back to LLAMAPARSE_API_KEY env var."""
+
+    adaptive_long_table: bool = False
+    """Whether to use adaptive long table."""
+
+    parse_mode: str = "parse_page_with_llm"
+    """Parse mode, defaults to "parse_page_with_llm"."""
 
     model_config = SettingsConfigDict(env_prefix="LLAMAPARSE_")
 

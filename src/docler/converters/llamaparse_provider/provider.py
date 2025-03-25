@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, ClassVar
 
-from docler.configs.converter_configs import LlamaParseConfig
+from docler.configs.converter_configs import LlamaParseConfig, LlamaParseMode
 from docler.converters.base import DocumentConverter
 from docler.log import get_logger
 from docler.models import Document, Image
@@ -73,15 +73,22 @@ class LlamaParseConverter(DocumentConverter[LlamaParseConfig]):
         languages: list[SupportedLanguage] | None = None,
         *,
         api_key: str | None = None,
+        adaptive_long_table: bool = True,
+        parse_mode: LlamaParseMode = "parse_page_with_llm",
     ):
         """Initialize the LlamaParse converter.
 
         Args:
             languages: List of supported languages
             api_key: LlamaParse API key, defaults to LLAMAPARSE_API_KEY env var
+            adaptive_long_table: Whether to use adaptive long table
+            parse_mode: Parse mode, defaults to "parse_page_with_llm"
         """
         super().__init__(languages=languages)
         self.api_key = api_key or get_api_key("LLAMAPARSE_API_KEY")
+        self.language = self.languages[0] if self.languages else None
+        self.adaptive_long_table = adaptive_long_table
+        self.parse_mode = parse_mode
 
     @property
     def price_per_page(self) -> float:
@@ -97,7 +104,13 @@ class LlamaParseConverter(DocumentConverter[LlamaParseConfig]):
         import upath
 
         path = upath.UPath(file_path)
-        parser = LlamaParse(api_key=self.api_key, result_type=ResultType.MD)
+        parser = LlamaParse(
+            api_key=self.api_key,
+            result_type=ResultType.MD,
+            language=self.language,
+            adaptive_long_table=self.adaptive_long_table,
+            parse_mode=self.parse_mode,
+        )
         result = parser.get_json_result(str(path))
 
         pages = result[0]["pages"]  # First document's pages
