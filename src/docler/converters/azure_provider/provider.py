@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
-import logging
 from typing import TYPE_CHECKING, ClassVar
 
 from docler.configs.converter_configs import AzureConfig, AzureFeatureFlag, AzureModel
 from docler.converters.base import DocumentConverter
 from docler.converters.exceptions import MissingConfigurationError
+from docler.log import get_logger
 from docler.models import Document, Image
 from docler.utils import get_api_key
 
@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 
     from docler.common_types import StrPath, SupportedLanguage
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 ENV_ENDPOINT = "AZURE_DOC_INTELLIGENCE_ENDPOINT"
 ENV_API_KEY = "AZURE_DOC_INTELLIGENCE_KEY"
@@ -199,9 +199,7 @@ class AzureConverter(DocumentConverter[AzureConfig]):
 if __name__ == "__main__":
     import anyenv
 
-    logging.basicConfig(level=logging.DEBUG)
     pdf_path = "src/docler/resources/pdf_sample.pdf"
-
     converter = AzureConverter()
     result = anyenv.run_sync(converter.convert_file(pdf_path))
     print(result.content)

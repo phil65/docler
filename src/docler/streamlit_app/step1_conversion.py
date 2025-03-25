@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import logging
 from pathlib import Path
 import tempfile
 
@@ -10,12 +9,13 @@ import anyenv
 import streambricks as sb
 import streamlit as st
 
+from docler.log import get_logger
 from docler.streamlit_app.converters import CONVERTERS
 from docler.streamlit_app.state import SessionState
 from docler.streamlit_app.utils import LANGUAGES, format_image_content
 
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 ALLOWED_EXTENSIONS = ["pdf", "docx", "jpg", "png", "ppt", "pptx", "xls", "xlsx"]
 
 

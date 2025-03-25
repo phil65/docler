@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-import logging
 from typing import TYPE_CHECKING, Any, ClassVar, Literal
 
 from docler.chunkers.base import TextChunker
+from docler.log import get_logger
 from docler.models import TextChunk
 
 
@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from docler.models import Document
 
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 ChunkerType = Literal["sentence", "token", "fixed", "markdown"]
 

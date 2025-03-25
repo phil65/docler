@@ -3,12 +3,12 @@
 from __future__ import annotations
 
 from io import BytesIO
-import logging
 from typing import TYPE_CHECKING, ClassVar
 
 from docler.configs.converter_configs import DoclingConverterConfig, DoclingEngine
 from docler.converters.base import DocumentConverter
 from docler.converters.docling_provider.utils import convert_languages
+from docler.log import get_logger
 from docler.models import Document, Image
 from docler.utils import pil_to_bytes
 
@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     from docler.common_types import StrPath, SupportedLanguage
 
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 class DoclingConverter(DocumentConverter[DoclingConverterConfig]):

@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-import logging
 from typing import TYPE_CHECKING, Any, ClassVar, Literal, cast
 import uuid
 
+from docler.log import get_logger
 from docler.models import SearchResult, Vector
 from docler.vector_db.base import VectorStoreBackend
 
@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     import numpy as np
 
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 Metric = Literal["cosine", "l2", "ip"]
 
 

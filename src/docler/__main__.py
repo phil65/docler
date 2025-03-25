@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import logging
 import os
 import pathlib
 import subprocess
@@ -10,10 +9,12 @@ import sys
 
 import typer
 
+from docler.log import get_logger
+
 
 cli = typer.Typer(help="Docler document converter CLI", no_args_is_help=True)
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 PACKAGE_DIR = pathlib.Path(__file__).parent
 

@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
-import logging
 from typing import TYPE_CHECKING, ClassVar
 
 from docler.configs.converter_configs import LlamaParseConfig
 from docler.converters.base import DocumentConverter
+from docler.log import get_logger
 from docler.models import Document, Image
 from docler.utils import get_api_key
 
@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from docler.common_types import StrPath, SupportedLanguage
 
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 class LlamaParseConverter(DocumentConverter[LlamaParseConfig]):

@@ -3,13 +3,13 @@
 from __future__ import annotations
 
 import base64
-import logging
 import time
 from typing import TYPE_CHECKING, ClassVar, Literal
 
 from docler.configs.converter_configs import DataLabConfig
 from docler.converters.base import DocumentConverter
 from docler.converters.datalab_provider.utils import normalize_markdown_images
+from docler.log import get_logger
 from docler.models import Document, Image
 from docler.utils import get_api_key
 
@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from docler.common_types import StrPath, SupportedLanguage
 
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 API_BASE = "https://www.datalab.to/api/v1"
 MAX_POLLS = 300

@@ -2,17 +2,17 @@
 
 from __future__ import annotations
 
-import logging
 from typing import ClassVar, cast
 
 from docler.configs.vector_db_configs import ChromaConfig
+from docler.log import get_logger
 from docler.models import VectorStoreInfo
 from docler.vector_db.base import VectorDB
 from docler.vector_db.base_manager import VectorManagerBase
 from docler.vector_db.dbs.chroma_db.db import ChromaBackend
 
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 class ChromaVectorManager(VectorManagerBase[ChromaConfig]):

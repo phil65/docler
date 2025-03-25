@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import logging
 from typing import TYPE_CHECKING, Literal, cast
 
 import anyenv
@@ -13,6 +12,7 @@ from docler.chunkers.ai_chunker import AIChunker
 from docler.chunkers.ai_chunker.chunker import SYS_PROMPT
 from docler.chunkers.llamaindex_chunker import LlamaIndexChunker
 from docler.chunkers.markdown_chunker import MarkdownChunker
+from docler.log import get_logger
 from docler.streamlit_app.chunkers import CHUNKERS
 from docler.streamlit_app.state import SessionState
 from docler.streamlit_app.utils import format_image_content
@@ -22,7 +22,7 @@ if TYPE_CHECKING:
     from docler.chunkers.base import TextChunker
 
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 def show_step_2():

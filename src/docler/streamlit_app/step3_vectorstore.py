@@ -2,13 +2,13 @@
 
 from __future__ import annotations
 
-import logging
 from typing import TYPE_CHECKING
 
 import anyenv
 import streambricks as sb
 import streamlit as st
 
+from docler.log import get_logger
 from docler.models import ChunkedDocument
 from docler.streamlit_app.state import SessionState
 from docler.vector_db.dbs import chroma_db, openai_db, pinecone_db
@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     from docler.vector_db.base_manager import VectorManagerBase
 
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 VECTOR_STORES: dict[str, type[VectorManagerBase]] = {
     "OpenAI": openai_db.OpenAIVectorManager,

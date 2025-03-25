@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-import logging
 from typing import ClassVar, Literal, cast
 
 from docler.configs.vector_db_configs import PineconeCloud, PineconeConfig, PineconeRegion
+from docler.log import get_logger
 from docler.models import VectorStoreInfo
 from docler.utils import get_api_key
 from docler.vector_db.base import VectorDB
@@ -15,7 +15,7 @@ from docler.vector_db.dbs.pinecone_db.db import PineconeBackend
 
 Metric = Literal["cosine", "euclidean", "dotproduct"]
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 class PineconeVectorManager(VectorManagerBase[PineconeConfig]):

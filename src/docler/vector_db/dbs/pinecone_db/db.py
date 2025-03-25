@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-import logging
 from typing import TYPE_CHECKING, Any, ClassVar
 import uuid
 
+from docler.log import get_logger
 from docler.models import SearchResult, Vector
 from docler.vector_db.base import VectorStoreBackend
 from docler.vector_db.dbs.pinecone_db.utils import (
@@ -20,7 +20,7 @@ if TYPE_CHECKING:
     from pinecone.control.pinecone_asyncio import _IndexAsyncio as IndexAsyncio
 
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 class PineconeBackend(VectorStoreBackend):
