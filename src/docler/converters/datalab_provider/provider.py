@@ -56,7 +56,6 @@ class DataLabConverter(DocumentConverter[DataLabConfig]):
         languages: list[SupportedLanguage] | None = None,
         *,
         api_key: str | None = None,
-        mode: Mode = "marker",
         force_ocr: bool = False,
         use_llm: bool = False,
         max_pages: int | None = None,
@@ -65,7 +64,6 @@ class DataLabConverter(DocumentConverter[DataLabConfig]):
 
         Args:
             api_key: DataLab API key.
-            mode: API endpoint to use.
             languages: Languages to use for OCR.
             force_ocr: Whether to force OCR on every page.
             use_llm: Whether to use LLM for enhanced accuracy.
@@ -73,7 +71,6 @@ class DataLabConverter(DocumentConverter[DataLabConfig]):
         """
         super().__init__(languages=languages)
         self.api_key = api_key or get_api_key("DATALAB_API_KEY")
-        self.mode = mode
         self.force_ocr = force_ocr
         self.use_llm = use_llm
         self.max_pages = max_pages
@@ -113,7 +110,7 @@ class DataLabConverter(DocumentConverter[DataLabConfig]):
         if self.max_pages:
             form["max_pages"] = str(self.max_pages)
         headers = {"X-Api-Key": self.api_key}
-        url = f"{API_BASE}/{self.mode}"
+        url = f"{API_BASE}/marker"
         response = await anyenv.post(url, data=form, files=files, headers=headers)  # type: ignore
         json_data = await response.json()
         if not json_data["success"]:

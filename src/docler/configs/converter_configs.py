@@ -142,9 +142,6 @@ class DataLabConfig(BaseConverterConfig):
     api_key: SecretStr | None = None
     """DataLab API key. If None, will try env var DATALAB_API_KEY."""
 
-    mode: Literal["marker", "table_rec", "ocr", "layout"] = "marker"
-    """API endpoint to use."""
-
     force_ocr: bool = False
     """Whether to force OCR on every page."""
 
