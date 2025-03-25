@@ -14,6 +14,8 @@ from docler.utils import pil_to_bytes
 
 
 if TYPE_CHECKING:
+    from collections.abc import Mapping
+
     from docler.common_types import StrPath, SupportedLanguage
 
 
@@ -76,13 +78,13 @@ class DoclingConverter(DocumentConverter[DoclingConverterConfig]):
         self.escaping_underscores = escaping_underscores
         self.indent = indent
         self.text_width = text_width
-        opts: dict[DoclingEngine, type[OcrOptions]] = dict(
-            easy_ocr=EasyOcrOptions,
-            tesseract_cli_ocr=TesseractCliOcrOptions,
-            tesseract_ocr=TesseractOcrOptions,
-            ocr_mac=OcrMacOptions,
-            rapid_ocr=RapidOcrOptions,
-        )
+        opts: Mapping[DoclingEngine, type[OcrOptions]] = {
+            "easy_ocr": EasyOcrOptions,
+            "tesseract_cli_ocr": TesseractCliOcrOptions,
+            "tesseract_ocr": TesseractOcrOptions,
+            "ocr_mac": OcrMacOptions,
+            "rapid_ocr": RapidOcrOptions,
+        }
         # Configure pipeline options
         engine = opts.get(ocr_engine)
         assert engine
