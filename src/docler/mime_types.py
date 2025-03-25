@@ -35,6 +35,18 @@ OPENDOC_SPREADSHEET_MIME_TYPE: Final = (
 )
 PLAIN_TEXT_MIME_TYPES: Final[set[str]] = {PLAIN_TEXT_MIME_TYPE, MARKDOWN_MIME_TYPE}
 
+AUDIO_MIME_TYPES = {
+    "audio/mpeg",
+    "audio/mp3",
+    "audio/wav",
+    "audio/webm",
+    "audio/x-wav",
+    "audio/ogg",
+    "audio/flac",
+    "audio/m4a",
+    "video/mp4",
+}
+
 IMAGE_MIME_TYPES: Final[set[str]] = {
     "image/bmp",
     "image/gif",
