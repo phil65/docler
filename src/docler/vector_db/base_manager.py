@@ -40,3 +40,16 @@ class VectorManagerBase[TConfig](BaseProvider[TConfig], ABC):
     @abstractmethod
     async def close(self) -> None:
         """Close all vector store connections."""
+
+    async def delete_all_vector_stores(self) -> bool:
+        """Delete all vector stores."""
+        stores = await self.list_vector_stores()
+        for store in stores:
+            await self.delete_vector_store(store.db_id)
+        return True
+
+    async def has_vector_store(self, name: str) -> bool:
+        """Check if a vector store exists."""
+        indexes = await self.list_vector_stores()
+        index_names = [idx.name for idx in indexes]
+        return name in index_names
