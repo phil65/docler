@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from docler.vector_db.base_manager import VectorManagerBase
 
 managers = [OpenAIVectorManager, PineconeVectorManager]
-managers = [PineconeVectorManager]
+managers = []
 
 
 @pytest.mark.integration

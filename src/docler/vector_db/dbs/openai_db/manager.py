@@ -247,7 +247,7 @@ class OpenAIVectorManager(VectorManagerBase[OpenAIVectorConfig]):
         """
         try:
             vector_db = await self.get_vector_store(vector_store_id)
-            results = await vector_db.similar_texts(query, k, filters)
+            results = await vector_db.query(query, k, filters)
             formatted_results = []
             for text, score, metadata in results:
                 result_obj = {"text": text, "score": score, **metadata}

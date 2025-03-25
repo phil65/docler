@@ -8,6 +8,7 @@ import os
 from typing import TYPE_CHECKING, Any, ClassVar, Literal
 
 from docler.models import TextChunk
+from docler.utils import get_api_key
 from docler.vector_db.base import VectorDB
 
 
@@ -78,11 +79,7 @@ class OpenAIVectorDB(VectorDB):
         if client is not None:
             self._client = client
         else:
-            api_key = api_key or os.getenv("OPENAI_API_KEY")
-            if not api_key:
-                msg = "API key must be provided via api_key param / OPENAI_API_KEY envvar"
-                raise ValueError(msg)
-
+            api_key = api_key or get_api_key("OPENAI_API_KEY")
             organization = organization or os.getenv("OPENAI_ORG_ID")
             self._client = AsyncOpenAI(api_key=api_key, organization=organization)
         self.chunking_config = to_chunking_config(
@@ -192,7 +189,7 @@ class OpenAIVectorDB(VectorDB):
 
         return chunks_with_scores
 
-    async def similar_texts(
+    async def query(
         self,
         query: str,
         k: int = 4,

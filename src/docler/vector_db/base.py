@@ -134,7 +134,7 @@ class VectorDB(ABC):
         """
 
     @abstractmethod
-    async def similar_texts(
+    async def query(
         self,
         query: str,
         k: int = 4,

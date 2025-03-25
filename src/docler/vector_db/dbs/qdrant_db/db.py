@@ -60,7 +60,6 @@ class QdrantBackend(VectorStoreBackend):
         self._client = AsyncQdrantClient(**client_kwargs)
         self._collection_name = collection_name
 
-        # temp client to check for existence
         temp_client = QdrantClient(**client_kwargs)
         collections = temp_client.get_collections().collections
         collection_names = [c.name for c in collections]
@@ -94,7 +93,6 @@ class QdrantBackend(VectorStoreBackend):
 
         if id_ is None:
             id_ = str(uuid.uuid4())
-
         vector_list = vector.astype(float).tolist()
         point = models.PointStruct(id=id_, vector=vector_list, payload=metadata)
         _result = await self._client.upsert(self._collection_name, points=[point])
