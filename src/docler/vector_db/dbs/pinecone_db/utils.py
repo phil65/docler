@@ -57,7 +57,7 @@ def prepare_metadata(metadata: dict[str, Any]) -> dict[str, Any]:
 
 def restore_metadata(metadata: dict[str, Any]) -> dict[str, Any]:
     """Restore encoded metadata fields."""
-    import json
+    import anyenv
 
     restored = metadata.copy()
 
@@ -65,7 +65,7 @@ def restore_metadata(metadata: dict[str, Any]) -> dict[str, Any]:
         if key.endswith("_json") and key[:-5] not in restored:
             try:
                 base_key = key[:-5]
-                restored[base_key] = json.loads(restored[key])
+                restored[base_key] = anyenv.load_json(restored[key])
                 del restored[key]
             except Exception:  # noqa: BLE001
                 pass
@@ -74,7 +74,7 @@ def restore_metadata(metadata: dict[str, Any]) -> dict[str, Any]:
             try:
                 base_key = key[:-4]
                 json_str = base64.b64decode(restored[key]).decode()
-                restored[base_key] = json.loads(json_str)
+                restored[base_key] = anyenv.load_json(json_str)
                 del restored[key]
             except Exception:  # noqa: BLE001
                 pass
