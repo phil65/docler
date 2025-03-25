@@ -81,7 +81,7 @@ class DataLabConverter(DocumentConverter[DataLabConfig]):
     @property
     def price_per_page(self) -> float:
         """Price per page in USD."""
-        return 0.0015
+        return 0.003 if self.use_llm else 0.0015
 
     async def _convert_path_async(self, file_path: StrPath, mime_type: str) -> Document:
         """Convert a file using DataLab's API.
