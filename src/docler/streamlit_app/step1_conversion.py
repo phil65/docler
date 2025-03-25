@@ -12,7 +12,7 @@ import streamlit as st
 from docler.log import get_logger
 from docler.streamlit_app.converters import CONVERTERS
 from docler.streamlit_app.state import SessionState
-from docler.streamlit_app.utils import LANGUAGES, format_image_content
+from docler.streamlit_app.utils import format_image_content
 
 
 logger = get_logger(__name__)
@@ -32,19 +32,12 @@ def show_step_1():
         index=0,
         key="selected_converter",
     )
-    language = st.selectbox("Select primary language", options=LANGUAGES, index=0)
 
-    # Get or create converter config
     if selected_converter not in state.converter_configs:
         converter_cls = CONVERTERS[selected_converter]
-        state.converter_configs[selected_converter] = converter_cls.Config(
-            languages=[language]
-        )
-
-    # Edit converter configuration
-    with st.expander("Converter Settings", expanded=False):
-        config = sb.model_edit(state.converter_configs[selected_converter])
-        state.converter_configs[selected_converter] = config
+        state.converter_configs[selected_converter] = converter_cls.Config()
+    config = sb.model_edit(state.converter_configs[selected_converter])
+    state.converter_configs[selected_converter] = config
 
     # Convert document
     if uploaded_file and st.button("Convert Document"):
