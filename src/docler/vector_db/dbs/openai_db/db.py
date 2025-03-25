@@ -131,7 +131,7 @@ class OpenAIVectorDB(VectorDB):
 
         return file_ids
 
-    async def similar_chunks(
+    async def query(
         self,
         query: str,
         k: int = 4,
@@ -188,49 +188,6 @@ class OpenAIVectorDB(VectorDB):
             chunks_with_scores.append((chunk, float(result.score)))
 
         return chunks_with_scores
-
-    async def query(
-        self,
-        query: str,
-        k: int = 4,
-        filters: dict[str, Any] | None = None,
-    ) -> list[tuple[str, float, dict[str, Any]]]:
-        """Find similar texts for a query.
-
-        Args:
-            query: Query text to search for
-            k: Number of results to return
-            filters: Optional filters to apply to results
-
-        Returns:
-            List of (text, score, metadata) tuples
-        """
-        from docler.vector_db.dbs.openai_db.utils import convert_filters
-
-        filter_obj = convert_filters(filters) if filters else None
-        extra = {"filters": filter_obj} if filter_obj else {}
-
-        try:
-            response = await self._client.vector_stores.search(
-                vector_store_id=self.vector_store_id,
-                query=query,
-                max_num_results=k,
-                **extra,  # type: ignore
-            )
-        except Exception:
-            logger.exception("Error searching OpenAI vector store")
-            return []
-
-        results = []
-        for result in response.data:
-            content_text = ""
-            for content_item in result.content:
-                if content_item.type == "text":
-                    content_text += content_item.text + "\n"
-            meta = dict[str, Any](file_id=result.file_id, filename=result.filename)
-            meta.update(result.attributes or {})
-            results.append((content_text.strip(), float(result.score), meta))
-        return results
 
     async def delete_chunk(self, chunk_id: str) -> bool:
         """Delete a chunk by ID.

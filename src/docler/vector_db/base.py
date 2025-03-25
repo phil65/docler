@@ -116,30 +116,12 @@ class VectorDB(ABC):
         """
 
     @abstractmethod
-    async def similar_chunks(
-        self,
-        query: str,
-        k: int = 4,
-        filters: dict[str, Any] | None = None,
-    ) -> list[tuple[TextChunk, float]]:
-        """Find similar chunks for a query.
-
-        Args:
-            query: Query text to search for
-            k: Number of results to return
-            filters: Optional filters to apply to results
-
-        Returns:
-            List of (chunk, score) tuples
-        """
-
-    @abstractmethod
     async def query(
         self,
         query: str,
         k: int = 4,
         filters: dict[str, Any] | None = None,
-    ) -> list[tuple[str, float, dict[str, Any]]]:
+    ) -> list[tuple[TextChunk, float]]:
         """Find similar texts for a query.
 
         Args:

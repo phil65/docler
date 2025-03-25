@@ -219,7 +219,7 @@ def show_step_3():
                             manager.get_vector_store(store_id, **cfg)
                         )
                         assert vector_db is not None, "Vector store not found"
-                        results = anyenv.run_sync(vector_db.similar_chunks(query, k=3))
+                        results = anyenv.run_sync(vector_db.query(query, k=3))
 
                         if results:
                             st.write(f"Found {len(results)} relevant chunks:")
