@@ -11,7 +11,8 @@ from docling.datamodel.pipeline_options import (  # noqa: TC002
     TesseractCliOcrOptions,
     TesseractOcrOptions,
 )
-from pydantic import BaseModel, ConfigDict, Field, SecretStr
+from pydantic import Field, SecretStr
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from docler.common_types import DEFAULT_CONVERTER_MODEL, SupportedLanguage
 
@@ -46,7 +47,7 @@ def default_languages() -> set[SupportedLanguage]:
     return {"en"}
 
 
-class BaseConverterConfig(BaseModel):
+class BaseConverterConfig(BaseSettings):
     """Base configuration for document converters."""
 
     type: str = Field(init=False)
@@ -55,7 +56,13 @@ class BaseConverterConfig(BaseModel):
     languages: set[SupportedLanguage] = Field(default_factory=default_languages)
     """List of supported languages for the converter."""
 
-    model_config = ConfigDict(frozen=True, use_attribute_docstrings=True, extra="forbid")
+    model_config = SettingsConfigDict(
+        frozen=True,
+        use_attribute_docstrings=True,
+        extra="forbid",
+        env_file=".env",
+        env_file_encoding="utf-8",
+    )
 
     def get_converter(self) -> DocumentConverter:
         """Get the converter instance."""
@@ -83,6 +90,8 @@ class DoclingConverterConfig(BaseConverterConfig):
         | RapidOcrOptions
     ) = "easy_ocr"
     """OCR engine to use."""
+
+    model_config = SettingsConfigDict(env_prefix="DOCLING_")
 
     def get_converter(self) -> DocumentConverter:
         """Get the converter instance."""
@@ -145,6 +154,8 @@ class DataLabConfig(BaseConverterConfig):
     max_pages: int | None = None
     """Maximum number of pages to process."""
 
+    model_config = SettingsConfigDict(env_prefix="DATALAB_")
+
     def get_converter(self) -> DocumentConverter:
         """Get the converter instance."""
         from docler.converters.datalab_provider import DataLabConverter
@@ -183,6 +194,8 @@ class MistralConfig(BaseConverterConfig):
     api_key: SecretStr | None = None
     """Mistral API key. If None, will try env var MISTRAL_API_KEY."""
 
+    model_config = SettingsConfigDict(env_prefix="MISTRAL_")
+
     # right now there only is one model
     # ocr_model: str = "mistral-ocr-latest"
     # """Mistral OCR model to use."""
@@ -202,6 +215,8 @@ class LlamaParseConfig(BaseConverterConfig):
 
     api_key: SecretStr | None = None
     """LlamaParse API key. Falls back to LLAMAPARSE_API_KEY env var."""
+
+    model_config = SettingsConfigDict(env_prefix="LLAMAPARSE_")
 
     def get_converter(self) -> DocumentConverter:
         """Get the converter instance."""
@@ -228,7 +243,7 @@ class AzureConfig(BaseConverterConfig):
     additional_features: set[AzureFeatureFlag] = Field(default_factory=set)
     """Optional add-on capabilities like BARCODES, FORMULAS, OCR_HIGH_RESOLUTION etc."""
 
-    model_config = ConfigDict(use_attribute_docstrings=True)
+    model_config = SettingsConfigDict(env_prefix="LLAMAPARSE_")
 
     def get_converter(self) -> DocumentConverter:
         """Get the converter instance."""
@@ -248,8 +263,6 @@ class MarkerConfig(BaseConverterConfig):
 
     llm_provider: Literal["gemini", "ollama", "vertex", "claude"] | None = None
     """Language model provider to use for OCR."""
-
-    model_config = ConfigDict(use_attribute_docstrings=True)
 
     def get_converter(self) -> DocumentConverter:
         """Get the converter instance."""
@@ -282,7 +295,7 @@ class UpstageConfig(BaseConverterConfig):
     base64_categories: list[str] = Field(default_factory=lambda: ["figure", "chart"])
     """Element categories to encode in base64."""
 
-    model_config = ConfigDict(use_attribute_docstrings=True)
+    model_config = SettingsConfigDict(env_prefix="UPSTAGE_")
 
     def get_converter(self) -> DocumentConverter:
         """Get the converter instance."""

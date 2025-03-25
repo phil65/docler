@@ -36,6 +36,7 @@ license = { file = "LICENSE" }
 dependencies = [
     "anyenv>=0.4.1",
     "pydantic",
+    "pydantic-settings>=2.8.1",
     # Only add below (Copier)
     "upathtools>=0.4.3",
 ]
