@@ -6,11 +6,13 @@ import base64
 import io
 from io import BytesIO
 import re
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal, overload
 
 
 if TYPE_CHECKING:
     import PIL.Image
+
+    from docler.common_types import StrPath
 
 
 def pil_to_bytes(image: PIL.Image.Image) -> bytes:
@@ -22,8 +24,57 @@ def pil_to_bytes(image: PIL.Image.Image) -> bytes:
 
 def get_mime_from_pil(image: PIL.Image.Image) -> str:
     """Get MIME type from PIL image format."""
-    format_ = image.format or "JPEG"
-    return f"image/{format_.lower()}"
+    fmt = image.format or "JPEG"
+    return f"image/{fmt.lower()}"
+
+
+@overload
+def check_mime(
+    path: StrPath,
+    *,
+    allowed_mime_types: set[str] | None = None,
+    raise_if_none_found: Literal[True],
+) -> str: ...
+
+
+@overload
+def check_mime(
+    path: StrPath,
+    *,
+    allowed_mime_types: set[str] | None = None,
+    raise_if_none_found: Literal[False] = False,
+) -> str | None: ...
+
+
+def check_mime(
+    path: StrPath,
+    *,
+    allowed_mime_types: set[str] | None = None,
+    raise_if_none_found: bool = False,
+) -> str | None:
+    """Return and optionally check MIME type for a path.
+
+    Determines the MIME type of a file or extension and raises an error
+    if the type cannot be determined or if it is not allowed.
+
+    Args:
+        path: Path to the file (like "test.jpg", or just the extension starting with ".")
+        allowed_mime_types: Set of allowed MIME types.
+        raise_if_none_found: Whether to raise an error if the type cant be determined.
+    """
+    import mimetypes
+
+    path_str = str(path)
+    if path_str.startswith("."):
+        path_str = f"file{path_str}"
+    mime = mimetypes.guess_type(path_str)[0]
+    if mime is None and raise_if_none_found:
+        msg = f"Could not determine MIME type for {path}"
+        raise ValueError(msg)
+    if allowed_mime_types and mime not in allowed_mime_types:
+        msg = f"Invalid MIME type: {mime}. Allowed types: {allowed_mime_types}"
+        raise ValueError(msg)
+    return mime
 
 
 def decode_base64_to_image(encoded_string, image_format="PNG"):
