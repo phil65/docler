@@ -2,11 +2,15 @@
 
 from __future__ import annotations
 
-from typing import Annotated, Literal
+from typing import TYPE_CHECKING, Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
 from docler.common_types import DEFAULT_CHUNKER_MODEL
+
+
+if TYPE_CHECKING:
+    from docler.chunkers.base import TextChunker
 
 
 class BaseChunkerConfig(BaseModel):
@@ -19,6 +23,10 @@ class BaseChunkerConfig(BaseModel):
     """Number of characters to overlap between chunks."""
 
     model_config = ConfigDict(frozen=True, use_attribute_docstrings=True)
+
+    def get_chunker(self) -> TextChunker:
+        """Get the chunker instance."""
+        raise NotImplementedError
 
 
 class LlamaIndexChunkerConfig(BaseChunkerConfig):
@@ -38,6 +46,17 @@ class LlamaIndexChunkerConfig(BaseChunkerConfig):
     include_prev_next_rel: bool = False
     """Whether to track relationships between chunks."""
 
+    def get_chunker(self) -> TextChunker:
+        """Get the chunker instance."""
+        from docler.chunkers.llamaindex_chunker import LlamaIndexChunker
+
+        return LlamaIndexChunker(
+            chunker_type=self.chunker_type,
+            chunk_size=self.chunk_size,
+            include_metadata=self.include_metadata,
+            include_prev_next_rel=self.include_prev_next_rel,
+        )
+
 
 class MarkdownChunkerConfig(BaseChunkerConfig):
     """Configuration for markdown-based chunker."""
@@ -51,8 +70,14 @@ class MarkdownChunkerConfig(BaseChunkerConfig):
     max_chunk_size: int = 1500
     """Maximum characters per chunk."""
 
-    max_markdown_header_level: int = Field(default=3, ge=1, le=6)
-    """Maximum header level to use for chunking (1-6)."""
+    def get_chunker(self) -> TextChunker:
+        """Get the chunker instance."""
+        from docler.chunkers.markdown_chunker import MarkdownChunker
+
+        return MarkdownChunker(
+            min_chunk_size=self.min_chunk_size,
+            max_chunk_size=self.max_chunk_size,
+        )
 
 
 class AiChunkerConfig(BaseChunkerConfig):
@@ -72,6 +97,17 @@ class AiChunkerConfig(BaseChunkerConfig):
 
     system_prompt: str | None = None
     """Custom prompt to override default chunk extraction prompt."""
+
+    def get_chunker(self) -> TextChunker:
+        """Get the chunker instance."""
+        from docler.chunkers.ai_chunker import AIChunker
+
+        return AIChunker(
+            model=self.model,
+            min_chunk_size=self.min_chunk_size,
+            max_chunk_size=self.max_chunk_size,
+            system_prompt=self.system_prompt,
+        )
 
 
 ChunkerConfig = Annotated[
