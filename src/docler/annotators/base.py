@@ -5,12 +5,14 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
+from docler.provider import BaseProvider
+
 
 if TYPE_CHECKING:
     from docler.models import ChunkedDocument
 
 
-class Annotator(ABC):
+class Annotator[TConfig](ABC, BaseProvider[TConfig]):
     """Base class for chunk annotation processors."""
 
     @abstractmethod

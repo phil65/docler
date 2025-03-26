@@ -5,12 +5,18 @@ from __future__ import annotations
 import asyncio
 import base64
 from itertools import batched
-from typing import TYPE_CHECKING, ClassVar, TypeVar
+from typing import TYPE_CHECKING, ClassVar
 
 from pydantic import BaseModel
+from typing_extensions import TypeVar
 
 from docler.annotators.base import Annotator
 from docler.common_types import DEFAULT_IMAGE_ANNOTATOR_MODEL
+from docler.configs.annotator_configs import (
+    DEFAULT_IMAGE_PROMPT_TEMPLATE,
+    DEFAULT_IMAGE_SYSTEM_PROMPT,
+    AIImageAnnotatorConfig,
+)
 from docler.log import get_logger
 
 
@@ -39,28 +45,10 @@ class DefaultImageMetadata(BaseModel):
     """Dominant colors in the image."""
 
 
-# Type variable for generic metadata model
-TMetadata = TypeVar("TMetadata", bound=BaseModel)
+TMetadata = TypeVar("TMetadata", bound=BaseModel, default=DefaultImageMetadata)
 
 
-SYSTEM_PROMPT = """
-Analyze images in detail. For each image, provide:
-1. A detailed description of what's visible
-2. Key objects/people present
-3. Any text content visible in the image
-4. Image type (photo, chart, diagram, illustration, etc.)
-5. Dominant colors and visual elements
-
-Format your response as structured data that can be parsed as JSON.
-"""
-
-USER_PROMPT = """
-Analyze this image with ID {image_id}{filename_info}.
-Describe what you see and extract key information.
-"""
-
-
-class AIImageAnnotator[TMetadata](Annotator):
+class AIImageAnnotator[TMetadata](Annotator[AIImageAnnotatorConfig]):
     """AI-based image annotator.
 
     Analyzes images in chunks and adds descriptions and metadata.
@@ -68,6 +56,8 @@ class AIImageAnnotator[TMetadata](Annotator):
     Type Parameters:
         TMetadata: Type of metadata model to use. Must be a Pydantic BaseModel.
     """
+
+    Config = AIImageAnnotatorConfig
 
     REQUIRED_PACKAGES: ClassVar = {"llmling-agent"}
 
@@ -89,8 +79,8 @@ class AIImageAnnotator[TMetadata](Annotator):
             batch_size: Number of images to process concurrently
         """
         self.model = model or DEFAULT_IMAGE_ANNOTATOR_MODEL
-        self.system_prompt = system_prompt or SYSTEM_PROMPT
-        self.user_prompt = user_prompt or USER_PROMPT
+        self.system_prompt = system_prompt or DEFAULT_IMAGE_SYSTEM_PROMPT
+        self.user_prompt = user_prompt or DEFAULT_IMAGE_PROMPT_TEMPLATE
         self.metadata_model = metadata_model
         self.batch_size = batch_size
 
@@ -154,19 +144,42 @@ class AIImageAnnotator[TMetadata](Annotator):
         Returns:
             Document with annotated images in chunks
         """
-        # Process images in chunks only
         for chunk in document.chunks:
             if not chunk.images:
                 continue
 
-            # Process images in this chunk
             for batch in batched(chunk.images, self.batch_size):
                 tasks = [self._process_image(img) for img in batch]
                 try:
                     await asyncio.gather(*tasks)
                 except Exception:
-                    logger.exception(
-                        "Error processing images in chunk %s", chunk.chunk_index
-                    )
+                    msg = "Error processing images in chunk %s"
+                    logger.exception(msg, chunk.chunk_index)
 
         return document
+
+
+if __name__ == "__main__":
+    import asyncio
+
+    from docler.models import ChunkedDocument, Image, TextChunk
+
+    async def main():
+        annotator = AIImageAnnotator[DefaultImageMetadata]()
+        url = "https://www.a-i-stack.com/wp-content/uploads/go-x/u/93dcedb9-17f3-4aee-9b5a-3744e5e84686/image-342x342.png"
+        image = await Image.from_file(url)
+        document = ChunkedDocument(
+            content="test",
+            chunks=[
+                TextChunk(
+                    text="Sample text",
+                    source_doc_id="sample_doc_id",
+                    images=[image],
+                    chunk_index=0,
+                ),
+            ],
+        )
+        doc = await annotator.annotate(document)
+        print(doc)
+
+    asyncio.run(main())
