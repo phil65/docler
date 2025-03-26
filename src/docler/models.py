@@ -31,6 +31,12 @@ class Image(BaseModel):
     filename: str | None = None
     """Optional original filename of the image."""
 
+    description: str | None = None
+    """Description of the image."""
+
+    metadata: dict[str, Any] | None = None
+    """Metadata of the image."""
+
     model_config = ConfigDict(use_attribute_docstrings=True)
 
 
@@ -63,6 +69,9 @@ class Document(BaseModel):
 
     page_count: int | None = None
     """Number of pages in the source document if available."""
+
+    metadata: dict[str, Any] | None = None
+    """Metadata of the document."""
 
     model_config = ConfigDict(use_attribute_docstrings=True)
 
