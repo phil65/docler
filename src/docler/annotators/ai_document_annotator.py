@@ -127,7 +127,7 @@ class AIDocumentAnnotator[TMetadata](Annotator):
             try:
                 results = await asyncio.gather(*tasks)
                 for chunk, result in zip(batch, results):
-                    metadata = result.content.model_dump()
+                    metadata = result.content.model_dump()  # type: ignore
                     chunk.metadata |= metadata
             except Exception:
                 logger.exception("Error annotating batch")
