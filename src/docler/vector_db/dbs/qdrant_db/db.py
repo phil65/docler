@@ -194,7 +194,7 @@ class QdrantBackend(VectorStoreBackend):
         vector_list = query_vector.astype(float).tolist()
         results = await self._client.search(
             collection_name=self._collection_name,
-            query_vector=vector_list,
+            query_vector=vector_list,  # type: ignore
             limit=k,
             with_payload=True,
             filter=get_query(filters),

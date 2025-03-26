@@ -92,7 +92,7 @@ class PineconeBackend(VectorStoreBackend):
         """
         if id_ is None:
             id_ = str(uuid.uuid4())
-        vector_list: list[float] = vector.tolist()  # pyright: ignore
+        vector_list: list[float] = vector.tolist()  # type: ignore
         metadata_copy = prepare_metadata(metadata)
 
         index = await self._get_index()
@@ -122,7 +122,7 @@ class PineconeBackend(VectorStoreBackend):
             ids = [str(uuid.uuid4()) for _ in vectors]
         vectors_data = []
         for i, (vector, meta) in enumerate(zip(vectors, metadata)):
-            vector_list: list[float] = vector.tolist()  # pyright: ignore
+            vector_list: list[float] = vector.tolist()  # type: ignore
             meta_copy = prepare_metadata(meta)
             vectors_data.append((ids[i], vector_list, meta_copy))
 
@@ -193,7 +193,7 @@ class PineconeBackend(VectorStoreBackend):
         Returns:
             List of search results
         """
-        vector_list: list[float] = query_vector.tolist()  # pyright: ignore
+        vector_list: list[float] = query_vector.tolist()  # type: ignore
         filter_obj = convert_filters(filters) if filters else None
 
         query_params = {
