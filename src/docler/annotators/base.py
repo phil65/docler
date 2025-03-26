@@ -3,17 +3,20 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, ClassVar
 
 from docler.provider import BaseProvider
 
 
 if TYPE_CHECKING:
+    from docler.configs.annotator_configs import BaseAnnotatorConfig
     from docler.models import ChunkedDocument
 
 
 class Annotator[TConfig](ABC, BaseProvider[TConfig]):
     """Base class for chunk annotation processors."""
+
+    Config: ClassVar[type[BaseAnnotatorConfig]]
 
     @abstractmethod
     async def annotate(

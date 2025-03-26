@@ -5,6 +5,11 @@ from typing import ClassVar
 from pydantic import BaseModel
 
 from docler.common_types import DEFAULT_PROOF_READER_MODEL
+from docler.configs.processor_configs import (
+    DEFAULT_PROOF_READER_PROMPT_TEMPLATE,
+    DEFAULT_PROOF_READER_SYSTEM_PROMPT,
+    LLMProofReaderConfig,
+)
 from docler.diffs import generate_all_diffs
 from docler.models import Document
 from docler.processors.base import DocumentProcessor
@@ -18,26 +23,6 @@ class LineCorrection(BaseModel):
 
     corrected: str
     """The corrected text."""
-
-
-SYSTEM_PROMPT = """\
-You are a professional OCR proof-reader. Your task is to correct OCR errors
-in the provided text, focusing especially on fixing misrecognized characters,
-merged/split words, and formatting issues. Generate corrections only for lines
-that need fixing.
-"""
-
-USER_PROMPT = """\
-Proofread the following text and provide corrections for OCR errors.
-For each line that needs correction, provide:
-
-LINE_NUMBER: corrected text
-
-Only include lines that need correction. Do not include lines that are correct.
-Here is the text with line numbers:
-
-{chunk_text}
-"""
 
 
 def apply_corrections(
@@ -71,15 +56,17 @@ def add_line_numbers(text: str) -> str:
     return "\n".join(f"{i + 1:5d} | {line}" for i, line in enumerate(lines))
 
 
-class LLMProofReader(DocumentProcessor):
+class LLMProofReader(DocumentProcessor[LLMProofReaderConfig]):
     """LLM-based proof-reader that improves OCR output using line-based corrections."""
 
+    Config = LLMProofReaderConfig
     REQUIRED_PACKAGES: ClassVar = {"llmling-agent"}
 
     def __init__(
         self,
-        model: str = DEFAULT_PROOF_READER_MODEL,
+        model: str | None = None,
         system_prompt: str | None = None,
+        prompt_template: str | None = None,
         max_chunk_tokens: int = 10000,
         chunk_overlap_lines: int = 20,
         include_diffs: bool = True,
@@ -90,13 +77,15 @@ class LLMProofReader(DocumentProcessor):
         Args:
             model: LLM model to use
             system_prompt: Custom system prompt
+            prompt_template: Custom prompt template
             max_chunk_tokens: Maximum tokens per chunk
             chunk_overlap_lines: Overlap between chunks in lines
             include_diffs: Whether to include diffs in metadata
             add_metadata_only: If True, only add metadata without modifying content
         """
-        self.model = model
-        self.system_prompt = system_prompt or SYSTEM_PROMPT
+        self.model = model or DEFAULT_PROOF_READER_MODEL
+        self.system_prompt = system_prompt or DEFAULT_PROOF_READER_SYSTEM_PROMPT
+        self.prompt_template = prompt_template or DEFAULT_PROOF_READER_PROMPT_TEMPLATE
         self.max_chunk_tokens = max_chunk_tokens
         self.chunk_overlap_lines = chunk_overlap_lines
         self.include_diffs = include_diffs
@@ -170,7 +159,7 @@ class LLMProofReader(DocumentProcessor):
         # If document is small enough, process it all at once
         numbered_text = add_line_numbers(doc.content)
         if self._count_tokens(numbered_text) <= self.max_chunk_tokens:
-            user_prompt = USER_PROMPT.format(chunk_text=numbered_text)
+            user_prompt = self.prompt_template.format(chunk_text=numbered_text)
 
             corrections = await agent.talk.extract_multiple(
                 text=numbered_text,
@@ -184,7 +173,7 @@ class LLMProofReader(DocumentProcessor):
             chunks = self._split_into_chunks(doc.content)
 
             for _, chunk_text in chunks:
-                user_prompt = USER_PROMPT.format(chunk_text=chunk_text)
+                user_prompt = self.prompt_template.format(chunk_text=chunk_text)
                 chunk_corrections = await agent.talk.extract_multiple(
                     text=chunk_text,
                     as_type=LineCorrection,
