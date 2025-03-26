@@ -17,13 +17,6 @@ if TYPE_CHECKING:
 class BaseChunkerConfig(ProviderConfig):
     """Base configuration for text chunkers."""
 
-    chunk_overlap: int = 200
-    """Number of characters to overlap between chunks."""
-
-    def get_provider(self) -> TextChunker:
-        """Get the chunker instance."""
-        raise NotImplementedError
-
 
 class LlamaIndexChunkerConfig(BaseChunkerConfig):
     """Configuration for LlamaIndex chunkers."""
@@ -32,6 +25,9 @@ class LlamaIndexChunkerConfig(BaseChunkerConfig):
 
     chunker_type: Literal["sentence", "token", "fixed", "markdown"] = "markdown"
     """Which LlamaIndex chunker to use."""
+
+    chunk_overlap: int = 200
+    """Number of characters to overlap between chunks."""
 
     chunk_size: int = 1000
     """Target size of chunks."""
@@ -66,6 +62,9 @@ class MarkdownChunkerConfig(BaseChunkerConfig):
     max_chunk_size: int = 1500
     """Maximum characters per chunk."""
 
+    chunk_overlap: int = 200
+    """Number of characters to overlap between chunks."""
+
     def get_provider(self) -> TextChunker:
         """Get the chunker instance."""
         from docler.chunkers.markdown_chunker import MarkdownChunker
@@ -85,13 +84,10 @@ class AiChunkerConfig(BaseChunkerConfig):
     model: str = DEFAULT_CHUNKER_MODEL
     """LLM model to use for chunking."""
 
-    min_chunk_size: int = 200
-    """Minimum characters per chunk."""
-
-    max_chunk_size: int = 1500
-    """Maximum characters per chunk."""
-
     system_prompt: str | None = None
+    """Custom prompt to override default chunk extraction prompt."""
+
+    user_prompt: str | None = None
     """Custom prompt to override default chunk extraction prompt."""
 
     def get_provider(self) -> TextChunker:
@@ -100,8 +96,7 @@ class AiChunkerConfig(BaseChunkerConfig):
 
         return AIChunker(
             model=self.model,
-            min_chunk_size=self.min_chunk_size,
-            max_chunk_size=self.max_chunk_size,
+            user_prompt=self.user_prompt,
             system_prompt=self.system_prompt,
         )
 

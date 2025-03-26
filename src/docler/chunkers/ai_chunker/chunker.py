@@ -45,8 +45,7 @@ class AIChunker(TextChunker):
     def __init__(
         self,
         model: str | None = None,
-        min_chunk_size: int = 200,
-        max_chunk_size: int = 1500,
+        user_prompt: str | None = None,
         system_prompt: str | None = None,
     ):
         """Initialize the AI chunker.
@@ -54,13 +53,11 @@ class AIChunker(TextChunker):
         Args:
             model: LLM model to use
             provider: LLM provider to use
-            min_chunk_size: Minimum characters per chunk
-            max_chunk_size: Maximum characters per chunk
+            user_prompt: User prompt to use
             system_prompt: System prompt to use
         """
         self.model = model or DEFAULT_CHUNKER_MODEL
-        self.min_chunk_size = min_chunk_size
-        self.max_chunk_size = max_chunk_size
+        self.user_prompt = user_prompt or CHUNKING_PROMPT
         self.system_prompt = system_prompt or SYS_PROMPT
 
     async def _get_chunks(self, text: str) -> Chunks:
@@ -75,7 +72,7 @@ class AIChunker(TextChunker):
         # prompt = CHUNKING_PROMPT.format(numbered_text=numbered_text)
         # response = await agent.run(prompt)
         agent: Agent[None] = Agent(model=self.model, system_prompt=self.system_prompt)
-        prompt = CHUNKING_PROMPT.format(numbered_text=numbered_text)
+        prompt = self.user_prompt.format(numbered_text=numbered_text)
         chunks = await agent.talk.extract_multiple(
             text,
             Chunk,

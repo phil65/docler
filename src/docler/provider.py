@@ -35,11 +35,15 @@ class ProviderConfig(BaseSettings):
     def get_config_fields(self):
         return self.model_dump(exclude={"type"}, mode="json")
 
+    def get_provider(self) -> BaseProvider:
+        """Get the provider instance."""
+        raise NotImplementedError
+
 
 class BaseProvider[TConfig]:
     """Represents an image within a document."""
 
-    Config: ClassVar[type[BaseModel]]
+    Config: ClassVar[type[ProviderConfig]]
 
     REQUIRED_PACKAGES: ClassVar[set[str]] = set()
     """Packages required for this converter."""
