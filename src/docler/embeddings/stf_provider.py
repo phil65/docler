@@ -28,8 +28,8 @@ class SentenceTransformerEmbeddings(
     def __init__(self, model: str = "all-MiniLM-L6-v2"):
         from sentence_transformers import SentenceTransformer
 
-        self.model = SentenceTransformer(model)
-        self.dimensions = self.model.get_sentence_embedding_dimension()
+        self.model = SentenceTransformer(model)  # type: ignore
+        self.dimensions = self.model.get_sentence_embedding_dimension()  # pyright: ignore
 
     async def embed_stream(
         self,
@@ -51,3 +51,14 @@ class SentenceTransformerEmbeddings(
             embeddings = await asyncio.to_thread(self.model.encode, batch)
             for embedding in embeddings:
                 yield embedding
+
+
+if __name__ == "__main__":
+    import asyncio
+
+    async def main():
+        provider = SentenceTransformerEmbeddings()
+        for embedding in await provider.embed_texts(["Hello world"]):
+            print(embedding)
+
+    asyncio.run(main())
