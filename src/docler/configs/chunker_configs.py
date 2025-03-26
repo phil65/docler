@@ -14,6 +14,28 @@ if TYPE_CHECKING:
     from docler.chunkers.base import TextChunker
 
 
+AI_CHUNKER_SYSTEM_PROMPT = """
+You are an expert at dividing text into meaningful chunks
+while preserving context and relationships.
+
+The task is to act like a chunker in an RAG pipeline.
+
+Analyze the text and split it into coherent chunks.
+
+All indexes are 1-based. Be accurate with line numbers.
+Extract key terms and concepts as keywords
+If any block is related to another block, you can add that info.
+"""
+
+AI_CHUNKER_USER_TEMPLATE = """
+Here's the text with line numbers:
+
+<text>
+{numbered_text}
+</text>
+"""
+
+
 class BaseChunkerConfig(ProviderConfig):
     """Base configuration for text chunkers."""
 
@@ -84,10 +106,10 @@ class AiChunkerConfig(BaseChunkerConfig):
     model: str = DEFAULT_CHUNKER_MODEL
     """LLM model to use for chunking."""
 
-    system_prompt: str | None = None
+    system_prompt: str = AI_CHUNKER_SYSTEM_PROMPT
     """Custom prompt to override default chunk extraction prompt."""
 
-    user_prompt: str | None = None
+    user_prompt: str = AI_CHUNKER_USER_TEMPLATE
     """Custom prompt to override default chunk extraction prompt."""
 
     def get_provider(self) -> TextChunker:

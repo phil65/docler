@@ -8,33 +8,15 @@ from docler.chunkers.ai_chunker.models import Chunk, Chunks
 from docler.chunkers.ai_chunker.utils import add_line_numbers, create_text_chunk
 from docler.chunkers.base import TextChunker
 from docler.common_types import DEFAULT_CHUNKER_MODEL
+from docler.configs.chunker_configs import (
+    AI_CHUNKER_SYSTEM_PROMPT,
+    AI_CHUNKER_USER_TEMPLATE,
+)
 from docler.models import TextChunk
 
 
 if TYPE_CHECKING:
     from docler.models import Document
-
-
-SYS_PROMPT = """
-You are an expert at dividing text into meaningful chunks
-while preserving context and relationships.
-
-The task is to act like a chunker in an RAG pipeline.
-
-Analyze the text and split it into coherent chunks.
-
-All indexes are 1-based. Be accurate with line numbers.
-Extract key terms and concepts as keywords
-If any block is related to another block, you can add that info.
-"""
-
-CHUNKING_PROMPT = """
-Here's the text with line numbers:
-
-<text>
-{numbered_text}
-</text>
-"""
 
 
 class AIChunker(TextChunker):
@@ -57,8 +39,8 @@ class AIChunker(TextChunker):
             system_prompt: System prompt to use
         """
         self.model = model or DEFAULT_CHUNKER_MODEL
-        self.user_prompt = user_prompt or CHUNKING_PROMPT
-        self.system_prompt = system_prompt or SYS_PROMPT
+        self.user_prompt = user_prompt or AI_CHUNKER_USER_TEMPLATE
+        self.system_prompt = system_prompt or AI_CHUNKER_SYSTEM_PROMPT
 
     async def _get_chunks(self, text: str) -> Chunks:
         """Get chunk definitions from LLM."""
@@ -103,7 +85,7 @@ if __name__ == "__main__":
 
     async def main():
         # Example usage
-        doc = Document(source_path="example.txt", content=SYS_PROMPT)
+        doc = Document(source_path="example.txt", content=AI_CHUNKER_SYSTEM_PROMPT)
         chunker = AIChunker()
         chunks = await chunker.split(doc)
         print(chunks)
