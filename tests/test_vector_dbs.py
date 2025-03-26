@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 from typing import TYPE_CHECKING
 import uuid
 
@@ -20,6 +21,7 @@ managers = [PineconeVectorManager]
 
 @pytest.mark.integration
 @pytest.mark.parametrize("manager_cls", managers)
+@pytest.mark.skipif(os.environ.get("CLI", True), reason="Skip integration in CI")
 async def test_vector_manager_lifecycle(manager_cls: type[VectorManagerBase]):
     """Test basic vector store lifecycle (create, list, delete)."""
     store_name = f"test-{uuid.uuid4().hex[:8]}"
