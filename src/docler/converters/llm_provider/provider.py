@@ -75,13 +75,13 @@ class LLMConverter(DocumentConverter[LLMConverterConfig]):
         Returns:
             Converted document
         """
-        from llmling_agent import Agent, ImageBase64Content
+        from llmling_agent import Agent, PDFBase64Content
         import upath
 
         path = upath.UPath(file_path)
         pdf_bytes = path.read_bytes()
         pdf_b64 = base64.b64encode(pdf_bytes).decode()
-        content = ImageBase64Content(data=pdf_b64, mime_type="application/pdf")
+        content = PDFBase64Content(data=pdf_b64)
         agent = Agent[None](model=self.model, system_prompt=self.system_prompt)
         response = agent.run_sync(self.user_prompt, content)
         return Document(

@@ -11,9 +11,9 @@ StrPath = str | os.PathLike[str]
 SupportedLanguage = Literal["en", "de", "fr", "es", "zh"]
 
 DEFAULT_CHUNKER_MODEL = "openrouter:openai/o3-mini"  # google/gemini-2.0-flash-lite-001
-DEFAULT_CONVERTER_MODEL = "gemini:gemini-2.0-flash"
-DEFAULT_ANNOTATOR_MODEL = "gemini:gemini-2.0-flash"
-DEFAULT_IMAGE_ANNOTATOR_MODEL = "gemini:gemini-2.0-flash"
+DEFAULT_CONVERTER_MODEL = "google-gla:gemini-2.0-flash"
+DEFAULT_ANNOTATOR_MODEL = "google-gla:gemini-2.0-flash"
+DEFAULT_IMAGE_ANNOTATOR_MODEL = "google-gla:gemini-2.0-flash"
 
 # Mapping tables for different backends
 TESSERACT_CODES: dict[SupportedLanguage, str] = {
