@@ -13,6 +13,7 @@ from docler.configs.processor_configs import (
 from docler.diffs import generate_all_diffs
 from docler.models import Document
 from docler.processors.base import DocumentProcessor
+from docler.utils import add_line_numbers
 
 
 class LineCorrection(BaseModel):
@@ -48,12 +49,6 @@ def apply_corrections(
             corrected_lines.add(line_idx)
 
     return "\n".join(lines), corrected_lines
-
-
-def add_line_numbers(text: str) -> str:
-    """Add line numbers to text."""
-    lines = text.splitlines()
-    return "\n".join(f"{i + 1:5d} | {line}" for i, line in enumerate(lines))
 
 
 class LLMProofReader(DocumentProcessor[LLMProofReaderConfig]):

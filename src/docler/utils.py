@@ -134,3 +134,9 @@ def get_api_key(env_var: str) -> str:
         msg = f"Required environment variable {env_var} not set"
         raise ValueError(msg)
     return key
+
+
+def add_line_numbers(text: str) -> str:
+    """Add line numbers to text."""
+    lines = text.splitlines()
+    return "\n".join(f"{i + 1:5d} | {line}" for i, line in enumerate(lines))
