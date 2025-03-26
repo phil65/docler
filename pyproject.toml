@@ -49,7 +49,7 @@ diffs = ["diff-match-patch"]
 bge = ["FlagEmbedding"]
 docling = ["docling[ocrmac,vlm,rapidocr]"] # tesserocr
 # olmocr = ["olmocr", "accelerate"]
-# markitdown = ["markitdown[all]"]
+markitdown = ["markitdown[all]"]
 kreuzberg = ["kreuzberg"]
 litellm = ["litellm", "tokonomics"]
 streamlit = ["streamlit", "streambricks", "tokonomics"]
@@ -65,7 +65,7 @@ all = [
     "marker-pdf",
     "mistralai",
     "docling",
-    "markitdown",
+    "markitdown[all]",
     "kreuzberg",
     # "litellm",
     "llmling-agent[pydantic-ai]",
