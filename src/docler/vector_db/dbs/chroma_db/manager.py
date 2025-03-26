@@ -83,11 +83,12 @@ class ChromaVectorManager(VectorManagerBase[ChromaConfig]):
         if not self._list_client:
             # Create an async client for listing
             if self.host:
-                self._list_client = await chromadb.AsyncHttpClient(
+                # TODO: need to check how async persistent works
+                self._list_client = await chromadb.AsyncHttpClient(  # type: ignore
                     host=self.host, port=self.port, ssl=self.ssl, headers=self.headers
                 )
             else:
-                self._list_client = await chromadb.AsyncClient()
+                self._list_client = await chromadb.AsyncClient()  # type: ignore
 
         return self._list_client
 
