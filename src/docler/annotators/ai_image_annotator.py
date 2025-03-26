@@ -103,7 +103,7 @@ class AIImageAnnotator[TMetadata](Annotator):
         Returns:
             Image with added description and metadata
         """
-        from llmling_agent import Agent, ImageBase64Content
+        from llmling_agent import Agent, ImageBase64Content, StructuredAgent
 
         if image.description and image.metadata:
             return image
@@ -117,7 +117,7 @@ class AIImageAnnotator[TMetadata](Annotator):
                 else image.content.split(",", 1)[1]
             )
         img_content = ImageBase64Content(data=b64_content, mime_type=image.mime_type)
-        agent = Agent[None](
+        agent: StructuredAgent[None, TMetadata] = Agent[None](
             model=self.model,
             system_prompt=self.system_prompt,
         ).to_structured(self.metadata_model)

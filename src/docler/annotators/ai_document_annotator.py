@@ -98,9 +98,9 @@ class AIDocumentAnnotator[TMetadata](Annotator):
         Returns:
             Document with enhanced metadata
         """
-        from llmling_agent import Agent
+        from llmling_agent import Agent, StructuredAgent
 
-        agent = Agent[None](
+        agent: StructuredAgent[None, TMetadata] = Agent[None](
             model=self.model,
             system_prompt=self.system_prompt,
         ).to_structured(self.metadata_model)
