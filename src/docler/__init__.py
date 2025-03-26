@@ -15,7 +15,7 @@ from docler.converters.llm_provider import LLMConverter
 from docler.converters.datalab_provider import DataLabConverter
 from docler.converters.llamaparse_provider import LlamaParseConverter
 
-__version__ = "0.2.0"
+__version__ = "0.3.0"
 
 __all__ = [
     "Conversion",
