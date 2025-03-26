@@ -117,7 +117,7 @@ class AIImageAnnotator[TMetadata](Annotator):
                 else image.content.split(",", 1)[1]
             )
         img_content = ImageBase64Content(data=b64_content, mime_type=image.mime_type)
-        agent: StructuredAgent[None, TMetadata] = Agent[None](
+        agent: StructuredAgent[None, TMetadata] = Agent[None](  # type: ignore
             model=self.model,
             system_prompt=self.system_prompt,
         ).to_structured(self.metadata_model)
@@ -132,7 +132,7 @@ class AIImageAnnotator[TMetadata](Annotator):
             )
 
             result = await agent.run(prompt, img_content)
-            metadata = result.content.model_dump()  # pyright: ignore
+            metadata = result.content.model_dump()  # type: ignore
             description = metadata.pop("description", None)
             if description:
                 image.description = description
