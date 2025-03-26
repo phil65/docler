@@ -34,7 +34,7 @@ class Image(BaseModel):
     description: str | None = None
     """Description of the image."""
 
-    metadata: dict[str, Any] | None = None
+    metadata: dict[str, Any] = Field(default_factory=dict)
     """Metadata of the image."""
 
     model_config = ConfigDict(use_attribute_docstrings=True)
@@ -70,7 +70,7 @@ class Document(BaseModel):
     page_count: int | None = None
     """Number of pages in the source document if available."""
 
-    metadata: dict[str, Any] | None = None
+    metadata: dict[str, Any] = Field(default_factory=dict)
     """Metadata of the document."""
 
     model_config = ConfigDict(use_attribute_docstrings=True)
