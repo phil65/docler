@@ -12,6 +12,8 @@ from pydantic import BaseModel, ConfigDict, Field
 if TYPE_CHECKING:
     import numpy as np
 
+    from docler.common_types import StrPath
+
 
 ImageReferenceFormat = Literal["inline_base64", "file_paths", "keep_internal"]
 
@@ -38,6 +40,93 @@ class Image(BaseModel):
     """Metadata of the image."""
 
     model_config = ConfigDict(use_attribute_docstrings=True)
+
+    @classmethod
+    async def from_file(
+        cls,
+        file_path: StrPath,
+        image_id: str | None = None,
+        description: str | None = None,
+    ) -> Image:
+        """Create an Image instance from a file.
+
+        Args:
+            file_path: Path to the image file
+            image_id: Optional ID for the image (defaults to filename without extension)
+            description: Optional description of the image
+
+        Returns:
+            Image instance with content loaded from the file
+
+        Raises:
+            FileNotFoundError: If the file doesn't exist
+            ValueError: If the file type is not supported
+        """
+        import mimetypes
+
+        import upath
+        import upathtools
+
+        path = upath.UPath(file_path)
+        if not path.exists():
+            msg = f"Image file not found: {file_path}"
+            raise FileNotFoundError(msg)
+
+        mime_type, _ = mimetypes.guess_type(str(path))
+        if image_id is None:
+            image_id = path.stem
+
+        content = await upathtools.read_path(path, mode="rb")
+        filename = path.name
+        file_stats = path.stat()
+        metadata = {
+            "size_bytes": file_stats.st_size,
+            "created_time": file_stats.st_ctime,
+            "modified_time": file_stats.st_mtime,
+            "source_path": str(path),
+        }
+
+        return cls(
+            id=image_id,
+            content=content,
+            mime_type=mime_type or "image/jpeg",
+            filename=filename,
+            description=description,
+            metadata=metadata,
+        )
+
+    @property
+    def dimensions(self) -> tuple[int, int] | None:
+        """Get the width and height of the image.
+
+        Returns:
+            A tuple of (width, height) if dimensions can be determined, None otherwise
+        """
+        try:
+            from io import BytesIO
+
+            from PIL import Image as PILImage
+
+            # Convert content to bytes if it's a base64 string
+            if isinstance(self.content, str):
+                import base64
+
+                # Handle data URLs
+                if self.content.startswith("data:"):
+                    # Extract the base64 part after the comma
+                    base64_data = self.content.split(",", 1)[1]
+                    image_data = base64.b64decode(base64_data)
+                else:
+                    # Regular base64 string
+                    image_data = base64.b64decode(self.content)
+            else:
+                image_data = self.content
+
+            # Open the image and get dimensions
+            with PILImage.open(BytesIO(image_data)) as img:
+                return (img.width, img.height)
+        except (ImportError, Exception):
+            return None
 
 
 class Document(BaseModel):
