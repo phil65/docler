@@ -41,12 +41,13 @@ dependencies = [
     "upathtools>=0.4.3",
 ]
 
+
 [project.optional-dependencies]
 marker = ["marker-pdf"]
 mistralai = ["mistralai"]
 diffs = ["diff-match-patch"]
 bge = ["FlagEmbedding"]
-docling = ["docling"]
+docling = ["docling[ocrmac,vlm,rapidocr]"] # tesserocr
 # olmocr = ["olmocr", "accelerate"]
 # markitdown = ["markitdown[all]"]
 kreuzberg = ["kreuzberg"]
