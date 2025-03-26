@@ -152,7 +152,7 @@ class ComponentBasedConfig(FileDatabaseConfig):
                     return QdrantConfig(collection_name=self.store_name)
                 case "pinecone":
                     return PineconeConfig(
-                        namespace=self.store_name,
+                        collection_name=self.store_name,
                         api_key=SecretStr(get_api_key("PINECONE_API_KEY")),
                     )
                 case "openai":

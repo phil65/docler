@@ -173,7 +173,7 @@ def show_step_3():
                         logger.exception("Vector store connection failed")
 
     # Upload chunks if we have a connected vector store
-    if store_id := state.vector_store_id:
+    if vec_store_id := state.vector_store_id:
         st.divider()
         st.subheader("Upload Chunks")
         st.write(f"Found {len(chunks)} chunks to upload")
@@ -187,7 +187,7 @@ def show_step_3():
                     config = state.vector_configs[provider]
                     vector_db = anyenv.run_sync(
                         manager.get_vector_store(
-                            store_id, **config.model_dump(exclude={"type"})
+                            vec_store_id, **config.model_dump(exclude={"type"})
                         )
                     )
                     assert vector_db is not None, "Vector store not found"
@@ -203,7 +203,7 @@ def show_step_3():
         if state.uploaded_chunks:
             num = state.uploaded_chunks
             provider = state.vector_provider or provider
-            st.success(f"{num} chunks uploaded to {provider} vector store '{store_id}'")
+            st.success(f"{num} chunks uploaded to {provider} vector db {vec_store_id!r}")
 
             st.divider()
             st.subheader("Test Your Vector Store")
@@ -216,7 +216,7 @@ def show_step_3():
                         config = state.vector_configs[provider]
                         cfg = config.model_dump(exclude={"type"})
                         vector_db = anyenv.run_sync(
-                            manager.get_vector_store(store_id, **cfg)
+                            manager.get_vector_store(vec_store_id, **cfg)
                         )
                         assert vector_db is not None, "Vector store not found"
                         results = anyenv.run_sync(vector_db.query(query, k=3))

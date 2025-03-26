@@ -124,7 +124,7 @@ class DoclingConverter(DocumentConverter[DoclingConverterConfig]):
             delim=self.delim,
             indent=self.indent,
             text_width=self.text_width,
-            escaping_underscores=self.escaping_underscores,
+            escape_underscores=self.escaping_underscores,
             strict_text=self.strict_text,
         )
         images: list[Image] = []
