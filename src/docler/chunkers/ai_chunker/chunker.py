@@ -9,8 +9,8 @@ from docler.chunkers.ai_chunker.utils import add_line_numbers, create_text_chunk
 from docler.chunkers.base import TextChunker
 from docler.common_types import DEFAULT_CHUNKER_MODEL
 from docler.configs.chunker_configs import (
-    AI_CHUNKER_SYSTEM_PROMPT,
-    AI_CHUNKER_USER_TEMPLATE,
+    DEFAULT_CHUNKER_SYSTEM_PROMPT,
+    DEFAULT_CHUNKER_USER_TEMPLATE,
 )
 from docler.models import TextChunk
 
@@ -39,8 +39,8 @@ class AIChunker(TextChunker):
             system_prompt: System prompt to use
         """
         self.model = model or DEFAULT_CHUNKER_MODEL
-        self.user_prompt = user_prompt or AI_CHUNKER_USER_TEMPLATE
-        self.system_prompt = system_prompt or AI_CHUNKER_SYSTEM_PROMPT
+        self.user_prompt = user_prompt or DEFAULT_CHUNKER_USER_TEMPLATE
+        self.system_prompt = system_prompt or DEFAULT_CHUNKER_SYSTEM_PROMPT
 
     async def _get_chunks(self, text: str) -> Chunks:
         """Get chunk definitions from LLM."""
@@ -85,7 +85,7 @@ if __name__ == "__main__":
 
     async def main():
         # Example usage
-        doc = Document(source_path="example.txt", content=AI_CHUNKER_SYSTEM_PROMPT)
+        doc = Document(source_path="example.txt", content=DEFAULT_CHUNKER_SYSTEM_PROMPT)
         chunker = AIChunker()
         chunks = await chunker.split(doc)
         print(chunks)

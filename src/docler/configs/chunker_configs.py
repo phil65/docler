@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from docler.chunkers.base import TextChunker
 
 
-AI_CHUNKER_SYSTEM_PROMPT = """
+DEFAULT_CHUNKER_SYSTEM_PROMPT = """
 You are an expert at dividing text into meaningful chunks
 while preserving context and relationships.
 
@@ -27,7 +27,7 @@ Extract key terms and concepts as keywords
 If any block is related to another block, you can add that info.
 """
 
-AI_CHUNKER_USER_TEMPLATE = """
+DEFAULT_CHUNKER_USER_TEMPLATE = """
 Here's the text with line numbers:
 
 <text>
@@ -106,10 +106,10 @@ class AiChunkerConfig(BaseChunkerConfig):
     model: str = DEFAULT_CHUNKER_MODEL
     """LLM model to use for chunking."""
 
-    system_prompt: str = AI_CHUNKER_SYSTEM_PROMPT
+    system_prompt: str = DEFAULT_CHUNKER_SYSTEM_PROMPT
     """Custom prompt to override default chunk extraction prompt."""
 
-    user_prompt: str = AI_CHUNKER_USER_TEMPLATE
+    user_prompt: str = DEFAULT_CHUNKER_USER_TEMPLATE
     """Custom prompt to override default chunk extraction prompt."""
 
     def get_provider(self) -> TextChunker:

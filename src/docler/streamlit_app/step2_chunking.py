@@ -9,9 +9,9 @@ import streambricks as sb
 import streamlit as st
 
 from docler.chunkers.ai_chunker import AIChunker
-from docler.chunkers.ai_chunker.chunker import SYS_PROMPT
 from docler.chunkers.llamaindex_chunker import LlamaIndexChunker
 from docler.chunkers.markdown_chunker import MarkdownChunker
+from docler.configs import DEFAULT_CHUNKER_SYSTEM_PROMPT
 from docler.log import get_logger
 from docler.streamlit_app.chunkers import CHUNKERS
 from docler.streamlit_app.state import SessionState
@@ -97,7 +97,7 @@ def show_step_2():
     elif chunker_type == "AI":
         model = sb.model_selector(providers=["openrouter"])
         model_name = model.pydantic_ai_id if model else None
-        sys_prompt = st.text_area("System prompt", value=SYS_PROMPT)
+        sys_prompt = st.text_area("System prompt", value=DEFAULT_CHUNKER_SYSTEM_PROMPT)
         chunker = AIChunker(model=model_name, system_prompt=sys_prompt)
     if chunker and st.button("Chunk Document"):
         with st.spinner("Processing document..."):

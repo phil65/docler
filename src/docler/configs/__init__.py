@@ -18,6 +18,8 @@ from docler.configs.chunker_configs import (
     ChunkerConfig,
     LlamaIndexChunkerConfig,
     MarkdownChunkerConfig,
+    DEFAULT_CHUNKER_USER_TEMPLATE,
+    DEFAULT_CHUNKER_SYSTEM_PROMPT,
 )
 from docler.configs.converter_configs import (
     AzureConfig,
@@ -82,6 +84,8 @@ from docler.configs.vector_db_configs import (
 )
 
 __all__ = [
+    "DEFAULT_CHUNKER_SYSTEM_PROMPT",
+    "DEFAULT_CHUNKER_USER_TEMPLATE",
     "DEFAULT_DOC_PROMPT_TEMPLATE",
     "DEFAULT_DOC_SYSTEM_PROMPT",
     "DEFAULT_IMAGE_PROMPT_TEMPLATE",
