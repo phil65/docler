@@ -14,6 +14,7 @@ DEFAULT_CHUNKER_MODEL = "openrouter:openai/o3-mini"  # google/gemini-2.0-flash-l
 DEFAULT_CONVERTER_MODEL = "google-gla:gemini-2.0-flash"
 DEFAULT_ANNOTATOR_MODEL = "google-gla:gemini-2.0-flash"
 DEFAULT_IMAGE_ANNOTATOR_MODEL = "google-gla:gemini-2.0-flash"
+DEFAULT_PROOF_READER_MODEL = "google-gla:gemini-2.0-flash"
 
 # Mapping tables for different backends
 TESSERACT_CODES: dict[SupportedLanguage, str] = {

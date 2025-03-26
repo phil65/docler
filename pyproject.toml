@@ -44,6 +44,7 @@ dependencies = [
 [project.optional-dependencies]
 marker = ["marker-pdf"]
 mistralai = ["mistralai"]
+diffs = ["diff-match-patch"]
 bge = ["FlagEmbedding"]
 docling = ["docling"]
 # olmocr = ["olmocr", "accelerate"]
