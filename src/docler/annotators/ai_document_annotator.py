@@ -100,7 +100,7 @@ class AIDocumentAnnotator[TMetadata](Annotator):
         """
         from llmling_agent import Agent, StructuredAgent
 
-        agent: StructuredAgent[None, TMetadata] = Agent[None](
+        agent: StructuredAgent[None, TMetadata] = Agent[None](  # type: ignore
             model=self.model,
             system_prompt=self.system_prompt,
         ).to_structured(self.metadata_model)

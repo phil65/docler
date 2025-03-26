@@ -3,18 +3,21 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, ClassVar
 
 from docler.provider import BaseProvider
 
 
 if TYPE_CHECKING:
+    from docler.configs.vector_db_configs import BaseVectorStoreConfig
     from docler.models import VectorStoreInfo
     from docler.vector_db.base import VectorDB
 
 
 class VectorManagerBase[TConfig](BaseProvider[TConfig], ABC):
     """Abstract base class for vector database managers."""
+
+    Config: ClassVar[type[BaseVectorStoreConfig]]
 
     @property
     @abstractmethod
