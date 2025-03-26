@@ -95,10 +95,6 @@ class AIDocumentAnnotator[TMetadata](Annotator[AIDocumentAnnotatorConfig]):
             system_prompt=self.system_prompt,
         ).to_structured(self.metadata_model)
 
-        # Process document-level metadata if needed
-        if document.metadata is None:
-            document.metadata = {}
-
         # Get a condensed version of the document for context
         context = (
             document.content[: self.max_context_length] + "..."

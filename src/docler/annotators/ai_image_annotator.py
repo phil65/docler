@@ -126,8 +126,6 @@ class AIImageAnnotator[TMetadata](Annotator[AIImageAnnotatorConfig]):
             description = metadata.pop("description", None)
             if description:
                 image.description = description
-            if image.metadata is None:
-                image.metadata = {}
             image.metadata.update(metadata)
 
         except Exception:
