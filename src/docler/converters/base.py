@@ -17,6 +17,7 @@ if TYPE_CHECKING:
     from collections.abc import Sequence
 
     from docler.common_types import StrPath, SupportedLanguage
+    from docler.configs.converter_configs import ConverterConfig
     from docler.models import Document
 
 
@@ -27,6 +28,8 @@ class DocumentConverter[TConfig](BaseProvider[TConfig], ABC):
     - _convert_path_sync: For CPU-bound operations
     - _convert_path_async: For IO-bound/API-based operations
     """
+
+    Config: ClassVar[type[ConverterConfig]]
 
     NAME: str
     """Name of the converter."""
