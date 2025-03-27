@@ -8,14 +8,14 @@ import uuid
 
 import pytest
 
-from docler.vector_db.dbs.openai_db import OpenAIVectorManager
+from docler.vector_db.dbs.chroma_db import ChromaVectorManager
 from docler.vector_db.dbs.pinecone_db import PineconeVectorManager
 
 
 if TYPE_CHECKING:
     from docler.vector_db.base_manager import VectorManagerBase
 
-managers = [OpenAIVectorManager, PineconeVectorManager]
+managers = [ChromaVectorManager, PineconeVectorManager]
 managers = [PineconeVectorManager]
 
 

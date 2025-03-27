@@ -34,7 +34,8 @@ class ChromaBackend(VectorStoreBackend):
 
         Args:
             vector_store_id: Name of collection to use
-            persist_directory: Directory for persistent storage (memory if None)
+            persist_directory: Directory for persistent storage
+                               (connects to ChromaDB server if None)
             distance_metric: Distance metric to use for similarity search
 
         Raises:
