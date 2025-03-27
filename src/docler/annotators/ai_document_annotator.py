@@ -37,7 +37,6 @@ class DefaultMetadata(BaseModel):
     """Main entities."""
 
 
-# Type variable for generic metadata model
 T = TypeVar("T", bound=BaseModel)
 
 
@@ -119,3 +118,18 @@ class AIDocumentAnnotator[TMetadata](Annotator[AIDocumentAnnotatorConfig]):
                 logger.exception("Error annotating batch")
 
         return document
+
+
+if __name__ == "__main__":
+    import asyncio
+
+    from docler.models import ChunkedDocument
+
+    async def main():
+        text = "Test"
+        annotator = AIDocumentAnnotator[DefaultMetadata]()
+        chunked_doc = ChunkedDocument(content=text)
+        result = await annotator.annotate(chunked_doc)
+        print(result)
+
+    asyncio.run(main())

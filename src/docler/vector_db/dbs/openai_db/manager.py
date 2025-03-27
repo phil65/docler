@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
-import logging
 import os
 from typing import TYPE_CHECKING, Any, Literal
 
 from docler.configs.vector_db_configs import OpenAIVectorConfig
+from docler.log import get_logger
 from docler.models import VectorStoreInfo
 from docler.utils import get_api_key
 from docler.vector_db.base_manager import VectorManagerBase
@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from docler.vector_db.base import VectorDB
 
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 # class VectorStore(BaseModel):

@@ -3,10 +3,10 @@
 from __future__ import annotations
 
 import io
-import logging
 import os
 from typing import TYPE_CHECKING, Any, ClassVar, Literal
 
+from docler.log import get_logger
 from docler.models import TextChunk
 from docler.utils import get_api_key
 from docler.vector_db.base import VectorDB
@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from openai.types import FileChunkingStrategyParam
 
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 BATCH_SIZE = 10
 ChunkingStrategy = Literal["auto", "static"]
