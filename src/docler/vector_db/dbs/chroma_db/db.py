@@ -7,7 +7,7 @@ import uuid
 
 from docler.log import get_logger
 from docler.models import SearchResult, Vector
-from docler.vector_db.base import VectorStoreBackend
+from docler.vector_db.base_backend import VectorStoreBackend
 
 
 if TYPE_CHECKING:
