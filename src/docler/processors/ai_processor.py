@@ -56,6 +56,7 @@ class LLMProofReader(DocumentProcessor[LLMProofReaderConfig]):
 
     Config = LLMProofReaderConfig
     REQUIRED_PACKAGES: ClassVar = {"llmling-agent"}
+    NAME = "proof_reading"
 
     def __init__(
         self,
@@ -149,24 +150,18 @@ class LLMProofReader(DocumentProcessor[LLMProofReaderConfig]):
         from llmling_agent import Agent
 
         agent = Agent[None](model=self.model, system_prompt=self.system_prompt)
-        all_corrections = []
-
-        # If document is small enough, process it all at once
         numbered_text = add_line_numbers(doc.content)
         if self._count_tokens(numbered_text) <= self.max_chunk_tokens:
             user_prompt = self.prompt_template.format(chunk_text=numbered_text)
-
             corrections = await agent.talk.extract_multiple(
                 text=numbered_text,
                 as_type=LineCorrection,
                 prompt=user_prompt,
                 mode="structured",
             )
-            all_corrections = corrections
         else:
-            # Process larger documents in chunks
+            corrections = []
             chunks = self._split_into_chunks(doc.content)
-
             for _, chunk_text in chunks:
                 user_prompt = self.prompt_template.format(chunk_text=chunk_text)
                 chunk_corrections = await agent.talk.extract_multiple(
@@ -175,9 +170,9 @@ class LLMProofReader(DocumentProcessor[LLMProofReaderConfig]):
                     prompt=user_prompt,
                     mode="structured",
                 )
-                all_corrections.extend(chunk_corrections)
+                corrections.extend(chunk_corrections)
 
-        new_content, corrected_lines = apply_corrections(doc.content, all_corrections)
+        new_content, corrected_lines = apply_corrections(doc.content, corrections)
         metadata = doc.metadata.copy() if doc.metadata else {}
         proof_reading = {
             "model": self.model,
@@ -186,16 +181,15 @@ class LLMProofReader(DocumentProcessor[LLMProofReaderConfig]):
             "metadata_only": self.add_metadata_only,
             "corrections": [
                 {"line_number": c.line_number, "corrected": c.corrected}
-                for c in all_corrections
+                for c in corrections
             ],
         }
 
         if self.include_diffs:
             diff_metadata = generate_all_diffs(doc.content, new_content)
-            # Add diffs to the proof_reading sub-dictionary
             proof_reading.update(diff_metadata)
 
-        metadata["proof_reading"] = proof_reading
+        metadata[self.NAME] = proof_reading
         final_content = new_content if not self.add_metadata_only else doc.content
         return Document(
             content=final_content,

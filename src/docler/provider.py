@@ -3,10 +3,12 @@
 from __future__ import annotations
 
 import importlib.util
-from typing import ClassVar, TypeVar
+from typing import Any, ClassVar, TypeVar
 
 from pydantic import BaseModel, Field, SecretStr, field_serializer
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+from docler.log import get_logger
 
 
 TConfig = TypeVar("TConfig", bound=BaseModel)
@@ -47,6 +49,9 @@ class BaseProvider[TConfig]:
 
     REQUIRED_PACKAGES: ClassVar[set[str]] = set()
     """Packages required for this converter."""
+
+    def __init__(self, *args: Any, **kwargs: Any):
+        self.logger = get_logger(__name__)
 
     @classmethod
     def has_required_packages(cls) -> bool:
