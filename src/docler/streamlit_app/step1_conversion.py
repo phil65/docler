@@ -76,7 +76,7 @@ def show_step_1():
     # Show preview for already converted document
     elif state.document:
         st.success(f"Document {state.uploaded_file_name!r} already converted!")
-        st.button("Proceed to Chunking", on_click=state.next_step)
+        st.button("Proceed to proof reading", on_click=state.next_step)
         st.subheader("Document Preview")
         with st.expander("Markdown Content", expanded=False):
             st.markdown(f"```markdown\n{state.document.content}\n```")
