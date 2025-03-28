@@ -2,14 +2,14 @@
 
 from __future__ import annotations
 
+import logging
 import mimetypes
 from typing import TYPE_CHECKING
 
 
 if TYPE_CHECKING:
-    from docler.common_types import StrPath, SupportedLanguage
+    from docler.common_types import SupportedLanguage
     from docler.converters.base import DocumentConverter
-    from docler.models import Document
 
 
 class ConverterRegistry:
@@ -21,21 +21,51 @@ class ConverterRegistry:
 
     def __init__(self):
         """Initialize an empty converter registry."""
-        # Dict[mime_type, List[Tuple[priority, converter_cls]]]
         self._converters: dict[str, list[tuple[int, type[DocumentConverter]]]] = {}
+        self._preferences: dict[str, str] = {}  # MIME type -> converter name preferences
 
     @classmethod
-    def create_default(cls):
+    def create_default(cls) -> ConverterRegistry:
+        """Create a registry with all available converters.
+
+        Returns:
+            Registry with all converters registered with sensible priorities
+        """
+        import importlib.util
+
+        from docler.converters.azure_provider import AzureConverter
+        from docler.converters.datalab_provider import DataLabConverter
+        from docler.converters.docling_provider import DoclingConverter
+        from docler.converters.kreuzberg_provider import KreuzbergConverter
+        from docler.converters.llamaparse_provider import LlamaParseConverter
+        from docler.converters.llm_provider import LLMConverter
         from docler.converters.marker_provider import MarkerConverter
+        from docler.converters.markitdown_provider import MarkItDownConverter
         from docler.converters.mistral_provider import MistralConverter
+        from docler.converters.upstage_provider import UpstageConverter
 
-        registry = ConverterRegistry()
+        registry = cls()
+        converters: list[type[DocumentConverter]] = [
+            MarkerConverter,
+            KreuzbergConverter,
+            MarkItDownConverter,
+            DoclingConverter,
+            LLMConverter,
+            DataLabConverter,
+            AzureConverter,
+            UpstageConverter,
+            MistralConverter,
+            LlamaParseConverter,
+        ]
 
-        # Register converters with priorities
-        # Base priority for most formats
-        registry.register(MarkerConverter, priority=0)
-        # Prefer Mistral for PDFs
-        registry.register(MistralConverter, ["application/pdf"], priority=100)
+        default_priority = 10
+        for converter_cls in converters:
+            has_requirements = all(
+                importlib.util.find_spec(package.replace("-", "_"))
+                for package in converter_cls.REQUIRED_PACKAGES
+            )
+            if has_requirements:
+                registry.register(converter_cls, priority=default_priority)
         return registry
 
     def register(
@@ -53,6 +83,7 @@ class ConverterRegistry:
                 If None, uses the converter's SUPPORTED_MIME_TYPES.
             priority: Priority of this converter (higher = more preferred).
         """
+        # Use the class's SUPPORTED_MIME_TYPES attribute
         types_to_register = mime_types or list(converter_cls.SUPPORTED_MIME_TYPES)
 
         for mime_type in types_to_register:
@@ -66,160 +97,110 @@ class ConverterRegistry:
     def get_converter(
         self,
         file_path: str,
+        mime_type: str | None = None,
     ) -> type[DocumentConverter] | None:
         """Get the highest priority converter for a file.
 
         Args:
             file_path: Path to the file to convert.
+            mime_type: Optional explicit MIME type
 
         Returns:
             Highest priority converter class for this file type,
             or None if no converter is registered.
         """
-        mime_type, _ = mimetypes.guess_type(file_path)
-        if not mime_type:
-            return None
+        if mime_type is None:
+            mime_type, _ = mimetypes.guess_type(file_path)
+            if not mime_type:
+                return None
 
+        # Check if we have a preference for this MIME type
+        if mime_type in self._preferences:
+            preferred_name = self._preferences[mime_type]
+            # Look for the preferred converter in all registered converters
+            for converters in self._converters.values():
+                for _, converter_cls in converters:
+                    if (
+                        preferred_name == converter_cls.NAME
+                        and mime_type in converter_cls.SUPPORTED_MIME_TYPES
+                    ):
+                        return converter_cls
+
+        # No preference or preferred converter not found, use highest priority
         converters = self._converters.get(mime_type, [])
         return converters[0][1] if converters else None
 
-    async def convert_file(
-        self,
-        file_path: StrPath,
-        language: SupportedLanguage,
-        **converter_kwargs,
-    ) -> Document:
-        """Convert a single file using the appropriate converter.
+    def set_preference(self, mime_or_extension: str, converter_name: str):
+        """Set a preference for a specific converter for a MIME type or file extension.
+
+        Args:
+            mime_or_extension: MIME type ('application/pdf') or file extension ('.pdf')
+            converter_name: Name of the preferred converter
+        """
+        # Determine if this is a MIME type or file extension
+        if "/" in mime_or_extension:
+            # This is a MIME type
+            self._preferences[mime_or_extension] = converter_name
+        else:
+            # This is a file extension - normalize it and get the MIME type
+            if not mime_or_extension.startswith("."):
+                mime_or_extension = f".{mime_or_extension}"
+
+            mime_type, _ = mimetypes.guess_type(f"dummy{mime_or_extension}")
+            if mime_type:
+                self._preferences[mime_type] = converter_name
+
+    def get_supported_mime_types(self) -> set[str]:
+        """Get all MIME types supported by registered converters.
+
+        Returns:
+            Set of supported MIME type strings
+        """
+        return set(self._converters.keys())
+
+    def create_converter(
+        self, file_path: str, languages: list[SupportedLanguage] | None = None, **kwargs
+    ) -> DocumentConverter | None:
+        """Create appropriate converter instance for a file.
 
         Args:
             file_path: Path to the file to convert
-            language: Primary language for OCR/processing
-            **converter_kwargs: Additional arguments to pass to the converter
+            languages: Languages to use for conversion
+            **kwargs: Additional arguments to pass to the converter
 
         Returns:
-            Converted document
-
-        Raises:
-            ValueError: If no suitable converter is found
+            Instantiated converter or None if no suitable converter found
         """
-        converter_cls = self.get_converter(str(file_path))
+        converter_cls = self.get_converter(file_path)
         if not converter_cls:
-            msg = f"No converter found for file: {file_path}"
-            raise ValueError(msg)
+            return None
 
-        converter = converter_cls(languages=[language], **converter_kwargs)
-        return await converter.convert_file(file_path)
-
-    # async def convert_directory(
-    #     self,
-    #     directory: StrPath,
-    #     language: SupportedLanguage,
-    #     *,
-    #     pattern: str = "**/*",
-    #     recursive: bool = True,
-    #     exclude: list[str] | None = None,
-    #     max_depth: int | None = None,
-    #     chunk_size: int = 50,
-    #     **converter_kwargs,
-    # ) -> dict[str, Document]:
-    #     """Convert all supported files in a directory.
-
-    #     Args:
-    #         directory: Directory to process
-    #         language: Primary language for OCR/processing
-    #         pattern: File glob pattern
-    #         recursive: Whether to process subdirectories
-    #         exclude: Patterns to exclude
-    #         max_depth: Maximum directory depth
-    #         chunk_size: Files to process in parallel
-    #         **converter_kwargs: Additional arguments for converters
-
-    #     Returns:
-    #         Map of relative paths to converted documents
-    #     """
-    #     from docler.dir_converter import DirectoryConverter
-
-    #     # Find the first matching converter for any file
-    #     files = await DirectoryConverter._list_files(
-    #         directory, pattern, recursive, exclude, max_depth
-    #     )
-    #     for file in files:
-    #         if converter_cls := self.get_converter(str(file)):
-    #             converter = converter_cls(languages=[language], **converter_kwargs)
-    #             dir_converter = DirectoryConverter(converter, chunk_size=chunk_size)
-    #             return await dir_converter.convert(
-    #                 directory,
-    #                 pattern=pattern,
-    #                 recursive=recursive,
-    #                 exclude=exclude,
-    #                 max_depth=max_depth,
-    #             )
-
-    #     msg = f"No suitable converter found for any files in {directory}"
-    #     raise ValueError(msg)
-
-    # async def convert_directory_with_progress(
-    #     self,
-    #     directory: StrPath,
-    #     language: SupportedLanguage,
-    #     *,
-    #     pattern: str = "**/*",
-    #     recursive: bool = True,
-    #     exclude: list[str] | None = None,
-    #     max_depth: int | None = None,
-    #     chunk_size: int = 50,
-    #     **converter_kwargs,
-    # ) -> AsyncIterator[Conversion]:
-    #     """Convert directory with progress updates.
-
-    #     Args:
-    #         directory: Directory to process
-    #         language: Primary language for OCR/processing
-    #         pattern: File glob pattern
-    #         recursive: Whether to process subdirectories
-    #         exclude: Patterns to exclude
-    #         max_depth: Maximum directory depth
-    #         chunk_size: Files to process in parallel
-    #         **converter_kwargs: Additional arguments for converters
-
-    #     Yields:
-    #         Conversion progress states
-    #     """
-    #     from docler.dir_converter import DirectoryConverter
-
-    #     # Find the first matching converter for any file
-    #     files = await DirectoryConverter._list_files(
-    #         directory, pattern, recursive, exclude, max_depth
-    #     )
-    #     for file in files:
-    #         if converter_cls := self.get_converter(str(file)):
-    #             converter = converter_cls(languages=[language], **converter_kwargs)
-    #             dir_converter = DirectoryConverter(converter, chunk_size=chunk_size)
-    #             async for state in dir_converter.convert_with_progress(
-    #                 directory,
-    #                 pattern=pattern,
-    #                 recursive=recursive,
-    #                 exclude=exclude,
-    #                 max_depth=max_depth,
-    #             ):
-    #                 yield state
-    #             return
-
-    #     msg = f"No suitable converter found for any files in {directory}"
-    #     raise ValueError(msg)
+        return converter_cls(languages=languages, **kwargs)
 
 
 if __name__ == "__main__":
-    import logging
-
     import anyenv
 
     logging.basicConfig(level=logging.DEBUG)
 
     async def main():
         registry = ConverterRegistry.create_default()
-        pdf_path = "document.pdf"
-        return await registry.convert_file(pdf_path, language="en")
+        converter_cls = registry.get_converter("document.pdf")
+        if converter_cls:
+            print(f"Found converter: {converter_cls.NAME}")
+            converter = converter_cls(languages=["en"])
+            try:
+                pdf_path = "document.pdf"
+                result = await converter.convert_file(pdf_path)
+                print(f"Conversion successful: {len(result.content)} characters")
+            except Exception as e:  # noqa: BLE001
+                print(f"Conversion failed: {e}")
+            else:
+                return result
+
+        else:
+            print("No suitable converter found")
+        return None
 
     result = anyenv.run_sync(main())
     print(result)

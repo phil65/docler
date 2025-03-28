@@ -49,6 +49,25 @@ class DocumentConverter[TConfig](BaseProvider[TConfig], ABC):
         """Price per page in USD."""
         return None
 
+    def get_supported_mime_types(self) -> set[str]:
+        """Get all MIME types supported by this converter.
+
+        Returns:
+            Set of supported MIME type strings
+        """
+        return self.SUPPORTED_MIME_TYPES
+
+    def supports_mime_type(self, mime_type: str) -> bool:
+        """Check if this converter supports a specific MIME type.
+
+        Args:
+            mime_type: MIME type to check
+
+        Returns:
+            True if this converter supports the MIME type
+        """
+        return mime_type in self.get_supported_mime_types()
+
     async def convert_files(self, file_paths: Sequence[StrPath]) -> list[Document]:
         """Convert multiple document files in parallel.
 
