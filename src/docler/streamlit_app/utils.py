@@ -10,10 +10,9 @@ import streamlit as st
 
 if TYPE_CHECKING:
     from docler.common_types import SupportedLanguage
-    from docler.models import TextChunk
+    from docler.models import Document, TextChunk
 
 
-# Language options
 LANGUAGES: list[SupportedLanguage] = ["en", "de", "fr", "es", "zh"]
 
 
@@ -77,3 +76,32 @@ def display_chunk_preview(chunk: TextChunk, expanded: bool = False) -> None:
                     st.markdown(f"**MIME Type:** {image.mime_type}")
                     st.image(data_url)
                     st.divider()
+
+
+def display_document_preview(doc: Document) -> None:
+    """Display a tabbed preview of a document.
+
+    Args:
+        doc: Document to display
+    """
+    tabs = ["Raw Markdown", "Rendered", "Images"]
+    raw_tab, rendered_tab, images_tab = st.tabs(tabs)
+
+    with raw_tab:
+        st.markdown(f"```markdown\n{doc.content}\n```")
+
+    with rendered_tab:
+        st.markdown(doc.content)
+
+    with images_tab:
+        if not doc.images:
+            st.info("No images extracted")
+        else:
+            for image in doc.images:
+                data_url = format_image_content(image.content, image.mime_type)
+                st.markdown(f"**ID:** {image.id}")
+                if image.filename:
+                    st.markdown(f"**Filename:** {image.filename}")
+                st.markdown(f"**MIME Type:** {image.mime_type}")
+                st.image(data_url)
+                st.divider()

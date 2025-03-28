@@ -21,6 +21,7 @@ from docler.converters.marker_provider import MarkerConverter
 from docler.converters.markitdown_provider import MarkItDownConverter
 from docler.converters.mistral_provider import MistralConverter
 from docler.converters.upstage_provider import UpstageConverter
+from docler.streamlit_app.utils import display_document_preview
 
 
 if TYPE_CHECKING:
@@ -62,13 +63,9 @@ def main():
     """Main Streamlit app."""
     st.title("Document Converter")
     uploaded_file = st.file_uploader("Choose a file", type=ALLOWED_EXTENSIONS)
-    selected_converters = st.multiselect(
-        "Select converters",
-        options=list(CONVERTERS.keys()),
-        default=["DataLab"],
-    )
+    opts = list(CONVERTERS.keys())
+    selected_converters = st.multiselect("Select converters", opts, default=["DataLab"])
     language = st.selectbox("Select language", options=LANGUAGES, index=0)
-
     if uploaded_file and selected_converters and st.button("Convert"):
         with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as temp_file:
             temp_file.write(uploaded_file.getvalue())
@@ -82,33 +79,9 @@ def main():
                         converter_cls = CONVERTERS[converter_name]
                         converter = converter_cls(languages=[language])
                         doc = anyenv.run_sync(converter.convert_file(temp_path))
-                        tabs = ["Raw Markdown", "Rendered", "Images"]
-                        raw_tab, rendered_tab, images_tab = st.tabs(tabs)
-                        with raw_tab:
-                            st.markdown(f"```markdown\n{doc.content}\n```")
-                        with rendered_tab:
-                            st.markdown(doc.content)
-                        with images_tab:
-                            if not doc.images:
-                                st.info("No images extracted")
-                            else:
-                                for image in doc.images:
-                                    data_url = format_image_content(
-                                        image.content,
-                                        image.mime_type,
-                                    )
-
-                                    # Show image details and preview
-                                    st.markdown(f"**ID:** {image.id}")
-                                    if image.filename:
-                                        st.markdown(f"**Filename:** {image.filename}")
-                                    st.markdown(f"**MIME Type:** {image.mime_type}")
-                                    st.image(data_url)
-                                    st.divider()
-
+                        display_document_preview(doc)
                 except Exception as e:  # noqa: BLE001
                     st.error(f"Conversion failed: {e!s}")
-
         Path(temp_path).unlink()
 
 
