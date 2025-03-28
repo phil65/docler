@@ -118,7 +118,7 @@ class LiteLLMEmbeddingConfig(BaseEmbeddingConfig):
     api_key: SecretStr | None = None
     """Optional API key for the provider."""
 
-    dimensions: int | None = None
+    dimensions: int | None = Field(default=None, gt=0)
     """Optional number of dimensions for the embeddings."""
 
     input_type: LiteLLMInputType | None = None

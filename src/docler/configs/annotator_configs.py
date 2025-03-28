@@ -69,10 +69,10 @@ class AIDocumentAnnotatorConfig(BaseAnnotatorConfig):
     prompt_template: str = DEFAULT_DOC_PROMPT_TEMPLATE
     """Template for the annotation prompt."""
 
-    max_context_length: int = 1500
+    max_context_length: int = Field(default=1500, ge=1)
     """Maximum length of context for annotation."""
 
-    batch_size: int = 5
+    batch_size: int = Field(default=5, ge=1)
     """Number of chunks to process in parallel."""
 
     def get_provider(self) -> Annotator:
@@ -102,7 +102,7 @@ class AIImageAnnotatorConfig(BaseAnnotatorConfig):
     user_prompt: str = DEFAULT_IMAGE_PROMPT_TEMPLATE
     """User prompt template for image analysis."""
 
-    batch_size: int = 3
+    batch_size: int = Field(default=3, ge=1)
     """Number of images to process concurrently."""
 
     def get_provider(self) -> Annotator:

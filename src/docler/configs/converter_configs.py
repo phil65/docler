@@ -16,6 +16,7 @@ from pydantic_settings import SettingsConfigDict
 
 from docler.common_types import DEFAULT_CONVERTER_MODEL, SupportedLanguage
 from docler.provider import ProviderConfig
+from docler.pydantic_types import ModelIdentifier  # noqa: TC001
 
 
 if TYPE_CHECKING:
@@ -74,7 +75,7 @@ class DoclingConverterConfig(BaseConverterConfig):
     languages: set[SupportedLanguage] = Field(default_factory=default_languages)
     """List of supported languages for the converter."""
 
-    image_scale: float = 2.0
+    image_scale: float = Field(default=2.0, gt=0)
     """Scale factor for image resizing."""
 
     generate_images: bool = True
@@ -156,7 +157,7 @@ class DataLabConfig(BaseConverterConfig):
     use_llm: bool = False
     """Whether to use LLM for enhanced accuracy."""
 
-    max_pages: int | None = None
+    max_pages: int | None = Field(default=None, ge=1)
     """Maximum number of pages to process."""
 
     model_config = SettingsConfigDict(env_prefix="DATALAB_")
@@ -177,7 +178,7 @@ class LLMConverterConfig(BaseConverterConfig):
     languages: set[SupportedLanguage] = Field(default_factory=default_languages)
     """List of supported languages for the converter."""
 
-    model: str = DEFAULT_CONVERTER_MODEL
+    model: ModelIdentifier = DEFAULT_CONVERTER_MODEL
     """LLM model to use."""
 
     system_prompt: str | None = None
@@ -281,7 +282,7 @@ class MarkerConfig(BaseConverterConfig):
     type: Literal["marker"] = Field("marker", init=False)
     """Type discriminator for Marker converter."""
 
-    dpi: int = 192
+    dpi: int = Field(default=192, gt=0)
     """DPI setting for image extraction."""
 
     llm_provider: Literal["gemini", "ollama", "vertex", "claude"] | None = None

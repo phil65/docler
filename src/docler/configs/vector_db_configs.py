@@ -111,7 +111,7 @@ class PineconeConfig(BaseVectorStoreConfig):
     region: PineconeRegion = "us-east-1"
     """Cloud region."""
 
-    dimension: int = 1536
+    dimension: int = Field(default=1536, gt=0)
     """Vector dimension."""
 
     metric: Metric = "cosine"
@@ -133,10 +133,10 @@ class OpenAIVectorConfig(BaseVectorStoreConfig):
     chunking_strategy: OpenAIChunkingStrategy = "auto"
     """Strategy for chunking text."""
 
-    max_chunk_size: int = 1000
+    max_chunk_size: int = Field(default=1000, gt=0)
     """Maximum chunk size in tokens (fixed strategy)."""
 
-    chunk_overlap: int = 200
+    chunk_overlap: int = Field(default=200, ge=0)
     """Overlap between chunks in tokens (fixed strategy)."""
 
     @model_validator(mode="after")

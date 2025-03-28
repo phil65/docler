@@ -49,10 +49,10 @@ class LlamaIndexChunkerConfig(BaseChunkerConfig):
     chunker_type: Literal["sentence", "token", "fixed", "markdown"] = "markdown"
     """Which LlamaIndex chunker to use."""
 
-    chunk_overlap: int = 200
+    chunk_overlap: int = Field(default=200, ge=0)
     """Number of characters to overlap between chunks."""
 
-    chunk_size: int = 1000
+    chunk_size: int = Field(default=1000, ge=1)
     """Target size of chunks."""
 
     include_metadata: bool = True
@@ -79,13 +79,13 @@ class MarkdownChunkerConfig(BaseChunkerConfig):
     type: Literal["markdown"] = Field(default="markdown", init=False)
     """Type discriminator for markdown chunker."""
 
-    min_chunk_size: int = 200
+    min_chunk_size: int = Field(default=200, ge=1)
     """Minimum characters per chunk."""
 
-    max_chunk_size: int = 1500
+    max_chunk_size: int = Field(default=1500, ge=1)
     """Maximum characters per chunk."""
 
-    chunk_overlap: int = 200
+    chunk_overlap: int = Field(default=200, ge=0)
     """Number of characters to overlap between chunks."""
 
     def get_provider(self) -> TextChunker:
