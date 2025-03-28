@@ -9,7 +9,7 @@ import streamlit as st
 
 from docler.configs.processor_configs import LLMProofReaderConfig
 from docler.log import get_logger
-from docler.streamlit_app.state import SessionState
+from docler_streamlit.state import SessionState
 
 
 logger = get_logger(__name__)

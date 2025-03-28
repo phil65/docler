@@ -7,7 +7,7 @@ import streamlit as st
 
 from docler.chunkers.markdown_chunker import MarkdownChunker
 from docler.models import Document
-from docler.streamlit_app.utils import display_chunk_preview
+from docler_streamlit.utils import display_chunk_preview
 
 
 SAMPLE_MARKDOWN = """# Introduction

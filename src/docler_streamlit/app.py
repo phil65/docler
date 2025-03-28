@@ -7,11 +7,11 @@ from typing import TYPE_CHECKING
 
 import streamlit as st
 
-from docler.streamlit_app.state import SessionState
-from docler.streamlit_app.step1_conversion import show_step_1
-from docler.streamlit_app.step2_correct import show_step_2
-from docler.streamlit_app.step3_chunking import show_step_3
-from docler.streamlit_app.step4_vectorstore import show_step_4
+from docler_streamlit.state import SessionState
+from docler_streamlit.step1_conversion import show_step_1
+from docler_streamlit.step2_correct import show_step_2
+from docler_streamlit.step3_chunking import show_step_3
+from docler_streamlit.step4_vectorstore import show_step_4
 
 
 if TYPE_CHECKING:

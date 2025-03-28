@@ -10,8 +10,8 @@ import streambricks as sb
 import streamlit as st
 
 from docler.log import get_logger
-from docler.streamlit_app.converters import CONVERTERS
-from docler.streamlit_app.state import SessionState
+from docler_streamlit.converters import CONVERTERS
+from docler_streamlit.state import SessionState
 
 
 logger = get_logger(__name__)

@@ -10,8 +10,8 @@ import streamlit as st
 
 from docler.log import get_logger
 from docler.models import ChunkedDocument
-from docler.streamlit_app.state import SessionState
 from docler.vector_db.dbs import chroma_db, pinecone_db
+from docler_streamlit.state import SessionState
 
 
 if TYPE_CHECKING:

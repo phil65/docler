@@ -13,9 +13,9 @@ from docler.chunkers.llamaindex_chunker import LlamaIndexChunker
 from docler.chunkers.markdown_chunker import MarkdownChunker
 from docler.configs import DEFAULT_CHUNKER_SYSTEM_PROMPT
 from docler.log import get_logger
-from docler.streamlit_app.chunkers import CHUNKERS
-from docler.streamlit_app.state import SessionState
-from docler.streamlit_app.utils import display_chunk_preview
+from docler_streamlit.chunkers import CHUNKERS
+from docler_streamlit.state import SessionState
+from docler_streamlit.utils import display_chunk_preview
 
 
 if TYPE_CHECKING:

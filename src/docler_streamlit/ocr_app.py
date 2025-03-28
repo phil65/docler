@@ -11,7 +11,7 @@ import anyenv
 import streamlit as st
 
 from docler.converters.base import DocumentConverter
-from docler.streamlit_app.utils import display_document_preview
+from docler_streamlit.utils import display_document_preview
 
 
 if TYPE_CHECKING:

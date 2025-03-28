@@ -3,6 +3,9 @@ source = "regex_commit"
 commit_extra_args = ["-e"]
 path = "src/docler/__init__.py"
 
+[tool.hatch.build.targets.wheel]
+packages = ["src/docler", "src/docler_streamlit"]
+
 [build-system]
 requires = ["hatchling", "hatch-regex-commit"]
 build-backend = "hatchling.build"
