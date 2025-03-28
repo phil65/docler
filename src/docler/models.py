@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import base64
 from dataclasses import dataclass, field
 from datetime import datetime  # noqa: TC003
 from typing import TYPE_CHECKING, Any, Literal
@@ -40,6 +41,24 @@ class Image(BaseModel):
     """Metadata of the image."""
 
     model_config = ConfigDict(use_attribute_docstrings=True)
+
+    def to_base64_url(self) -> str:
+        """Convert image content to base64 data URL.
+
+        Args:
+            data: Raw bytes or base64 string of image data
+            mime_type: MIME type of the image
+
+        Returns:
+            Data URL format of the image for embedding in HTML/Markdown
+        """
+        if isinstance(self.content, bytes):
+            b64_content = base64.b64encode(self.content).decode()
+        else:
+            b64_content = (
+                self.content.split(",")[-1] if "," in self.content else self.content
+            )
+        return f"data:{self.mime_type};base64,{b64_content}"
 
     @classmethod
     async def from_file(
