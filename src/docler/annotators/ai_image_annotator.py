@@ -166,17 +166,8 @@ if __name__ == "__main__":
         annotator = AIImageAnnotator[DefaultImageMetadata]()
         url = "https://www.a-i-stack.com/wp-content/uploads/go-x/u/93dcedb9-17f3-4aee-9b5a-3744e5e84686/image-342x342.png"
         image = await Image.from_file(url)
-        document = ChunkedDocument(
-            content="test",
-            chunks=[
-                TextChunk(
-                    text="Sample text",
-                    source_doc_id="sample_doc_id",
-                    images=[image],
-                    chunk_index=0,
-                ),
-            ],
-        )
+        chunk = TextChunk("Sample text", "sample_doc_id", images=[image], chunk_index=0)
+        document = ChunkedDocument(content="test", chunks=[chunk])
         doc = await annotator.annotate(document)
         print(doc)
 
