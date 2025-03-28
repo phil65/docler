@@ -46,12 +46,10 @@ class ChromaBackend(VectorStoreBackend):
         except ImportError as e:
             msg = "ChromaDB is not installed. Please install with 'pip install chromadb'"
             raise ImportError(msg) from e
-
-        # Create client based on configuration
         if persist_directory:
-            self._client = chromadb.PersistentClient(path=persist_directory)
+            self._client = chromadb.PersistentClient(path=persist_directory)  # type: ignore
         else:
-            self._client = chromadb.Client()
+            self._client = chromadb.Client()  # type: ignore
         self._collection = self._client.get_or_create_collection(
             name=vector_store_id,
             metadata={"hnsw:space": distance_metric},
@@ -59,41 +57,6 @@ class ChromaBackend(VectorStoreBackend):
         )
         msg = "ChromaDB initialized - collection: %s, persistent: %s"
         logger.info(msg, vector_store_id, bool(persist_directory))
-
-    async def add_vector(
-        self,
-        vector: np.ndarray,
-        metadata: dict[str, Any],
-        id_: str | None = None,
-    ) -> str:
-        """Add single vector to ChromaDB."""
-        import anyenv
-
-        # Generate ID if not provided
-        if id_ is None:
-            id_ = str(uuid.uuid4())
-
-        # Convert numpy array to list for JSON serialization
-        vector_list = vector.tolist()
-
-        try:
-            # Add new vector
-            await anyenv.run_in_thread(
-                self._collection.add,
-                ids=[id_],
-                embeddings=[vector_list],
-                metadatas=[metadata],
-            )
-        except ValueError:
-            # Update if already exists
-            await anyenv.run_in_thread(
-                self._collection.update,
-                ids=[id_],
-                embeddings=[vector_list],
-                metadatas=[metadata],
-            )
-
-        return id_
 
     async def add_vectors(
         self,
@@ -110,24 +73,14 @@ class ChromaBackend(VectorStoreBackend):
 
         if ids is None:
             ids = [str(uuid.uuid4()) for _ in vectors]
-        vector_lists = [v.tolist() for v in vectors]
-        try:
-            # Try to add new vectors
-            await anyenv.run_in_thread(
-                self._collection.add,
-                ids=ids,
-                embeddings=vector_lists,
-                metadatas=metadata,
-            )
-        except ValueError:
-            # If vectors exist, update them
-            await anyenv.run_in_thread(
-                self._collection.update,
-                ids=ids,
-                embeddings=vector_lists,
-                metadatas=metadata,
-            )
+        vector_lists: list[float] = [v.tolist() for v in vectors]  # type: ignore
 
+        await anyenv.run_in_thread(
+            self._collection.add,
+            ids,
+            vector_lists,
+            metadata,
+        )
         return ids
 
     async def get_vector(self, chunk_id: str) -> Vector | None:

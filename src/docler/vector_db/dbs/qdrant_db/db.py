@@ -73,31 +73,6 @@ class QdrantBackend(VectorStoreBackend):
             cfg = models.VectorParams(size=vector_size, distance=metric_map[metric])
             temp_client.create_collection(self._collection_name, vectors_config=cfg)
 
-    async def add_vector(
-        self,
-        vector: np.ndarray,
-        metadata: dict[str, Any],
-        id_: str | None = None,
-    ) -> str:
-        """Add single vector to Qdrant.
-
-        Args:
-            vector: Vector embedding to store
-            metadata: Metadata dictionary
-            id_: Optional ID (generated if not provided)
-
-        Returns:
-            ID of the stored vector
-        """
-        from qdrant_client.http import models
-
-        if id_ is None:
-            id_ = str(uuid.uuid4())
-        vector_list = vector.astype(float).tolist()
-        point = models.PointStruct(id=id_, vector=vector_list, payload=metadata)
-        _result = await self._client.upsert(self._collection_name, points=[point])
-        return id_
-
     async def add_vectors(
         self,
         vectors: list[np.ndarray],

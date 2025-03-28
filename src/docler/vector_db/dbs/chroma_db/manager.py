@@ -40,22 +40,12 @@ class ChromaVectorManager(VectorManagerBase[ChromaConfig]):
             ssl: Whether to use SSL for server connection
             headers: Optional headers for server connection
         """
-        try:
-            import chromadb  # noqa: F401
-        except ImportError as e:
-            msg = "ChromaDB is not installed. Please install with 'pip install chromadb'"
-            raise ImportError(msg) from e
-
-        # Store configuration
         self.persist_directory = persist_directory
         self.host = host
         self.port = port
         self.ssl = ssl
         self.headers = headers
-
-        # Map of collection name -> backend instance
         self._vector_stores: dict[str, ChromaBackend] = {}
-
         # Initialized client for listing collections
         self._list_client = None
 
@@ -128,12 +118,8 @@ class ChromaVectorManager(VectorManagerBase[ChromaConfig]):
                 persist_directory=self.persist_directory,
                 **kwargs,
             )
-
             # await db.initialize()
-
-            # Store for later cleanup
             self._vector_stores[name] = db
-
             return cast(VectorDB, db)
 
         except Exception as e:
@@ -162,25 +148,18 @@ class ChromaVectorManager(VectorManagerBase[ChromaConfig]):
             return cast(VectorDB, self._vector_stores[name])
 
         try:
-            # Check if collection exists
             client = await self._get_list_client()
             collection_names = await client.list_collections()
-
             if name not in collection_names:
                 msg = f"Collection {name!r} not found in ChromaDB"
                 raise ValueError(msg)  # noqa: TRY301
-
-            # Connect to existing collection
             db = ChromaBackend(
                 vector_store_id=name,
                 persist_directory=self.persist_directory,
                 **kwargs,
             )
 
-            # Initialize
             # await db.initialize()
-
-            # Store for later cleanup
             self._vector_stores[name] = db
 
             return cast(VectorDB, db)

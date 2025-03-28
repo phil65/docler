@@ -7,6 +7,7 @@ import uuid
 
 from docler.log import get_logger
 from docler.models import SearchResult, Vector
+from docler.utils import get_api_key
 from docler.vector_db.base_backend import VectorStoreBackend
 from docler.vector_db.dbs.pinecone_db.utils import (
     convert_filters,
@@ -32,7 +33,7 @@ class PineconeBackend(VectorStoreBackend):
     def __init__(
         self,
         host: str,
-        api_key: str,
+        api_key: str | None = None,
         dimension: int = 1536,
         namespace: str = "default",
     ):
@@ -44,7 +45,7 @@ class PineconeBackend(VectorStoreBackend):
             dimension: Dimension of vectors to store
             namespace: Namespace to use for vectors
         """
-        self.api_key = api_key
+        self.api_key = api_key or get_api_key("PINECONE_API_KEY")
         self._host = host
         self._index: IndexAsyncio | None = None
         self.dimension = dimension
@@ -69,38 +70,9 @@ class PineconeBackend(VectorStoreBackend):
         from pinecone import PineconeAsyncio
 
         if not self._index:
-            self._index = PineconeAsyncio(api_key=self.api_key).IndexAsyncio(
-                host=self._host
-            )
+            client = PineconeAsyncio(api_key=self.api_key)
+            self._index = client.IndexAsyncio(host=self._host)
         return self._index
-
-    async def add_vector(
-        self,
-        vector: np.ndarray,
-        metadata: dict[str, Any],
-        id_: str | None = None,
-    ) -> str:
-        """Add single vector to Pinecone.
-
-        Args:
-            vector: Vector embedding to store
-            metadata: Metadata dictionary for the vector
-            id_: Optional ID (generated if not provided)
-
-        Returns:
-            ID of the stored vector
-        """
-        if id_ is None:
-            id_ = str(uuid.uuid4())
-        vector_list: list[float] = vector.tolist()  # type: ignore
-        metadata_copy = prepare_metadata(metadata)
-
-        index = await self._get_index()
-        async with index:
-            vector_tuple = (id_, vector_list, metadata_copy)
-            await index.upsert(vectors=[vector_tuple], namespace=self.namespace)
-
-        return id_
 
     async def add_vectors(
         self,
@@ -195,21 +167,16 @@ class PineconeBackend(VectorStoreBackend):
         """
         vector_list: list[float] = query_vector.tolist()  # type: ignore
         filter_obj = convert_filters(filters) if filters else None
-
-        query_params = {
-            "vector": vector_list,
-            "top_k": k,
-            "namespace": self.namespace,
-            "include_metadata": True,
-        }
-
-        if filter_obj:
-            query_params["filter"] = filter_obj
-
         index = await self._get_index()
         try:
             async with index:
-                results = await index.query(**query_params)
+                results = await index.query(
+                    vector=vector_list,
+                    top_k=k,
+                    namespace=self.namespace,
+                    include_metadata=True,
+                    filter=filter_obj,
+                )
         except Exception:
             logger.exception("Error searching Pinecone")
             return []
@@ -218,11 +185,10 @@ class PineconeBackend(VectorStoreBackend):
         for match in results.matches:  # pyright: ignore
             raw_metadata = match.metadata or {}
             metadata = restore_metadata(raw_metadata)
-            score = match.score or 0.0
             text = metadata.pop("text", None) if isinstance(metadata, dict) else None
             result = SearchResult(
                 chunk_id=match.id,
-                score=score,
+                score=match.score or 0.0,
                 metadata=metadata,
                 text=text,
             )
@@ -233,3 +199,7 @@ class PineconeBackend(VectorStoreBackend):
     async def close(self):
         """Close the Pinecone connection."""
         self._index = None
+
+
+if __name__ == "__main__":
+    db = PineconeBackend(host="")

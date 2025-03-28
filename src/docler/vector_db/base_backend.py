@@ -26,24 +26,6 @@ class VectorStoreBackend(ABC):
         super().__init__(**kwargs)
 
     @abstractmethod
-    async def add_vector(
-        self,
-        vector: np.ndarray,
-        metadata: dict[str, Any],
-        id_: str | None = None,
-    ) -> str:
-        """Add single vector to store.
-
-        Args:
-            vector: Vector embedding to store
-            metadata: Metadata dictionary for the vector
-            id_: Optional ID (generated if not provided)
-
-        Returns:
-            ID of the stored vector
-        """
-
-    @abstractmethod
     async def add_vectors(
         self,
         vectors: list[np.ndarray],
@@ -89,6 +71,20 @@ class VectorStoreBackend(ABC):
         Returns:
             List of search results
         """
+
+    async def add_vector(
+        self,
+        vector: np.ndarray,
+        metadata: dict[str, Any],
+        id_: str | None = None,
+    ) -> str:
+        """Add single vector to store.
+
+        Default implementation calls add_vectors with a single item.
+        Override this method if you need special handling for single items.
+        """
+        ids = await self.add_vectors([vector], [metadata], [id_] if id_ else None)
+        return ids[0]
 
     @abstractmethod
     async def delete(self, chunk_id: str) -> bool:
