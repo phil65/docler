@@ -328,6 +328,25 @@ class UpstageConfig(BaseConverterConfig):
         return UpstageConverter(**self.get_config_fields())
 
 
+class AggregatedConverterConfig(BaseConverterConfig):
+    """Configuration for the aggregated converter."""
+
+    type: Literal["aggregated"] = Field(default="aggregated", init=False)
+    """Type discriminator for aggregated converter."""
+
+    converters: list[ConverterConfig] = Field(default_factory=list)
+    """List of converter configurations to use."""
+
+    mime_preferences: dict[str, str] = Field(default_factory=dict)
+    """Mapping of MIME types or extensions to preferred converter names."""
+
+    def get_provider(self) -> DocumentConverter:
+        """Get the converter instance."""
+        from docler.converters.aggregated_converter import AggregatedConverter
+
+        return AggregatedConverter.from_config(self)
+
+
 ConverterConfig = Annotated[
     DataLabConfig
     | DoclingConverterConfig
@@ -338,6 +357,7 @@ ConverterConfig = Annotated[
     | LlamaParseConfig
     | AzureConfig
     | UpstageConfig
+    | AggregatedConverterConfig
     | MarkerConfig,
     Field(discriminator="type"),
 ]
