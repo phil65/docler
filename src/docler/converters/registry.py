@@ -137,18 +137,19 @@ class ConverterRegistry:
             mime_or_extension: MIME type ('application/pdf') or file extension ('.pdf')
             converter_name: Name of the preferred converter
         """
-        # Determine if this is a MIME type or file extension
-        if "/" in mime_or_extension:
-            # This is a MIME type
-            self._preferences[mime_or_extension] = converter_name
-        else:
-            # This is a file extension - normalize it and get the MIME type
+        # Handle file extensions by converting to mime type
+        if "/" not in mime_or_extension:
+            # This is a file extension - normalize it
             if not mime_or_extension.startswith("."):
                 mime_or_extension = f".{mime_or_extension}"
 
+            # Convert to mime type
             mime_type, _ = mimetypes.guess_type(f"dummy{mime_or_extension}")
             if mime_type:
-                self._preferences[mime_type] = converter_name
+                mime_or_extension = mime_type
+
+        # Store the preference
+        self._preferences[mime_or_extension] = converter_name
 
     def get_supported_mime_types(self) -> set[str]:
         """Get all MIME types supported by registered converters.
