@@ -7,6 +7,7 @@ import streamlit as st
 
 from docler.chunkers.markdown_chunker import MarkdownChunker
 from docler.models import Document
+from docler.streamlit_app.utils import display_chunk_preview
 
 
 SAMPLE_MARKDOWN = """# Introduction
@@ -79,26 +80,8 @@ def main():
             with st.spinner("Processing..."):
                 chunked = anyenv.run_sync(chunker.chunk(doc))
                 st.subheader("Chunks")
-                for i, chunk in enumerate(chunked.chunks):
-                    header_text = f"Chunk {i + 1}"
-                    if chunk.metadata.get("header"):
-                        header_text += f" - {chunk.metadata['header']}"
-                    header_text += f" ({len(chunk.text)} chars)"
-                    with st.expander(header_text, expanded=True):
-                        tabs = ["Raw", "Rendered", "Debug Info"]
-                        raw_tab, rendered_tab, debug_tab = st.tabs(tabs)
-                        with raw_tab:
-                            st.code(chunk.text, language="markdown")
-                        with rendered_tab:
-                            st.markdown(chunk.text)
-                        with debug_tab:
-                            debug_info = {
-                                "Chunk Index": chunk.chunk_index,
-                                "Source": chunk.source_doc_id,
-                                "Images": len(chunk.images),
-                                **chunk.metadata,
-                            }
-                            st.json(debug_info)
+                for chunk in chunked.chunks:
+                    display_chunk_preview(chunk, expanded=True)
 
 
 if __name__ == "__main__":

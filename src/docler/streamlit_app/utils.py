@@ -26,17 +26,13 @@ def display_chunk_preview(chunk: TextChunk, expanded: bool = False) -> None:
     if chunk.metadata.get("header"):
         header_text += f" - {chunk.metadata['header']}"
     header_text += f" ({len(chunk.text)} chars)"
-
     with st.expander(header_text, expanded=expanded):
         tabs = ["Raw", "Rendered", "Debug Info", "Images"]
         raw_tab, rendered_tab, debug_tab, images_tab = st.tabs(tabs)
-
         with raw_tab:
             st.code(chunk.text, language="markdown")
-
         with rendered_tab:
             st.markdown(chunk.text)
-
         with debug_tab:
             debug_info = {
                 "Chunk Index": chunk.chunk_index,
@@ -68,13 +64,10 @@ def display_document_preview(doc: Document) -> None:
     """
     tabs = ["Raw Markdown", "Rendered", "Images"]
     raw_tab, rendered_tab, images_tab = st.tabs(tabs)
-
     with raw_tab:
         st.markdown(f"```markdown\n{doc.content}\n```")
-
     with rendered_tab:
         st.markdown(doc.content)
-
     with images_tab:
         if not doc.images:
             st.info("No images extracted")
