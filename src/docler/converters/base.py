@@ -40,9 +40,16 @@ class DocumentConverter[TConfig](BaseProvider[TConfig], ABC):
 
     Non-supported protocols will get handled using fsspec + a temporary file.
     """
+    registry: ClassVar[dict[str, type[DocumentConverter]]] = {}
 
     def __init__(self, languages: list[SupportedLanguage] | None = None):
+        super().__init__()
         self.languages = languages
+
+    def __init_subclass__(cls, **kwargs):
+        """Register subclasses automatically when they're defined."""
+        super().__init_subclass__(**kwargs)
+        DocumentConverter.registry[cls.NAME] = cls
 
     @property
     def price_per_page(self) -> float | None:
