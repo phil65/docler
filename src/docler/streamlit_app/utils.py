@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import base64
 from typing import TYPE_CHECKING
 
 import streamlit as st
@@ -14,23 +13,6 @@ if TYPE_CHECKING:
 
 
 LANGUAGES: list[SupportedLanguage] = ["en", "de", "fr", "es", "zh"]
-
-
-def format_image_content(data: bytes | str, mime_type: str) -> str:
-    """Convert image content to base64 data URL.
-
-    Args:
-        data: Raw bytes or base64 string of image data
-        mime_type: MIME type of the image
-
-    Returns:
-        Data URL format of the image for embedding in HTML/Markdown
-    """
-    if isinstance(data, bytes):
-        b64_content = base64.b64encode(data).decode()
-    else:
-        b64_content = data.split(",")[-1] if "," in data else data
-    return f"data:{mime_type};base64,{b64_content}"
 
 
 def display_chunk_preview(chunk: TextChunk, expanded: bool = False) -> None:
@@ -69,7 +51,7 @@ def display_chunk_preview(chunk: TextChunk, expanded: bool = False) -> None:
                 st.info("No images in this chunk")
             else:
                 for image in chunk.images:
-                    data_url = format_image_content(image.content, image.mime_type)
+                    data_url = image.to_base64_url()
                     st.markdown(f"**ID:** {image.id}")
                     if image.filename:
                         st.markdown(f"**Filename:** {image.filename}")
@@ -98,7 +80,7 @@ def display_document_preview(doc: Document) -> None:
             st.info("No images extracted")
         else:
             for image in doc.images:
-                data_url = format_image_content(image.content, image.mime_type)
+                data_url = image.to_base64_url()
                 st.markdown(f"**ID:** {image.id}")
                 if image.filename:
                     st.markdown(f"**Filename:** {image.filename}")

@@ -1,4 +1,4 @@
-"""Step 2: Document chunking interface."""
+"""Step 3: Document chunking interface."""
 
 from __future__ import annotations
 
@@ -15,7 +15,7 @@ from docler.configs import DEFAULT_CHUNKER_SYSTEM_PROMPT
 from docler.log import get_logger
 from docler.streamlit_app.chunkers import CHUNKERS
 from docler.streamlit_app.state import SessionState
-from docler.streamlit_app.utils import format_image_content
+from docler.streamlit_app.utils import display_chunk_preview
 
 
 if TYPE_CHECKING:
@@ -25,11 +25,11 @@ if TYPE_CHECKING:
 logger = get_logger(__name__)
 
 
-def show_step_2():
-    """Show document chunking screen (step 2)."""
-    st.header("Step 2: Document Chunking")
+def show_step_3():
+    """Show document chunking screen (step 3)."""
+    st.header("Step 3: Document Chunking")
     state = SessionState.get()
-    doc = state.document
+    doc = state.corrected_document if state.corrected_document else state.document
     # Navigation buttons at the top
     col1, col2 = st.columns([1, 5])
     with col1:
@@ -120,38 +120,4 @@ def show_step_2():
         for i, chunk in enumerate(chunks):
             if filter_text and filter_text.lower() not in chunk.text.lower():
                 continue
-
-            header_text = f"Chunk {i + 1}"
-            if chunk.metadata.get("header"):
-                header_text += f" - {chunk.metadata['header']}"
-            header_text += f" ({len(chunk.text)} chars)"
-            with st.expander(header_text, expanded=i == 0):
-                tabs = ["Raw", "Rendered", "Debug Info", "Images"]
-                raw_tab, rendered_tab, debug_tab, images_tab = st.tabs(tabs)
-                with raw_tab:
-                    st.code(chunk.text, language="markdown")
-                with rendered_tab:
-                    st.markdown(chunk.text)
-                with debug_tab:
-                    debug_info = {
-                        "Chunk Index": chunk.chunk_index,
-                        "Source": chunk.source_doc_id,
-                        "Images": len(chunk.images),
-                        **chunk.metadata,
-                    }
-                    st.json(debug_info)
-
-                with images_tab:
-                    if not chunk.images:
-                        st.info("No images in this chunk")
-                    else:
-                        for image in chunk.images:
-                            data_url = format_image_content(
-                                image.content, image.mime_type
-                            )
-                            st.markdown(f"**ID:** {image.id}")
-                            if image.filename:
-                                st.markdown(f"**Filename:** {image.filename}")
-                            st.markdown(f"**MIME Type:** {image.mime_type}")
-                            st.image(data_url)
-                            st.divider()
+            display_chunk_preview(chunk, expanded=(i == 0))

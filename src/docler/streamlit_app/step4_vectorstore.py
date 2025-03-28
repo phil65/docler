@@ -1,4 +1,4 @@
-"""Step 3: Vector Store uploading interface."""
+"""Step 4: Vector Store uploading interface."""
 
 from __future__ import annotations
 
@@ -27,10 +27,10 @@ VECTOR_STORES: dict[str, type[VectorManagerBase]] = {
 }
 
 
-def show_step_3():
-    """Show vector store upload screen (step 3)."""
+def show_step_4():
+    """Show vector store upload screen (step 4)."""
     state = SessionState.get()
-    st.header("Step 3: Upload to Vector Store")
+    st.header("Step 4: Upload to Vector Store")
     col1, col2 = st.columns([1, 5])
     with col1:
         st.button("← Back", on_click=state.prev_step)
@@ -240,4 +240,4 @@ if __name__ == "__main__":
     chunk = TextChunk(text="Sample chunk content", source_doc_id="test", chunk_index=0)
     state.chunked_doc = ChunkedDocument(content="Sample content", chunks=[chunk])
     state.uploaded_file_name = "sample.txt"
-    run(show_step_3)
+    run(show_step_4)

@@ -12,7 +12,6 @@ import streamlit as st
 from docler.log import get_logger
 from docler.streamlit_app.converters import CONVERTERS
 from docler.streamlit_app.state import SessionState
-from docler.streamlit_app.utils import format_image_content
 
 
 logger = get_logger(__name__)
@@ -68,9 +67,7 @@ def show_step_1():
                 if doc.images:
                     with st.expander(f"Images ({len(doc.images)})", expanded=False):
                         for image in doc.images:
-                            data_url = format_image_content(
-                                image.content, image.mime_type
-                            )
+                            data_url = image.to_base64_url()
                             st.markdown(f"**ID:** {image.id}")
                             if image.filename:
                                 st.markdown(f"**Filename:** {image.filename}")

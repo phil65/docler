@@ -9,8 +9,9 @@ import streamlit as st
 
 from docler.streamlit_app.state import SessionState
 from docler.streamlit_app.step1_conversion import show_step_1
-from docler.streamlit_app.step2_chunking import show_step_2
-from docler.streamlit_app.step3_vectorstore import show_step_3
+from docler.streamlit_app.step2_correct import show_step_2
+from docler.streamlit_app.step3_chunking import show_step_3
+from docler.streamlit_app.step4_vectorstore import show_step_4
 
 
 if TYPE_CHECKING:
@@ -47,6 +48,8 @@ def main():
         show_step_2()
     elif state.step == 3:  # noqa: PLR2004
         show_step_3()
+    elif state.step == 4:  # noqa: PLR2004
+        show_step_4()
 
 
 if __name__ == "__main__":

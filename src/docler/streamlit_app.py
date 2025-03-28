@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import base64
 import logging
 from pathlib import Path
 import tempfile
@@ -31,7 +30,6 @@ if TYPE_CHECKING:
 
 logging.basicConfig(level=logging.INFO)
 
-# Available converters with their configs
 CONVERTERS: dict[str, type[DocumentConverter]] = {
     "DataLab": DataLabConverter,
     "Docling": DoclingConverter,
@@ -45,18 +43,8 @@ CONVERTERS: dict[str, type[DocumentConverter]] = {
     "upstage": UpstageConverter,
 }
 
-# Language options
 LANGUAGES: list[SupportedLanguage] = ["en", "de", "fr", "es", "zh"]
 ALLOWED_EXTENSIONS = ["pdf", "docx", "jpg", "png", "ppt", "pptx", "xls", "xlsx"]
-
-
-def format_image_content(data: bytes | str, mime_type: str) -> str:
-    """Convert image content to base64 data URL."""
-    if isinstance(data, bytes):
-        b64_content = base64.b64encode(data).decode()
-    else:
-        b64_content = data.split(",")[-1] if "," in data else data
-    return f"data:{mime_type};base64,{b64_content}"
 
 
 def main():
