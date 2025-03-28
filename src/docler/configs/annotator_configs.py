@@ -8,6 +8,7 @@ from pydantic import Field
 
 from docler.common_types import DEFAULT_ANNOTATOR_MODEL, DEFAULT_IMAGE_ANNOTATOR_MODEL
 from docler.provider import ProviderConfig
+from docler.pydantic_types import ModelIdentifier  # noqa: TC001
 
 
 if TYPE_CHECKING:
@@ -59,7 +60,7 @@ class AIDocumentAnnotatorConfig(BaseAnnotatorConfig):
     type: Literal["ai_document"] = Field(default="ai_document", init=False)
     """Type discriminator for AI document annotator."""
 
-    model: str = DEFAULT_ANNOTATOR_MODEL
+    model: ModelIdentifier = DEFAULT_ANNOTATOR_MODEL
     """LLM model to use for annotation."""
 
     system_prompt: str = DEFAULT_DOC_SYSTEM_PROMPT
@@ -92,7 +93,7 @@ class AIImageAnnotatorConfig(BaseAnnotatorConfig):
     type: Literal["ai_image"] = Field(default="ai_image", init=False)
     """Type discriminator for AI image annotator."""
 
-    model: str = DEFAULT_IMAGE_ANNOTATOR_MODEL
+    model: ModelIdentifier = DEFAULT_IMAGE_ANNOTATOR_MODEL
     """Vision model to use for image annotation."""
 
     system_prompt: str = DEFAULT_IMAGE_SYSTEM_PROMPT

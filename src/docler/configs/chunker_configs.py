@@ -8,6 +8,7 @@ from pydantic import Field
 
 from docler.common_types import DEFAULT_CHUNKER_MODEL
 from docler.provider import ProviderConfig
+from docler.pydantic_types import ModelIdentifier  # noqa: TC001
 
 
 if TYPE_CHECKING:
@@ -103,7 +104,7 @@ class AiChunkerConfig(BaseChunkerConfig):
     type: Literal["ai"] = Field(default="ai", init=False)
     """Type discriminator for AI chunker."""
 
-    model: str = DEFAULT_CHUNKER_MODEL
+    model: ModelIdentifier = DEFAULT_CHUNKER_MODEL
     """LLM model to use for chunking."""
 
     system_prompt: str = DEFAULT_CHUNKER_SYSTEM_PROMPT

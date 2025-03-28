@@ -8,6 +8,7 @@ from pydantic import Field
 
 from docler.common_types import DEFAULT_PROOF_READER_MODEL
 from docler.provider import ProviderConfig
+from docler.pydantic_types import ModelIdentifier  # noqa: TC001
 
 
 if TYPE_CHECKING:
@@ -45,7 +46,7 @@ class LLMProofReaderConfig(BaseProcessorConfig):
     type: Literal["llm_proof_reader"] = Field(default="llm_proof_reader", init=False)
     """Type discriminator for LLM proof reader."""
 
-    model: str = DEFAULT_PROOF_READER_MODEL
+    model: ModelIdentifier = DEFAULT_PROOF_READER_MODEL
     """LLM model to use for proof reading."""
 
     system_prompt: str = DEFAULT_PROOF_READER_SYSTEM_PROMPT
