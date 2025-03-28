@@ -37,8 +37,6 @@ def show_step_1():
         state.converter_configs[selected_converter] = converter_cls.Config()
     config = sb.model_edit(state.converter_configs[selected_converter])
     state.converter_configs[selected_converter] = config
-
-    # Convert document
     if uploaded_file and st.button("Convert Document"):
         with st.spinner(f"Converting with {selected_converter}..."):
             suffix = Path(uploaded_file.name).suffix
@@ -47,23 +45,17 @@ def show_step_1():
                 temp_path = temp_file.name
 
             try:
-                # Create converter from config
                 converter = config.get_provider()
                 doc = anyenv.run_sync(converter.convert_file(temp_path))
                 state.document = doc
                 state.uploaded_file_name = uploaded_file.name
-
                 st.success("Document converted successfully!")
                 st.button("Proceed to Chunking", on_click=state.next_step)
-
-                # Show document preview
                 st.subheader("Document Preview")
                 with st.expander("Markdown Content", expanded=False):
                     st.markdown(f"```markdown\n{doc.content}\n```")
                 with st.expander("Rendered Content", expanded=True):
                     st.markdown(doc.content)
-
-                # Show images if present
                 if doc.images:
                     with st.expander(f"Images ({len(doc.images)})", expanded=False):
                         for image in doc.images:
