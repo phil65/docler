@@ -124,7 +124,36 @@ class AiChunkerConfig(BaseChunkerConfig):
         )
 
 
+class TokenAwareChunkerConfig(BaseChunkerConfig):
+    """Configuration for token-aware chunker."""
+
+    type: Literal["token_aware"] = Field(default="token_aware", init=False)
+    """Type discriminator for token-aware chunker."""
+
+    model: ModelIdentifier = "gpt-4"
+    """Model ID to use for tokenization calculation."""
+
+    max_tokens_per_chunk: int = Field(default=4000, ge=100)
+    """Maximum tokens per chunk."""
+
+    chunk_overlap_lines: int = Field(default=20, ge=0)
+    """Number of lines to overlap between chunks."""
+
+    def get_provider(self) -> TextChunker:
+        """Get the chunker instance."""
+        from docler.chunkers.token_chunker import TokenAwareChunker
+
+        return TokenAwareChunker(
+            model=self.model,
+            max_tokens_per_chunk=self.max_tokens_per_chunk,
+            chunk_overlap_lines=self.chunk_overlap_lines,
+        )
+
+
 ChunkerConfig = Annotated[
-    LlamaIndexChunkerConfig | MarkdownChunkerConfig | AiChunkerConfig,
+    LlamaIndexChunkerConfig
+    | MarkdownChunkerConfig
+    | AiChunkerConfig
+    | TokenAwareChunkerConfig,
     Field(discriminator="type"),
 ]
