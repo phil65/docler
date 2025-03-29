@@ -51,6 +51,59 @@ def apply_corrections(
     return "\n".join(lines), corrected_lines
 
 
+def _count_tokens(text: str, model: str) -> int:
+    """Count tokens in text using tokonomics."""
+    from tokonomics import count_tokens
+
+    return count_tokens(text, model=model.split(":")[-1])
+
+
+def _split_into_chunks(
+    text: str, model: str, max_chunk_tokens: int, chunk_overlap_lines: int
+) -> list[tuple[int, str]]:
+    """Split text into chunks with line numbers based on token count.
+
+    Returns:
+        List of (start_line, numbered_text) tuples
+    """
+    lines = text.splitlines()
+    chunks = []
+
+    start_idx = 0
+    while start_idx < len(lines):
+        # Start with a minimum chunk size
+        end_idx = min(start_idx + 100, len(lines))
+
+        # Add lines until we reach the token limit or end of document
+        current_chunk = "\n".join(
+            f"{start_idx + i + 1:5d} | {line}"
+            for i, line in enumerate(lines[start_idx:end_idx])
+        )
+        token_count = _count_tokens(current_chunk, model=model)
+
+        # If we have room for more lines, keep adding them
+        while end_idx < len(lines) and token_count < max_chunk_tokens - _count_tokens(
+            lines[end_idx], model=model
+        ):
+            end_idx += 1
+            current_chunk = "\n".join(
+                f"{start_idx + i + 1:5d} | {line}"
+                for i, line in enumerate(lines[start_idx:end_idx])
+            )
+            token_count = _count_tokens(current_chunk, model=model)
+
+        chunks.append((start_idx + 1, current_chunk))  # 1-based line numbers
+        start_idx = end_idx - chunk_overlap_lines
+        if start_idx <= chunks[-1][0] - 1:
+            start_idx = chunks[-1][0] + 50
+
+        # Stop if we've processed all lines
+        if start_idx >= len(lines):
+            break
+
+    return chunks
+
+
 class LLMProofReader(DocumentProcessor[LLMProofReaderConfig]):
     """LLM-based proof-reader that improves OCR output using line-based corrections."""
 
@@ -87,60 +140,6 @@ class LLMProofReader(DocumentProcessor[LLMProofReaderConfig]):
         self.include_diffs = include_diffs
         self.add_metadata_only = add_metadata_only
 
-    def _count_tokens(self, text: str) -> int:
-        """Count tokens in text using tokonomics."""
-        from tokonomics import count_tokens
-
-        return count_tokens(text, model=self.model.split(":")[-1])
-
-    def _split_into_chunks(self, text: str) -> list[tuple[int, str]]:
-        """Split text into chunks with line numbers based on token count.
-
-        Returns:
-            List of (start_line, numbered_text) tuples
-        """
-        lines = text.splitlines()
-        chunks = []
-
-        start_idx = 0
-        while start_idx < len(lines):
-            # Start with a minimum chunk size
-            end_idx = min(start_idx + 100, len(lines))
-
-            # Add lines until we reach the token limit or end of document
-            current_chunk = "\n".join(
-                f"{start_idx + i + 1:5d} | {line}"
-                for i, line in enumerate(lines[start_idx:end_idx])
-            )
-            token_count = self._count_tokens(current_chunk)
-
-            # If we have room for more lines, keep adding them
-            while end_idx < len(
-                lines
-            ) and token_count < self.max_chunk_tokens - self._count_tokens(
-                lines[end_idx]
-            ):
-                end_idx += 1
-                current_chunk = "\n".join(
-                    f"{start_idx + i + 1:5d} | {line}"
-                    for i, line in enumerate(lines[start_idx:end_idx])
-                )
-                token_count = self._count_tokens(current_chunk)
-
-            # Add this chunk to our list
-            chunks.append((start_idx + 1, current_chunk))  # 1-based line numbers
-
-            # Move to next chunk with overlap
-            start_idx = end_idx - self.chunk_overlap_lines
-            if start_idx <= chunks[-1][0] - 1:
-                start_idx = chunks[-1][0] + 50
-
-            # Stop if we've processed all lines
-            if start_idx >= len(lines):
-                break
-
-        return chunks
-
     async def process(self, doc: Document) -> Document:
         """Process document using line-based corrections.
 
@@ -151,7 +150,7 @@ class LLMProofReader(DocumentProcessor[LLMProofReaderConfig]):
 
         agent = Agent[None](model=self.model, system_prompt=self.system_prompt)
         numbered_text = add_line_numbers(doc.content)
-        if self._count_tokens(numbered_text) <= self.max_chunk_tokens:
+        if _count_tokens(numbered_text, model=self.model) <= self.max_chunk_tokens:
             user_prompt = self.prompt_template.format(chunk_text=numbered_text)
             corrections = await agent.talk.extract_multiple(
                 text=numbered_text,
@@ -161,7 +160,12 @@ class LLMProofReader(DocumentProcessor[LLMProofReaderConfig]):
             )
         else:
             corrections = []
-            chunks = self._split_into_chunks(doc.content)
+            chunks = _split_into_chunks(
+                doc.content,
+                model=self.model,
+                chunk_overlap_lines=self.chunk_overlap_lines,
+                max_chunk_tokens=self.max_chunk_tokens,
+            )
             for _, chunk_text in chunks:
                 user_prompt = self.prompt_template.format(chunk_text=chunk_text)
                 chunk_corrections = await agent.talk.extract_multiple(
@@ -243,20 +247,16 @@ numbers like 5678 can be misread as S67B."""
         print("-" * 50)
         print(corrected_doc.content)
         print("-" * 50)
-
-        # Display proof reading metadata
-        if "proof_reading" in corrected_doc.metadata:
-            proof_reading = corrected_doc.metadata["proof_reading"]
-
-            print("\nProof reading metadata:")
-            for key, value in proof_reading.items():
-                if key == "unified_diff":
-                    print(f"\n{key}:")
-                    print("-" * 50)
-                    print(value)
-                    print("-" * 50)
-                elif key not in ("html_diff", "semantic_diff"):
-                    print(f"{key}: {value}")
+        proof_reading = corrected_doc.metadata["proof_reading"]
+        print("\nProof reading metadata:")
+        for key, value in proof_reading.items():
+            if key == "unified_diff":
+                print(f"\n{key}:")
+                print("-" * 50)
+                print(value)
+                print("-" * 50)
+            elif key not in ("html_diff", "semantic_diff"):
+                print(f"{key}: {value}")
 
             print(f"\nCorrected {proof_reading.get('corrections_count', 0)} lines")
 
