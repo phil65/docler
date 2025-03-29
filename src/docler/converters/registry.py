@@ -113,13 +113,13 @@ class ConverterRegistry:
             for converter in self._converters:
                 if (
                     preferred_name == converter.NAME
-                    and mime_type in converter.__class__.SUPPORTED_MIME_TYPES
+                    and mime_type in converter.get_supported_mime_types()
                 ):
                     return converter
 
         # No preference, use first converter that supports this MIME type
         for converter in self._converters:
-            if mime_type in converter.__class__.SUPPORTED_MIME_TYPES:
+            if mime_type in converter.get_supported_mime_types():
                 return converter
 
         return None
@@ -147,7 +147,7 @@ class ConverterRegistry:
         """
         mime_types = set()
         for converter in self._converters:
-            mime_types.update(converter.__class__.SUPPORTED_MIME_TYPES)
+            mime_types.update(converter.get_supported_mime_types())
         return mime_types
 
 

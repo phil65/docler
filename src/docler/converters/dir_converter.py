@@ -130,8 +130,6 @@ class DirectoryConverter:
             exclude=exclude,
             max_depth=max_depth,
         )
-
-        # Filter for supported mime types
         supported_files: list[tuple[str, upath.UPath]] = []
         for file_path in files:
             mime_type, _ = mimetypes.guess_type(str(file_path))
@@ -159,8 +157,6 @@ class DirectoryConverter:
                 # Store errors for all files in failed chunk
                 for rel_path, _ in chunk:
                     errors[rel_path] = e
-
-            # Yield progress
             yield Conversion(
                 total_files=len(supported_files),
                 processed_files=i + len(chunk),

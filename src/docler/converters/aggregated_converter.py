@@ -44,40 +44,22 @@ class AggregatedConverter(DocumentConverter[AggregatedConverterConfig]):
 
     @classmethod
     def from_config(cls, config: AggregatedConverterConfig) -> AggregatedConverter:
-        """Create an AggregatedConverter instance from a configuration.
-
-        Args:
-            config: Configuration for the aggregated converter
-
-        Returns:
-            Configured AggregatedConverter instance
-        """
+        """Create an AggregatedConverter instance from a configuration."""
         registry = ConverterRegistry()
-
-        # Create and register each converter
         for converter_config in config.converters:
             converter = converter_config.get_provider()
             registry.register(converter)
-
-        # Set preferences
         for mime_or_ext, converter_name in config.mime_preferences.items():
             registry.set_preference(mime_or_ext, converter_name)
 
         return cls(registry=registry)
 
     def to_config(self) -> AggregatedConverterConfig:
-        """Extract configuration from the converter instance.
-
-        Returns:
-            AggregatedConverterConfig representing this converter's settings
-        """
+        """Extract configuration from the converter instance."""
         config = AggregatedConverterConfig()
         for converter in self._registry._converters:
             config.converters.append(converter.to_config())
-
-        # Copy preferences
         config.mime_preferences = dict(self._registry._preferences)
-
         return config
 
     def get_supported_mime_types(self) -> set[str]:

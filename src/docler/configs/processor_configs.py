@@ -57,7 +57,7 @@ class LLMProofReaderConfig(BaseProcessorConfig):
     """Template for the proof reading prompt."""
 
     chunker: ChunkerConfig | ChunkerShorthand | None = None
-    """Custom chunker configuration or shorthand."""
+    """Optional chunker configuration. If None, processes entire document at once."""
 
     include_diffs: bool = True
     """Whether to include diffs in metadata."""

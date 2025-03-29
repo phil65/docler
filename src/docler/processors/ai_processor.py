@@ -20,6 +20,7 @@ from docler.configs.processor_configs import (
 from docler.diffs import generate_all_diffs
 from docler.models import Document
 from docler.processors.base import DocumentProcessor
+from docler.utils import add_line_numbers
 
 
 if TYPE_CHECKING:
@@ -62,7 +63,7 @@ def apply_corrections(
 
 def resolve_chunker_config(
     config: ChunkerConfig | ChunkerShorthand | None, model: str
-) -> ChunkerConfig:
+) -> ChunkerConfig | None:
     """Resolve chunker configuration from shorthand or create default.
 
     Args:
@@ -72,14 +73,6 @@ def resolve_chunker_config(
     Returns:
         Fully resolved configuration object
     """
-    if config is None:
-        # Create default token-aware chunker config
-        return TokenAwareChunkerConfig(
-            model=model,
-            max_tokens_per_chunk=10000,
-            chunk_overlap_lines=20,
-        )
-
     if isinstance(config, str):
         match config:
             case "markdown":
@@ -132,33 +125,40 @@ class LLMProofReader(DocumentProcessor[LLMProofReaderConfig]):
         self.chunker_config = resolve_chunker_config(chunker, self.model)
 
     async def process(self, doc: Document) -> Document:
-        """Process document using line-based corrections.
-
-        If add_metadata_only is True, adds metadata about corrections but doesn't
-        modify the document content.
-        """
+        """Process document using line-based corrections."""
         from llmling_agent import Agent
 
         agent = Agent[None](model=self.model, system_prompt=self.system_prompt)
-        chunker = self.chunker_config.get_provider()
-        temp_doc = Document(content=doc.content, source_path=doc.source_path)
-        chunks = await chunker.split(temp_doc)
 
-        # Process each chunk
         corrections = []
-        for chunk in chunks:
-            numbered_text = chunk.to_numbered_text()
+        if self.chunker_config:
+            # Process with chunking
+            chunker = self.chunker_config.get_provider()
+            temp_doc = Document(content=doc.content, source_path=doc.source_path)
+            chunks = await chunker.split(temp_doc)
+
+            for chunk in chunks:
+                numbered_text = chunk.to_numbered_text()
+                user_prompt = self.prompt_template.format(chunk_text=numbered_text)
+
+                chunk_corrections = await agent.talk.extract_multiple(
+                    text=numbered_text,
+                    as_type=LineCorrection,
+                    prompt=user_prompt,
+                    mode="structured",
+                )
+                corrections.extend(chunk_corrections)
+        else:
+            # Process the entire document at once
+            numbered_text = add_line_numbers(doc.content)
             user_prompt = self.prompt_template.format(chunk_text=numbered_text)
-            chunk_corrections = await agent.talk.extract_multiple(
+
+            corrections = await agent.talk.extract_multiple(
                 text=numbered_text,
                 as_type=LineCorrection,
                 prompt=user_prompt,
                 mode="structured",
             )
-
-            # Adjust line numbers if needed based on chunk metadata
-            # No need to adjust if the chunker properly sets start_line metadata
-            corrections.extend(chunk_corrections)
 
         new_content, corrected_lines = apply_corrections(doc.content, corrections)
         metadata = doc.metadata.copy() if doc.metadata else {}
