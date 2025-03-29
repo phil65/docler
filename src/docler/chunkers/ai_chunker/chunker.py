@@ -11,6 +11,7 @@ from docler.common_types import DEFAULT_CHUNKER_MODEL
 from docler.configs.chunker_configs import (
     DEFAULT_CHUNKER_SYSTEM_PROMPT,
     DEFAULT_CHUNKER_USER_TEMPLATE,
+    AiChunkerConfig,
 )
 from docler.models import TextChunk
 
@@ -19,10 +20,12 @@ if TYPE_CHECKING:
     from docler.models import Document
 
 
-class AIChunker(TextChunker):
+class AIChunker(TextChunker[AiChunkerConfig]):
     """LLM-based document chunker."""
 
+    NAME = "ai"
     REQUIRED_PACKAGES: ClassVar = {"llmling-agent"}
+    Config = AiChunkerConfig
 
     def __init__(
         self,

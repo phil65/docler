@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any
 
 from docler.chunkers.base import TextChunker
 from docler.chunkers.markdown_chunker.utils import assign_images, split_by_headers
+from docler.configs.chunker_configs import MarkdownChunkerConfig
 from docler.models import TextChunk
 
 
@@ -15,8 +16,11 @@ if TYPE_CHECKING:
     from docler.models import Document, Image
 
 
-class MarkdownChunker(TextChunker):
+class MarkdownChunker(TextChunker[MarkdownChunkerConfig]):
     """Header-based markdown chunker with fallback to size-based chunks."""
+
+    Config = MarkdownChunkerConfig
+    NAME = "markdown"
 
     def __init__(
         self,

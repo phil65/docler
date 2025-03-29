@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, ClassVar, Literal
 
 from docler.chunkers.base import TextChunker
+from docler.configs.chunker_configs import LlamaIndexChunkerConfig
 from docler.log import get_logger
 from docler.models import TextChunk
 
@@ -18,13 +19,15 @@ logger = get_logger(__name__)
 ChunkerType = Literal["sentence", "token", "fixed", "markdown"]
 
 
-class LlamaIndexChunker(TextChunker):
+class LlamaIndexChunker(TextChunker[LlamaIndexChunkerConfig]):
     """Text chunker using LlamaIndex chunkers.
 
     This is a wrapper around LlamaIndex's chunking functionality,
     allowing dynamic import to avoid a fixed dependency.
     """
 
+    Config = LlamaIndexChunkerConfig
+    NAME = "llamaindex"
     REQUIRED_PACKAGES: ClassVar = {"llama-index"}
 
     def __init__(

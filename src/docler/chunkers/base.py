@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from docler.models import Document, TextChunk
 
 
-class TextChunker(BaseProvider, ABC):
+class TextChunker[TConfig](BaseProvider[TConfig], ABC):
     """Base class for text chunkers."""
 
     def __init__(self, chunk_size: int = 500, chunk_overlap: int = 50):
