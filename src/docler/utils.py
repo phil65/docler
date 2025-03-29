@@ -78,6 +78,7 @@ def check_mime(
 
 
 def decode_base64_to_image(encoded_string, image_format="PNG"):
+    """Decode a base64 string to an image."""
     from PIL import Image
 
     try:
@@ -89,12 +90,14 @@ def decode_base64_to_image(encoded_string, image_format="PNG"):
 
 
 def encode_image_to_base64(image, image_format="WEBP", quality=20):
+    """Encode an image to base64 string."""
     buffer = io.BytesIO()
     image.save(buffer, format=image_format, quality=quality)
     return base64.b64encode(buffer.getvalue()).decode("utf-8")
 
 
 def png_to_webp(content: str) -> str:
+    """Convert PNG images to WebP format in Markdown content."""
     pattern = re.compile(r"!\[Image\]\(data:image/png;base64,([^)]*)\)")
     matches = pattern.findall(content)
 

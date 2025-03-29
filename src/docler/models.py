@@ -5,6 +5,7 @@ from __future__ import annotations
 import base64
 from dataclasses import dataclass, field
 from datetime import datetime  # noqa: TC003
+from io import BytesIO
 from typing import TYPE_CHECKING, Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -122,8 +123,6 @@ class Image(BaseModel):
             A tuple of (width, height) if dimensions can be determined, None otherwise
         """
         try:
-            from io import BytesIO
-
             from PIL import Image as PILImage
 
             # Convert content to bytes if it's a base64 string
