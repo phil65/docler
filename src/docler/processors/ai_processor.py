@@ -1,10 +1,17 @@
 from __future__ import annotations
 
-from typing import ClassVar
+from typing import TYPE_CHECKING, ClassVar
 
 from pydantic import BaseModel
 
 from docler.common_types import DEFAULT_PROOF_READER_MODEL
+from docler.configs.chunker_configs import (
+    AiChunkerConfig,
+    ChunkerConfig,
+    LlamaIndexChunkerConfig,
+    MarkdownChunkerConfig,
+    TokenAwareChunkerConfig,
+)
 from docler.configs.processor_configs import (
     DEFAULT_PROOF_READER_PROMPT_TEMPLATE,
     DEFAULT_PROOF_READER_SYSTEM_PROMPT,
@@ -13,7 +20,10 @@ from docler.configs.processor_configs import (
 from docler.diffs import generate_all_diffs
 from docler.models import Document
 from docler.processors.base import DocumentProcessor
-from docler.utils import add_line_numbers
+
+
+if TYPE_CHECKING:
+    from docler.configs.file_db_configs import ChunkerShorthand
 
 
 class LineCorrection(BaseModel):
@@ -41,7 +51,6 @@ def apply_corrections(
     lines = text.splitlines()
     corrections.sort(key=lambda c: c.line_number, reverse=True)
     corrected_lines = set()
-
     for correction in corrections:
         line_idx = correction.line_number - 1
         if 0 <= line_idx < len(lines) and line_idx not in corrected_lines:
@@ -51,57 +60,39 @@ def apply_corrections(
     return "\n".join(lines), corrected_lines
 
 
-def _count_tokens(text: str, model: str) -> int:
-    """Count tokens in text using tokonomics."""
-    from tokonomics import count_tokens
+def resolve_chunker_config(
+    config: ChunkerConfig | ChunkerShorthand | None, model: str
+) -> ChunkerConfig:
+    """Resolve chunker configuration from shorthand or create default.
 
-    return count_tokens(text, model=model.split(":")[-1])
-
-
-def _split_into_chunks(
-    text: str, model: str, max_chunk_tokens: int, chunk_overlap_lines: int
-) -> list[tuple[int, str]]:
-    """Split text into chunks with line numbers based on token count.
+    Args:
+        config: Shorthand string, configuration object, or None
+        model: Model to use for default token-aware chunker
 
     Returns:
-        List of (start_line, numbered_text) tuples
+        Fully resolved configuration object
     """
-    lines = text.splitlines()
-    chunks = []
-
-    start_idx = 0
-    while start_idx < len(lines):
-        # Start with a minimum chunk size
-        end_idx = min(start_idx + 100, len(lines))
-
-        # Add lines until we reach the token limit or end of document
-        current_chunk = "\n".join(
-            f"{start_idx + i + 1:5d} | {line}"
-            for i, line in enumerate(lines[start_idx:end_idx])
+    if config is None:
+        # Create default token-aware chunker config
+        return TokenAwareChunkerConfig(
+            model=model,
+            max_tokens_per_chunk=10000,
+            chunk_overlap_lines=20,
         )
-        token_count = _count_tokens(current_chunk, model=model)
 
-        # If we have room for more lines, keep adding them
-        while end_idx < len(lines) and token_count < max_chunk_tokens - _count_tokens(
-            lines[end_idx], model=model
-        ):
-            end_idx += 1
-            current_chunk = "\n".join(
-                f"{start_idx + i + 1:5d} | {line}"
-                for i, line in enumerate(lines[start_idx:end_idx])
-            )
-            token_count = _count_tokens(current_chunk, model=model)
+    if isinstance(config, str):
+        match config:
+            case "markdown":
+                return MarkdownChunkerConfig()
+            case "llamaindex":
+                return LlamaIndexChunkerConfig()
+            case "ai":
+                return AiChunkerConfig()
+            case "token_aware":
+                return TokenAwareChunkerConfig(model=model)
 
-        chunks.append((start_idx + 1, current_chunk))  # 1-based line numbers
-        start_idx = end_idx - chunk_overlap_lines
-        if start_idx <= chunks[-1][0] - 1:
-            start_idx = chunks[-1][0] + 50
-
-        # Stop if we've processed all lines
-        if start_idx >= len(lines):
-            break
-
-    return chunks
+    # Return the config if it's already a config object
+    return config
 
 
 class LLMProofReader(DocumentProcessor[LLMProofReaderConfig]):
@@ -116,8 +107,7 @@ class LLMProofReader(DocumentProcessor[LLMProofReaderConfig]):
         model: str | None = None,
         system_prompt: str | None = None,
         prompt_template: str | None = None,
-        max_chunk_tokens: int = 10000,
-        chunk_overlap_lines: int = 20,
+        chunker: ChunkerConfig | ChunkerShorthand | None = None,
         include_diffs: bool = True,
         add_metadata_only: bool = False,
     ):
@@ -127,18 +117,19 @@ class LLMProofReader(DocumentProcessor[LLMProofReaderConfig]):
             model: LLM model to use
             system_prompt: Custom system prompt
             prompt_template: Custom prompt template
-            max_chunk_tokens: Maximum tokens per chunk
-            chunk_overlap_lines: Overlap between chunks in lines
+            chunker: Custom chunker configuration or shorthand
+                     (if None, uses TokenAwareChunker with this model)
             include_diffs: Whether to include diffs in metadata
             add_metadata_only: If True, only add metadata without modifying content
         """
         self.model = model or DEFAULT_PROOF_READER_MODEL
         self.system_prompt = system_prompt or DEFAULT_PROOF_READER_SYSTEM_PROMPT
         self.prompt_template = prompt_template or DEFAULT_PROOF_READER_PROMPT_TEMPLATE
-        self.max_chunk_tokens = max_chunk_tokens
-        self.chunk_overlap_lines = chunk_overlap_lines
         self.include_diffs = include_diffs
         self.add_metadata_only = add_metadata_only
+
+        # Resolve chunker config
+        self.chunker_config = resolve_chunker_config(chunker, self.model)
 
     async def process(self, doc: Document) -> Document:
         """Process document using line-based corrections.
@@ -149,32 +140,25 @@ class LLMProofReader(DocumentProcessor[LLMProofReaderConfig]):
         from llmling_agent import Agent
 
         agent = Agent[None](model=self.model, system_prompt=self.system_prompt)
-        numbered_text = add_line_numbers(doc.content)
-        if _count_tokens(numbered_text, model=self.model) <= self.max_chunk_tokens:
+        chunker = self.chunker_config.get_provider()
+        temp_doc = Document(content=doc.content, source_path=doc.source_path)
+        chunks = await chunker.split(temp_doc)
+
+        # Process each chunk
+        corrections = []
+        for chunk in chunks:
+            numbered_text = chunk.to_numbered_text()
             user_prompt = self.prompt_template.format(chunk_text=numbered_text)
-            corrections = await agent.talk.extract_multiple(
+            chunk_corrections = await agent.talk.extract_multiple(
                 text=numbered_text,
                 as_type=LineCorrection,
                 prompt=user_prompt,
                 mode="structured",
             )
-        else:
-            corrections = []
-            chunks = _split_into_chunks(
-                doc.content,
-                model=self.model,
-                chunk_overlap_lines=self.chunk_overlap_lines,
-                max_chunk_tokens=self.max_chunk_tokens,
-            )
-            for _, chunk_text in chunks:
-                user_prompt = self.prompt_template.format(chunk_text=chunk_text)
-                chunk_corrections = await agent.talk.extract_multiple(
-                    text=chunk_text,
-                    as_type=LineCorrection,
-                    prompt=user_prompt,
-                    mode="structured",
-                )
-                corrections.extend(chunk_corrections)
+
+            # Adjust line numbers if needed based on chunk metadata
+            # No need to adjust if the chunker properly sets start_line metadata
+            corrections.extend(chunk_corrections)
 
         new_content, corrected_lines = apply_corrections(doc.content, corrections)
         metadata = doc.metadata.copy() if doc.metadata else {}
@@ -188,7 +172,6 @@ class LLMProofReader(DocumentProcessor[LLMProofReaderConfig]):
                 for c in corrections
             ],
         }
-
         if self.include_diffs:
             diff_metadata = generate_all_diffs(doc.content, new_content)
             proof_reading.update(diff_metadata)
@@ -233,7 +216,6 @@ numbers like 5678 can be misread as S67B."""
         )
         proofreader = LLMProofReader(
             model=DEFAULT_PROOF_READER_MODEL,
-            max_chunk_tokens=4000,
             include_diffs=True,
         )
 

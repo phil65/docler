@@ -17,6 +17,24 @@ if TYPE_CHECKING:
 logger = get_logger(__name__)
 
 
+def count_tokens(text: str, model_name: str) -> int:
+    """Count tokens in text using tokonomics.
+
+    Args:
+        text: Text to count tokens for
+        model_name: Name of the model to use for tokenization calculation
+
+    Returns:
+        Number of tokens in the text
+    """
+    from tokonomics import count_tokens
+
+    # Extract model name from full model identifier (e.g., "openai/gpt-4" -> "gpt-4")
+    model_name = model_name.split("/")[-1] if "/" in model_name else model_name
+    model_name = model_name.split(":")[-1] if ":" in model_name else model_name
+    return count_tokens(text, model=model_name)
+
+
 class TokenAwareChunker(TextChunker[TokenAwareChunkerConfig]):
     """Chunker that splits text based on token counts rather than character lengths."""
 
@@ -43,23 +61,6 @@ class TokenAwareChunker(TextChunker[TokenAwareChunkerConfig]):
         self.max_tokens_per_chunk = max_tokens_per_chunk
         self.chunk_overlap_lines = chunk_overlap_lines
 
-    def _count_tokens(self, text: str) -> int:
-        """Count tokens in text using tokonomics.
-
-        Args:
-            text: Text to count tokens for
-
-        Returns:
-            Number of tokens in the text
-        """
-        from tokonomics import count_tokens
-
-        # Extract model name from full model identifier (e.g., "openai/gpt-4" -> "gpt-4")
-        model_name = self.model.split("/")[-1] if "/" in self.model else self.model
-        model_name = model_name.split(":")[-1] if ":" in model_name else model_name
-
-        return count_tokens(text, model=model_name)
-
     async def split(
         self,
         doc: Document,
@@ -84,20 +85,18 @@ class TokenAwareChunker(TextChunker[TokenAwareChunkerConfig]):
         while start_idx < len(lines):
             # Start with a minimum chunk size of 100 lines or remaining lines
             end_idx = min(start_idx + 100, len(lines))
-
-            # Start with initial chunk of text
             current_chunk = "\n".join(lines[start_idx:end_idx])
-            token_count = self._count_tokens(current_chunk)
+            token_count = count_tokens(current_chunk, self.model)
 
             # Keep adding lines until we reach the token limit or end of document
             while end_idx < len(
                 lines
-            ) and token_count < self.max_tokens_per_chunk - self._count_tokens(
-                lines[end_idx]
+            ) and token_count < self.max_tokens_per_chunk - count_tokens(
+                lines[end_idx], self.model
             ):
                 end_idx += 1
                 current_chunk = "\n".join(lines[start_idx:end_idx])
-                token_count = self._count_tokens(current_chunk)
+                token_count = count_tokens(current_chunk, self.model)
 
             # Find images relevant to this chunk
             chunk_images = [

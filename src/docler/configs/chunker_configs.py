@@ -36,6 +36,8 @@ Here's the text with line numbers:
 </text>
 """
 
+ChunkerShorthand = Literal["markdown", "llamaindex", "ai"]
+
 
 class BaseChunkerConfig(ProviderConfig):
     """Base configuration for text chunkers."""

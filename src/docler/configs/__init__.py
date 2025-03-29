@@ -18,6 +18,7 @@ from docler.configs.chunker_configs import (
     ChunkerConfig,
     LlamaIndexChunkerConfig,
     MarkdownChunkerConfig,
+    ChunkerShorthand,
     DEFAULT_CHUNKER_USER_TEMPLATE,
     DEFAULT_CHUNKER_SYSTEM_PROMPT,
 )
@@ -51,7 +52,6 @@ from docler.configs.embedding_configs import (
     SentenceTransformerModel,
 )
 from docler.configs.file_db_configs import (
-    ChunkerShorthand,
     ComponentBasedConfig,
     ConverterShorthand,
     DatabaseShorthand,

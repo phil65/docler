@@ -6,7 +6,7 @@ from typing import Annotated, Literal
 
 from pydantic import Field, SecretStr
 
-from docler.configs.chunker_configs import ChunkerConfig  # noqa: TC001
+from docler.configs.chunker_configs import ChunkerConfig, ChunkerShorthand  # noqa: TC001
 from docler.configs.converter_configs import ConverterConfig  # noqa: TC001
 from docler.configs.embedding_configs import EmbeddingConfig  # noqa: TC001
 from docler.configs.vector_db_configs import VectorStoreConfig  # noqa: TC001
@@ -14,16 +14,13 @@ from docler.provider import ProviderConfig
 from docler.utils import get_api_key
 
 
-# Shorthand literals for common configurations
-ChunkerShorthand = Literal["markdown", "llamaindex", "ai"]
-
 EmbeddingShorthand = Literal["openai", "bge", "sentence-transformer", "mistral-embed"]
-
 VectorDBShorthand = Literal["chroma", "qdrant", "pinecone", "openai"]
-
 ConverterShorthand = Literal[
     "docling", "marker", "mistral", "llamaparse", "datalab", "azure", "llm"
 ]
+# Shorthand literals for the complete configuration
+DatabaseShorthand = Literal["openai", "component", "chroma", "qdrant", "pinecone"]
 
 
 class FileDatabaseConfig(ProviderConfig):
@@ -201,16 +198,6 @@ class OpenAIFileDatabaseConfig(FileDatabaseConfig):
         return self
 
 
-# Union type for file database configs
-FileDatabaseConfigUnion = Annotated[
-    ComponentBasedConfig | OpenAIFileDatabaseConfig,
-    Field(discriminator="type"),
-]
-
-# Shorthand literals for the complete configuration
-DatabaseShorthand = Literal["openai", "component", "chroma", "qdrant", "pinecone"]
-
-
 def resolve_database_config(
     config: FileDatabaseConfigUnion | DatabaseShorthand,
 ) -> FileDatabaseConfigUnion:
@@ -237,3 +224,10 @@ def resolve_database_config(
 
     # Return the fully resolved config if it's already a config object
     return config.resolve()
+
+
+# Union type for file database configs
+FileDatabaseConfigUnion = Annotated[
+    ComponentBasedConfig | OpenAIFileDatabaseConfig,
+    Field(discriminator="type"),
+]

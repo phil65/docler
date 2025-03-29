@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, Annotated, Literal
 from pydantic import Field
 
 from docler.common_types import DEFAULT_PROOF_READER_MODEL
+from docler.configs.chunker_configs import ChunkerConfig, ChunkerShorthand  # noqa: TC001
 from docler.provider import ProviderConfig
 from docler.pydantic_types import ModelIdentifier  # noqa: TC001
 
@@ -55,11 +56,8 @@ class LLMProofReaderConfig(BaseProcessorConfig):
     prompt_template: str = DEFAULT_PROOF_READER_PROMPT_TEMPLATE
     """Template for the proof reading prompt."""
 
-    max_chunk_tokens: int = 10000
-    """Maximum tokens per chunk."""
-
-    chunk_overlap_lines: int = 20
-    """Overlap between chunks in lines."""
+    chunker: ChunkerConfig | ChunkerShorthand | None = None
+    """Custom chunker configuration or shorthand."""
 
     include_diffs: bool = True
     """Whether to include diffs in metadata."""
@@ -75,8 +73,7 @@ class LLMProofReaderConfig(BaseProcessorConfig):
             model=self.model,
             system_prompt=self.system_prompt,
             prompt_template=self.prompt_template,
-            max_chunk_tokens=self.max_chunk_tokens,
-            chunk_overlap_lines=self.chunk_overlap_lines,
+            chunker=self.chunker,
             include_diffs=self.include_diffs,
             add_metadata_only=self.add_metadata_only,
         )
