@@ -62,7 +62,7 @@ class MarkdownChunker(TextChunker):
             # Fallback to size-based if no headers
             for content, images in self._fallback_split(doc.content, doc.images):
                 chunk = TextChunk(
-                    text=content,
+                    content=content,
                     source_doc_id=doc.source_path or "",
                     chunk_index=chunk_idx,
                     images=images,
@@ -78,7 +78,7 @@ class MarkdownChunker(TextChunker):
             if len(content) > self.max_chunk_size:
                 for sub_content, images in self._fallback_split(content, doc.images):
                     chunk = TextChunk(
-                        text=f"{header}\n\n{sub_content}",
+                        content=f"{header}\n\n{sub_content}",
                         source_doc_id=doc.source_path or "",
                         chunk_index=chunk_idx,
                         images=images,
@@ -89,7 +89,7 @@ class MarkdownChunker(TextChunker):
             else:
                 content, images = assign_images(content, doc.images)
                 chunk = TextChunk(
-                    text=f"{header}\n\n{content}",
+                    content=f"{header}\n\n{content}",
                     source_doc_id=doc.source_path or "",
                     chunk_index=chunk_idx,
                     images=images,

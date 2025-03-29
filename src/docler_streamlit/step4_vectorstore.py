@@ -223,7 +223,7 @@ def show_step_4():
                             st.write(f"Found {len(results)} relevant chunks:")
                             for i, (chunk, score) in enumerate(results):
                                 with st.expander(f"Result {i + 1} - Score: {score:.4f}"):
-                                    st.markdown(chunk.text)
+                                    st.markdown(chunk.content)
                         else:
                             st.info("No results found.")
                     except Exception as e:
@@ -237,7 +237,7 @@ if __name__ == "__main__":
     from docler.models import ChunkedDocument, TextChunk
 
     state = SessionState.get()
-    chunk = TextChunk(text="Sample chunk content", source_doc_id="test", chunk_index=0)
+    chunk = TextChunk(content="Sample chunk content", source_doc_id="test", chunk_index=0)
     state.chunked_doc = ChunkedDocument(content="Sample content", chunks=[chunk])
     state.uploaded_file_name = "sample.txt"
     run(show_step_4)

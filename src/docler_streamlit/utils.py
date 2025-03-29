@@ -25,14 +25,14 @@ def display_chunk_preview(chunk: TextChunk, expanded: bool = False) -> None:
     header_text = f"Chunk {chunk.chunk_index + 1}"
     if chunk.metadata.get("header"):
         header_text += f" - {chunk.metadata['header']}"
-    header_text += f" ({len(chunk.text)} chars)"
+    header_text += f" ({len(chunk.content)} chars)"
     with st.expander(header_text, expanded=expanded):
         tabs = ["Raw", "Rendered", "Debug Info", "Images"]
         raw_tab, rendered_tab, debug_tab, images_tab = st.tabs(tabs)
         with raw_tab:
-            st.code(chunk.text, language="markdown")
+            st.code(chunk.content, language="markdown")
         with rendered_tab:
-            st.markdown(chunk.text)
+            st.markdown(chunk.content)
         with debug_tab:
             debug_info = {
                 "Chunk Index": chunk.chunk_index,

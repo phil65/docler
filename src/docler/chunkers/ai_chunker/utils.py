@@ -32,7 +32,7 @@ def create_text_chunk(
     metadata = {**base, "keywords": chunk.keywords, "references": chunk.references}
     chunk_images = [i for i in doc.images if i.filename and i.filename in chunk_text]
     return TextChunk(
-        text=chunk_text,
+        content=chunk_text,
         source_doc_id=doc.source_path or "",
         chunk_index=chunk_idx,
         images=chunk_images,

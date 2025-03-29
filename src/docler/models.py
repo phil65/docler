@@ -209,7 +209,7 @@ class ChunkedDocument(Document):
 class TextChunk:
     """Chunk of text with associated metadata and images."""
 
-    text: str
+    content: str
     source_doc_id: str
     chunk_index: int
     page_number: int | None = None
@@ -229,7 +229,7 @@ class TextChunk:
         if start_line is None:
             start_line = self.metadata.get("start_line", 1)
 
-        lines = self.text.splitlines()
+        lines = self.content.splitlines()
         return "\n".join(f"{start_line + i:5d} | {line}" for i, line in enumerate(lines))  # pyright: ignore
 
 

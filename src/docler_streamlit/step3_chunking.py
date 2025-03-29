@@ -118,6 +118,6 @@ def show_step_3():
         st.subheader(f"Chunks ({len(chunks)})")
         filter_text = st.text_input("Filter chunks by content:", "")
         for i, chunk in enumerate(chunks):
-            if filter_text and filter_text.lower() not in chunk.text.lower():
+            if filter_text and filter_text.lower() not in chunk.content.lower():
                 continue
             display_chunk_preview(chunk, expanded=(i == 0))

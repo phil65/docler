@@ -138,7 +138,7 @@ class LlamaIndexChunker(TextChunker):
             metadata["relationships"] = node.relationships
             chunk_images = self._find_images_for_chunk(doc, node.get_content())
             chunk = TextChunk(
-                text=node.get_content(),
+                content=node.get_content(),
                 source_doc_id=doc.source_path or "",
                 chunk_index=i,
                 images=chunk_images,
@@ -163,6 +163,6 @@ if __name__ == "__main__":
         chunker = LlamaIndexChunker(chunker_type="markdown")
         chunks = await chunker.split(doc)
         for chunk in chunks:
-            print(f"Chunk {chunk.chunk_index}:\n{chunk.text}\n")
+            print(f"Chunk {chunk.chunk_index}:\n{chunk.content}\n")
 
     asyncio.run(main())

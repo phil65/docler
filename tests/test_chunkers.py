@@ -75,17 +75,17 @@ async def test_header_based_image_splitting(markdown_with_images: Document):
     # First chunk should contain image1
     assert len(chunks[0].images) == 1
     assert chunks[0].images[0].id == "img1"
-    assert "![img1](image1.png)" in chunks[0].text
+    assert "![img1](image1.png)" in chunks[0].content
 
     # Second chunk (subsection) should contain image2
     assert len(chunks[1].images) == 1
     assert chunks[1].images[0].id == "img2"
-    assert "![img2](image2.png)" in chunks[1].text
+    assert "![img2](image2.png)" in chunks[1].content
 
     # Third chunk should contain image3
     assert len(chunks[2].images) == 1
     assert chunks[2].images[0].id == "img3"
-    assert "![img3](image3.png)" in chunks[2].text
+    assert "![img3](image3.png)" in chunks[2].content
 
 
 async def test_size_based_image_splitting(long_markdown_with_images: Document):
@@ -99,7 +99,7 @@ async def test_size_based_image_splitting(long_markdown_with_images: Document):
         # Each chunk should only contain the images referenced within its text
         for image in chunk.images:
             ref = f"![{image.id}]({image.filename})"
-            assert ref in chunk.text, f"Image reference {ref} not found in chunk"
+            assert ref in chunk.content, f"Image reference {ref} not found in chunk"
 
 
 async def test_headerless_content_with_images():
@@ -126,7 +126,7 @@ async def test_headerless_content_with_images():
     for chunk in chunks:
         for image in chunk.images:
             ref = f"![{image.id}]({image.filename})"
-            assert ref in chunk.text, f"Image reference {ref} not found in chunk"
+            assert ref in chunk.content, f"Image reference {ref} not found in chunk"
 
 
 async def test_image_metadata_preservation():

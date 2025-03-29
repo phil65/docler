@@ -106,7 +106,7 @@ class AIDocumentAnnotator[TMetadata](Annotator[AIDocumentAnnotatorConfig]):
             tasks = []
 
             for chunk in batch:
-                prompt = self.user_prompt.format(context=context, chunk=chunk.text)
+                prompt = self.user_prompt.format(context=context, chunk=chunk.content)
                 tasks.append(agent.run(prompt))
 
             try:
