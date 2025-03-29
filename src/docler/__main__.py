@@ -22,7 +22,7 @@ PACKAGE_DIR = pathlib.Path(__file__).parent.parent / "docler_streamlit"
 @cli.command()
 def flow():
     """Start the Streamlit web interface."""
-    app_path = str(PACKAGE_DIR / "streamlit_app" / "app.py")
+    app_path = str(PACKAGE_DIR / "app.py")
     try:
         cmd = [sys.executable, "-m", "streamlit", "run", app_path]
         subprocess.run(cmd, env=os.environ.copy(), check=True)
