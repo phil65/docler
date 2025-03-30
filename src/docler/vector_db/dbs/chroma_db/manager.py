@@ -176,26 +176,24 @@ class ChromaVectorManager(VectorManagerBase[ChromaConfig]):
         Returns:
             True if successful, False if failed
         """
-        return True
+        try:
+            if name in self._vector_stores:
+                del self._vector_stores[name]
+            client = await self._get_list_client()
+            await client.delete_collection(name=name)
+            if self.persist_directory:
+                from pathlib import Path
+                import shutil
 
-    #     try:
-    #         # Clean up any existing instance
-    #         if name in self._vector_stores:
-    #             db = self._vector_stores[name]
-    #             success = await db.delete_collection()
-    #             await db.close()
-    #             del self._vector_stores[name]
-    #             return success
+                collection_path = Path(self.persist_directory) / name
+                if collection_path.exists():
+                    shutil.rmtree(collection_path, ignore_errors=True)
 
-    #         # No existing instance, use list client
-    #         client = await self._get_list_client()
-    #         await client.delete_collection(name=name)
-
-    #     except Exception:
-    #         logger.exception("Failed to delete collection %s", name)
-    #         return False
-    #     else:
-    #         return True
+        except Exception:
+            logger.exception("Failed to delete collection %s", name)
+            return False
+        else:
+            return True
 
     async def close(self) -> None:
         """Close all vector store connections."""
