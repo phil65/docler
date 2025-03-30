@@ -11,7 +11,7 @@ from docler.provider import BaseProvider
 if TYPE_CHECKING:
     from docler.configs.vector_db_configs import BaseVectorStoreConfig
     from docler.models import VectorStoreInfo
-    from docler.vector_db.base import VectorDB
+    from docler.vector_db.base import BaseVectorDB
 
 
 class VectorManagerBase[TConfig](BaseProvider[TConfig], ABC):
@@ -29,11 +29,11 @@ class VectorManagerBase[TConfig](BaseProvider[TConfig], ABC):
         """List all available vector stores for this provider."""
 
     @abstractmethod
-    async def create_vector_store(self, name: str, **kwargs) -> VectorDB:
+    async def create_vector_store(self, name: str, **kwargs) -> BaseVectorDB:
         """Create a new vector store."""
 
     @abstractmethod
-    async def get_vector_store(self, name: str, **kwargs) -> VectorDB:
+    async def get_vector_store(self, name: str, **kwargs) -> BaseVectorDB:
         """Get a connection to an existing vector store."""
 
     @abstractmethod

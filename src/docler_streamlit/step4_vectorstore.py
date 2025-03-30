@@ -15,7 +15,7 @@ from docler_streamlit.state import SessionState
 
 
 if TYPE_CHECKING:
-    from docler.vector_db.base import VectorDB
+    from docler.vector_db.base import BaseVectorDB
     from docler.vector_db.base_manager import VectorManagerBase
 
 
@@ -60,7 +60,7 @@ def show_step_4():
     st.divider()
     opts = ["Create new store", "Use existing store"]
     action = st.radio("Vector Store Action", opts, index=0)
-    vector_db: VectorDB | None = None
+    vector_db: BaseVectorDB | None = None
 
     if action == "Create new store":
         store_name = st.text_input(

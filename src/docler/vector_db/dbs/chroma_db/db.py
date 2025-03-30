@@ -130,7 +130,7 @@ class ChromaBackend(VectorStoreBackend):
             include=["metadatas", "distances"],
         )
 
-        search_results: list[Any] = []
+        search_results: list[SearchResult] = []
         if not results or not results["ids"] or not results["ids"][0]:
             return search_results
 
@@ -157,3 +157,18 @@ class ChromaBackend(VectorStoreBackend):
             search_results.append(result)
 
         return search_results
+
+
+if __name__ == "__main__":
+    import asyncio
+
+    import numpy as np
+
+    async def main():
+        db = ChromaBackend(persist_directory="./chroma")
+        query_vector = np.array([0.1, 0.2, 0.3])
+        await db.add_vector(query_vector, metadata={"source": "user"})
+        search_results = await db.search_vectors(query_vector)
+        print(search_results)
+
+    asyncio.run(main())

@@ -8,7 +8,7 @@ from docler.configs.vector_db_configs import PineconeCloud, PineconeConfig, Pine
 from docler.log import get_logger
 from docler.models import VectorStoreInfo
 from docler.utils import get_api_key
-from docler.vector_db.base import VectorDB
+from docler.vector_db.base import BaseVectorDB
 from docler.vector_db.base_manager import VectorManagerBase
 from docler.vector_db.dbs.pinecone_db.db import PineconeBackend
 
@@ -78,7 +78,7 @@ class PineconeVectorManager(VectorManagerBase[PineconeConfig]):
         region: PineconeRegion = "us-east-1",
         namespace: str = "default",
         **kwargs,
-    ) -> VectorDB:
+    ) -> BaseVectorDB:
         """Create a new vector store.
 
         Args:
@@ -115,19 +115,19 @@ class PineconeVectorManager(VectorManagerBase[PineconeConfig]):
                     namespace=namespace,
                 )
                 self._vector_stores[name] = db
-                return cast(VectorDB, db)  # type: ignore[override]
+                return cast(BaseVectorDB, db)  # type: ignore[override]
 
         except Exception as e:
             msg = f"Failed to create vector store: {e}"
             logger.exception(msg)
             raise ValueError(msg) from e
 
-    async def get_vector_store(self, name: str, **kwargs) -> VectorDB:
+    async def get_vector_store(self, name: str, **kwargs) -> BaseVectorDB:
         """Get a connection to an existing vector store."""
         from pinecone import PineconeAsyncio
 
         if name in self._vector_stores:
-            return cast(VectorDB, self._vector_stores[name])
+            return cast(BaseVectorDB, self._vector_stores[name])
 
         try:
             if not await self.has_vector_store(name):
@@ -148,7 +148,7 @@ class PineconeVectorManager(VectorManagerBase[PineconeConfig]):
             logger.exception(msg)
             raise ValueError(msg) from e
         else:
-            return cast(VectorDB, db)
+            return cast(BaseVectorDB, db)
 
     async def delete_vector_store(self, name: str) -> bool:
         """Delete a vector store.

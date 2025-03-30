@@ -7,7 +7,7 @@ from typing import ClassVar, cast
 from docler.configs.vector_db_configs import ChromaConfig
 from docler.log import get_logger
 from docler.models import VectorStoreInfo
-from docler.vector_db.base import VectorDB
+from docler.vector_db.base import BaseVectorDB
 from docler.vector_db.base_manager import VectorManagerBase
 from docler.vector_db.dbs.chroma_db.db import ChromaBackend
 
@@ -46,7 +46,6 @@ class ChromaVectorManager(VectorManagerBase[ChromaConfig]):
         self.ssl = ssl
         self.headers = headers
         self._vector_stores: dict[str, ChromaBackend] = {}
-        # Initialized client for listing collections
         self._list_client = None
 
     @property
@@ -96,7 +95,7 @@ class ChromaVectorManager(VectorManagerBase[ChromaConfig]):
         self,
         name: str,
         **kwargs,
-    ) -> VectorDB:
+    ) -> BaseVectorDB:
         """Create a new vector store (collection).
 
         Args:
@@ -110,7 +109,7 @@ class ChromaVectorManager(VectorManagerBase[ChromaConfig]):
             ValueError: If creation fails
         """
         if name in self._vector_stores:
-            return cast(VectorDB, self._vector_stores[name])
+            return cast(BaseVectorDB, self._vector_stores[name])
 
         try:
             db = ChromaBackend(
@@ -118,9 +117,8 @@ class ChromaVectorManager(VectorManagerBase[ChromaConfig]):
                 persist_directory=self.persist_directory,
                 **kwargs,
             )
-            # await db.initialize()
             self._vector_stores[name] = db
-            return cast(VectorDB, db)
+            return cast(BaseVectorDB, db)
 
         except Exception as e:
             msg = f"Failed to create ChromaDB collection: {e}"
@@ -131,7 +129,7 @@ class ChromaVectorManager(VectorManagerBase[ChromaConfig]):
         self,
         name: str,
         **kwargs,
-    ) -> VectorDB:
+    ) -> BaseVectorDB:
         """Get a connection to an existing collection.
 
         Args:
@@ -145,7 +143,7 @@ class ChromaVectorManager(VectorManagerBase[ChromaConfig]):
             ValueError: If collection doesn't exist or connection fails
         """
         if name in self._vector_stores:
-            return cast(VectorDB, self._vector_stores[name])
+            return cast(BaseVectorDB, self._vector_stores[name])
 
         try:
             client = await self._get_list_client()
@@ -162,7 +160,7 @@ class ChromaVectorManager(VectorManagerBase[ChromaConfig]):
             # await db.initialize()
             self._vector_stores[name] = db
 
-            return cast(VectorDB, db)
+            return cast(BaseVectorDB, db)
 
         except Exception as e:
             msg = f"Failed to connect to ChromaDB collection {name}: {e}"
@@ -204,8 +202,6 @@ class ChromaVectorManager(VectorManagerBase[ChromaConfig]):
         # for db in list(self._vector_stores.values()):
         #     await db.close()
         self._vector_stores.clear()
-
-        # Close list client
         if self._list_client:
             try:
                 await self._list_client.reset()

@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 Metric = Literal["cosine", "euclidean", "dot"]
 
 
-class VectorDB(ABC):
+class BaseVectorDB(ABC):
     """Abstract interface for vector databases that handle both storage and retrieval."""
 
     def __init__(self, vector_store_id: str):
