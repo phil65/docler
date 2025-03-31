@@ -54,6 +54,11 @@ class BaseProvider[TConfig]:
         self.logger = get_logger(__name__)
 
     @classmethod
+    def get_available_providers(cls) -> list[type[BaseProvider[TConfig]]]:
+        """Get a list of available provider classes."""
+        return [kls for kls in cls.__subclasses__() if kls.has_required_packages()]
+
+    @classmethod
     def has_required_packages(cls) -> bool:
         """Check if all required packages are available.
 
