@@ -8,24 +8,25 @@ import uuid
 
 import pytest
 
-from docler.vector_db.dbs.chroma_db import ChromaVectorManager
+# from docler.vector_db.dbs.chroma_db import ChromaVectorManager
 from docler.vector_db.dbs.pinecone_db import PineconeVectorManager
 
 
 if TYPE_CHECKING:
     from docler.vector_db.base_manager import VectorManagerBase
 
-managers = [ChromaVectorManager, PineconeVectorManager]
-managers = [PineconeVectorManager]
+managers = [
+    # ChromaVectorManager(persist_directory="chroma"),
+    PineconeVectorManager(),
+]
 
 
 @pytest.mark.integration
-@pytest.mark.parametrize("manager_cls", managers)
+@pytest.mark.parametrize("manager", managers)
 @pytest.mark.skipif(os.environ.get("CLI", False), reason="Skip integration in CI")
-async def test_vector_manager_lifecycle(manager_cls: type[VectorManagerBase]):
+async def test_vector_manager_lifecycle(manager: VectorManagerBase):
     """Test basic vector store lifecycle (create, list, delete)."""
     store_name = f"test-{uuid.uuid4().hex[:8]}"
-    manager = manager_cls()
 
     try:
         store = await manager.create_vector_store(store_name)

@@ -52,8 +52,6 @@ def show_step_4():
 
     # Get the manager class for the selected provider
     manager_cls = VECTOR_STORES[provider]
-
-    # Initialize config in the dictionary if not exists
     if provider not in state.vector_configs:
         state.vector_configs[provider] = manager_cls.Config()
 
@@ -79,11 +77,9 @@ def show_step_4():
                     manager = manager_cls()
                     config = state.vector_configs[provider]
                     config.collection_name = store_name
-
+                    kwargs = config.model_dump(exclude={"type"})
                     vector_db = anyenv.run_sync(
-                        manager.create_vector_store(
-                            store_name, **config.model_dump(exclude={"type"})
-                        )
+                        manager.create_vector_store(store_name, **kwargs)
                     )
                     assert vector_db is not None, "Vector store creation failed"
                     state.vector_store_id = vector_db.vector_store_id
@@ -101,10 +97,7 @@ def show_step_4():
 
             if not stores:
                 st.info(f"No existing {provider} vector stores found.")
-                store_id = st.text_input(
-                    f"{provider} Vector Store ID",
-                    help=f"ID of an existing {provider} vector store",
-                )
+                store_id = st.text_input(f"{provider} Vector Store ID")
             else:
                 store_options = {f"{s.name} ({s.db_id})": s.db_id for s in stores}
                 store_display = st.selectbox(
@@ -140,12 +133,7 @@ def show_step_4():
                         logger.exception("Vector store connection failed")
         except Exception as e:  # noqa: BLE001
             st.error(f"Error listing vector stores: {e}")
-            store_id = st.text_input(
-                f"{provider} Vector Store ID",
-                help=f"ID of an existing {provider} vector store",
-            )
-
-            # Use model_edit to generate the configuration form for connection options
+            store_id = st.text_input(f"{provider} Vector Store ID")
             with st.expander("Connection Options", expanded=False):
                 state.vector_configs[provider] = sb.model_edit(
                     state.vector_configs[provider]
@@ -156,10 +144,9 @@ def show_step_4():
                     try:
                         manager = manager_cls()
                         config = state.vector_configs[provider]
+                        cfg = config.model_dump(exclude={"type"})
                         vector_db = anyenv.run_sync(
-                            manager.get_vector_store(
-                                store_id, **config.model_dump(exclude={"type"})
-                            )
+                            manager.get_vector_store(store_id, **cfg)
                         )
                         assert vector_db is not None
                         state.vector_store_id = vector_db.vector_store_id
@@ -183,10 +170,9 @@ def show_step_4():
                     manager_cls = VECTOR_STORES[provider]
                     manager = manager_cls()
                     config = state.vector_configs[provider]
+                    cfg = config.model_dump(exclude={"type"})
                     vector_db = anyenv.run_sync(
-                        manager.get_vector_store(
-                            vec_store_id, **config.model_dump(exclude={"type"})
-                        )
+                        manager.get_vector_store(vec_store_id, **cfg)
                     )
                     assert vector_db is not None, "Vector store not found"
                     chunk_ids = anyenv.run_sync(vector_db.add_chunks(chunks))
