@@ -126,10 +126,7 @@ class ComponentBasedConfig(FileDatabaseConfig):
                 case "sentence-transformer":
                     return SentenceTransformerEmbeddingConfig()
                 case "mistral-embed":
-                    return LiteLLMEmbeddingConfig(
-                        model="mistral/mistral-embed",
-                        api_key=SecretStr(get_api_key("MISTRAL_API_KEY")),
-                    )
+                    return LiteLLMEmbeddingConfig()
         return self.embeddings
 
     def resolve_vector_store(self) -> VectorStoreConfig:

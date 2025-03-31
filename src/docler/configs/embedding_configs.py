@@ -59,7 +59,7 @@ class OpenAIEmbeddingConfig(BaseEmbeddingConfig):
     type: Literal["openai"] = Field(default="openai", init=False)
     """Type discriminator for OpenAI embedding provider."""
 
-    api_key: SecretStr
+    api_key: SecretStr | None = None
     """OpenAI API key."""
 
     model: OpenAIEmbeddingModel = "text-embedding-3-small"
@@ -112,7 +112,7 @@ class LiteLLMEmbeddingConfig(BaseEmbeddingConfig):
     type: Literal["litellm"] = Field(default="litellm", init=False)
     """Type discriminator for LiteLLM embedding provider."""
 
-    model: str
+    model: str = "mistral/mistral-embed"
     """Model identifier (e.g., "text-embedding-3-small", "mistral/mistral-embed")."""
 
     api_key: SecretStr | None = None

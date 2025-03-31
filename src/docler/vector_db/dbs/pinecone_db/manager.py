@@ -96,11 +96,9 @@ class PineconeVectorManager(VectorManagerBase[PineconeConfig]):
         Raises:
             ValueError: If creation fails
         """
-        from pinecone import PineconeAsyncio
+        from pinecone import PineconeAsyncio, ServerlessSpec
 
         try:
-            from pinecone import ServerlessSpec
-
             if await self.has_vector_store(name):
                 msg = f"Index {name!r} already exists"
                 raise ValueError(msg)  # noqa: TRY301

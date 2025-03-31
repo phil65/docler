@@ -51,7 +51,6 @@ class MarkItDownConverter(DocumentConverter[MarkItDownConfig]):
     }
 
     SUPPORTED_PROTOCOLS: ClassVar[set[str]] = {
-        # MarkItDown can handle these protocols directly
         "",
         "file",
         "http",

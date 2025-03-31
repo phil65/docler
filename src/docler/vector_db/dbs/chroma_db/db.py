@@ -41,11 +41,8 @@ class ChromaBackend(VectorStoreBackend):
         Raises:
             ImportError: If chromadb is not installed
         """
-        try:
-            import chromadb
-        except ImportError as e:
-            msg = "ChromaDB is not installed. Please install with 'pip install chromadb'"
-            raise ImportError(msg) from e
+        import chromadb
+
         if persist_directory:
             self._client = chromadb.PersistentClient(path=persist_directory)  # type: ignore
         else:
@@ -55,6 +52,7 @@ class ChromaBackend(VectorStoreBackend):
             metadata={"hnsw:space": distance_metric},
             embedding_function=None,
         )
+        self.vector_store_id = vector_store_id
         msg = "ChromaDB initialized - collection: %s, persistent: %s"
         logger.info(msg, vector_store_id, bool(persist_directory))
 
