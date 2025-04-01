@@ -7,19 +7,22 @@ from typing import Annotated, Literal
 from pydantic import Field, SecretStr
 
 from docler.configs.chunker_configs import ChunkerConfig, ChunkerShorthand  # noqa: TC001
-from docler.configs.converter_configs import ConverterConfig  # noqa: TC001
-from docler.configs.embedding_configs import EmbeddingConfig  # noqa: TC001
-from docler.configs.vector_db_configs import VectorStoreConfig  # noqa: TC001
+from docler.configs.converter_configs import (  # noqa: TC001
+    ConverterConfig,
+    ConverterShorthand,
+)
+from docler.configs.embedding_configs import (  # noqa: TC001
+    EmbeddingConfig,
+    EmbeddingShorthand,
+)
+from docler.configs.vector_db_configs import (  # noqa: TC001
+    VectorDBShorthand,
+    VectorStoreConfig,
+)
 from docler.provider import ProviderConfig
 from docler.utils import get_api_key
 
 
-EmbeddingShorthand = Literal["openai", "bge", "sentence-transformer", "mistral-embed"]
-VectorDBShorthand = Literal["chroma", "qdrant", "pinecone", "openai"]
-ConverterShorthand = Literal[
-    "docling", "marker", "mistral", "llamaparse", "datalab", "azure", "llm"
-]
-# Shorthand literals for the complete configuration
 DatabaseShorthand = Literal["openai", "component", "chroma", "qdrant", "pinecone"]
 
 
@@ -118,9 +121,8 @@ class ComponentBasedConfig(FileDatabaseConfig):
 
             match self.embeddings:
                 case "openai":
-                    return OpenAIEmbeddingConfig(
-                        api_key=SecretStr(get_api_key("OPENAI_API_KEY"))
-                    )
+                    key = SecretStr(get_api_key("OPENAI_API_KEY"))
+                    return OpenAIEmbeddingConfig(api_key=key)
                 case "bge":
                     return BGEEmbeddingConfig()
                 case "sentence-transformer":
@@ -145,14 +147,11 @@ class ComponentBasedConfig(FileDatabaseConfig):
                 case "qdrant":
                     return QdrantConfig(collection_name=self.store_name)
                 case "pinecone":
-                    return PineconeConfig(
-                        collection_name=self.store_name,
-                        api_key=SecretStr(get_api_key("PINECONE_API_KEY")),
-                    )
+                    key = SecretStr(get_api_key("PINECONE_API_KEY"))
+                    return PineconeConfig(collection_name=self.store_name, api_key=key)
                 case "openai":
-                    return OpenAIVectorConfig(
-                        api_key=SecretStr(get_api_key("OPENAI_API_KEY")),
-                    )
+                    key = SecretStr(get_api_key("OPENAI_API_KEY"))
+                    return OpenAIVectorConfig(api_key=key)
         return self.vector_store
 
     def resolve(self) -> ComponentBasedConfig:
@@ -172,7 +171,7 @@ class OpenAIFileDatabaseConfig(FileDatabaseConfig):
 
     type: Literal["openai"] = "openai"
 
-    api_key: str | None = None
+    api_key: SecretStr | None = None
     """OpenAI API key (falls back to OPENAI_API_KEY env var)."""
 
     vector_store_id: str | None = None

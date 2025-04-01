@@ -19,6 +19,9 @@ PineconeCloud = Literal["aws", "gcp", "azure"]
 OpenAIChunkingStrategy = Literal["auto", "static"]
 
 
+VectorDBShorthand = Literal["chroma", "qdrant", "pinecone", "openai"]
+
+
 class BaseVectorStoreConfig(ProviderConfig):
     """Base configuration for vector stores."""
 

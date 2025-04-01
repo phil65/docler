@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Annotated, Literal
 from pydantic import Field
 
 from docler.common_types import DEFAULT_PROOF_READER_MODEL
-from docler.configs.chunker_configs import ChunkerConfig, ChunkerShorthand  # noqa: TC001
+from docler.configs.chunker_configs import ChunkerConfig  # noqa: TC001
 from docler.provider import ProviderConfig
 from docler.pydantic_types import ModelIdentifier  # noqa: TC001
 
@@ -56,7 +56,7 @@ class LLMProofReaderConfig(BaseProcessorConfig):
     prompt_template: str = DEFAULT_PROOF_READER_PROMPT_TEMPLATE
     """Template for the proof reading prompt."""
 
-    chunker: ChunkerConfig | ChunkerShorthand | None = None
+    chunker: ChunkerConfig | None = None
     """Optional chunker configuration. If None, processes entire document at once."""
 
     include_diffs: bool = True

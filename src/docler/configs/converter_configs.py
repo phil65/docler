@@ -23,6 +23,10 @@ if TYPE_CHECKING:
     from docler.converters.base import DocumentConverter
 
 
+ConverterShorthand = Literal[
+    "docling", "marker", "mistral", "llamaparse", "datalab", "azure", "llm"
+]
+
 DoclingEngine = Literal[
     "easy_ocr", "tesseract_cli_ocr", "tesseract_ocr", "ocr_mac", "rapid_ocr"
 ]

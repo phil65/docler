@@ -23,6 +23,7 @@ from docler.configs.chunker_configs import (
     DEFAULT_CHUNKER_SYSTEM_PROMPT,
 )
 from docler.configs.converter_configs import (
+    ConverterShorthand,
     AzureConfig,
     AzureFeatureFlag,
     AzureModel,
@@ -41,6 +42,7 @@ from docler.configs.converter_configs import (
     UpstageConfig,
 )
 from docler.configs.embedding_configs import (
+    EmbeddingShorthand,
     BaseEmbeddingConfig,
     BGEEmbeddingConfig,
     EmbeddingConfig,
@@ -53,13 +55,10 @@ from docler.configs.embedding_configs import (
 )
 from docler.configs.file_db_configs import (
     ComponentBasedConfig,
-    ConverterShorthand,
     DatabaseShorthand,
-    EmbeddingShorthand,
     FileDatabaseConfig,
     FileDatabaseConfigUnion,
     OpenAIFileDatabaseConfig,
-    VectorDBShorthand,
     resolve_database_config,
 )
 from docler.configs.processor_configs import (
@@ -70,6 +69,7 @@ from docler.configs.processor_configs import (
     ProcessorConfig,
 )
 from docler.configs.vector_db_configs import (
+    VectorDBShorthand,
     BaseVectorStoreConfig,
     ChromaConfig,
     KdbAiConfig,

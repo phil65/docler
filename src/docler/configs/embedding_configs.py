@@ -9,6 +9,8 @@ from pydantic import Field, SecretStr
 from docler.provider import ProviderConfig
 
 
+EmbeddingShorthand = Literal["openai", "bge", "sentence-transformer", "mistral-embed"]
+
 LiteLLMInputType = Literal[
     "sentence-similarity",
     "search_document",
