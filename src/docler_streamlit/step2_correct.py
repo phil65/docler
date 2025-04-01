@@ -19,9 +19,18 @@ def show_step_2():
     """Show document proof reading/correction screen (step 2)."""
     state = SessionState.get()
     st.header("Step 2: Document Correction")
-    col1, col2 = st.columns([1, 5])
+    col1, col2, col3 = st.columns([1, 4, 1])
     with col1:
         st.button("← Back", on_click=state.prev_step)
+    with col3:
+        # When proceeding without corrections, copy original document
+        def proceed_to_chunking():
+            if state.document and not state.corrected_document:
+                state.corrected_document = state.document
+            state.next_step()
+
+        st.button("Proceed to Chunking →", on_click=proceed_to_chunking)
+
     if not state.document:
         st.warning("No document to process. Please go back and convert a document first.")
         return
@@ -42,7 +51,6 @@ def show_step_2():
                 logger.exception("Document processing failed")
 
     if state.corrected_document:
-        st.button("Proceed to Chunking", on_click=state.next_step)
         st.subheader("Document Corrections")
         original_content = state.document.content
         corrected_content = state.corrected_document.content
@@ -78,8 +86,11 @@ def show_step_2():
             st.markdown(state.corrected_document.content)
         with tabs[1]:
             st.code(state.corrected_document.content, language="markdown")
-    elif state.document:
-        st.info("Use the processor to correct common OCR errors in the document.")
+    else:
+        st.info(
+            "You can proceed to chunking without corrections, "
+            "or use the processor to correct common OCR errors."
+        )
         with st.expander("View Original Document"):
             st.markdown(state.document.content)
 
