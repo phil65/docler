@@ -5,7 +5,6 @@ from __future__ import annotations
 from typing import ClassVar, Literal, cast
 
 from docler.configs.vector_db_configs import PineconeCloud, PineconeConfig, PineconeRegion
-from docler.log import get_logger
 from docler.models import VectorStoreInfo
 from docler.utils import get_api_key
 from docler.vector_db.base import BaseVectorDB
@@ -14,8 +13,6 @@ from docler.vector_db.dbs.pinecone_db.db import PineconeBackend
 
 
 Metric = Literal["cosine", "euclidean", "dotproduct"]
-
-logger = get_logger(__name__)
 
 
 class PineconeVectorManager(VectorManagerBase[PineconeConfig]):
@@ -117,7 +114,7 @@ class PineconeVectorManager(VectorManagerBase[PineconeConfig]):
 
         except Exception as e:
             msg = f"Failed to create vector store: {e}"
-            logger.exception(msg)
+            self.logger.exception(msg)
             raise ValueError(msg) from e
 
     async def get_vector_store(self, name: str, **kwargs) -> BaseVectorDB:
@@ -143,7 +140,7 @@ class PineconeVectorManager(VectorManagerBase[PineconeConfig]):
 
         except Exception as e:
             msg = f"Failed to connect to vector store {name}: {e}"
-            logger.exception(msg)
+            self.logger.exception(msg)
             raise ValueError(msg) from e
         else:
             return cast(BaseVectorDB, db)
@@ -172,7 +169,7 @@ class PineconeVectorManager(VectorManagerBase[PineconeConfig]):
                 await self._vector_stores[name].close()
                 del self._vector_stores[name]
         except Exception:
-            logger.exception("Error deleting vector store %s", name)
+            self.logger.exception("Error deleting vector store %s", name)
             return False
         else:
             return True

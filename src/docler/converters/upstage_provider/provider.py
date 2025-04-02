@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING, ClassVar, Literal
 
 from docler.configs.converter_configs import MistralConfig
 from docler.converters.base import DocumentConverter
-from docler.log import get_logger
 from docler.models import Document, Image
 from docler.utils import get_api_key
 
@@ -14,8 +13,6 @@ from docler.utils import get_api_key
 if TYPE_CHECKING:
     from docler.common_types import StrPath, SupportedLanguage
 
-
-logger = get_logger(__name__)
 
 OCRType = Literal["auto", "force"]
 OutputFormat = Literal["text", "html", "markdown"]
@@ -126,7 +123,7 @@ class UpstageConverter(DocumentConverter[MistralConfig]):
             raise ValueError(msg) from e
         except Exception as e:
             msg = f"Failed to convert document: {e}"
-            logger.exception(msg)
+            self.logger.exception(msg)
             raise ValueError(msg) from e
 
         # Extract content from response

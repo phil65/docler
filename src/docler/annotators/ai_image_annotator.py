@@ -17,13 +17,10 @@ from docler.configs.annotator_configs import (
     DEFAULT_IMAGE_SYSTEM_PROMPT,
     AIImageAnnotatorConfig,
 )
-from docler.log import get_logger
 
 
 if TYPE_CHECKING:
     from docler.models import ChunkedDocument, Image
-
-logger = get_logger(__name__)
 
 
 class DefaultImageMetadata(BaseModel):
@@ -78,6 +75,7 @@ class AIImageAnnotator[TMetadata](Annotator[AIImageAnnotatorConfig]):
             metadata_model: Pydantic model for image metadata
             batch_size: Number of images to process concurrently
         """
+        super().__init__()
         self.model = model or DEFAULT_IMAGE_ANNOTATOR_MODEL
         self.system_prompt = system_prompt or DEFAULT_IMAGE_SYSTEM_PROMPT
         self.user_prompt = user_prompt or DEFAULT_IMAGE_PROMPT_TEMPLATE
@@ -129,7 +127,7 @@ class AIImageAnnotator[TMetadata](Annotator[AIImageAnnotatorConfig]):
             image.metadata.update(metadata)
 
         except Exception:
-            logger.exception("Error processing image %s", image.id)
+            self.logger.exception("Error processing image %s", image.id)
 
         return image
 
@@ -152,7 +150,7 @@ class AIImageAnnotator[TMetadata](Annotator[AIImageAnnotatorConfig]):
                     await asyncio.gather(*tasks)
                 except Exception:
                     msg = "Error processing images in chunk %s"
-                    logger.exception(msg, chunk.chunk_index)
+                    self.logger.exception(msg, chunk.chunk_index)
 
         return document
 

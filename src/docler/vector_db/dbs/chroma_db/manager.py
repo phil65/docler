@@ -5,14 +5,10 @@ from __future__ import annotations
 from typing import ClassVar, cast
 
 from docler.configs.vector_db_configs import ChromaConfig
-from docler.log import get_logger
 from docler.models import VectorStoreInfo
 from docler.vector_db.base import BaseVectorDB
 from docler.vector_db.base_manager import VectorManagerBase
 from docler.vector_db.dbs.chroma_db.db import ChromaBackend
-
-
-logger = get_logger(__name__)
 
 
 class ChromaVectorManager(VectorManagerBase[ChromaConfig]):
@@ -40,6 +36,7 @@ class ChromaVectorManager(VectorManagerBase[ChromaConfig]):
             ssl: Whether to use SSL for server connection
             headers: Optional headers for server connection
         """
+        super().__init__()
         self.persist_directory = persist_directory
         self.host = host
         self.port = port
@@ -88,7 +85,7 @@ class ChromaVectorManager(VectorManagerBase[ChromaConfig]):
             collections = await client.list_collections()
             return [VectorStoreInfo(db_id=c, name=c) for c in collections]
         except Exception:
-            logger.exception("Error listing ChromaDB collections")
+            self.logger.exception("Error listing ChromaDB collections")
             return []
 
     async def create_vector_store(
@@ -122,7 +119,7 @@ class ChromaVectorManager(VectorManagerBase[ChromaConfig]):
 
         except Exception as e:
             msg = f"Failed to create ChromaDB collection: {e}"
-            logger.exception(msg)
+            self.logger.exception(msg)
             raise ValueError(msg) from e
 
     async def get_vector_store(
@@ -159,12 +156,11 @@ class ChromaVectorManager(VectorManagerBase[ChromaConfig]):
 
             # await db.initialize()
             self._vector_stores[name] = db
-
             return cast(BaseVectorDB, db)
 
         except Exception as e:
             msg = f"Failed to connect to ChromaDB collection {name}: {e}"
-            logger.exception(msg)
+            self.logger.exception(msg)
             raise ValueError(msg) from e
 
     async def delete_vector_store(self, name: str) -> bool:
@@ -190,7 +186,7 @@ class ChromaVectorManager(VectorManagerBase[ChromaConfig]):
                     shutil.rmtree(collection_path, ignore_errors=True)
 
         except Exception:
-            logger.exception("Failed to delete collection %s", name)
+            self.logger.exception("Failed to delete collection %s", name)
             return False
         else:
             return True
@@ -204,6 +200,6 @@ class ChromaVectorManager(VectorManagerBase[ChromaConfig]):
             try:
                 await self._list_client.reset()
             except Exception as e:  # noqa: BLE001
-                logger.warning("Error closing list client: %s", e)
+                self.logger.warning("Error closing list client: %s", e)
 
             self._list_client = None

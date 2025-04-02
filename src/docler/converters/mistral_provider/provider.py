@@ -6,16 +6,12 @@ from typing import TYPE_CHECKING, ClassVar
 
 from docler.configs.converter_configs import MistralConfig
 from docler.converters.base import DocumentConverter
-from docler.log import get_logger
 from docler.models import Document, Image
 from docler.utils import get_api_key
 
 
 if TYPE_CHECKING:
     from docler.common_types import StrPath, SupportedLanguage
-
-
-logger = get_logger(__name__)
 
 
 class MistralConverter(DocumentConverter[MistralConfig]):
@@ -56,12 +52,12 @@ class MistralConverter(DocumentConverter[MistralConfig]):
 
         pdf_file = upath.UPath(file_path)
         client = Mistral(api_key=self.api_key)
-        logger.debug("Uploading file %s...", pdf_file.name)
+        self.logger.debug("Uploading file %s...", pdf_file.name)
         data = pdf_file.read_bytes()
         file_ = File(file_name=pdf_file.stem, content=data)
         uploaded = client.files.upload(file=file_, purpose="ocr")  # type: ignore
         signed_url = client.files.get_signed_url(file_id=uploaded.id, expiry=1)
-        logger.debug("Processing with OCR model...")
+        self.logger.debug("Processing with OCR model...")
         doc = DocumentURLChunk(document_url=signed_url.url)
         r = client.ocr.process(document=doc, model=self.model, include_image_base64=True)
         images: list[Image] = []

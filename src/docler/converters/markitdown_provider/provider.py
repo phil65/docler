@@ -91,7 +91,7 @@ class MarkItDownConverter(DocumentConverter[MarkItDownConfig]):
             )
         except Exception as e:
             msg = f"Failed to convert file {file_path}"
-            logger.exception(msg)
+            self.logger.exception(msg)
             raise ValueError(msg) from e
 
 

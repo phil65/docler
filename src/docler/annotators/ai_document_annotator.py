@@ -15,13 +15,10 @@ from docler.configs.annotator_configs import (
     DEFAULT_DOC_SYSTEM_PROMPT,
     AIDocumentAnnotatorConfig,
 )
-from docler.log import get_logger
 
 
 if TYPE_CHECKING:
     from docler.models import ChunkedDocument
-
-logger = get_logger(__name__)
 
 
 class DefaultMetadata(BaseModel):
@@ -71,6 +68,7 @@ class AIDocumentAnnotator[TMetadata](Annotator[AIDocumentAnnotatorConfig]):
             max_context_length: Maximum length of context for annotation
             batch_size: Number of chunks to process in parallel
         """
+        super().__init__()
         self.model = model or DEFAULT_ANNOTATOR_MODEL
         self.system_prompt = system_prompt or DEFAULT_DOC_SYSTEM_PROMPT
         self.user_prompt = user_prompt or DEFAULT_DOC_PROMPT_TEMPLATE
@@ -87,14 +85,16 @@ class AIDocumentAnnotator[TMetadata](Annotator[AIDocumentAnnotatorConfig]):
         Returns:
             Document with enhanced metadata
         """
-        from llmling_agent import Agent, StructuredAgent
+        from llmling_models import infer_model
+        from pydantic_ai import Agent
 
-        agent: StructuredAgent[None, TMetadata] = Agent[None](  # type: ignore
-            model=self.model,
+        model = infer_model(self.model)
+        agent: Agent[None, TMetadata] = Agent[None](  # type: ignore
+            model=model,
             system_prompt=self.system_prompt,
-        ).to_structured(self.metadata_model)
+            result_type=self.metadata_model,  # type: ignore
+        )
 
-        # Get a condensed version of the document for context
         context = (
             document.content[: self.max_context_length] + "..."
             if self.max_context_length and len(document.content) > self.max_context_length
@@ -115,7 +115,7 @@ class AIDocumentAnnotator[TMetadata](Annotator[AIDocumentAnnotatorConfig]):
                     metadata = result.content.model_dump()  # type: ignore
                     chunk.metadata |= metadata
             except Exception:
-                logger.exception("Error annotating batch")
+                self.logger.exception("Error annotating batch")
 
         return document
 
