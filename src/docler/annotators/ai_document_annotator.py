@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-import asyncio
 from itertools import batched
 from typing import TYPE_CHECKING, ClassVar, TypeVar
 
+import anyenv
 from pydantic import BaseModel
 
 from docler.annotators.base import Annotator
@@ -110,7 +110,7 @@ class AIDocumentAnnotator[TMetadata](Annotator[AIDocumentAnnotatorConfig]):
                 tasks.append(agent.run(prompt))
 
             try:
-                results = await asyncio.gather(*tasks)
+                results = await anyenv.gather(*tasks)
                 for chunk, result in zip(batch, results):
                     metadata = result.content.model_dump()  # type: ignore
                     chunk.metadata |= metadata

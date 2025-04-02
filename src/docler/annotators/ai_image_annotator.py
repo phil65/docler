@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
-import asyncio
 import base64
 from itertools import batched
 from typing import TYPE_CHECKING, ClassVar
 
+import anyenv
 from pydantic import BaseModel
 from typing_extensions import TypeVar
 
@@ -147,7 +147,7 @@ class AIImageAnnotator[TMetadata](Annotator[AIImageAnnotatorConfig]):
             for batch in batched(chunk.images, self.batch_size):
                 tasks = [self._process_image(img) for img in batch]
                 try:
-                    await asyncio.gather(*tasks)
+                    await anyenv.gather(*tasks)
                 except Exception:
                     msg = "Error processing images in chunk %s"
                     self.logger.exception(msg, chunk.chunk_index)
