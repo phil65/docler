@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from typing import Annotated, Any
+from typing import Annotated, Any, Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 ModelIdentifier = Annotated[
@@ -19,6 +19,50 @@ Temperature = Annotated[
     float,
     Field(json_schema_extra={"field_type": "parameter", "step": 0.1}, ge=0.0, le=2.0),
 ]
+
+
+class ImageClassification(BaseModel):
+    """First-stage classification of an image."""
+
+    image_type: Literal[
+        "photo", "diagram", "chart", "graph", "table", "map", "screenshot", "other"
+    ]
+    """Type of the image."""
+
+    description: str
+    """General description of what's in the image."""
+
+    needs_diagram_analysis: bool = False
+    """Whether this image should be sent for specialized diagram analysis."""
+
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
+
+class DiagramAnalysis(BaseModel):
+    """Second-stage detailed analysis for diagrams."""
+
+    diagram_type: Literal[
+        "flowchart",
+        "sequence",
+        "class",
+        "entity_relationship",
+        "mindmap",
+        "network",
+        "architecture",
+        "other",
+    ]
+    """Specific type of diagram."""
+
+    mermaid_code: str
+    """A mermaid.js compatible representation of the diagram."""
+
+    key_elements: list[str] = Field(default_factory=list)
+    """Important elements/nodes in the diagram."""
+
+    key_insights: list[str] = Field(default_factory=list)
+    """Key insights or important aspects of the diagram."""
+
+    model_config = ConfigDict(use_attribute_docstrings=True)
 
 
 # Helper function to extract field type metadata

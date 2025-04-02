@@ -8,7 +8,7 @@ from datetime import datetime  # noqa: TC003
 from io import BytesIO
 from typing import TYPE_CHECKING, Any, Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import Base64Str, BaseModel, ConfigDict, Field
 
 
 if TYPE_CHECKING:
@@ -26,7 +26,7 @@ class Image(BaseModel):
     id: str
     """Internal reference id used in markdown content."""
 
-    content: bytes | str = Field(repr=False)
+    content: bytes | Base64Str = Field(repr=False)
     """Raw image bytes or base64 encoded string."""
 
     mime_type: str
