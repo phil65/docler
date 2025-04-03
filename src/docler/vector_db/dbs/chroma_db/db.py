@@ -74,7 +74,7 @@ class ChromaBackend(VectorStoreBackend):
         vector_lists: list[float] = [v.tolist() for v in vectors]  # type: ignore
 
         await anyenv.run_in_thread(
-            self._collection.add,
+            self._collection.add,  # type: ignore
             ids,
             vector_lists,
             metadata,
