@@ -24,6 +24,7 @@ from docler.utils import get_api_key
 
 
 DatabaseShorthand = Literal["openai", "component", "chroma", "qdrant", "pinecone"]
+OpenAIChunkingStrategy = Literal["auto", "static"]
 
 
 class FileDatabaseConfig(ProviderConfig):
@@ -136,7 +137,6 @@ class ComponentBasedConfig(FileDatabaseConfig):
         if isinstance(self.vector_store, str):
             from docler.configs.vector_db_configs import (
                 ChromaConfig,
-                OpenAIVectorConfig,
                 PineconeConfig,
                 QdrantConfig,
             )
@@ -149,9 +149,6 @@ class ComponentBasedConfig(FileDatabaseConfig):
                 case "pinecone":
                     key = SecretStr(get_api_key("PINECONE_API_KEY"))
                     return PineconeConfig(collection_name=self.store_name, api_key=key)
-                case "openai":
-                    key = SecretStr(get_api_key("OPENAI_API_KEY"))
-                    return OpenAIVectorConfig(api_key=key)
         return self.vector_store
 
     def resolve(self) -> ComponentBasedConfig:
@@ -180,7 +177,7 @@ class OpenAIFileDatabaseConfig(FileDatabaseConfig):
     # store_name is inherited from FileDatabaseConfig
     # and used to create a new vector store if vector_store_id is None
 
-    chunking_strategy: Literal["auto", "static"] = "auto"
+    chunking_strategy: OpenAIChunkingStrategy = "auto"
     """Chunking strategy to use."""
 
     max_chunk_size: int = 1000

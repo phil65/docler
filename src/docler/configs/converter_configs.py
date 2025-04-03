@@ -11,7 +11,7 @@ from docling.datamodel.pipeline_options import (  # noqa: TC002
     TesseractCliOcrOptions,
     TesseractOcrOptions,
 )
-from pydantic import Field, SecretStr
+from pydantic import Field, HttpUrl, SecretStr
 from pydantic_settings import SettingsConfigDict
 
 from docler.common_types import DEFAULT_CONVERTER_MODEL, SupportedLanguage
@@ -59,6 +59,9 @@ LlamaParseMode = Literal[
     "parse_page_with_agent",
     "parse_document_with_llm",
 ]
+
+
+MarkerLLMProvider = Literal["gemini", "ollama", "vertex", "claude"]
 
 
 def default_languages() -> set[SupportedLanguage]:
@@ -292,7 +295,7 @@ class MarkerConfig(BaseConverterConfig):
     dpi: int = Field(default=192, gt=0)
     """DPI setting for image extraction."""
 
-    llm_provider: Literal["gemini", "ollama", "vertex", "claude"] | None = None
+    llm_provider: MarkerLLMProvider | None = None
     """Language model provider to use for OCR."""
 
     def get_provider(self) -> DocumentConverter:
@@ -311,7 +314,7 @@ class UpstageConfig(BaseConverterConfig):
     api_key: SecretStr | None = None
     """Upstage API key. Falls back to UPSTAGE_API_KEY env var."""
 
-    base_url: str = "https://api.upstage.ai/v1/document-ai/document-parse"
+    base_url: HttpUrl = HttpUrl("https://api.upstage.ai/v1/document-ai/document-parse")
     """API endpoint URL."""
 
     # model: str = "document-parse"

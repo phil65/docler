@@ -4,11 +4,10 @@ from __future__ import annotations
 
 from typing import Annotated, Literal
 
-from pydantic import Field, SecretStr
+from pydantic import Field, HttpUrl, SecretStr
 from pydantic.functional_validators import model_validator
 
 from docler.provider import ProviderConfig
-from docler.utils import get_api_key
 
 
 Metric = Literal["cosine", "euclidean", "dotproduct"]
@@ -16,10 +15,9 @@ PineconeRegion = Literal[
     "us-east-1", "us-west-2", "eu-west-1", "europe-west4", "us-central1", "eastus2"
 ]
 PineconeCloud = Literal["aws", "gcp", "azure"]
-OpenAIChunkingStrategy = Literal["auto", "static"]
 
 
-VectorDBShorthand = Literal["chroma", "qdrant", "pinecone", "openai"]
+VectorDBShorthand = Literal["chroma", "qdrant", "pinecone"]
 
 
 class BaseVectorStoreConfig(ProviderConfig):
@@ -46,7 +44,7 @@ class QdrantConfig(BaseVectorStoreConfig):
     location: str | None = None
     """Path to local Qdrant storage. If None, uses memory."""
 
-    url: str | None = None
+    url: HttpUrl | None = None
     """URL for Qdrant server. If set, location is ignored."""
 
     api_key: SecretStr | None = None
@@ -121,37 +119,7 @@ class PineconeConfig(BaseVectorStoreConfig):
     """Distance metric for similarity search."""
 
 
-class OpenAIVectorConfig(BaseVectorStoreConfig):
-    """Configuration for OpenAI Vector store."""
-
-    type: Literal["openai"] = Field(default="openai", init=False)
-    """Type identifier for OpenAI Vector."""
-
-    api_key: SecretStr | None = None
-    """OpenAI API key."""
-
-    organization: str | None = None
-    """OpenAI organization ID."""
-
-    chunking_strategy: OpenAIChunkingStrategy = "auto"
-    """Strategy for chunking text."""
-
-    max_chunk_size: int = Field(default=1000, gt=0)
-    """Maximum chunk size in tokens (fixed strategy)."""
-
-    chunk_overlap: int = Field(default=200, ge=0)
-    """Overlap between chunks in tokens (fixed strategy)."""
-
-    @model_validator(mode="after")
-    def validate_config(self) -> OpenAIVectorConfig:
-        """Validate configuration."""
-        if not self.api_key:
-            get_api_key("OPENAI_API_KEY")
-        return self
-
-
-# Complete VectorStoreConfig union type with all implemented configurations
 VectorStoreConfig = Annotated[
-    ChromaConfig | QdrantConfig | KdbAiConfig | PineconeConfig | OpenAIVectorConfig,
+    ChromaConfig | QdrantConfig | KdbAiConfig | PineconeConfig,
     Field(discriminator="type"),
 ]

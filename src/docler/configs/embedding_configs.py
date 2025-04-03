@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Annotated, Literal
 
-from pydantic import Field, SecretStr
+from pydantic import Field, HttpUrl, SecretStr
 
 from docler.provider import ProviderConfig
 
@@ -126,7 +126,7 @@ class LiteLLMEmbeddingConfig(BaseEmbeddingConfig):
     input_type: LiteLLMInputType | None = None
     """Optional input type for the embeddings."""
 
-    base_url: str | None = None
+    base_url: HttpUrl | None = None
     """Optional base URL for the provider."""
 
     extra_params: dict[str, str | float | bool | None] = Field(default_factory=dict)

@@ -5,7 +5,7 @@ from __future__ import annotations
 import importlib.util
 from typing import Any, ClassVar, TypeVar
 
-from pydantic import BaseModel, Field, SecretStr, field_serializer
+from pydantic import BaseModel, Field, HttpUrl, SecretStr, field_serializer
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from docler.log import get_logger
@@ -29,10 +29,14 @@ class ProviderConfig(BaseSettings):
     )
 
     @field_serializer("*", when_used="json-unless-none")
-    def serialize_secrets(self, v, _info):
-        if isinstance(v, SecretStr):
-            return v.get_secret_value()
-        return v
+    def serialize_special_types(self, v, _info):
+        match v:
+            case SecretStr():
+                return v.get_secret_value()
+            case HttpUrl():
+                return str(v)
+            case _:
+                return v
 
     def get_config_fields(self):
         return self.model_dump(exclude={"type"}, mode="json")
