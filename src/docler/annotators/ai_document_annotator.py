@@ -85,16 +85,14 @@ class AIDocumentAnnotator[TMetadata](Annotator[AIDocumentAnnotatorConfig]):
         Returns:
             Document with enhanced metadata
         """
-        from llmling_models import infer_model
-        from pydantic_ai import Agent
+        from llmling_agent import Agent, StructuredAgent
 
-        model = infer_model(self.model)
-        agent: Agent[None, TMetadata] = Agent[None](  # type: ignore
-            model=model,
+        agent: StructuredAgent[None, TMetadata] = Agent[None](  # type: ignore
+            model=self.model,
             system_prompt=self.system_prompt,
-            result_type=self.metadata_model,  # type: ignore
-        )
+        ).to_structured(self.metadata_model)
 
+        # Get a condensed version of the document for context
         context = (
             document.content[: self.max_context_length] + "..."
             if self.max_context_length and len(document.content) > self.max_context_length
