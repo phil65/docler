@@ -23,7 +23,7 @@ managers = [
 
 @pytest.mark.integration
 @pytest.mark.parametrize("manager", managers)
-@pytest.mark.skipif(os.environ.get("CLI", False), reason="Skip integration in CI")
+@pytest.mark.skipif(os.environ.get("CI", False), reason="Skip integration in CI")
 async def test_vector_manager_lifecycle(manager: VectorManagerBase):
     """Test basic vector store lifecycle (create, list, delete)."""
     store_name = f"test-{uuid.uuid4().hex[:8]}"
