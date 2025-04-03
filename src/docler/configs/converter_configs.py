@@ -31,6 +31,9 @@ DoclingEngine = Literal[
     "easy_ocr", "tesseract_cli_ocr", "tesseract_ocr", "ocr_mac", "rapid_ocr"
 ]
 
+UpstageOCRType = Literal["auto", "force"]
+UpstageOutputFormat = Literal["markdown", "text", "html"]
+
 AzureModel = Literal[
     "prebuilt-read",
     "prebuilt-layout",
@@ -238,7 +241,7 @@ class LlamaParseConfig(BaseConverterConfig):
     adaptive_long_table: bool = False
     """Whether to use adaptive long table."""
 
-    parse_mode: str = "parse_page_with_llm"
+    parse_mode: LlamaParseMode = "parse_page_with_llm"
     """Parse mode, defaults to "parse_page_with_llm"."""
 
     model_config = SettingsConfigDict(env_prefix="LLAMAPARSE_")
@@ -311,13 +314,13 @@ class UpstageConfig(BaseConverterConfig):
     base_url: str = "https://api.upstage.ai/v1/document-ai/document-parse"
     """API endpoint URL."""
 
-    model: str = "document-parse"
-    """Model name for document parsing."""
+    # model: str = "document-parse"
+    # """Model name for document parsing."""
 
-    ocr: Literal["auto", "force"] = "auto"
+    ocr: UpstageOCRType = "auto"
     """OCR mode ('auto' or 'force')."""
 
-    output_format: Literal["markdown", "text", "html"] = "markdown"
+    output_format: UpstageOutputFormat = "markdown"
     """Output format ('markdown', 'text', or 'html')."""
 
     base64_categories: list[str] = Field(default_factory=lambda: ["figure", "chart"])

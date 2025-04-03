@@ -10,6 +10,8 @@ from typing import TYPE_CHECKING, Any, Literal
 
 from pydantic import Base64Str, BaseModel, ConfigDict, Field
 
+from docler.pydantic_types import MimeType  # noqa: TC001
+
 
 if TYPE_CHECKING:
     import numpy as np
@@ -29,7 +31,7 @@ class Image(BaseModel):
     content: bytes | Base64Str = Field(repr=False)
     """Raw image bytes or base64 encoded string."""
 
-    mime_type: str
+    mime_type: MimeType
     """MIME type of the image (e.g. 'image/jpeg', 'image/png')."""
 
     filename: str | None = None
@@ -125,10 +127,7 @@ class Image(BaseModel):
         try:
             from PIL import Image as PILImage
 
-            # Convert content to bytes if it's a base64 string
             if isinstance(self.content, str):
-                import base64
-
                 # Handle data URLs
                 if self.content.startswith("data:"):
                     # Extract the base64 part after the comma

@@ -4,7 +4,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, ClassVar, Literal
 
-from docler.configs.converter_configs import MistralConfig
+from docler.configs.converter_configs import (
+    MistralConfig,
+    UpstageOCRType,
+    UpstageOutputFormat,
+)
 from docler.converters.base import DocumentConverter
 from docler.models import Document, Image
 from docler.utils import get_api_key
@@ -14,8 +18,6 @@ if TYPE_CHECKING:
     from docler.common_types import StrPath, SupportedLanguage
 
 
-OCRType = Literal["auto", "force"]
-OutputFormat = Literal["text", "html", "markdown"]
 Category = Literal["figure", "chart", "table", "paragraph"]
 
 # API endpoints
@@ -46,8 +48,8 @@ class UpstageConverter(DocumentConverter[MistralConfig]):
         api_key: str | None = None,
         base_url: str = DOCUMENT_PARSE_BASE_URL,
         model: str = DOCUMENT_PARSE_DEFAULT_MODEL,
-        ocr: OCRType = "auto",
-        output_format: OutputFormat = "markdown",
+        ocr: UpstageOCRType = "auto",
+        output_format: UpstageOutputFormat = "markdown",
         base64_categories: set[Category] | None = None,
     ):
         """Initialize the Upstage converter.
