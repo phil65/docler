@@ -67,12 +67,7 @@ class LlamaIndexChunkerConfig(BaseChunkerConfig):
         """Get the chunker instance."""
         from docler.chunkers.llamaindex_chunker import LlamaIndexChunker
 
-        return LlamaIndexChunker(
-            chunker_type=self.chunker_type,
-            chunk_size=self.chunk_size,
-            include_metadata=self.include_metadata,
-            include_prev_next_rel=self.include_prev_next_rel,
-        )
+        return LlamaIndexChunker(**self.get_config_fields())
 
 
 class MarkdownChunkerConfig(BaseChunkerConfig):
@@ -94,10 +89,7 @@ class MarkdownChunkerConfig(BaseChunkerConfig):
         """Get the chunker instance."""
         from docler.chunkers.markdown_chunker import MarkdownChunker
 
-        return MarkdownChunker(
-            min_chunk_size=self.min_chunk_size,
-            max_chunk_size=self.max_chunk_size,
-        )
+        return MarkdownChunker(**self.get_config_fields())
 
 
 class AiChunkerConfig(BaseChunkerConfig):
@@ -119,11 +111,7 @@ class AiChunkerConfig(BaseChunkerConfig):
         """Get the chunker instance."""
         from docler.chunkers.ai_chunker import AIChunker
 
-        return AIChunker(
-            model=self.model,
-            user_prompt=self.user_prompt,
-            system_prompt=self.system_prompt,
-        )
+        return AIChunker(**self.get_config_fields())
 
 
 class TokenAwareChunkerConfig(BaseChunkerConfig):
@@ -145,11 +133,7 @@ class TokenAwareChunkerConfig(BaseChunkerConfig):
         """Get the chunker instance."""
         from docler.chunkers.token_chunker import TokenAwareChunker
 
-        return TokenAwareChunker(
-            model=self.model,
-            max_tokens_per_chunk=self.max_tokens_per_chunk,
-            chunk_overlap_lines=self.chunk_overlap_lines,
-        )
+        return TokenAwareChunker(**self.get_config_fields())
 
 
 ChunkerConfig = Annotated[

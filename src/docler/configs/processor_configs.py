@@ -69,14 +69,7 @@ class LLMProofReaderConfig(BaseProcessorConfig):
         """Get the processor instance."""
         from docler.processors.ai_processor import LLMProofReader
 
-        return LLMProofReader(
-            model=self.model,
-            system_prompt=self.system_prompt,
-            prompt_template=self.prompt_template,
-            chunker=self.chunker,
-            include_diffs=self.include_diffs,
-            add_metadata_only=self.add_metadata_only,
-        )
+        return LLMProofReader(**self.get_config_fields())
 
 
 # Union type for processor configs

@@ -12,11 +12,7 @@ ModelIdentifier = Annotated[
     Field(
         json_schema_extra={"field_type": "model_identifier"},
         pattern=r"^[a-zA-Z0-9\-]+(/[a-zA-Z0-9\-]+)*(:[\w\-\.]+)?$",
-        examples=[
-            "openai:gpt-o1-mini",
-            "anthropic/claude-3-opus",
-            "google/gemini-1.5-pro",
-        ],
+        examples=["openai:gpt-o1-mini", "anthropic/claude-3-opus"],
         description="Identifier for an AI model, optionally including provider.",
     ),
 ]

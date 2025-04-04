@@ -66,7 +66,7 @@ class AIDocumentAnnotatorConfig(BaseAnnotatorConfig):
     system_prompt: str = DEFAULT_DOC_SYSTEM_PROMPT
     """System prompt for the annotation task."""
 
-    prompt_template: str = DEFAULT_DOC_PROMPT_TEMPLATE
+    user_prompt: str = DEFAULT_DOC_PROMPT_TEMPLATE
     """Template for the annotation prompt."""
 
     max_context_length: int = Field(default=1500, ge=1)
@@ -79,12 +79,7 @@ class AIDocumentAnnotatorConfig(BaseAnnotatorConfig):
         """Get the annotator instance."""
         from docler.annotators.ai_document_annotator import AIDocumentAnnotator
 
-        return AIDocumentAnnotator(
-            model=self.model,
-            system_prompt=self.system_prompt,
-            max_context_length=self.max_context_length,
-            batch_size=self.batch_size,
-        )
+        return AIDocumentAnnotator(**self.get_config_fields())
 
 
 class AIImageAnnotatorConfig(BaseAnnotatorConfig):
@@ -109,12 +104,7 @@ class AIImageAnnotatorConfig(BaseAnnotatorConfig):
         """Get the annotator instance."""
         from docler.annotators.ai_image_annotator import AIImageAnnotator
 
-        return AIImageAnnotator(
-            model=self.model,
-            system_prompt=self.system_prompt,
-            user_prompt=self.user_prompt,
-            batch_size=self.batch_size,
-        )
+        return AIImageAnnotator(**self.get_config_fields())
 
 
 # Union type for annotator configs
