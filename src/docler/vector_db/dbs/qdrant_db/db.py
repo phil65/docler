@@ -9,7 +9,11 @@ from docler.log import get_logger
 from docler.models import SearchResult, Vector
 from docler.process_runner import ProcessRunner
 from docler.vector_db.base_backend import VectorStoreBackend
-from docler.vector_db.dbs.qdrant_db.utils import get_query
+from docler.vector_db.dbs.qdrant_db.utils import (
+    get_query,
+    to_pointstructs,
+    to_search_result,
+)
 
 
 if TYPE_CHECKING:
@@ -88,18 +92,9 @@ class QdrantBackend(VectorStoreBackend):
         ids: list[str] | None = None,
     ) -> list[str]:
         """Add vectors to Qdrant."""
-        from qdrant_client.http import models
-
         if ids is None:
             ids = [str(uuid.uuid4()) for _ in vectors]
-
-        points = []
-        for i, vector in enumerate(vectors):
-            # Convert to float64 then to list to ensure compatibility
-            vector_ls = vector.astype(float).tolist()
-            struct = models.PointStruct(id=ids[i], vector=vector_ls, payload=metadata[i])
-            points.append(struct)
-
+        points = to_pointstructs(vectors, metadata, ids)
         await self._client.upsert(collection_name=self._collection_name, points=points)
         return ids
 
@@ -136,13 +131,10 @@ class QdrantBackend(VectorStoreBackend):
     async def delete(self, chunk_id: str) -> bool:
         """Delete vector by ID."""
         from qdrant_client.http import models
-        from qdrant_client.http.exceptions import UnexpectedResponse
 
         try:
             selector = models.PointIdsList(points=[chunk_id])
             await self._client.delete(self._collection_name, points_selector=selector)
-        except UnexpectedResponse:
-            return False
         except Exception:  # noqa: BLE001
             return False
         else:
@@ -163,17 +155,7 @@ class QdrantBackend(VectorStoreBackend):
             with_payload=True,
             filter=get_query(filters),
         )
-
-        search_results = []
-        for hit in results:
-            data = hit.payload or {}
-            text = data.pop("text", None) if data else None
-            txt = str(text) if text is not None else None
-            id_ = str(hit.id)
-            result = SearchResult(chunk_id=id_, score=hit.score, metadata=data, text=txt)
-            search_results.append(result)
-
-        return search_results
+        return [to_search_result(i) for i in results]
 
     async def close(self):
         """Close the Qdrant connection."""
