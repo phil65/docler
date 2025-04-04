@@ -7,10 +7,13 @@ import uuid
 
 from docler.log import get_logger
 from docler.models import SearchResult, Vector
+from docler.process_runner import ProcessRunner
 from docler.vector_db.base_backend import VectorStoreBackend
 
 
 if TYPE_CHECKING:
+    import os
+
     import numpy as np
 
 
@@ -55,6 +58,10 @@ class ChromaBackend(VectorStoreBackend):
         self.vector_store_id = vector_store_id
         msg = "ChromaDB initialized - collection: %s, persistent: %s"
         logger.info(msg, vector_store_id, bool(persist_directory))
+
+    @staticmethod
+    def run_server(path: str | os.PathLike[str]) -> ProcessRunner:
+        return ProcessRunner(f"chroma run {path}")
 
     async def add_vectors(
         self,
