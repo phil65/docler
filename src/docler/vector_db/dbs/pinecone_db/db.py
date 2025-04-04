@@ -13,6 +13,7 @@ from docler.vector_db.dbs.pinecone_db.utils import (
     convert_filters,
     prepare_metadata,
     restore_metadata,
+    to_search_result,
 )
 
 
@@ -141,21 +142,7 @@ class PineconeBackend(VectorStoreBackend):
         except Exception:
             logger.exception("Error searching Pinecone")
             return []
-
-        search_results = []
-        for match in results.matches:  # pyright: ignore
-            raw_metadata = match.metadata or {}
-            metadata = restore_metadata(raw_metadata)
-            text = metadata.pop("text", None) if isinstance(metadata, dict) else None
-            result = SearchResult(
-                chunk_id=match.id,
-                score=match.score or 0.0,
-                metadata=metadata,
-                text=text,
-            )
-            search_results.append(result)
-
-        return search_results
+        return [to_search_result(i) for i in results.matches]  # type: ignore
 
     async def close(self):
         """Close the Pinecone connection."""

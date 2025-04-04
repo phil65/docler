@@ -10,6 +10,7 @@ from docler.models import SearchResult, Vector
 from docler.process_runner import ProcessRunner
 from docler.vector_db.base_backend import VectorStoreBackend
 from docler.vector_db.dbs.qdrant_db.utils import (
+    get_distance,
     get_query,
     to_pointstructs,
     to_search_result,
@@ -24,6 +25,17 @@ if TYPE_CHECKING:
 
 logger = get_logger(__name__)
 Metric = Literal["cosine", "euclidean", "dotproduct", "manhattan"]
+SERVER_ARGS = [
+    "docker",
+    "run",
+    "-p",
+    "6333:6333",
+    "-p",
+    "6334:6334",
+    "-v",
+    "$(pwd)/qdrant_storage:/qdrant/storage:z",
+    "qdrant/qdrant",
+]
 
 
 class QdrantBackend(VectorStoreBackend):
@@ -45,7 +57,7 @@ class QdrantBackend(VectorStoreBackend):
         from qdrant_client import AsyncQdrantClient, QdrantClient
         from qdrant_client.http import models
 
-        client_kwargs: dict[str, Any] = {"prefer_grpc": prefer_grpc}
+        client_kwargs: dict[str, Any] = {}
         if url:
             client_kwargs["url"] = url
             if api_key:
@@ -54,36 +66,19 @@ class QdrantBackend(VectorStoreBackend):
             client_kwargs["location"] = location
         else:
             client_kwargs["location"] = ":memory:"
-        self._client = AsyncQdrantClient(**client_kwargs)
+        self._client = AsyncQdrantClient(prefer_grpc=prefer_grpc, **client_kwargs)
         self._collection_name = collection_name
 
         temp_client = QdrantClient(**client_kwargs)
         collections = temp_client.get_collections().collections
         collection_names = [c.name for c in collections]
-        metric_map = dict(
-            cosine=models.Distance.COSINE,
-            euclidean=models.Distance.EUCLID,
-            dotproduct=models.Distance.DOT,
-            manhattan=models.Distance.MANHATTAN,
-        )
         if self._collection_name not in collection_names:
-            cfg = models.VectorParams(size=vector_size, distance=metric_map[metric])
+            cfg = models.VectorParams(size=vector_size, distance=get_distance(metric))
             temp_client.create_collection(self._collection_name, vectors_config=cfg)
 
     @staticmethod
     def run_server(path: str | os.PathLike[str]) -> ProcessRunner:
-        args = [
-            "docker",
-            "run",
-            "-p",
-            "6333:6333",
-            "-p",
-            "6334:6334",
-            "-v",
-            "$(pwd)/qdrant_storage:/qdrant/storage:z",
-            "qdrant/qdrant",
-        ]
-        return ProcessRunner(args)
+        return ProcessRunner(SERVER_ARGS)
 
     async def add_vectors(
         self,
@@ -92,11 +87,10 @@ class QdrantBackend(VectorStoreBackend):
         ids: list[str] | None = None,
     ) -> list[str]:
         """Add vectors to Qdrant."""
-        if ids is None:
-            ids = [str(uuid.uuid4()) for _ in vectors]
-        points = to_pointstructs(vectors, metadata, ids)
+        ids_ = [str(uuid.uuid4()) for _ in vectors] if ids is None else ids
+        points = to_pointstructs(vectors, metadata, ids_)
         await self._client.upsert(collection_name=self._collection_name, points=points)
-        return ids
+        return ids_
 
     async def get_vector(self, chunk_id: str) -> Vector | None:
         """Get a vector and its metadata by ID."""

@@ -3,21 +3,18 @@
 from __future__ import annotations
 
 import base64
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+from docler.models import SearchResult, VectorStoreInfo
+
+
+if TYPE_CHECKING:
+    from pinecone import IndexModel
+    from pinecone.core.openapi.db_data.models import ScoredVector
 
 
 def convert_filters(filters: dict[str, Any]) -> dict:
-    """Convert standard filters to Pinecone filter format.
-
-    Args:
-        filters: Dictionary of filters
-
-    Returns:
-        Pinecone-compatible filter object
-    """
-    if not filters:
-        return {}
-
+    """Convert standard filters to Pinecone filter format."""
     pinecone_filter = {}
     for key, value in filters.items():
         pinecone_filter[key] = {"$in": value} if isinstance(value, list) else value
@@ -80,3 +77,25 @@ def restore_metadata(metadata: dict[str, Any]) -> dict[str, Any]:
                 pass
 
     return restored
+
+
+def to_search_result(match: ScoredVector) -> SearchResult:
+    """Convert a Pinecone match to a SearchResult."""
+    raw_metadata = match.metadata or {}
+    metadata = restore_metadata(raw_metadata)
+    text = metadata.pop("text", None) if isinstance(metadata, dict) else None
+    score = match.score or 0.0
+    return SearchResult(chunk_id=match.id, score=score, metadata=metadata, text=text)
+
+
+def to_vector_store_info(index: IndexModel) -> VectorStoreInfo:
+    """Convert a Pinecone index to a VectorStoreInfo."""
+    meta = dict(
+        dimension=index.dimension,
+        metric=index.metric,
+        status=index.status.state if index.status else None,
+        ready=index.status.ready if index.status else False,
+        vector_type=index.vector_type,
+        tags=index.tags,
+    )
+    return VectorStoreInfo(db_id=index.host, name=index.name, metadata=meta)

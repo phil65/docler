@@ -9,6 +9,7 @@ from docler.log import get_logger
 from docler.models import SearchResult, Vector
 from docler.process_runner import ProcessRunner
 from docler.vector_db.base_backend import VectorStoreBackend
+from docler.vector_db.dbs.chroma_db.utils import to_search_results
 
 
 if TYPE_CHECKING:
@@ -76,17 +77,15 @@ class ChromaBackend(VectorStoreBackend):
             msg = "Number of vectors and metadata entries must match"
             raise ValueError(msg)
 
-        if ids is None:
-            ids = [str(uuid.uuid4()) for _ in vectors]
+        ids_ = [str(uuid.uuid4()) for _ in vectors] if ids is None else ids
         vector_lists: list[float] = [v.tolist() for v in vectors]  # type: ignore
-
         await anyenv.run_in_thread(
             self._collection.add,  # type: ignore
-            ids,
+            ids_,
             vector_lists,
             metadata,
         )
-        return ids
+        return ids_
 
     async def get_vector(self, chunk_id: str) -> Vector | None:
         """Get vector and metadata from ChromaDB."""
@@ -143,33 +142,10 @@ class ChromaBackend(VectorStoreBackend):
             include=["metadatas", "distances"],
         )
 
-        search_results: list[SearchResult] = []
         if not results or not results["ids"] or not results["ids"][0]:
-            return search_results
+            return []
 
-        distances = results.get("distances")
-        metadatas = results.get("metadatas")
-
-        assert distances is not None
-        assert distances[0]
-        assert metadatas is not None
-        assert metadatas[0]
-
-        for i, doc_id in enumerate(results["ids"][0]):
-            metadata = dict(metadatas[0][i])
-            text = metadata.pop("text", None)
-            if text is not None:
-                text = str(text)
-
-            result = SearchResult(
-                chunk_id=str(doc_id),
-                score=1.0 - float(distances[0][i]),
-                metadata=metadata,
-                text=text,
-            )
-            search_results.append(result)
-
-        return search_results
+        return to_search_results(results)
 
 
 if __name__ == "__main__":

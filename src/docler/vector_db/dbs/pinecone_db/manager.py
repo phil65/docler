@@ -2,14 +2,18 @@
 
 from __future__ import annotations
 
-from typing import ClassVar, Literal, cast
+from typing import TYPE_CHECKING, ClassVar, Literal, cast
 
 from docler.configs.vector_db_configs import PineconeCloud, PineconeConfig, PineconeRegion
-from docler.models import VectorStoreInfo
 from docler.utils import get_api_key
 from docler.vector_db.base import BaseVectorDB
 from docler.vector_db.base_manager import VectorManagerBase
 from docler.vector_db.dbs.pinecone_db.db import PineconeBackend
+from docler.vector_db.dbs.pinecone_db.utils import to_vector_store_info
+
+
+if TYPE_CHECKING:
+    from docler.models import VectorStoreInfo
 
 
 Metric = Literal["cosine", "euclidean", "dotproduct"]
@@ -50,21 +54,7 @@ class PineconeVectorManager(VectorManagerBase[PineconeConfig]):
 
         async with PineconeAsyncio(api_key=self.api_key) as client:
             indexes = await client.list_indexes()
-            return [
-                VectorStoreInfo(
-                    db_id=idx.host,
-                    name=idx.name,
-                    metadata=dict(
-                        dimension=idx.dimension,
-                        metric=idx.metric,
-                        status=idx.status.state if idx.status else None,
-                        ready=idx.status.ready if idx.status else False,
-                        vector_type=idx.vector_type,
-                        tags=idx.tags,
-                    ),
-                )
-                for idx in indexes
-            ]
+            return [to_vector_store_info(idx) for idx in indexes]
 
     async def create_vector_store(
         self,

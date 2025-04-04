@@ -21,7 +21,7 @@ def get_query(filters: dict[str, Any] | None = None) -> models.Filter | None:
     return Filter(must=conditions) if conditions else None
 
 
-def to_pointstructs(vectors, ids, metadata):
+def to_pointstructs(vectors, ids, metadata) -> list[models.PointStruct]:
     points = []
     for i, vector in enumerate(vectors):
         vector_ls = vector.astype(float).tolist()
@@ -36,3 +36,13 @@ def to_search_result(result: models.ScoredPoint) -> SearchResult:
     txt = str(text) if text is not None else None
     id_ = str(result.id)
     return SearchResult(chunk_id=id_, score=result.score, metadata=data, text=txt)
+
+
+def get_distance(metric: str) -> models.Distance:
+    metric_map = dict(
+        cosine=models.Distance.COSINE,
+        euclidean=models.Distance.EUCLID,
+        dotproduct=models.Distance.DOT,
+        manhattan=models.Distance.MANHATTAN,
+    )
+    return metric_map[metric]
