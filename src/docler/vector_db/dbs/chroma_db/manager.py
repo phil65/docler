@@ -91,18 +91,7 @@ class ChromaVectorManager(VectorManagerBase[ChromaConfig]):
             return []
 
     async def create_vector_store(self, name: str, **kwargs) -> BaseVectorDB:
-        """Create a new vector store (collection).
-
-        Args:
-            name: Name for the new collection
-            **kwargs: Additional parameters for the collection
-
-        Returns:
-            Configured vector database instance
-
-        Raises:
-            ValueError: If creation fails
-        """
+        """Create a new vector store (collection)."""
         if name in self._vector_stores:
             return cast(BaseVectorDB, self._vector_stores[name])
 
@@ -125,18 +114,7 @@ class ChromaVectorManager(VectorManagerBase[ChromaConfig]):
         name: str,
         **kwargs,
     ) -> BaseVectorDB:
-        """Get a connection to an existing collection.
-
-        Args:
-            name: Name of the collection
-            **kwargs: Additional parameters for the connection
-
-        Returns:
-            Configured vector database instance
-
-        Raises:
-            ValueError: If collection doesn't exist or connection fails
-        """
+        """Get a connection to an existing collection."""
         if name in self._vector_stores:
             return cast(BaseVectorDB, self._vector_stores[name])
 
@@ -162,14 +140,7 @@ class ChromaVectorManager(VectorManagerBase[ChromaConfig]):
             raise ValueError(msg) from e
 
     async def delete_vector_store(self, name: str) -> bool:
-        """Delete a vector store (collection).
-
-        Args:
-            name: Name of the collection to delete
-
-        Returns:
-            True if successful, False if failed
-        """
+        """Delete a vector store (collection)."""
         try:
             if name in self._vector_stores:
                 del self._vector_stores[name]

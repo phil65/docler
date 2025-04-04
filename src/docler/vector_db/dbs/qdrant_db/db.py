@@ -34,17 +34,7 @@ class QdrantBackend(VectorStoreBackend):
         vector_size: int = 1536,
         prefer_grpc: bool = True,
     ):
-        """Initialize Qdrant backend.
-
-        Args:
-            collection_name: Name of collection to use
-            metric: Metric to use for similarity search
-            location: Path to local storage (memory if None)
-            url: URL of Qdrant server (overrides location)
-            api_key: API key for Qdrant cloud
-            vector_size: Size of vectors to store
-            prefer_grpc: Whether to prefer gRPC over HTTP
-        """
+        """Initialize Qdrant backend."""
         from qdrant_client import AsyncQdrantClient, QdrantClient
         from qdrant_client.http import models
 
@@ -79,16 +69,7 @@ class QdrantBackend(VectorStoreBackend):
         metadata: list[dict[str, Any]],
         ids: list[str] | None = None,
     ) -> list[str]:
-        """Add vectors to Qdrant.
-
-        Args:
-            vectors: List of vector embeddings
-            metadata: List of metadata dictionaries
-            ids: Optional list of IDs
-
-        Returns:
-            List of IDs for stored vectors
-        """
+        """Add vectors to Qdrant."""
         from qdrant_client.http import models
 
         if ids is None:
@@ -105,14 +86,7 @@ class QdrantBackend(VectorStoreBackend):
         return ids
 
     async def get_vector(self, chunk_id: str) -> Vector | None:
-        """Get a vector and its metadata by ID.
-
-        Args:
-            chunk_id: ID of vector to retrieve
-
-        Returns:
-            Tuple of (vector, metadata) if found, None if not
-        """
+        """Get a vector and its metadata by ID."""
         import numpy as np
 
         points = await self._client.retrieve(
@@ -129,14 +103,7 @@ class QdrantBackend(VectorStoreBackend):
         return Vector(data=data, metadata=point.payload or {}, id=str(point.id))
 
     async def delete(self, chunk_id: str) -> bool:
-        """Delete vector by ID.
-
-        Args:
-            chunk_id: ID of vector to delete
-
-        Returns:
-            True if vector was deleted, False if not found
-        """
+        """Delete vector by ID."""
         from qdrant_client.http import models
         from qdrant_client.http.exceptions import UnexpectedResponse
 
@@ -156,16 +123,7 @@ class QdrantBackend(VectorStoreBackend):
         k: int = 4,
         filters: dict[str, Any] | None = None,
     ) -> list[SearchResult]:
-        """Search Qdrant for similar vectors.
-
-        Args:
-            query_vector: Vector to search for
-            k: Number of results to return
-            filters: Optional filters to apply
-
-        Returns:
-            List of search results
-        """
+        """Search Qdrant for similar vectors."""
         vector_list = query_vector.astype(float).tolist()
         results = await self._client.search(
             collection_name=self._collection_name,

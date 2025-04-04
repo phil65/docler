@@ -37,14 +37,7 @@ class PineconeBackend(VectorStoreBackend):
         dimension: int = 1536,
         namespace: str = "default",
     ):
-        """Initialize Pinecone backend.
-
-        Args:
-            host: Host URL for the index
-            api_key: Pinecone API key
-            dimension: Dimension of vectors to store
-            namespace: Namespace to use for vectors
-        """
+        """Initialize Pinecone backend."""
         self.api_key = api_key or get_api_key("PINECONE_API_KEY")
         self._host = host
         self._index: IndexAsyncio | None = None
@@ -54,19 +47,11 @@ class PineconeBackend(VectorStoreBackend):
 
     @property
     def vector_store_id(self) -> str:
-        """Get the vector store ID.
-
-        Returns:
-            Vector store ID
-        """
+        """Get the vector store ID."""
         return self._host
 
     async def _get_index(self) -> IndexAsyncio:
-        """Get the asyncio index client.
-
-        Returns:
-            IndexAsyncio instance
-        """
+        """Get the asyncio index client."""
         from pinecone import PineconeAsyncio
 
         if not self._index:
@@ -80,16 +65,7 @@ class PineconeBackend(VectorStoreBackend):
         metadata: list[dict[str, Any]],
         ids: list[str] | None = None,
     ) -> list[str]:
-        """Add vectors to Pinecone.
-
-        Args:
-            vectors: List of vector embeddings
-            metadata: List of metadata dictionaries
-            ids: Optional list of IDs
-
-        Returns:
-            List of IDs for stored vectors
-        """
+        """Add vectors to Pinecone."""
         if ids is None:
             ids = [str(uuid.uuid4()) for _ in vectors]
         vectors_data = []
@@ -107,14 +83,7 @@ class PineconeBackend(VectorStoreBackend):
         return ids
 
     async def get_vector(self, chunk_id: str) -> Vector | None:
-        """Get vector and metadata from Pinecone.
-
-        Args:
-            chunk_id: ID of vector to retrieve
-
-        Returns:
-            Tuple of (vector, metadata) if found, None if not
-        """
+        """Get vector and metadata from Pinecone."""
         import numpy as np
 
         index = await self._get_index()
@@ -131,14 +100,7 @@ class PineconeBackend(VectorStoreBackend):
         return Vector(data=vector, metadata=metadata, id=chunk_id)
 
     async def delete(self, chunk_id: str) -> bool:
-        """Delete vector by ID.
-
-        Args:
-            chunk_id: ID of vector to delete
-
-        Returns:
-            True if vector was deleted, False if not found
-        """
+        """Delete vector by ID."""
         index = await self._get_index()
         try:
             async with index:
@@ -155,16 +117,7 @@ class PineconeBackend(VectorStoreBackend):
         k: int = 4,
         filters: dict[str, Any] | None = None,
     ) -> list[SearchResult]:
-        """Search Pinecone for similar vectors.
-
-        Args:
-            query_vector: Vector to search for
-            k: Number of results to return
-            filters: Optional filters to apply
-
-        Returns:
-            List of search results
-        """
+        """Search Pinecone for similar vectors."""
         vector_list: list[float] = query_vector.tolist()  # type: ignore
         filter_obj = convert_filters(filters) if filters else None
         index = await self._get_index()

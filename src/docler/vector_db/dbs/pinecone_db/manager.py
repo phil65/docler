@@ -76,23 +76,7 @@ class PineconeVectorManager(VectorManagerBase[PineconeConfig]):
         namespace: str = "default",
         **kwargs,
     ) -> BaseVectorDB:
-        """Create a new vector store.
-
-        Args:
-            name: Name for the new index
-            dimension: Dimension of vectors to store
-            metric: Distance metric for similarity search
-            cloud: Cloud provider (aws, gcp, azure)
-            region: Cloud region
-            namespace: Namespace for the index
-            **kwargs: Additional parameters
-
-        Returns:
-            Configured vector database instance
-
-        Raises:
-            ValueError: If creation fails
-        """
+        """Create a new vector store."""
         from pinecone import PineconeAsyncio, ServerlessSpec
 
         try:
@@ -146,14 +130,7 @@ class PineconeVectorManager(VectorManagerBase[PineconeConfig]):
             return cast(BaseVectorDB, db)
 
     async def delete_vector_store(self, name: str) -> bool:
-        """Delete a vector store.
-
-        Args:
-            name: Name of the index to delete
-
-        Returns:
-            True if successful, False if failed
-        """
+        """Delete a vector store."""
         from pinecone import PineconeAsyncio
 
         try:
