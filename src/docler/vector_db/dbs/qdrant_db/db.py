@@ -7,11 +7,14 @@ import uuid
 
 from docler.log import get_logger
 from docler.models import SearchResult, Vector
+from docler.process_runner import ProcessRunner
 from docler.vector_db.base_backend import VectorStoreBackend
 from docler.vector_db.dbs.qdrant_db.utils import get_query
 
 
 if TYPE_CHECKING:
+    import os
+
     import numpy as np
 
 
@@ -63,6 +66,21 @@ class QdrantBackend(VectorStoreBackend):
             cfg = models.VectorParams(size=vector_size, distance=metric_map[metric])
             temp_client.create_collection(self._collection_name, vectors_config=cfg)
 
+    @staticmethod
+    def run_server(path: str | os.PathLike[str]) -> ProcessRunner:
+        args = [
+            "docker",
+            "run",
+            "-p",
+            "6333:6333",
+            "-p",
+            "6334:6334",
+            "-v",
+            "$(pwd)/qdrant_storage:/qdrant/storage:z",
+            "qdrant/qdrant",
+        ]
+        return ProcessRunner(args)
+
     async def add_vectors(
         self,
         vectors: list[np.ndarray],
@@ -101,6 +119,19 @@ class QdrantBackend(VectorStoreBackend):
         point = points[0]
         data = np.array(point.vector)
         return Vector(data=data, metadata=point.payload or {}, id=str(point.id))
+
+    async def list_vector_ids(
+        self,
+        namespace: str | None = None,
+        limit: int | None = None,
+    ) -> list[str | int]:
+        records, _ = await self._client.scroll(
+            collection_name=self._collection_name,
+            limit=limit or 999999,
+            with_payload=False,
+            with_vectors=False,
+        )
+        return [record.id for record in records]
 
     async def delete(self, chunk_id: str) -> bool:
         """Delete vector by ID."""

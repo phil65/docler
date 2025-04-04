@@ -59,6 +59,15 @@ class PineconeBackend(VectorStoreBackend):
             self._index = client.IndexAsyncio(host=self._host)
         return self._index
 
+    async def list_vector_ids(
+        self,
+        namespace: str | None = None,
+        limit: int | None = None,
+    ) -> list[str]:
+        index = await self._get_index()
+        result = await index.list_paginated(namespace=namespace, limit=limit)
+        return [i["id"] for i in result["vectors"]]
+
     async def add_vectors(
         self,
         vectors: list[np.ndarray],
@@ -86,8 +95,7 @@ class PineconeBackend(VectorStoreBackend):
         """Get vector and metadata from Pinecone."""
         import numpy as np
 
-        index = await self._get_index()
-        async with index:
+        async with (index := await self._get_index()):
             result = await index.fetch(ids=[chunk_id], namespace=self.namespace)
 
         vectors = result.vectors
@@ -155,4 +163,12 @@ class PineconeBackend(VectorStoreBackend):
 
 
 if __name__ == "__main__":
-    db = PineconeBackend(host="")
+
+    async def main():
+        db = PineconeBackend(host="https://test-y8nq1hj.svc.aped-4627-b74a.pinecone.io")
+        data = await db.list_vector_ids()
+        print(data)
+
+    import asyncio
+
+    asyncio.run(main())

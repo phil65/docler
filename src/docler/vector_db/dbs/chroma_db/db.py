@@ -106,6 +106,14 @@ class ChromaBackend(VectorStoreBackend):
         metadata = cast(dict[str, Any], result["metadatas"][0])
         return Vector(data=vector, metadata=metadata, id=chunk_id)
 
+    async def list_vector_ids(
+        self,
+        namespace: str | None = None,
+        limit: int | None = None,
+    ) -> list[str]:
+        data = self._collection.get(include=[], limit=limit)
+        return data["ids"]
+
     async def delete(self, chunk_id: str) -> bool:
         """Delete vector from ChromaDB."""
         import anyenv
