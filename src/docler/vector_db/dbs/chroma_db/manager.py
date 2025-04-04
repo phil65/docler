@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+import shutil
 from typing import ClassVar, cast
 
 from docler.configs.vector_db_configs import ChromaConfig
@@ -88,11 +90,7 @@ class ChromaVectorManager(VectorManagerBase[ChromaConfig]):
             self.logger.exception("Error listing ChromaDB collections")
             return []
 
-    async def create_vector_store(
-        self,
-        name: str,
-        **kwargs,
-    ) -> BaseVectorDB:
+    async def create_vector_store(self, name: str, **kwargs) -> BaseVectorDB:
         """Create a new vector store (collection).
 
         Args:
@@ -178,9 +176,6 @@ class ChromaVectorManager(VectorManagerBase[ChromaConfig]):
             client = await self._get_list_client()
             await client.delete_collection(name=name)
             if self.persist_directory:
-                from pathlib import Path
-                import shutil
-
                 collection_path = Path(self.persist_directory) / name
                 if collection_path.exists():
                     shutil.rmtree(collection_path, ignore_errors=True)
