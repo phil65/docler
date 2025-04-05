@@ -3,11 +3,13 @@
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import http.client
 import re
 import socket
-from typing import TYPE_CHECKING, Self
+from typing import TYPE_CHECKING, Literal, Self
 import urllib.parse
+import weakref
 
 
 if TYPE_CHECKING:
@@ -15,11 +17,46 @@ if TYPE_CHECKING:
 
 RegexPattern = str
 
+# Global registry of running processes
+_process_registry: dict[tuple[str, ...], weakref.ref[asyncio.subprocess.Process]] = {}
+_registry_lock = asyncio.Lock()
+
+
+def _clean_registry() -> None:
+    """Remove dead processes from registry."""
+    dead_keys = []
+    for key, ref in _process_registry.items():
+        process = ref()
+        if process is None or process.returncode is not None:
+            dead_keys.append(key)
+
+    for key in dead_keys:
+        del _process_registry[key]
+
+
+async def _read_stream_lines(
+    stream: asyncio.StreamReader,
+    timeout: float = 0.1,
+) -> list[str]:
+    """Read all currently available lines from a stream with timeout."""
+    lines = []
+    while True:
+        try:
+            line = await asyncio.wait_for(stream.readline(), timeout=timeout)
+            if not line:  # EOF
+                break
+            lines.append(line.decode().rstrip())
+        except (TimeoutError, ValueError):
+            break
+    return lines
+
 
 class ProcessRunner:
     def __init__(
         self,
         command: list[str] | str,
+        *,
+        reuse: bool = False,
         wait_http: list[str] | None = None,  # ["http://localhost:8000/health"]
         wait_tcp: list[tuple[str, int]] | None = None,  # [("localhost", 6379)]
         wait_predicates: list[Callable[[], bool] | Callable[[], Awaitable[bool]]]
@@ -28,8 +65,12 @@ class ProcessRunner:
         wait_stderr: list[RegexPattern] | None = None,
         wait_timeout: float = 30.0,
         poll_interval: float = 0.1,
+        cleanup_timeout: float = 5.0,
     ) -> None:
+        self.cleanup_timeout = cleanup_timeout
         self.command = command if isinstance(command, list) else command.split()
+        self.command_key = tuple(self.command)
+        self.reuse = reuse
         self.wait_http = wait_http or []
         self.wait_tcp = wait_tcp or []
         self.wait_predicates = wait_predicates or []
@@ -81,13 +122,10 @@ class ProcessRunner:
             patterns: dict[re.Pattern[str], bool],
         ) -> None:
             while True:
-                line = await stream.readline()
-                if not line:
-                    break
-                decoded = line.decode().strip()
-                for pattern in patterns:
-                    if pattern.search(decoded):
-                        patterns[pattern] = True
+                for line in await _read_stream_lines(stream):
+                    for pattern in patterns:
+                        if pattern.search(line):
+                            patterns[pattern] = True
 
         await asyncio.gather(
             _check_stream(self.process.stdout, self._stdout_patterns_found),
@@ -134,12 +172,25 @@ class ProcessRunner:
             await asyncio.sleep(self.poll_interval)
 
     async def __aenter__(self) -> Self:
+        if self.reuse:
+            async with _registry_lock:
+                _clean_registry()
+                if self.command_key in _process_registry:
+                    existing_process = _process_registry[self.command_key]()
+                    if (
+                        existing_process is not None
+                        and existing_process.returncode is None
+                    ):
+                        self.process = existing_process
+                        return self
+
         self.process = await asyncio.create_subprocess_exec(
             *self.command,
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
         )
 
+        _process_registry[self.command_key] = weakref.ref(self.process)
         has_conditions = (
             self.wait_http
             or self.wait_tcp
@@ -165,9 +216,23 @@ class ProcessRunner:
         return self
 
     async def __aexit__(self, *_) -> None:
-        if self.process:
+        """Clean up process with timeout."""
+        if self.process is None:
+            return
+
+        try:
+            # Kill process first
             self.process.kill()
-            await self.process.wait()
+            # Close the transport (which handles pipe cleanup)
+            self.process._transport.close()  # type: ignore[attr-defined]
+
+            # Wait for process to terminate with timeout
+            with contextlib.suppress(asyncio.TimeoutError):
+                await asyncio.wait_for(self.process.wait(), timeout=self.cleanup_timeout)
+
+        except ProcessLookupError:
+            # Process already terminated
+            pass
 
     @property
     def pid(self) -> int | None:
@@ -184,15 +249,26 @@ class ProcessRunner:
         if self.process:
             self.process.send_signal(sig)
 
+    async def get_output(self, stream: Literal["stdout", "stderr"] = "stdout") -> str:
+        """Get current output content from stdout or stderr."""
+        if self.process is None:
+            return ""
+
+        source = self.process.stderr if stream == "stderr" else self.process.stdout
+        if source is None:
+            return ""
+
+        lines = await _read_stream_lines(source)
+        return "\n".join(lines)
+
 
 if __name__ == "__main__":
     import asyncio
 
-    from docler.vector_db.dbs.chroma_db import ChromaBackend
-
     async def main():
-        async with ChromaBackend.run_server("./chroma") as runner:
+        async with ProcessRunner("uvx mcp-server-llmling start E:/mcp_zed.yml") as runner:
             print(f"Process running with PID {runner.pid}")
-        print("finished!")
+            await asyncio.sleep(3)
+        print(await runner.get_output())
 
     asyncio.run(main())
