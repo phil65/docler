@@ -153,11 +153,14 @@ if __name__ == "__main__":
 
     import numpy as np
 
+    from docler.vector_db.dbs.chroma_db import ChromaBackend
+
     async def main():
-        db = ChromaBackend(persist_directory="./chroma")
-        query_vector = np.array([0.1, 0.2, 0.3])
-        await db.add_vector(query_vector, metadata={"source": "user"})
-        search_results = await db.search_vectors(query_vector)
-        print(search_results)
+        async with ChromaBackend.run_server("chroma"):
+            db = ChromaBackend(persist_directory="./chroma")
+            query_vector = np.array([0.1, 0.2, 0.3])
+            await db.add_vector(query_vector, metadata={"source": "user"})
+            search_results = await db.search_vectors(query_vector)
+            print(search_results)
 
     asyncio.run(main())

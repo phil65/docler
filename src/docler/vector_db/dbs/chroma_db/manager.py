@@ -40,7 +40,7 @@ class ChromaVectorManager(VectorManagerBase[ChromaConfig]):
         """
         super().__init__()
         self.persist_directory = persist_directory
-        self.host = host
+        self.host = host or "localhost"
         self.port = port
         self.ssl = ssl
         self.headers = headers
@@ -69,15 +69,12 @@ class ChromaVectorManager(VectorManagerBase[ChromaConfig]):
         import chromadb
 
         if not self._list_client:
-            # Create an async client for listing
-            if self.host:
-                # TODO: need to check how async persistent works
-                self._list_client = await chromadb.AsyncHttpClient(  # type: ignore
-                    host=self.host, port=self.port, ssl=self.ssl, headers=self.headers
-                )
-            else:
-                self._list_client = await chromadb.AsyncClient()  # type: ignore
-
+            self._list_client = await chromadb.AsyncHttpClient(
+                host=self.host,
+                port=self.port,
+                ssl=self.ssl,
+                headers=self.headers,
+            )
         return self._list_client
 
     async def list_vector_stores(self) -> list[VectorStoreInfo]:
@@ -169,3 +166,15 @@ class ChromaVectorManager(VectorManagerBase[ChromaConfig]):
                 self.logger.warning("Error closing list client: %s", e)
 
             self._list_client = None
+
+
+if __name__ == "__main__":
+    import asyncio
+
+    async def main():
+        manager = ChromaVectorManager()
+        await manager.create_vector_store("test")
+        await manager.delete_vector_store("test")
+        await manager.close()
+
+    asyncio.run(main())
