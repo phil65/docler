@@ -66,9 +66,7 @@ class AggregatedConverter(DocumentConverter[AggregatedConverterConfig]):
         """Get all MIME types supported by registered converters."""
         return self._registry.get_supported_mime_types()
 
-    def set_converter_preference(
-        self, mime_or_extension: str, converter_name: str
-    ) -> None:
+    def set_converter_preference(self, mime_or_extension: str, converter_name: str):
         """Set a preference for which converter to use for a specific file type.
 
         Args:

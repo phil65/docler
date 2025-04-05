@@ -154,7 +154,7 @@ class ChromaVectorManager(VectorManagerBase[ChromaConfig]):
         else:
             return True
 
-    async def close(self) -> None:
+    async def close(self):
         """Close all vector store connections."""
         # for db in list(self._vector_stores.values()):
         #     await db.close()

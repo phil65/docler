@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, ClassVar, Literal, cast
 
+from pydantic import SecretStr
+
 from docler.configs.vector_db_configs import PineconeCloud, PineconeConfig, PineconeRegion
 from docler.utils import get_api_key
 from docler.vector_db.base import BaseVectorDB
@@ -39,8 +41,6 @@ class PineconeVectorManager(VectorManagerBase[PineconeConfig]):
 
     def to_config(self) -> PineconeConfig:
         """Extract configuration from instance."""
-        from pydantic import SecretStr
-
         return PineconeConfig(api_key=SecretStr(self.api_key) if self.api_key else None)
 
     @property
@@ -141,7 +141,7 @@ class PineconeVectorManager(VectorManagerBase[PineconeConfig]):
         else:
             return True
 
-    async def close(self) -> None:
+    async def close(self):
         """Close all vector store connections."""
         for db in self._vector_stores.values():
             await db.close()

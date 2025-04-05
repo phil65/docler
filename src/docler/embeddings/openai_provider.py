@@ -70,10 +70,7 @@ class OpenAIEmbeddings(EmbeddingProvider[OpenAIEmbeddingConfig]):
         import openai
 
         client = openai.AsyncClient(api_key=self.api_key)
-        response = await client.embeddings.create(
-            model=self.model,
-            input=texts,
-        )
+        response = await client.embeddings.create(model=self.model, input=texts)
         return [item.embedding for item in response.data]
 
     async def _get_embeddings_rest(

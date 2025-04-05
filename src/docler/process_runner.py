@@ -22,7 +22,7 @@ _process_registry: dict[tuple[str, ...], weakref.ref[asyncio.subprocess.Process]
 _registry_lock = asyncio.Lock()
 
 
-def _clean_registry() -> None:
+def _clean_registry():
     """Remove dead processes from registry."""
     dead_keys = []
     for key, ref in _process_registry.items():
@@ -66,7 +66,7 @@ class ProcessRunner:
         wait_timeout: float = 30.0,
         poll_interval: float = 0.1,
         cleanup_timeout: float = 5.0,
-    ) -> None:
+    ):
         self.cleanup_timeout = cleanup_timeout
         self.command = command if isinstance(command, list) else command.split()
         self.command_key = tuple(self.command)
@@ -112,7 +112,7 @@ class ProcessRunner:
             return await pred()
         return await asyncio.to_thread(pred)  # type: ignore
 
-    async def _monitor_output(self) -> None:
+    async def _monitor_output(self):
         assert self.process is not None
         assert self.process.stdout is not None
         assert self.process.stderr is not None
@@ -120,7 +120,7 @@ class ProcessRunner:
         async def _check_stream(
             stream: asyncio.StreamReader,
             patterns: dict[re.Pattern[str], bool],
-        ) -> None:
+        ):
             while True:
                 for line in await _read_stream_lines(stream):
                     for pattern in patterns:
@@ -132,7 +132,7 @@ class ProcessRunner:
             _check_stream(self.process.stderr, self._stderr_patterns_found),
         )
 
-    async def _wait_for_conditions(self) -> None:
+    async def _wait_for_conditions(self):
         async def check_all() -> bool:
             # Check HTTP endpoints
             http_results = await asyncio.gather(
@@ -215,7 +215,7 @@ class ProcessRunner:
 
         return self
 
-    async def __aexit__(self, *_) -> None:
+    async def __aexit__(self, *_):
         """Clean up process with timeout."""
         if self.process is None:
             return
@@ -244,7 +244,7 @@ class ProcessRunner:
         """Return exit code if process has finished."""
         return self.process.returncode if self.process else None
 
-    def send_signal(self, sig: int) -> None:
+    def send_signal(self, sig: int):
         """Send a signal to the process."""
         if self.process:
             self.process.send_signal(sig)

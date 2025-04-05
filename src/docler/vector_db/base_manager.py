@@ -41,7 +41,7 @@ class VectorManagerBase[TConfig](BaseProvider[TConfig], ABC):
         """Delete a vector store."""
 
     @abstractmethod
-    async def close(self) -> None:
+    async def close(self):
         """Close all vector store connections."""
 
     async def delete_all_vector_stores(self) -> bool:

@@ -95,16 +95,10 @@ class LiteLLMEmbeddings(EmbeddingProvider[LiteLLMEmbeddingConfig]):
             kwargs["api_key"] = self.api_key
         if self.dimensions:
             kwargs["dimensions"] = self.dimensions
-
         if self.base_url:
             kwargs["base_url"] = self.base_url
-
         if self.input_type:
             kwargs["input_type"] = self.input_type
 
-        response = await self._litellm.aembedding(
-            model=self.model,
-            input=texts,
-            **kwargs,
-        )
+        response = await self._litellm.aembedding(model=self.model, input=texts, **kwargs)
         return [np.array(i["embedding"], dtype=np.float32) for i in response["data"]]
