@@ -51,6 +51,39 @@ async def _read_stream_lines(
     return lines
 
 
+async def _check_http(url: str) -> bool:
+    parsed = urllib.parse.urlparse(url)
+    conn = http.client.HTTPConnection(parsed.netloc)
+    try:
+        conn.request("GET", parsed.path or "/")
+        response = conn.getresponse()
+    except (ConnectionRefusedError, socket.gaierror):
+        return False
+    else:
+        return 200 <= response.status < 400  # noqa: PLR2004
+    finally:
+        conn.close()
+
+
+async def _check_tcp(host: str, port: int) -> bool:
+    try:
+        _, writer = await asyncio.open_connection(host, port)
+        writer.close()
+        await writer.wait_closed()
+    except (ConnectionRefusedError, socket.gaierror):
+        return False
+    else:
+        return True
+
+
+async def _check_predicate(
+    pred: Callable[[], bool] | Callable[[], Awaitable[bool]],
+) -> bool:
+    if asyncio.iscoroutinefunction(pred):
+        return await pred()
+    return await asyncio.to_thread(pred)  # type: ignore
+
+
 class ProcessRunner:
     def __init__(
         self,
@@ -82,36 +115,6 @@ class ProcessRunner:
         self._stdout_patterns_found = dict.fromkeys(self.wait_output, False)
         self._stderr_patterns_found = dict.fromkeys(self.wait_stderr, False)
 
-    async def _check_http(self, url: str) -> bool:
-        parsed = urllib.parse.urlparse(url)
-        conn = http.client.HTTPConnection(parsed.netloc)
-        try:
-            conn.request("GET", parsed.path or "/")
-            response = conn.getresponse()
-        except (ConnectionRefusedError, socket.gaierror):
-            return False
-        else:
-            return 200 <= response.status < 400  # noqa: PLR2004
-        finally:
-            conn.close()
-
-    async def _check_tcp(self, host: str, port: int) -> bool:
-        try:
-            _, writer = await asyncio.open_connection(host, port)
-            writer.close()
-            await writer.wait_closed()
-        except (ConnectionRefusedError, socket.gaierror):
-            return False
-        else:
-            return True
-
-    async def _check_predicate(
-        self, pred: Callable[[], bool] | Callable[[], Awaitable[bool]]
-    ) -> bool:
-        if asyncio.iscoroutinefunction(pred):
-            return await pred()
-        return await asyncio.to_thread(pred)  # type: ignore
-
     async def _monitor_output(self):
         assert self.process is not None
         assert self.process.stdout is not None
@@ -136,21 +139,21 @@ class ProcessRunner:
         async def check_all() -> bool:
             # Check HTTP endpoints
             http_results = await asyncio.gather(
-                *(self._check_http(url) for url in self.wait_http)
+                *(_check_http(url) for url in self.wait_http)
             )
             if not all(http_results):
                 return False
 
             # Check TCP ports
             tcp_results = await asyncio.gather(
-                *(self._check_tcp(h, p) for h, p in self.wait_tcp)
+                *(_check_tcp(h, p) for h, p in self.wait_tcp)
             )
             if not all(tcp_results):
                 return False
 
             # Check predicates
             pred_results = await asyncio.gather(
-                *(self._check_predicate(p) for p in self.wait_predicates)
+                *(_check_predicate(p) for p in self.wait_predicates)
             )
             if not all(pred_results):
                 return False
