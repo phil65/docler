@@ -45,6 +45,16 @@ class Image(BaseModel):
 
     model_config = ConfigDict(use_attribute_docstrings=True)
 
+    def to_base64(self) -> str:
+        """Convert image content to base64 string.
+
+        Returns:
+            Base64 encoded string of the image content.
+        """
+        if isinstance(self.content, bytes):
+            return base64.b64encode(self.content).decode()
+        return self.content.split(",")[-1] if "," in self.content else self.content
+
     def to_base64_url(self) -> str:
         """Convert image content to base64 data URL.
 
@@ -55,12 +65,7 @@ class Image(BaseModel):
         Returns:
             Data URL format of the image for embedding in HTML/Markdown
         """
-        if isinstance(self.content, bytes):
-            b64_content = base64.b64encode(self.content).decode()
-        else:
-            b64_content = (
-                self.content.split(",")[-1] if "," in self.content else self.content
-            )
+        b64_content = self.to_base64()
         return f"data:{self.mime_type};base64,{b64_content}"
 
     @classmethod
