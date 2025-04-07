@@ -184,11 +184,20 @@ class ChromaVectorManager(VectorManagerBase[ChromaConfig]):
 
 if __name__ == "__main__":
     import asyncio
+    import logging
+
+    logging.basicConfig(level=logging.INFO)
 
     async def main():
-        manager = ChromaVectorManager()
-        await manager.create_vector_store("test")
-        await manager.delete_vector_store("test")
-        await manager.close()
+        async with ChromaVectorManager.run_server(
+            "test",
+            wait_output=[".*Uvicorn running.*"],
+            wait_timeout=10,
+        ):
+            manager = ChromaVectorManager()
+            await manager.create_vector_store("test")
+            await manager.list_vector_stores()
+            await manager.delete_vector_store("test")
+            await manager.close()
 
     asyncio.run(main())
