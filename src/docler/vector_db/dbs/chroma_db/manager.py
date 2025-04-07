@@ -78,7 +78,7 @@ class ChromaVectorManager(VectorManagerBase[ChromaConfig]):
             collection_name="default",
         )
 
-    async def _get_list_client(self):
+    async def _get_list_client(self) -> chromadb.AsyncClientAPI:
         """Get a client for listing collections."""
         import chromadb
 
@@ -96,7 +96,7 @@ class ChromaVectorManager(VectorManagerBase[ChromaConfig]):
         try:
             client = await self._get_list_client()
             collections = await client.list_collections()
-            return [VectorStoreInfo(db_id=c, name=c) for c in collections]
+            return [VectorStoreInfo(db_id=c.name, name=c.name) for c in collections]
         except Exception:
             self.logger.exception("Error listing ChromaDB collections")
             return []
