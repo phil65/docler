@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, ClassVar
 
+import anyenv
+
 from docler.configs.converter_configs import LlamaParseConfig, LlamaParseMode
 from docler.converters.base import DocumentConverter
 from docler.log import get_logger
@@ -100,7 +102,6 @@ class LlamaParseConverter(DocumentConverter[LlamaParseConfig]):
         import base64
 
         from llama_parse import LlamaParse, ResultType
-        import requests
         import upath
 
         path = upath.UPath(file_path)
@@ -112,7 +113,6 @@ class LlamaParseConverter(DocumentConverter[LlamaParseConfig]):
             parse_mode=self.parse_mode,
         )
         result = parser.get_json_result(str(path))
-
         pages = result[0]["pages"]  # First document's pages
         job_id = result[0]["job_id"]
         content_parts: list[str] = []
@@ -121,24 +121,15 @@ class LlamaParseConverter(DocumentConverter[LlamaParseConfig]):
         for page in pages:
             if page.get("md"):
                 content_parts.append(page["md"])
-
-            # Process images directly from the page
             for img in page.get("images", []):
                 image_count = len(images)
                 id_ = f"img-{image_count}"
-
-                # Get image data directly from API
                 asset_name = img["name"]
                 asset_url = f"{parser.base_url}/api/parsing/job/{job_id}/result/image/{asset_name}"  # noqa: E501
-
-                response = requests.get(
-                    asset_url, headers={"Authorization": f"Bearer {self.api_key}"}
-                )
-                response.raise_for_status()
-                img_data = base64.b64encode(response.content).decode("utf-8")
-
-                # Determine image type or default to png
-                img_type = "png"  # Default image type
+                headers = {"Authorization": f"Bearer {self.api_key}"}
+                response = anyenv.get_bytes_sync(asset_url, headers=headers)
+                img_data = base64.b64encode(response).decode("utf-8")
+                img_type = "png"
                 if "." in asset_name:
                     extension = asset_name.split(".")[-1].lower()
                     if extension in ["jpg", "jpeg", "png", "gif", "webp", "svg"]:
@@ -146,7 +137,6 @@ class LlamaParseConverter(DocumentConverter[LlamaParseConfig]):
 
                 filename = f"{id_}.{img_type}"
                 mime = f"image/{img_type}"
-
                 image = Image(id=id_, content=img_data, mime_type=mime, filename=filename)
                 images.append(image)
 
@@ -161,8 +151,6 @@ class LlamaParseConverter(DocumentConverter[LlamaParseConfig]):
 
 
 if __name__ == "__main__":
-    import anyenv
-
     pdf_path = "src/docler/resources/pdf_sample.pdf"
     converter = LlamaParseConverter()
     result = anyenv.run_sync(converter.convert_file(pdf_path))
