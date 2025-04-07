@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import base64
 from itertools import batched
 from typing import TYPE_CHECKING, ClassVar
 
@@ -96,14 +95,7 @@ class AIImageAnnotator[TMetadata](Annotator[AIImageAnnotatorConfig]):
         if image.description and image.metadata:
             return image
 
-        if isinstance(image.content, bytes):
-            b64_content = base64.b64encode(image.content).decode("utf-8")
-        else:
-            b64_content = (
-                image.content
-                if not image.content.startswith("data:")
-                else image.content.split(",", 1)[1]
-            )
+        b64_content = image.to_base64()
         img_content = ImageBase64Content(data=b64_content, mime_type=image.mime_type)
         agent: StructuredAgent[None, TMetadata] = Agent[None](  # type: ignore
             model=self.model,

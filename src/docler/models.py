@@ -53,7 +53,11 @@ class Image(BaseModel):
         """
         if isinstance(self.content, bytes):
             return base64.b64encode(self.content).decode()
-        return self.content.split(",")[-1] if "," in self.content else self.content
+        return (
+            self.content
+            if not self.content.startswith("data:")
+            else self.content.split(",", 1)[1]
+        )
 
     def to_base64_url(self) -> str:
         """Convert image content to base64 data URL.
