@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
+from contextlib import AsyncExitStack
 import importlib.util
-from typing import Any, ClassVar, TypeVar
+from typing import Any, ClassVar, Self, TypeVar
 
 from pydantic import BaseModel, Field, HttpUrl, SecretStr, field_serializer
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -56,6 +57,14 @@ class BaseProvider[TConfig]:
 
     def __init__(self, *args: Any, **kwargs: Any):
         self.logger = get_logger(__name__)
+        self.exit_stack = AsyncExitStack()
+
+    async def __aenter__(self) -> Self:
+        """Async context manager entry."""
+        return self
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
+        """Async context manager exit."""
 
     @classmethod
     def get_available_providers(cls) -> list[type[BaseProvider[TConfig]]]:
