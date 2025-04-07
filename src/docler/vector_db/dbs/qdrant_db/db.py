@@ -7,7 +7,6 @@ import uuid
 
 from docler.log import get_logger
 from docler.models import SearchResult, Vector
-from docler.process_runner import ProcessRunner
 from docler.vector_db.base_backend import VectorStoreBackend
 from docler.vector_db.dbs.qdrant_db.utils import (
     get_distance,
@@ -18,8 +17,6 @@ from docler.vector_db.dbs.qdrant_db.utils import (
 
 
 if TYPE_CHECKING:
-    import os
-
     import numpy as np
 
 
@@ -76,9 +73,9 @@ class QdrantBackend(VectorStoreBackend):
             cfg = models.VectorParams(size=vector_size, distance=get_distance(metric))
             temp_client.create_collection(self._collection_name, vectors_config=cfg)
 
-    @staticmethod
-    def run_server(path: str | os.PathLike[str]) -> ProcessRunner:
-        return ProcessRunner(SERVER_ARGS)
+    # @staticmethod
+    # def run_server(path: StrPath) -> ProcessRunner:
+    #     return ProcessRunner(SERVER_ARGS)
 
     async def add_vectors(
         self,

@@ -7,14 +7,11 @@ import uuid
 
 from docler.log import get_logger
 from docler.models import SearchResult, Vector
-from docler.process_runner import ProcessRunner
 from docler.vector_db.base_backend import VectorStoreBackend
 from docler.vector_db.dbs.chroma_db.utils import to_search_results
 
 
 if TYPE_CHECKING:
-    import os
-
     import numpy as np
 
 
@@ -59,10 +56,6 @@ class ChromaBackend(VectorStoreBackend):
         self.vector_store_id = vector_store_id
         msg = "ChromaDB initialized - collection: %s, persistent: %s"
         logger.info(msg, vector_store_id, bool(persist_directory))
-
-    @staticmethod
-    def run_server(path: str | os.PathLike[str]) -> ProcessRunner:
-        return ProcessRunner(f"chroma run {path}")
 
     async def add_vectors(
         self,
@@ -153,10 +146,10 @@ if __name__ == "__main__":
 
     import numpy as np
 
-    from docler.vector_db.dbs.chroma_db import ChromaBackend
+    from docler.vector_db.dbs.chroma_db import ChromaVectorManager
 
     async def main():
-        async with ChromaBackend.run_server("chroma"):
+        async with ChromaVectorManager.run_server("chroma"):
             db = ChromaBackend(persist_directory="./chroma")
             query_vector = np.array([0.1, 0.2, 0.3])
             await db.add_vector(query_vector, metadata={"source": "user"})

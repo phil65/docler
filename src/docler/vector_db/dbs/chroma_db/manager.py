@@ -4,13 +4,20 @@ from __future__ import annotations
 
 from pathlib import Path
 import shutil
-from typing import ClassVar, cast
+from typing import TYPE_CHECKING, ClassVar, cast
 
 from docler.configs.vector_db_configs import ChromaConfig
 from docler.models import VectorStoreInfo
+from docler.process_runner import ProcessRunner
 from docler.vector_db.base import BaseVectorDB
 from docler.vector_db.base_manager import VectorManagerBase
 from docler.vector_db.dbs.chroma_db.db import ChromaBackend
+
+
+if TYPE_CHECKING:
+    import chromadb
+
+    from docler.common_types import StrPath
 
 
 class ChromaVectorManager(VectorManagerBase[ChromaConfig]):
@@ -45,7 +52,14 @@ class ChromaVectorManager(VectorManagerBase[ChromaConfig]):
         self.ssl = ssl
         self.headers = headers
         self._vector_stores: dict[str, ChromaBackend] = {}
-        self._list_client = None
+        self._list_client: chromadb.AsyncClientAPI | None = None
+
+    @staticmethod
+    def run_server(path: StrPath, **kwargs) -> ProcessRunner:
+        cmd = f"chroma run {path}"
+        # if self.port:
+        #     cmd += f" --port {self.port}"
+        return ProcessRunner(cmd, **kwargs)
 
     @property
     def name(self) -> str:
