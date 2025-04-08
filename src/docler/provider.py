@@ -67,7 +67,7 @@ class BaseProvider[TConfig]:
         """Async context manager exit."""
 
     @classmethod
-    def get_available_providers(cls) -> list[type[BaseProvider[TConfig]]]:
+    def get_available_providers(cls) -> list[type[Self]]:
         """Get a list of available provider classes."""
         return [kls for kls in cls.__subclasses__() if kls.has_required_packages()]
 
