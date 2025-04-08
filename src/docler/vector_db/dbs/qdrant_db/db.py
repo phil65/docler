@@ -22,17 +22,6 @@ if TYPE_CHECKING:
 
 logger = get_logger(__name__)
 Metric = Literal["cosine", "euclidean", "dotproduct", "manhattan"]
-SERVER_ARGS = [
-    "docker",
-    "run",
-    "-p",
-    "6333:6333",
-    "-p",
-    "6334:6334",
-    "-v",
-    "$(pwd)/qdrant_storage:/qdrant/storage:z",
-    "qdrant/qdrant",
-]
 
 
 class QdrantBackend(VectorStoreBackend):
@@ -73,9 +62,9 @@ class QdrantBackend(VectorStoreBackend):
             cfg = models.VectorParams(size=vector_size, distance=get_distance(metric))
             temp_client.create_collection(self._collection_name, vectors_config=cfg)
 
-    # @staticmethod
-    # def run_server(path: StrPath) -> ProcessRunner:
-    #     return ProcessRunner(SERVER_ARGS)
+    @property
+    def vector_store_id(self):
+        return self._collection_name
 
     async def add_vectors(
         self,

@@ -2,11 +2,15 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from qdrant_client.http import models
 
 from docler.models import SearchResult
+
+
+if TYPE_CHECKING:
+    from docler.vector_db.dbs.qdrant_db.manager import Metric
 
 
 def get_query(filters: dict[str, Any] | None = None) -> models.Filter | None:
@@ -38,7 +42,7 @@ def to_search_result(result: models.ScoredPoint) -> SearchResult:
     return SearchResult(chunk_id=id_, score=result.score, metadata=data, text=txt)
 
 
-def get_distance(metric: str) -> models.Distance:
+def get_distance(metric: Metric) -> models.Distance:
     metric_map = dict(
         cosine=models.Distance.COSINE,
         euclidean=models.Distance.EUCLID,
