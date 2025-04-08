@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import logging
 from typing import TYPE_CHECKING
 
 import streamlit as st
@@ -16,9 +15,6 @@ from docler_streamlit.step4_vectorstore import show_step_4
 
 if TYPE_CHECKING:
     from docler.models import Document
-
-
-logging.basicConfig(level=logging.INFO)
 
 
 def main():

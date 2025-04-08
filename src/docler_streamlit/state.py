@@ -18,6 +18,7 @@ class SessionState(State):
     uploaded_file_name: str | None = None
     chunked_doc: ChunkedDocument | None = None
     vector_store_id: str | None = None
+    vector_store_name: str | None = None
     vector_provider: str | None = None
     uploaded_chunks: int | None = None
     chunks: list[str] | None = None

@@ -2,35 +2,93 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import Any
 
 import anyenv
-import streambricks as sb
+import numpy as np
 import streamlit as st
 
+from docler.embeddings.openai_provider import OpenAIEmbeddings
 from docler.log import get_logger
-from docler.models import ChunkedDocument
-from docler.vector_db.dbs import chroma_db, pinecone_db
+from docler.models import TextChunk
+from docler.vector_db.dbs.pinecone_db import PineconeVectorManager
 from docler_streamlit.state import SessionState
-
-
-if TYPE_CHECKING:
-    from docler.vector_db.base import BaseVectorDB
-    from docler.vector_db.base_manager import VectorManagerBase
 
 
 logger = get_logger(__name__)
 
-VECTOR_STORES: dict[str, type[VectorManagerBase]] = {
-    "Pinecone": pinecone_db.PineconeVectorManager,
-    "Chroma": chroma_db.ChromaVectorManager,
-}
+
+class VectorStore:
+    """Helper class to manage both embedding and vector storage."""
+
+    def __init__(self, store_name: str, backend):
+        """Initialize with a vector store backend."""
+        self.store_name = store_name
+        self.backend = backend
+        # Use OpenAI embeddings instead of LiteLLM
+        self.embedder = OpenAIEmbeddings(model="text-embedding-3-small")
+
+    async def add_chunks(self, chunks: list[TextChunk]) -> list[str]:
+        """Embed and add chunks to the vector store."""
+        vectors = []
+        metadata_list = []
+
+        for chunk in chunks:
+            embedding = await self.embedder.embed_query(chunk.content)
+            vectors.append(embedding)
+            metadata = {
+                "text": chunk.content,
+                "source_doc_id": chunk.source_doc_id,
+                "chunk_index": chunk.chunk_index,
+                **chunk.metadata,
+            }
+            metadata_list.append(metadata)
+
+        # Add vectors to storage
+        return await self.backend.add_vectors(
+            vectors=np.array(vectors),
+            metadata=metadata_list,
+        )
+
+    async def query(
+        self, query: str, k: int = 4, filters: dict[str, Any] | None = None
+    ) -> list[tuple[TextChunk, float]]:
+        """Search for similar chunks."""
+        # Embed the query
+        query_embedding = await self.embedder.embed_query(query)
+
+        # Search the vector store
+        results = await self.backend.search_vectors(
+            query_vector=query_embedding,
+            k=k,
+            filters=filters,
+        )
+
+        # Convert search results to TextChunks
+        chunks_with_scores = []
+        for result in results:
+            metadata = result.metadata
+            content = metadata.pop("text", "") or result.text or ""
+            source_doc_id = metadata.pop("source_doc_id", "")
+            chunk_index = metadata.pop("chunk_index", 0)
+
+            # Create a TextChunk from the search result
+            chunk = TextChunk(
+                content=content,
+                source_doc_id=source_doc_id,
+                chunk_index=chunk_index,
+                metadata=metadata,
+            )
+            chunks_with_scores.append((chunk, result.score))
+
+        return chunks_with_scores
 
 
 def show_step_4():
     """Show vector store upload screen (step 4)."""
     state = SessionState.get()
     st.header("Step 4: Upload to Vector Store")
+
     col1, col2 = st.columns([1, 5])
     with col1:
         st.button("← Back", on_click=state.prev_step)
@@ -42,168 +100,93 @@ def show_step_4():
     chunked_doc = state.chunked_doc
     chunks = chunked_doc.chunks
 
-    # Vector DB Provider Selection
-    st.subheader("Vector Store Configuration")
-    provider = st.selectbox(
-        "Select Vector Store Provider",
-        options=list(VECTOR_STORES.keys()),
-        key="selected_vector_provider",
-    )
+    try:
+        # Initialize Pinecone manager (uses PINECONE_API_KEY environment variable)
+        manager = PineconeVectorManager()
 
-    # Get the manager class for the selected provider
-    manager_cls = VECTOR_STORES[provider]
-    if provider not in state.vector_configs:
-        state.vector_configs[provider] = manager_cls.Config()
-
-    st.divider()
-    opts = ["Create new store", "Use existing store"]
-    action = st.radio("Vector Store Action", opts, index=0)
-    vector_db: BaseVectorDB | None = None
-
-    if action == "Create new store":
-        store_name = st.text_input(
-            "New Vector Store Name",
-            value="docler-store",
-            help=f"Name for the new {provider} vector store",
-        )
-
-        # Use model_edit to generate the configuration form
-        with st.expander("Advanced Configuration", expanded=False):
-            state.vector_configs[provider] = sb.model_edit(state.vector_configs[provider])
-
-        if st.button("Create Vector Store"):
-            with st.spinner(f"Creating {provider} vector store..."):
-                try:
-                    manager = manager_cls()
-                    config = state.vector_configs[provider]
-                    vector_db = anyenv.run_sync(manager.create_vector_store(store_name))
-                    assert vector_db is not None, "Vector store creation failed"
-                    state.vector_store_id = vector_db.vector_store_id
-                    state.vector_provider = provider
-                    st.success(f"vector store {store_name!r} created successfully!")
-                except Exception as e:
-                    st.error(f"Failed to create vector store: {e}")
-                    logger.exception("Vector store creation failed")
-    else:
-        try:
-            manager = manager_cls()
+        # Load existing vector stores
+        with st.spinner("Loading vector stores..."):
             stores = anyenv.run_sync(manager.list_vector_stores())
 
-            if not stores:
-                st.info(f"No existing {provider} vector stores found.")
-                store_id = st.text_input(f"{provider} Vector Store ID")
+        # Display vector store options
+        col1, col2 = st.columns(2)
+        with col1:
+            store_options = ["Create new store"] + [s.name for s in stores]
+            selected_option = st.selectbox("Vector Store", options=store_options)
+
+        with col2:
+            if selected_option == "Create new store":
+                store_name = st.text_input("New Store Name", value="docler-store")
+                if st.button("Create Store"):
+                    with st.spinner(f"Creating store '{store_name}'..."):
+                        try:
+                            anyenv.run_sync(manager.create_vector_store(store_name))
+                            # Store the name only
+                            state.vector_store_name = store_name
+                            st.success(f"Store '{store_name}' created!")
+                        except Exception as e:  # noqa: BLE001
+                            st.error(f"Failed to create store: {e}")
             else:
-                store_options = {f"{s.name} ({s.db_id})": s.db_id for s in stores}
-                opts = list(store_options.keys())
-                store_display = st.selectbox("Select Vector Store", options=opts)
-                store_id = store_options.get(store_display, "")
+                # Store the selected store name
+                state.vector_store_name = selected_option
+                st.info(f"Using existing store: {selected_option}")
 
-            with st.expander("Connection Options", expanded=False):
-                state.vector_configs[provider] = sb.model_edit(
-                    state.vector_configs[provider]
-                )
-
-            if store_id and st.button("Connect to Vector Store"):
-                with st.spinner(f"Connecting to {provider} vector store..."):
-                    try:
-                        manager = manager_cls()
-                        config = state.vector_configs[provider]
-                        vector_db = anyenv.run_sync(manager.get_vector_store(store_id))
-                        assert vector_db is not None, "Vector store connection failed"
-                        state.vector_store_id = vector_db.vector_store_id
-                        state.vector_provider = provider
-                        msg = f"Connected to {provider} vector store {store_id!r}!"
-                        st.success(msg)
-                    except Exception as e:
-                        st.error(f"Failed to connect to vector store: {e}")
-                        logger.exception("Vector store connection failed")
-        except Exception as e:  # noqa: BLE001
-            st.error(f"Error listing vector stores: {e}")
-            store_id = st.text_input(f"{provider} Vector Store ID")
-            with st.expander("Connection Options", expanded=False):
-                state.vector_configs[provider] = sb.model_edit(
-                    state.vector_configs[provider]
-                )
-
-            if store_id and st.button("Connect to Vector Store"):
-                with st.spinner(f"Connecting to {provider} vector store..."):
-                    try:
-                        manager = manager_cls()
-                        config = state.vector_configs[provider]
-                        vector_db = anyenv.run_sync(manager.get_vector_store(store_id))
-                        assert vector_db is not None, "Vector store not found"
-                        state.vector_store_id = vector_db.vector_store_id
-                        state.vector_provider = provider
-                        msg = f"Connected to {provider} vector store {store_id!r}!"
-                        st.success(msg)
-                    except Exception as e:
-                        st.error(f"Failed to connect to vector store: {e}")
-                        logger.exception("Vector store connection failed")
-
-    if vec_store_id := state.vector_store_id:
-        st.divider()
-        st.subheader("Upload Chunks")
-        st.write(f"Found {len(chunks)} chunks to upload")
-        if st.button("Upload Chunks to Vector Store"):
-            with st.spinner("Uploading chunks..."):
-                try:
-                    provider = state.vector_provider or provider
-                    manager_cls = VECTOR_STORES[provider]
-                    manager = manager_cls()
-                    config = state.vector_configs[provider]
-                    cfg = config.model_dump(exclude={"type"})
-                    vector_db = anyenv.run_sync(
-                        manager.get_vector_store(vec_store_id, **cfg)
-                    )
-                    assert vector_db is not None, "Vector store not found"
-                    chunk_ids = anyenv.run_sync(vector_db.add_chunks(chunks))
-                    state.uploaded_chunks = len(chunk_ids)
-                    msg = f"Uploaded {len(chunk_ids)} chunks to the vector store!"
-                    st.success(msg)
-                except Exception as e:
-                    st.error(f"Upload failed: {e}")
-                    logger.exception("Chunk upload failed")
-
-        # Test vector search if chunks have been uploaded
-        if state.uploaded_chunks:
-            num = state.uploaded_chunks
-            provider = state.vector_provider or provider
-            st.success(f"{num} chunks uploaded to {provider} vector db {vec_store_id!r}")
-
+        # Upload button (only show if we have a store name)
+        if state.vector_store_name:
             st.divider()
-            st.subheader("Test Your Vector Store")
-            query = st.text_input("Enter a query to test your vector store:")
-            if query:
-                with st.spinner("Searching..."):
+            st.write(f"Found {len(chunks)} chunks to upload")
+
+            if st.button("Upload Chunks"):
+                with st.spinner("Uploading chunks..."):
                     try:
-                        manager_cls = VECTOR_STORES[provider]
-                        manager = manager_cls()
-                        config = state.vector_configs[provider]
-                        vector_db = anyenv.run_sync(
-                            manager.get_vector_store(vec_store_id)
+                        # Get the backend for the selected store
+                        backend = anyenv.run_sync(
+                            manager.get_vector_store(state.vector_store_name)
                         )
-                        assert vector_db is not None, "Vector store not found"
-                        results = anyenv.run_sync(vector_db.query(query, k=3))
 
-                        if results:
-                            st.write(f"Found {len(results)} relevant chunks:")
-                            for i, (chunk, score) in enumerate(results):
-                                with st.expander(f"Result {i + 1} - Score: {score:.4f}"):
-                                    st.markdown(chunk.content)
-                        else:
-                            st.info("No results found.")
+                        # Create our helper class
+                        vector_store = VectorStore(state.vector_store_name, backend)
+
+                        # Upload the chunks
+                        chunk_ids = anyenv.run_sync(vector_store.add_chunks(chunks))
+                        state.uploaded_chunks = len(chunk_ids)
+                        st.success(f"Uploaded {len(chunk_ids)} chunks!")
                     except Exception as e:
-                        st.error(f"Search failed: {e}")
-                        logger.exception("Vector search failed")
+                        st.error(f"Upload failed: {e}")
+                        logger.exception("Chunk upload failed")
 
+            # Test search (only show if chunks were uploaded)
+            if state.uploaded_chunks:
+                st.divider()
+                st.subheader("Test Search")
+                query = st.text_input("Enter a query:")
 
-if __name__ == "__main__":
-    from streambricks import run
+                if query:
+                    with st.spinner("Searching..."):
+                        try:
+                            # Get the backend for the selected store
+                            backend = anyenv.run_sync(
+                                manager.get_vector_store(state.vector_store_name)
+                            )
 
-    from docler.models import ChunkedDocument, TextChunk
+                            # Create our helper class
+                            vector_store = VectorStore(state.vector_store_name, backend)
 
-    state = SessionState.get()
-    chunk = TextChunk(content="Sample chunk content", source_doc_id="test", chunk_index=0)
-    state.chunked_doc = ChunkedDocument(content="Sample content", chunks=[chunk])
-    state.uploaded_file_name = "sample.txt"
-    run(show_step_4)
+                            # Search for results
+                            results = anyenv.run_sync(vector_store.query(query, k=3))
+
+                            if results:
+                                for i, (chunk, score) in enumerate(results):
+                                    with st.expander(
+                                        f"Result {i + 1} - Score: {score:.4f}"
+                                    ):
+                                        st.markdown(chunk.content)
+                            else:
+                                st.info("No results found.")
+                        except Exception as e:
+                            st.error(f"Search failed: {e}")
+                            logger.exception("Vector search failed")
+
+    except Exception as e:  # noqa: BLE001
+        st.error(f"Error connecting to Pinecone: {e}")
+        st.info("Make sure the PINECONE_API_KEY environment variable is set.")
