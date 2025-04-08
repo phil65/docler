@@ -62,7 +62,7 @@ class LLMConverter(DocumentConverter[LLMConverterConfig]):
         if languages:
             lang_str = ", ".join(languages)
             txt = f"The document may contain text in these languages: {lang_str}."
-        self.user_prompt = user_prompt or USER_PROMPT.format(txt)
+        self.user_prompt = user_prompt or USER_PROMPT.format(txt=txt)
 
     def _convert_path_sync(self, file_path: StrPath, mime_type: str) -> Document:
         """Convert a PDF file using the configured LLM.
