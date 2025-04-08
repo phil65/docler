@@ -76,17 +76,11 @@ def show_step_4():
                 try:
                     manager = manager_cls()
                     config = state.vector_configs[provider]
-                    config.collection_name = store_name
-                    kwargs = config.model_dump(exclude={"type"})
-                    vector_db = anyenv.run_sync(
-                        manager.create_vector_store(store_name, **kwargs)
-                    )
+                    vector_db = anyenv.run_sync(manager.create_vector_store(store_name))
                     assert vector_db is not None, "Vector store creation failed"
                     state.vector_store_id = vector_db.vector_store_id
                     state.vector_provider = provider
-                    st.success(
-                        f"{provider} vector store '{store_name}' created successfully!"
-                    )
+                    st.success(f"vector store {store_name!r} created successfully!")
                 except Exception as e:
                     st.error(f"Failed to create vector store: {e}")
                     logger.exception("Vector store creation failed")
@@ -100,14 +94,10 @@ def show_step_4():
                 store_id = st.text_input(f"{provider} Vector Store ID")
             else:
                 store_options = {f"{s.name} ({s.db_id})": s.db_id for s in stores}
-                store_display = st.selectbox(
-                    "Select Vector Store",
-                    options=list(store_options.keys()),
-                    help=f"Available {provider} vector stores",
-                )
+                opts = list(store_options.keys())
+                store_display = st.selectbox("Select Vector Store", options=opts)
                 store_id = store_options.get(store_display, "")
 
-            # Use model_edit to generate the configuration form for connection options
             with st.expander("Connection Options", expanded=False):
                 state.vector_configs[provider] = sb.model_edit(
                     state.vector_configs[provider]
@@ -118,11 +108,7 @@ def show_step_4():
                     try:
                         manager = manager_cls()
                         config = state.vector_configs[provider]
-                        vector_db = anyenv.run_sync(
-                            manager.get_vector_store(
-                                store_id, **config.model_dump(exclude={"type"})
-                            )
-                        )
+                        vector_db = anyenv.run_sync(manager.get_vector_store(store_id))
                         assert vector_db is not None, "Vector store connection failed"
                         state.vector_store_id = vector_db.vector_store_id
                         state.vector_provider = provider
@@ -144,11 +130,8 @@ def show_step_4():
                     try:
                         manager = manager_cls()
                         config = state.vector_configs[provider]
-                        cfg = config.model_dump(exclude={"type"})
-                        vector_db = anyenv.run_sync(
-                            manager.get_vector_store(store_id, **cfg)
-                        )
-                        assert vector_db is not None
+                        vector_db = anyenv.run_sync(manager.get_vector_store(store_id))
+                        assert vector_db is not None, "Vector store not found"
                         state.vector_store_id = vector_db.vector_store_id
                         state.vector_provider = provider
                         msg = f"Connected to {provider} vector store {store_id!r}!"
@@ -157,12 +140,10 @@ def show_step_4():
                         st.error(f"Failed to connect to vector store: {e}")
                         logger.exception("Vector store connection failed")
 
-    # Upload chunks if we have a connected vector store
     if vec_store_id := state.vector_store_id:
         st.divider()
         st.subheader("Upload Chunks")
         st.write(f"Found {len(chunks)} chunks to upload")
-
         if st.button("Upload Chunks to Vector Store"):
             with st.spinner("Uploading chunks..."):
                 try:
@@ -198,9 +179,8 @@ def show_step_4():
                         manager_cls = VECTOR_STORES[provider]
                         manager = manager_cls()
                         config = state.vector_configs[provider]
-                        cfg = config.model_dump(exclude={"type"})
                         vector_db = anyenv.run_sync(
-                            manager.get_vector_store(vec_store_id, **cfg)
+                            manager.get_vector_store(vec_store_id)
                         )
                         assert vector_db is not None, "Vector store not found"
                         results = anyenv.run_sync(vector_db.query(query, k=3))

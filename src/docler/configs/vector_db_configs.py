@@ -23,9 +23,6 @@ VectorDBShorthand = Literal["chroma", "qdrant", "pinecone"]
 class BaseVectorStoreConfig(ProviderConfig):
     """Base configuration for vector stores."""
 
-    collection_name: str = "default"
-    """Name of the collection to use."""
-
 
 class ChromaConfig(BaseVectorStoreConfig):
     """Configuration for ChromaDB vector store."""
