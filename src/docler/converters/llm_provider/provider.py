@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import base64
 from typing import TYPE_CHECKING, ClassVar
 
 from docler.common_types import DEFAULT_CONVERTER_MODEL
@@ -80,8 +79,7 @@ class LLMConverter(DocumentConverter[LLMConverterConfig]):
 
         path = upath.UPath(file_path)
         pdf_bytes = path.read_bytes()
-        pdf_b64 = base64.b64encode(pdf_bytes).decode()
-        content = PDFBase64Content(data=pdf_b64)
+        content = PDFBase64Content.from_bytes(pdf_bytes)
         agent = Agent[None](model=self.model, system_prompt=self.system_prompt)
         response = agent.run_sync(self.user_prompt, content)
         return Document(
