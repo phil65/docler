@@ -2,12 +2,11 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, ClassVar, Literal
-
-import anyenv
+from typing import TYPE_CHECKING, ClassVar
 
 from docler.configs.converter_configs import (
     MistralConfig,
+    UpstageCategory,
     UpstageOCRType,
     UpstageOutputFormat,
 )
@@ -19,8 +18,6 @@ from docler.utils import get_api_key
 if TYPE_CHECKING:
     from docler.common_types import StrPath, SupportedLanguage
 
-
-Category = Literal["figure", "chart", "table", "paragraph"]
 
 # API endpoints
 DOCUMENT_PARSE_BASE_URL = "https://api.upstage.ai/v1/document-ai/document-parse"
@@ -52,7 +49,7 @@ class UpstageConverter(DocumentConverter[MistralConfig]):
         model: str = DOCUMENT_PARSE_DEFAULT_MODEL,
         ocr: UpstageOCRType = "auto",
         output_format: UpstageOutputFormat = "markdown",
-        base64_categories: set[Category] | None = None,
+        base64_categories: set[UpstageCategory] | None = None,
     ):
         """Initialize the Upstage converter.
 
@@ -68,15 +65,13 @@ class UpstageConverter(DocumentConverter[MistralConfig]):
         Raises:
             ValueError: If API key is not provided or found in environment
         """
-        if base64_categories is None:
-            base64_categories = {"figure", "chart"}
         super().__init__(languages=languages)
         self.api_key = api_key or get_api_key("UPSTAGE_API_KEY")
         self.base_url = base_url
         self.model = model
         self.ocr = ocr
         self.output_format = output_format
-        self.base64_categories = base64_categories
+        self.base64_categories = base64_categories or {"figure", "chart"}
 
     @property
     def price_per_page(self) -> float:
@@ -96,30 +91,32 @@ class UpstageConverter(DocumentConverter[MistralConfig]):
         Raises:
             ValueError: If conversion fails
         """
+        import requests
         import upath
 
         path = upath.UPath(file_path)
-        with path.open("rb") as f:
-            file_content = f.read()
-
+        file_content = path.read_bytes()
         headers = {"Authorization": f"Bearer {self.api_key}"}
         files = {"document": (path.name, file_content, mime_type)}
-        categories_str = str(list(self.base64_categories)).replace("'", "'")
         data = {
             "ocr": self.ocr,
             "model": self.model,
             "output_formats": f"['{self.output_format}']",
-            "base64_encoding": categories_str,
+            "base64_encoding": str(list(self.base64_categories)),
         }
 
         try:
-            result = anyenv.post_json_sync(
+            response = requests.post(
                 self.base_url,
                 headers=headers,
                 files=files,
-                json_data=data,
-                return_type=dict,
+                data=data,
             )
+            response.raise_for_status()
+            result = response.json()
+        except requests.HTTPError as e:
+            msg = f"Upstage API error: {e.response.text if e.response else str(e)}"
+            raise ValueError(msg) from e
         except Exception as e:
             msg = f"Failed to convert document: {e}"
             self.logger.exception(msg)
@@ -137,11 +134,14 @@ class UpstageConverter(DocumentConverter[MistralConfig]):
         for element in elements:
             if element.get("category") not in self.base64_categories:
                 continue
+
+            # Skip elements without base64 encoding
             if not element.get("base64_encoding"):
                 continue
 
             image_id = f"img-{image_counter}"
             image_counter += 1
+            # Handle base64 encoded images
             img_data = element["base64_encoding"]
             if img_data.startswith("data:image/"):
                 # Extract MIME type and remove prefix
@@ -178,6 +178,8 @@ class UpstageConverter(DocumentConverter[MistralConfig]):
 
 
 if __name__ == "__main__":
+    import anyenv
+
     pdf_path = "src/docler/resources/pdf_sample.pdf"
 
     # Initialize converter with custom base64 categories

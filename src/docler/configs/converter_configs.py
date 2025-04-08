@@ -33,6 +33,7 @@ DoclingEngine = Literal[
 
 UpstageOCRType = Literal["auto", "force"]
 UpstageOutputFormat = Literal["markdown", "text", "html"]
+UpstageCategory = Literal["figure", "chart", "table", "paragraph"]
 
 AzureModel = Literal[
     "prebuilt-read",
@@ -326,7 +327,9 @@ class UpstageConfig(BaseConverterConfig):
     output_format: UpstageOutputFormat = "markdown"
     """Output format ('markdown', 'text', or 'html')."""
 
-    base64_categories: list[str] = Field(default_factory=lambda: ["figure", "chart"])
+    base64_categories: set[UpstageCategory] = Field(
+        default_factory=lambda: {"figure", "chart"}  # type: ignore
+    )
     """Element categories to encode in base64."""
 
     model_config = SettingsConfigDict(env_prefix="UPSTAGE_")
