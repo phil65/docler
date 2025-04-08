@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  docler-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./src:/app/src
+    environment:
+      - PYTHONPATH=/app
+    restart: unless-stopped
