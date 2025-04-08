@@ -30,6 +30,7 @@ class PineconeVectorManager(VectorManagerBase[PineconeConfig]):
 
     def __init__(self, api_key: str | None = None):
         """Initialize the Pinecone Vector Store manager."""
+        super().__init__()
         self.api_key = api_key or get_api_key("PINECONE_API_KEY")
         self._vector_stores: dict[str, PineconeBackend] = {}
 
@@ -69,27 +70,21 @@ class PineconeVectorManager(VectorManagerBase[PineconeConfig]):
         """Create a new vector store."""
         from pinecone import PineconeAsyncio, ServerlessSpec
 
-        try:
-            if await self.has_vector_store(name):
-                msg = f"Index {name!r} already exists"
-                raise ValueError(msg)  # noqa: TRY301
-            async with PineconeAsyncio(api_key=self.api_key) as client:
-                spec = ServerlessSpec(cloud=cloud.lower(), region=region)
-                await client.create_index(name, spec, dimension=dimension, metric=metric)
-                index_info = await client.describe_index(name)
-                db = PineconeBackend(
-                    api_key=self.api_key,
-                    host=index_info.host,
-                    dimension=dimension,
-                    namespace=namespace,
-                )
-                self._vector_stores[name] = db
-                return cast(BaseVectorDB, db)  # type: ignore[override]
-
-        except Exception as e:
-            msg = f"Failed to create vector store: {e}"
-            self.logger.exception(msg)
-            raise ValueError(msg) from e
+        if await self.has_vector_store(name):
+            msg = f"Index {name!r} already exists"
+            raise ValueError(msg)
+        async with PineconeAsyncio(api_key=self.api_key) as client:
+            spec = ServerlessSpec(cloud=cloud.lower(), region=region)
+            await client.create_index(name, spec, dimension=dimension, metric=metric)
+            index_info = await client.describe_index(name)
+            db = PineconeBackend(
+                api_key=self.api_key,
+                host=index_info.host,
+                dimension=dimension,
+                namespace=namespace,
+            )
+            self._vector_stores[name] = db
+            return cast(BaseVectorDB, db)  # type: ignore[override]
 
     async def get_vector_store(self, name: str, **kwargs) -> BaseVectorDB:
         """Get a connection to an existing vector store."""
