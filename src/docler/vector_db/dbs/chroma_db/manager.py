@@ -51,7 +51,6 @@ class ChromaVectorManager(VectorManagerBase[ChromaConfig]):
         self.port = port
         self.ssl = ssl
         self.headers = headers
-        self._vector_stores: dict[str, ChromaBackend] = {}
         self._list_client: chromadb.AsyncClientAPI | None = None
 
     @staticmethod
@@ -73,10 +72,7 @@ class ChromaVectorManager(VectorManagerBase[ChromaConfig]):
 
     def to_config(self) -> ChromaConfig:
         """Extract configuration from instance."""
-        return ChromaConfig(
-            persist_directory=self.persist_directory,
-            collection_name="default",
-        )
+        return ChromaConfig(persist_directory=self.persist_directory)
 
     async def _get_list_client(self) -> chromadb.AsyncClientAPI:
         """Get a client for listing collections."""
@@ -103,16 +99,12 @@ class ChromaVectorManager(VectorManagerBase[ChromaConfig]):
 
     async def create_vector_store(self, name: str, **kwargs) -> BaseVectorDB:
         """Create a new vector store (collection)."""
-        if name in self._vector_stores:
-            return cast(BaseVectorDB, self._vector_stores[name])
-
         try:
             db = ChromaBackend(
                 vector_store_id=name,
                 persist_directory=self.persist_directory,
                 **kwargs,
             )
-            self._vector_stores[name] = db
             return cast(BaseVectorDB, db)
 
         except Exception as e:
@@ -126,9 +118,6 @@ class ChromaVectorManager(VectorManagerBase[ChromaConfig]):
         **kwargs,
     ) -> BaseVectorDB:
         """Get a connection to an existing collection."""
-        if name in self._vector_stores:
-            return cast(BaseVectorDB, self._vector_stores[name])
-
         try:
             client = await self._get_list_client()
             collection_names = await client.list_collections()
@@ -141,8 +130,6 @@ class ChromaVectorManager(VectorManagerBase[ChromaConfig]):
                 **kwargs,
             )
 
-            # await db.initialize()
-            self._vector_stores[name] = db
             return cast(BaseVectorDB, db)
 
         except Exception as e:
@@ -153,8 +140,6 @@ class ChromaVectorManager(VectorManagerBase[ChromaConfig]):
     async def delete_vector_store(self, name: str) -> bool:
         """Delete a vector store (collection)."""
         try:
-            if name in self._vector_stores:
-                del self._vector_stores[name]
             client = await self._get_list_client()
             await client.delete_collection(name=name)
             if self.persist_directory:
@@ -170,9 +155,6 @@ class ChromaVectorManager(VectorManagerBase[ChromaConfig]):
 
     async def close(self):
         """Close all vector store connections."""
-        # for db in list(self._vector_stores.values()):
-        #     await db.close()
-        self._vector_stores.clear()
         if self._list_client:
             try:
                 await self._list_client.reset()

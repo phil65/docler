@@ -9,7 +9,6 @@ from docler.log import get_logger
 from docler.models import SearchResult, Vector
 from docler.vector_db.base_backend import VectorStoreBackend
 from docler.vector_db.dbs.qdrant_db.utils import (
-    get_distance,
     get_query,
     to_pointstructs,
     to_search_result,
@@ -40,8 +39,7 @@ class QdrantBackend(VectorStoreBackend):
         prefer_grpc: bool = True,
     ):
         """Initialize Qdrant backend."""
-        from qdrant_client import AsyncQdrantClient, QdrantClient
-        from qdrant_client.http import models
+        from qdrant_client import AsyncQdrantClient
 
         client_kwargs: dict[str, Any] = {}
         if url:
@@ -54,13 +52,6 @@ class QdrantBackend(VectorStoreBackend):
             client_kwargs["location"] = ":memory:"
         self._client = AsyncQdrantClient(prefer_grpc=prefer_grpc, **client_kwargs)
         self._collection_name = collection_name
-
-        temp_client = QdrantClient(**client_kwargs)
-        collections = temp_client.get_collections().collections
-        collection_names = [c.name for c in collections]
-        if self._collection_name not in collection_names:
-            cfg = models.VectorParams(size=vector_size, distance=get_distance(metric))
-            temp_client.create_collection(self._collection_name, vectors_config=cfg)
 
     @property
     def vector_store_id(self):

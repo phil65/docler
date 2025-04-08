@@ -61,7 +61,6 @@ class QdrantVectorManager(VectorManagerBase[QdrantConfig]):
         self.url = str(url) if url else None
         self.api_key = api_key
         self.prefer_grpc = prefer_grpc
-        self._vector_stores: dict[str, QdrantBackend] = {}
 
         client_kwargs = {}
         if self.url:
@@ -162,9 +161,6 @@ class QdrantVectorManager(VectorManagerBase[QdrantConfig]):
         """Create a new vector store (collection)."""
         from qdrant_client.http import models
 
-        if name in self._vector_stores:
-            return cast(BaseVectorDB, self._vector_stores[name])
-
         try:
             collections_list = await self._client.get_collections()
             collection_names = [c.name for c in collections_list.collections]
@@ -199,7 +195,6 @@ class QdrantVectorManager(VectorManagerBase[QdrantConfig]):
                 vector_size=vector_size,
                 metric=metric,  # This is already a proper Metric type
             )
-            self._vector_stores[name] = db
             return cast(BaseVectorDB, db)
 
         except Exception as e:
@@ -213,9 +208,6 @@ class QdrantVectorManager(VectorManagerBase[QdrantConfig]):
         **kwargs,
     ) -> BaseVectorDB:
         """Get a connection to an existing collection."""
-        if name in self._vector_stores:
-            return cast(BaseVectorDB, self._vector_stores[name])
-
         try:
             collections_list = await self._client.get_collections()
             collection_names = [c.name for c in collections_list.collections]
@@ -258,7 +250,6 @@ class QdrantVectorManager(VectorManagerBase[QdrantConfig]):
                 metric=metric,
             )
 
-            self._vector_stores[name] = db
             return cast(BaseVectorDB, db)
 
         except Exception as e:
@@ -269,10 +260,6 @@ class QdrantVectorManager(VectorManagerBase[QdrantConfig]):
     async def delete_vector_store(self, name: str) -> bool:
         """Delete a vector store (collection)."""
         try:
-            if name in self._vector_stores:
-                await self._vector_stores[name].close()
-                del self._vector_stores[name]
-
             await self._client.delete_collection(collection_name=name)
         except Exception:
             self.logger.exception("Failed to delete collection %s", name)
@@ -282,9 +269,6 @@ class QdrantVectorManager(VectorManagerBase[QdrantConfig]):
 
     async def close(self):
         """Close all vector store connections."""
-        for db in list(self._vector_stores.values()):
-            await db.close()
-        self._vector_stores.clear()
         await self._client.close()
 
 

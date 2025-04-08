@@ -32,7 +32,6 @@ class PineconeVectorManager(VectorManagerBase[PineconeConfig]):
         """Initialize the Pinecone Vector Store manager."""
         super().__init__()
         self.api_key = api_key or get_api_key("PINECONE_API_KEY")
-        self._vector_stores: dict[str, PineconeBackend] = {}
 
     @classmethod
     def from_config(cls, config: PineconeConfig) -> PineconeVectorManager:
@@ -83,15 +82,11 @@ class PineconeVectorManager(VectorManagerBase[PineconeConfig]):
                 dimension=dimension,
                 namespace=namespace,
             )
-            self._vector_stores[name] = db
             return cast(BaseVectorDB, db)  # type: ignore[override]
 
     async def get_vector_store(self, name: str, **kwargs) -> BaseVectorDB:
         """Get a connection to an existing vector store."""
         from pinecone import PineconeAsyncio
-
-        if name in self._vector_stores:
-            return cast(BaseVectorDB, self._vector_stores[name])
 
         try:
             if not await self.has_vector_store(name):
@@ -105,7 +100,6 @@ class PineconeVectorManager(VectorManagerBase[PineconeConfig]):
                 dimension=index_info.dimension,
                 namespace=kwargs.get("namespace", "default"),
             )
-            self._vector_stores[name] = db
 
         except Exception as e:
             msg = f"Failed to connect to vector store {name}: {e}"
@@ -127,9 +121,6 @@ class PineconeVectorManager(VectorManagerBase[PineconeConfig]):
                     await client.configure_index(name, deletion_protection="disabled")
                 await client.delete_index(name)
 
-            if name in self._vector_stores:
-                await self._vector_stores[name].close()
-                del self._vector_stores[name]
         except Exception:
             self.logger.exception("Error deleting vector store %s", name)
             return False
@@ -138,9 +129,6 @@ class PineconeVectorManager(VectorManagerBase[PineconeConfig]):
 
     async def close(self):
         """Close all vector store connections."""
-        for db in self._vector_stores.values():
-            await db.close()
-        self._vector_stores.clear()
 
 
 if __name__ == "__main__":
