@@ -32,12 +32,11 @@ class ConverterRegistry:
 
         Args:
             languages: Languages to use for converters
-
-        Returns:
-            Registry with all converters registered
         """
         registry = cls()
         for converter_cls in DocumentConverter[Any].get_available_providers():
+            if converter_cls.NAME == "aggregated":
+                continue
             try:
                 converter = converter_cls(languages=languages)
                 registry.register(converter)
@@ -48,11 +47,7 @@ class ConverterRegistry:
         return registry
 
     def register(self, converter: DocumentConverter):
-        """Register a converter.
-
-        Args:
-            converter: Converter instance to register.
-        """
+        """Register a converter."""
         self._converters.append(converter)
 
     def get_converter(
@@ -106,11 +101,7 @@ class ConverterRegistry:
         self._preferences[mime_or_extension] = converter_name
 
     def get_supported_mime_types(self) -> set[str]:
-        """Get all MIME types supported by registered converters.
-
-        Returns:
-            Set of supported MIME type strings
-        """
+        """Get all MIME types supported by registered converters."""
         mime_types = set()
         for converter in self._converters:
             mime_types.update(converter.get_supported_mime_types())
@@ -127,18 +118,13 @@ if __name__ == "__main__":
         converter = registry.get_converter("document.pdf")
         if converter:
             print(f"Found converter: {converter.NAME}")
-            try:
-                pdf_path = "document.pdf"
-                result = await converter.convert_file(pdf_path)
-                print(f"Conversion successful: {len(result.content)} characters")
-            except Exception as e:  # noqa: BLE001
-                print(f"Conversion failed: {e}")
-            else:
-                return result
+            #     pdf_path = "document.pdf"
+            #     result = await converter.convert_file(pdf_path)
+            #     print(f"Conversion successful: {len(result.content)} characters")
+            #     return result
 
         else:
             print("No suitable converter found")
-        return None
 
     result = anyenv.run_sync(main())
     print(result)
