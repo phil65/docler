@@ -137,14 +137,11 @@ class UpstageConverter(DocumentConverter[MistralConfig]):
         for element in elements:
             if element.get("category") not in self.base64_categories:
                 continue
-
-            # Skip elements without base64 encoding
             if not element.get("base64_encoding"):
                 continue
 
             image_id = f"img-{image_counter}"
             image_counter += 1
-            # Handle base64 encoded images
             img_data = element["base64_encoding"]
             if img_data.startswith("data:image/"):
                 # Extract MIME type and remove prefix

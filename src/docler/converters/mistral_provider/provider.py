@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, ClassVar
 
 from docler.configs.converter_configs import MistralConfig
 from docler.converters.base import DocumentConverter
+from docler.converters.mistral_provider.utils import convert_image
 from docler.models import Document, Image
 from docler.utils import get_api_key
 
@@ -39,6 +40,7 @@ class MistralConverter(DocumentConverter[MistralConfig]):
         *,
         api_key: str | None = None,
         ocr_model: str = "mistral-ocr-latest",
+        image_min_size: int | None = None,
     ):
         """Initialize the Mistral converter.
 
@@ -46,6 +48,7 @@ class MistralConverter(DocumentConverter[MistralConfig]):
             languages: List of supported languages.
             api_key: Mistral API key. If None, will try to get from environment.
             ocr_model: Mistral OCR model to use. Defaults to "mistral-ocr-latest".
+            image_min_size: Minimum size of image in pixels.
 
         Raises:
             ValueError: If MISTRAL_API_KEY environment variable is not set.
@@ -53,6 +56,7 @@ class MistralConverter(DocumentConverter[MistralConfig]):
         super().__init__(languages=languages)
         self.api_key = api_key or get_api_key("MISTRAL_API_KEY")
         self.model = ocr_model
+        self.image_min_size = image_min_size
 
     def _convert_path_sync(self, file_path: StrPath, mime_type: str) -> Document:
         """Implementation of abstract method."""
@@ -93,20 +97,14 @@ class MistralConverter(DocumentConverter[MistralConfig]):
             model=self.model,
             document={"type": "document_url", "document_url": signed_url.url},
             include_image_base64=True,
+            image_min_size=self.image_min_size,
         )
-
-        images: list[Image] = []
-        for page in r.pages:
-            for img in page.images:
-                if not img.id or not img.image_base64:
-                    continue
-                img_data = img.image_base64
-                if img_data.startswith("data:image/"):
-                    img_data = img_data.split(",", 1)[1]
-                ext = img.id.split(".")[-1].lower() if "." in img.id else "jpeg"
-                mime = f"image/{ext}"
-                obj = Image(id=img.id, content=img_data, mime_type=mime, filename=img.id)
-                images.append(obj)
+        images = [
+            convert_image(img)
+            for page in r.pages
+            for img in page.images
+            if img.id and img.image_base64
+        ]
 
         content = "\n\n".join(page.markdown for page in r.pages)
         return Document(
@@ -142,13 +140,14 @@ class MistralConverter(DocumentConverter[MistralConfig]):
 
         # Process with OCR using the correct document format
         r = client.ocr.process(
-            model=self.model, document={"type": "image_url", "image_url": img_url}
+            model=self.model,
+            document={"type": "image_url", "image_url": img_url},
+            include_image_base64=True,
+            image_min_size=self.image_min_size,
         )
 
         # Extract the content (for images, we'll usually have just one page)
         content = "\n\n".join(page.markdown for page in r.pages)
-
-        # Create an image entry for the original image
         image_id = "img-0"
         image = Image(
             id=image_id,
@@ -156,12 +155,8 @@ class MistralConverter(DocumentConverter[MistralConfig]):
             mime_type=mime_type,
             filename=file_path.name,
         )
-
-        # Add reference to the original image in the content
         image_ref = f"\n\n![{image_id}]({file_path.name})\n\n"
         content = image_ref + content
-
-        # Also add any images extracted by the OCR process
         additional_images = []
         for page in r.pages:
             for idx, img in enumerate(page.images):
@@ -191,6 +186,7 @@ class MistralConverter(DocumentConverter[MistralConfig]):
 
 if __name__ == "__main__":
     import anyenv
+    import devtools
 
     # # Example usage with PDF
     # pdf_path = "src/docler/resources/pdf_sample.pdf"
@@ -201,4 +197,4 @@ if __name__ == "__main__":
     # Example usage with image
     img_path = "E:/sap.png"
     result = anyenv.run_sync(converter.convert_file(img_path))
-    print(f"Image result: {result}")
+    devtools.debug(result)
