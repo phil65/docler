@@ -4,12 +4,13 @@ from __future__ import annotations
 
 import logging
 import mimetypes
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
+
+from docler.converters.base import DocumentConverter
 
 
 if TYPE_CHECKING:
     from docler.common_types import SupportedLanguage
-    from docler.converters.base import DocumentConverter
 
 
 class ConverterRegistry:
@@ -24,7 +25,8 @@ class ConverterRegistry:
 
     @classmethod
     def create_default(
-        cls, languages: list[SupportedLanguage] | None = None
+        cls,
+        languages: list[SupportedLanguage] | None = None,
     ) -> ConverterRegistry:
         """Create a registry with all available converters.
 
@@ -34,50 +36,14 @@ class ConverterRegistry:
         Returns:
             Registry with all converters registered
         """
-        import importlib.util
-
-        # Import all converter classes
-        from docler.converters.azure_provider import AzureConverter
-        from docler.converters.datalab_provider import DataLabConverter
-        from docler.converters.docling_provider import DoclingConverter
-        from docler.converters.kreuzberg_provider import KreuzbergConverter
-        from docler.converters.llamaparse_provider import LlamaParseConverter
-        from docler.converters.llm_provider import LLMConverter
-        from docler.converters.marker_provider import MarkerConverter
-        from docler.converters.markitdown_provider import MarkItDownConverter
-        from docler.converters.mistral_provider import MistralConverter
-        from docler.converters.upstage_provider import UpstageConverter
-
         registry = cls()
-
-        # All converter classes
-        converter_classes: list[type[DocumentConverter]] = [
-            MarkerConverter,
-            KreuzbergConverter,
-            MarkItDownConverter,
-            DoclingConverter,
-            LLMConverter,
-            DataLabConverter,
-            AzureConverter,
-            UpstageConverter,
-            MistralConverter,
-            LlamaParseConverter,
-        ]
-
-        for converter_cls in converter_classes:
-            has_requirements = all(
-                importlib.util.find_spec(package.replace("-", "_"))
-                for package in converter_cls.REQUIRED_PACKAGES
-            )
-
-            if has_requirements:
-                try:
-                    converter = converter_cls(languages=languages)
-                    # Register the converter instance
-                    registry.register(converter)
-                except Exception:
-                    logging.exception("Failed to initialize %s", converter_cls.__name__)
-                    continue
+        for converter_cls in DocumentConverter[Any].get_available_providers():
+            try:
+                converter = converter_cls(languages=languages)
+                registry.register(converter)
+            except Exception:
+                logging.exception("Failed to initialize %s", converter_cls.__name__)
+                continue
 
         return registry
 
