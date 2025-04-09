@@ -16,6 +16,8 @@ if TYPE_CHECKING:
 class TextChunker[TConfig](BaseProvider[TConfig], ABC):
     """Base class for text chunkers."""
 
+    NAME: str
+
     def __init__(self, chunk_size: int = 500, chunk_overlap: int = 50):
         self.chunk_size = chunk_size
         self.chunk_overlap = chunk_overlap

@@ -4,7 +4,7 @@ commit_extra_args = ["-e"]
 path = "src/docler/__init__.py"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/docler", "src/docler_streamlit"]
+packages = ["src/docler", "src/docler_streamlit", "src/docler_api"]
 
 [build-system]
 requires = ["hatchling", "hatch-regex-commit"]
@@ -64,6 +64,7 @@ openai = ["openai"]
 pinecone = ["pinecone[asyncio]"]
 qdrant = ["qdrant-client[fastembed]"]
 azure = ["azure-ai-documentintelligence"]
+server = ["uvicorn", "fastapi"]
 all = [
     "marker-pdf",
     "mistralai",
@@ -83,6 +84,8 @@ all = [
     "pinecone[asyncio]",
     "qdrant-client[fastembed]",
     "azure-ai-documentintelligence",
+    "uvicorn",
+    "fastapi",
 ]
 
 
