@@ -5,7 +5,7 @@ A FastAPI server for the Docler document conversion library.
 ## Installation
 
 ```bash
-pip install "docler[api]"
+pip install "docler[server]"
 ```
 
 ## Usage

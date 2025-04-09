@@ -21,7 +21,7 @@ ENV PATH="/root/.local/bin:${PATH}"
 COPY . .
 
 # Install dependencies with UV (much faster than pip)
-RUN uv pip install --system ".[api,all]"
+RUN uv pip install --system ".[server,all]"
 
 # Final stage with minimal runtime image
 FROM python:3.13-slim-bookworm
