@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, ClassVar, Literal, cast
+from typing import TYPE_CHECKING, Any, ClassVar, Literal, cast
 
 from pydantic import HttpUrl, SecretStr
 
@@ -62,7 +62,7 @@ class QdrantVectorManager(VectorManagerBase[QdrantConfig]):
         self.api_key = api_key
         self.prefer_grpc = prefer_grpc
 
-        client_kwargs = {}
+        client_kwargs: dict[str, Any] = {}
         if self.url:
             client_kwargs["url"] = self.url
             if self.api_key:
