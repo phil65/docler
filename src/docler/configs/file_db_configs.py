@@ -6,21 +6,27 @@ from typing import Annotated, Literal
 
 from pydantic import Field, SecretStr
 
-from docler.configs.chunker_configs import ChunkerConfig, ChunkerShorthand  # noqa: TC001
-from docler.configs.converter_configs import (  # noqa: TC001
+from docler.configs.chunker_configs import (
+    BaseChunkerConfig,
+    ChunkerConfig,
+    ChunkerShorthand,
+)
+from docler.configs.converter_configs import (
+    BaseConverterConfig,
     ConverterConfig,
     ConverterShorthand,
 )
-from docler.configs.embedding_configs import (  # noqa: TC001
+from docler.configs.embedding_configs import (
+    BaseEmbeddingConfig,
     EmbeddingConfig,
     EmbeddingShorthand,
 )
-from docler.configs.vector_db_configs import (  # noqa: TC001
+from docler.configs.vector_db_configs import (
+    BaseVectorStoreConfig,
     VectorDBShorthand,
     VectorStoreConfig,
 )
 from docler.provider import ProviderConfig
-from docler.utils import get_api_key
 
 
 DatabaseShorthand = Literal["openai", "component", "chroma", "qdrant", "pinecone"]
@@ -62,93 +68,28 @@ class ComponentBasedConfig(FileDatabaseConfig):
     batch_size: int = 8
     """Batch size for processing."""
 
-    def resolve_converter(self) -> ConverterConfig:  # noqa: PLR0911
+    def resolve_converter(self) -> ConverterConfig:
         """Get full converter config from shorthand or pass through existing."""
         if isinstance(self.converter, str):
-            from docler.configs.converter_configs import (
-                AzureConfig,
-                DataLabConfig,
-                DoclingConverterConfig,
-                LlamaParseConfig,
-                LLMConverterConfig,
-                MarkerConfig,
-                MistralConfig,
-            )
-
-            match self.converter:
-                case "docling":
-                    return DoclingConverterConfig()
-                case "marker":
-                    return MarkerConfig()
-                case "mistral":
-                    return MistralConfig()
-                case "llamaparse":
-                    return LlamaParseConfig()
-                case "datalab":
-                    return DataLabConfig()
-                case "azure":
-                    return AzureConfig()
-                case "llm":
-                    return LLMConverterConfig()
+            return BaseConverterConfig.resolve_type(self.converter)()  # type: ignore
         return self.converter
 
     def resolve_chunker(self) -> ChunkerConfig:
         """Get full chunker config from shorthand or pass through existing."""
         if isinstance(self.chunker, str):
-            from docler.configs.chunker_configs import (
-                AiChunkerConfig,
-                LlamaIndexChunkerConfig,
-                MarkdownChunkerConfig,
-            )
-
-            match self.chunker:
-                case "markdown":
-                    return MarkdownChunkerConfig()
-                case "llamaindex":
-                    return LlamaIndexChunkerConfig()
-                case "ai":
-                    return AiChunkerConfig()
+            return BaseChunkerConfig.resolve_type(self.chunker)()  # type: ignore
         return self.chunker
 
     def resolve_embeddings(self) -> EmbeddingConfig:
         """Get full embedding config from shorthand or pass through existing."""
         if isinstance(self.embeddings, str):
-            from docler.configs.embedding_configs import (
-                BGEEmbeddingConfig,
-                LiteLLMEmbeddingConfig,
-                OpenAIEmbeddingConfig,
-                SentenceTransformerEmbeddingConfig,
-            )
-
-            match self.embeddings:
-                case "openai":
-                    key = SecretStr(get_api_key("OPENAI_API_KEY"))
-                    return OpenAIEmbeddingConfig(api_key=key)
-                case "bge":
-                    return BGEEmbeddingConfig()
-                case "sentence-transformer":
-                    return SentenceTransformerEmbeddingConfig()
-                case "mistral-embed":
-                    return LiteLLMEmbeddingConfig()
+            return BaseEmbeddingConfig.resolve_type(self.embeddings)()  # type: ignore
         return self.embeddings
 
     def resolve_vector_store(self) -> VectorStoreConfig:
         """Get full vector store config from shorthand or pass through existing."""
         if isinstance(self.vector_store, str):
-            from docler.configs.vector_db_configs import (
-                ChromaConfig,
-                PineconeConfig,
-                QdrantConfig,
-            )
-
-            match self.vector_store:
-                case "chroma":
-                    return ChromaConfig(collection_name=self.store_name)
-                case "qdrant":
-                    return QdrantConfig(collection_name=self.store_name)
-                case "pinecone":
-                    key = SecretStr(get_api_key("PINECONE_API_KEY"))
-                    return PineconeConfig(collection_name=self.store_name, api_key=key)
+            return BaseVectorStoreConfig.resolve_type(self.vector_store)()  # type: ignore
         return self.vector_store
 
     def resolve(self) -> ComponentBasedConfig:

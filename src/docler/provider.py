@@ -29,6 +29,11 @@ class ProviderConfig(BaseSettings):
         env_file_encoding="utf-8",
     )
 
+    @classmethod
+    def resolve_type(cls, name: str) -> type[Self]:  # type: ignore
+        """Get a the config class of given type."""
+        return next(kls for kls in cls.__subclasses__() if kls.type == name)
+
     @field_serializer("*", when_used="json-unless-none")
     def serialize_special_types(self, v, _info):
         match v:
@@ -51,7 +56,6 @@ class BaseProvider[TConfig]:
     """Represents an image within a document."""
 
     Config: ClassVar[type[ProviderConfig]]
-
     REQUIRED_PACKAGES: ClassVar[set[str]] = set()
     """Packages required for this converter."""
 
@@ -91,3 +95,9 @@ class BaseProvider[TConfig]:
     def to_config(self) -> TConfig:
         """Extract configuration from the provider instance."""
         raise NotImplementedError
+
+
+if __name__ == "__main__":
+    from docler.configs.chunker_configs import BaseChunkerConfig
+
+    test = BaseChunkerConfig.resolve_type("")
