@@ -126,7 +126,7 @@ class QdrantVectorManager(VectorManagerBase[QdrantConfig]):
             # Unix-style command
             cmd = f"docker run -p 6333:6333 -p 6334:6334 -v {path}:/qdrant/storage:z qdrant/qdrant"  # noqa: E501
 
-        return ProcessRunner(cmd, **kwargs)
+        return ProcessRunner(cmd, wait_tcp=[("localhost", 6333)], **kwargs)
 
     @property
     def name(self) -> str:
@@ -276,15 +276,14 @@ if __name__ == "__main__":
     import asyncio
 
     async def main():
+        # async with QdrantVectorManager.run_server("test"):
         manager = QdrantVectorManager(url="http://localhost:6333")
-        try:
-            store = await manager.create_vector_store("test-store")
-            print(f"Created vector store: {store.vector_store_id}")
-            stores = await manager.list_vector_stores()
-            print(f"Available stores: {[s.name for s in stores]}")
-            success = await manager.delete_vector_store("test-store")
-            print(f"Deleted store: {success}")
-        finally:
-            await manager.close()
+        store = await manager.create_vector_store("test-store")
+        print(f"Created vector store: {store.vector_store_id}")
+        stores = await manager.list_vector_stores()
+        print(f"Available stores: {[s.name for s in stores]}")
+        success = await manager.delete_vector_store("test-store")
+        print(f"Deleted store: {success}")
+        await manager.close()
 
     asyncio.run(main())
