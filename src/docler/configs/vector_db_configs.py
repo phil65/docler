@@ -2,12 +2,16 @@
 
 from __future__ import annotations
 
-from typing import Annotated, Literal
+from typing import TYPE_CHECKING, Annotated, Literal
 
 from pydantic import Field, HttpUrl, SecretStr
 from pydantic.functional_validators import model_validator
 
 from docler.provider import ProviderConfig
+
+
+if TYPE_CHECKING:
+    from docler.vector_db.base_manager import VectorManagerBase
 
 
 Metric = Literal["cosine", "euclidean", "dotproduct"]
@@ -22,6 +26,10 @@ VectorDBShorthand = Literal["chroma", "qdrant", "pinecone"]
 
 class BaseVectorStoreConfig(ProviderConfig):
     """Base configuration for vector stores."""
+
+    def get_provider(self) -> VectorManagerBase:
+        """Get the converter instance."""
+        raise NotImplementedError
 
 
 class ChromaConfig(BaseVectorStoreConfig):

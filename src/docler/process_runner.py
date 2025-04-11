@@ -20,7 +20,6 @@ if TYPE_CHECKING:
 
 RegexPattern = str
 
-# Global registry of running processes
 _process_registry: dict[tuple[str, ...], weakref.ref[subprocess.Popen]] = {}
 _registry_lock = asyncio.Lock()
 
@@ -79,10 +78,8 @@ def _reader_thread(
     try:
         for line in iter(stream.readline, b""):
             try:
-                decoded = line.decode().rstrip()
+                decoded = line.decode(errors="ignore").rstrip()
                 buffer.append(decoded)  # Store the line in the buffer
-
-                # Check patterns if provided
                 if patterns:
                     for pattern in patterns:
                         if pattern.search(decoded):

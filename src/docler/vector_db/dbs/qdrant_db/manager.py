@@ -11,6 +11,7 @@ from docler.process_runner import ProcessRunner
 from docler.vector_db.base import BaseVectorDB
 from docler.vector_db.base_manager import VectorManagerBase
 from docler.vector_db.dbs.qdrant_db.db import QdrantBackend
+from docler.vector_db.dbs.qdrant_db.utils import get_distance
 
 
 if TYPE_CHECKING:
@@ -166,26 +167,9 @@ class QdrantVectorManager(VectorManagerBase[QdrantConfig]):
             collection_names = [c.name for c in collections_list.collections]
 
             if name not in collection_names:
-                # Create the collection
-                distance = models.Distance.COSINE
-                if metric == "euclidean":
-                    distance = models.Distance.EUCLID
-                elif metric == "dotproduct":
-                    distance = models.Distance.DOT
-                elif metric == "manhattan":
-                    distance = models.Distance.MANHATTAN
-
-                vector_config = models.VectorParams(
-                    size=vector_size,
-                    distance=distance,
-                )
-
-                await self._client.create_collection(
-                    collection_name=name,
-                    vectors_config=vector_config,
-                )
-
-            # Create backend instance
+                distance = get_distance(metric)
+                params = models.VectorParams(size=vector_size, distance=distance)
+                await self._client.create_collection(name, vectors_config=params)
             db = QdrantBackend(
                 collection_name=name,
                 location=self.location,
@@ -193,7 +177,7 @@ class QdrantVectorManager(VectorManagerBase[QdrantConfig]):
                 api_key=self.api_key,
                 prefer_grpc=self.prefer_grpc,
                 vector_size=vector_size,
-                metric=metric,  # This is already a proper Metric type
+                metric=metric,
             )
             return cast(BaseVectorDB, db)
 
@@ -208,54 +192,33 @@ class QdrantVectorManager(VectorManagerBase[QdrantConfig]):
         **kwargs,
     ) -> BaseVectorDB:
         """Get a connection to an existing collection."""
-        try:
-            collections_list = await self._client.get_collections()
-            collection_names = [c.name for c in collections_list.collections]
+        vector_size = kwargs.get("vector_size", 1536)
+        metric: Metric = "cosine"
+        collection_info = await self._client.get_collection(name)
+        if hasattr(collection_info.config.params, "vector_size"):
+            vector_size = collection_info.config.params.vector_size  # pyright: ignore
+        if hasattr(collection_info.config.params, "distance"):
+            distance_str = str(collection_info.config.params.distance).lower()  # pyright: ignore
+            if distance_str == "cosine":
+                metric = "cosine"
+            elif distance_str in ("euclid", "euclidean"):
+                metric = "euclidean"
+            elif distance_str in ("dot", "dotproduct"):
+                metric = "dotproduct"
+            elif distance_str == "manhattan":
+                metric = "manhattan"
 
-            if name not in collection_names:
-                msg = f"Collection {name!r} not found in Qdrant"
-                raise ValueError(msg)  # noqa: TRY301
+        db = QdrantBackend(
+            collection_name=name,
+            location=self.location,
+            url=self.url,
+            api_key=self.api_key,
+            prefer_grpc=self.prefer_grpc,
+            vector_size=vector_size,
+            metric=metric,
+        )
 
-            # Get collection info and extract parameters
-            # Default values for vector_size and metric if we can't extract them
-            vector_size = kwargs.get("vector_size", 1536)
-            metric: Metric = "cosine"
-
-            try:
-                # Attempt to get collection details
-                collection_info = await self._client.get_collection(name)
-
-                if hasattr(collection_info.config.params, "vector_size"):
-                    vector_size = collection_info.config.params.vector_size  # pyright: ignore
-                if hasattr(collection_info.config.params, "distance"):
-                    distance_str = str(collection_info.config.params.distance).lower()  # pyright: ignore
-                    if distance_str == "cosine":
-                        metric = "cosine"
-                    elif distance_str in ("euclid", "euclidean"):
-                        metric = "euclidean"
-                    elif distance_str in ("dot", "dotproduct"):
-                        metric = "dotproduct"
-                    elif distance_str == "manhattan":
-                        metric = "manhattan"
-            except Exception:  # noqa: BLE001
-                self.logger.warning("Could not extract collection details for %s", name)
-
-            db = QdrantBackend(
-                collection_name=name,
-                location=self.location,
-                url=self.url,
-                api_key=self.api_key,
-                prefer_grpc=self.prefer_grpc,
-                vector_size=vector_size,
-                metric=metric,
-            )
-
-            return cast(BaseVectorDB, db)
-
-        except Exception as e:
-            msg = f"Failed to connect to Qdrant collection {name}: {e}"
-            self.logger.exception(msg)
-            raise ValueError(msg) from e
+        return cast(BaseVectorDB, db)
 
     async def delete_vector_store(self, name: str) -> bool:
         """Delete a vector store (collection)."""
@@ -282,6 +245,7 @@ if __name__ == "__main__":
         print(f"Created vector store: {store.vector_store_id}")
         stores = await manager.list_vector_stores()
         print(f"Available stores: {[s.name for s in stores]}")
+        store = await manager.get_vector_store("test-store")
         success = await manager.delete_vector_store("test-store")
         print(f"Deleted store: {success}")
         await manager.close()

@@ -53,7 +53,7 @@ class ProviderConfig(BaseSettings):
 
 
 class BaseProvider[TConfig]:
-    """Represents an image within a document."""
+    """Base class for configurable providers."""
 
     Config: ClassVar[type[ProviderConfig]]
     REQUIRED_PACKAGES: ClassVar[set[str]] = set()

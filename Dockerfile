@@ -55,5 +55,6 @@ ENV PORT="8000"
 # Expose the port for FastAPI
 EXPOSE 8000
 
+# HEALTHCHECK --interval=30s --start-period=60s CMD curl -f http://localhost:${PORT}/health || exit 1
 # Command to run the application
 CMD ["sh", "-c", "python -m docler_api api --host 0.0.0.0 --port ${PORT}"]
