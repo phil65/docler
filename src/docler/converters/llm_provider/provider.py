@@ -5,7 +5,11 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, ClassVar
 
 from docler.common_types import DEFAULT_CONVERTER_MODEL
-from docler.configs.converter_configs import LLMConverterConfig
+from docler.configs.converter_configs import (
+    LLM_SYSTEM_PROMPT,
+    LLM_USER_PROMPT,
+    LLMConverterConfig,
+)
 from docler.converters.base import DocumentConverter
 from docler.log import get_logger
 from docler.models import Document
@@ -16,15 +20,6 @@ if TYPE_CHECKING:
 
 
 logger = get_logger(__name__)
-
-
-USER_PROMPT = """
-Convert this PDF document to markdown format
-Preserve the original formatting and structure where possible.
-Include any important tables or lists.
-Describe any images you see in brackets.
-{txt}
-"""
 
 
 class LLMConverter(DocumentConverter[LLMConverterConfig]):
@@ -57,12 +52,8 @@ class LLMConverter(DocumentConverter[LLMConverterConfig]):
         """
         super().__init__(languages=languages)
         self.model = model  # .replace(":", "/")
-        self.system_prompt = system_prompt
-        txt = ""
-        if languages:
-            lang_str = ", ".join(languages)
-            txt = f"The document may contain text in these languages: {lang_str}."
-        self.user_prompt = user_prompt or USER_PROMPT.format(txt=txt)
+        self.system_prompt = system_prompt or LLM_SYSTEM_PROMPT
+        self.user_prompt = user_prompt or LLM_USER_PROMPT
 
     def _convert_path_sync(self, file_path: StrPath, mime_type: str) -> Document:
         """Convert a PDF file using the configured LLM.

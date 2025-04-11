@@ -65,6 +65,19 @@ LlamaParseMode = Literal[
 MarkerLLMProvider = Literal["gemini", "ollama", "vertex", "claude"]
 
 
+LLM_SYSTEM_PROMPT = """
+You are a OCR engine that can parse PDF documents & images into markdown formatted text.
+"""
+
+
+LLM_USER_PROMPT = """
+Convert this PDF document to markdown format
+Preserve the original formatting and structure where possible.
+Include any important tables or lists.
+Describe any images you see in brackets.
+"""
+
+
 def default_languages() -> set[SupportedLanguage]:
     return {"en"}
 
@@ -192,10 +205,10 @@ class LLMConverterConfig(BaseConverterConfig):
     model: ModelIdentifier = DEFAULT_CONVERTER_MODEL
     """LLM model to use."""
 
-    system_prompt: str | None = None
+    system_prompt: str = LLM_SYSTEM_PROMPT
     """Optional system prompt to guide conversion."""
 
-    user_prompt: str | None = None
+    user_prompt: str = LLM_USER_PROMPT
     """Custom prompt for the conversion task."""
 
     def get_provider(self) -> DocumentConverter:
