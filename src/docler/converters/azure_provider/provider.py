@@ -145,10 +145,8 @@ class AzureConverter(DocumentConverter[AzureConfig]):
                     output_content_format="markdown",
                 )
             result = poller.result()
-            operation_id = poller.details["operation_id"]
             metadata = get_metadata(result)
-            images = self._convert_azure_images(result, operation_id)
-            # Process content to replace <figure> tags with markdown image references
+            images = self._convert_azure_images(result, poller.details["operation_id"])
             content = result.content
             if images:
                 content = update_content(content, images)
@@ -159,7 +157,7 @@ class AzureConverter(DocumentConverter[AzureConfig]):
                 source_path=str(path),
                 mime_type=mime_type,
                 page_count=len(result.pages) if result.pages else None,
-                **metadata,
+                metadata=metadata,
             )
 
         except HttpResponseError as e:

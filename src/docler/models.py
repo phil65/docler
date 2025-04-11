@@ -188,7 +188,7 @@ class Document(BaseModel):
     metadata: dict[str, Any] = Field(default_factory=dict)
     """Metadata of the document."""
 
-    model_config = ConfigDict(use_attribute_docstrings=True)
+    model_config = ConfigDict(use_attribute_docstrings=True, extra="forbid")
 
 
 class ChunkedDocument(Document):
