@@ -5,6 +5,8 @@ from __future__ import annotations
 import base64
 from typing import TYPE_CHECKING, ClassVar
 
+import upath
+
 from docler.configs.converter_configs import MistralConfig
 from docler.converters.base import DocumentConverter
 from docler.converters.mistral_provider.utils import convert_image
@@ -13,8 +15,6 @@ from docler.utils import get_api_key
 
 
 if TYPE_CHECKING:
-    import upath
-
     from docler.common_types import StrPath, SupportedLanguage
 
 
@@ -60,8 +60,6 @@ class MistralConverter(DocumentConverter[MistralConfig]):
 
     def _convert_path_sync(self, file_path: StrPath, mime_type: str) -> Document:
         """Implementation of abstract method."""
-        import upath
-
         local_file = upath.UPath(file_path)
         data = local_file.read_bytes()
 

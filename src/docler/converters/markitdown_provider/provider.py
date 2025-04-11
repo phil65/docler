@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, ClassVar
 
+import upath
+
 from docler.configs.converter_configs import MarkItDownConfig
 from docler.converters.base import DocumentConverter
 from docler.log import get_logger
@@ -77,10 +79,7 @@ class MarkItDownConverter(DocumentConverter[MarkItDownConfig]):
         Raises:
             ValueError: If conversion fails.
         """
-        import upath
-
         path = upath.UPath(file_path)
-
         try:
             result = self.converter.convert(str(path), keep_data_uris=True)
             return Document(

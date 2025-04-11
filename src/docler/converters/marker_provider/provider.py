@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, ClassVar, Literal
 
+import upath
+
 from docler.configs.converter_configs import MarkerConfig
 from docler.converters.base import DocumentConverter
 from docler.models import Document, Image
@@ -89,7 +91,6 @@ class MarkerConverter(DocumentConverter[MarkerConfig]):
     def _convert_path_sync(self, file_path: StrPath, mime_type: str) -> Document:
         """Implementation of abstract method."""
         from marker.output import text_from_rendered
-        import upath
 
         local_file = upath.UPath(file_path)
         rendered = self.converter(str(local_file))
