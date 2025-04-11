@@ -5,6 +5,8 @@ from __future__ import annotations
 from io import BytesIO
 from typing import TYPE_CHECKING, ClassVar
 
+import upath
+
 from docler.configs.converter_configs import DoclingConverterConfig, DoclingEngine
 from docler.converters.base import DocumentConverter
 from docler.converters.docling_provider.utils import convert_languages
@@ -113,7 +115,6 @@ class DoclingConverter(DocumentConverter[DoclingConverterConfig]):
         """
         from docling_core.types.doc.base import ImageRefMode
         from docling_core.types.io import DocumentStream
-        import upath
 
         pdf_path = upath.UPath(file_path)
         stream = BytesIO(pdf_path.read_bytes())

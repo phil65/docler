@@ -6,6 +6,10 @@ import base64
 import time
 from typing import TYPE_CHECKING, ClassVar, Literal
 
+import anyenv
+import upath
+from upathtools import read_path
+
 from docler.configs.converter_configs import DataLabConfig
 from docler.converters.base import DocumentConverter
 from docler.converters.datalab_provider.utils import normalize_markdown_images
@@ -93,10 +97,6 @@ class DataLabConverter(DocumentConverter[DataLabConfig]):
         Raises:
             ValueError: If conversion fails.
         """
-        import anyenv
-        import upath
-        from upathtools import read_path
-
         path = upath.UPath(file_path)
         form = {"output_format": "markdown"}
         data = await read_path(path, mode="rb")
@@ -111,7 +111,7 @@ class DataLabConverter(DocumentConverter[DataLabConfig]):
             form["max_pages"] = str(self.max_pages)
         headers = {"X-Api-Key": self.api_key}
         url = f"{API_BASE}/marker"
-        response = await anyenv.post(url, data=form, files=files, headers=headers)  # type: ignore
+        response = await anyenv.post(url, data=form, files=files, headers=headers)
         json_data = await response.json()
         if not json_data["success"]:
             msg = f"Failed to submit conversion: {json_data['error']}"
@@ -159,10 +159,7 @@ class DataLabConverter(DocumentConverter[DataLabConfig]):
 
 
 if __name__ == "__main__":
-    import anyenv
-
     pdf_path = "src/docler/resources/pdf_sample.pdf"
-
     converter = DataLabConverter()
     result = anyenv.run_sync(converter.convert_file(pdf_path))
     print(result)

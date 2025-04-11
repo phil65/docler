@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, ClassVar
 
 from docler.configs.converter_configs import AzureConfig, AzureFeatureFlag, AzureModel
+from docler.converters.azure_provider.utils import to_image, update_content
 from docler.converters.base import DocumentConverter
 from docler.converters.exceptions import MissingConfigurationError
 from docler.log import get_logger
@@ -116,23 +117,13 @@ class AzureConverter(DocumentConverter[AzureConfig]):
                     result_id=operation_id,
                     figure_id=figure.id,
                 )
-                content = b"".join(response_iter)
-                image_id = f"img-{i}"
-                filename = f"{image_id}.png"
-                image = Image(
-                    id=image_id,
-                    content=content,
-                    mime_type="image/png",
-                    filename=filename,
-                )
+                image = to_image(response_iter, i)
                 images.append(image)
 
         return images
 
     def _convert_path_sync(self, file_path: StrPath, mime_type: str) -> Document:
         """Convert a document file synchronously using Azure Document Intelligence."""
-        import re
-
         from azure.ai.documentintelligence.models import (
             AnalyzeOutputOption,
             DocumentAnalysisFeature,
@@ -171,14 +162,7 @@ class AzureConverter(DocumentConverter[AzureConfig]):
             # Process content to replace <figure> tags with markdown image references
             content = result.content
             if images:
-                figure_pattern = r"<figure>(.*?)</figure>"
-                figure_blocks = re.findall(figure_pattern, content, re.DOTALL)
-                for i, block in enumerate(figure_blocks):
-                    if i < len(images):
-                        image = images[i]
-                        img_ref = f"\n\n![{image.id}]({image.filename})\n\n"
-                        content = content.replace(f"<figure>{block}</figure>", img_ref, 1)
-
+                content = update_content(content, images)
             return Document(
                 content=content,
                 images=images,

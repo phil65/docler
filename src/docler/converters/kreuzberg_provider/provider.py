@@ -4,6 +4,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, ClassVar
 
+import anyenv
+import upath
+
+from docler.common_types import TESSERACT_CODES
 from docler.configs.converter_configs import KreuzbergConfig
 from docler.converters.base import DocumentConverter
 from docler.log import get_logger
@@ -55,8 +59,6 @@ class KreuzbergConverter(DocumentConverter[KreuzbergConfig]):
             languages: Language codes for OCR.
             force_ocr: Whether to force OCR even on digital documents.
         """
-        from docler.common_types import TESSERACT_CODES
-
         super().__init__(languages=languages)
         self.force_ocr = force_ocr
         if languages:
@@ -74,9 +76,7 @@ class KreuzbergConverter(DocumentConverter[KreuzbergConfig]):
         Returns:
             Converted document.
         """
-        import anyenv
         from kreuzberg import ExtractionConfig, extract_file
-        import upath
 
         local_file = upath.UPath(file_path)
         config = ExtractionConfig(force_ocr=self.force_ocr)
@@ -104,8 +104,6 @@ class KreuzbergConverter(DocumentConverter[KreuzbergConfig]):
 
 
 if __name__ == "__main__":
-    import anyenv
-
     pdf_path = "src/docler/resources/pdf_sample.pdf"
     converter = KreuzbergConverter(force_ocr=True)
     result = anyenv.run_sync(converter.convert_file(pdf_path))

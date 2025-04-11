@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+import base64
 from typing import TYPE_CHECKING, ClassVar
 
 import anyenv
+import upath
 
 from docler.configs.converter_configs import LlamaParseConfig, LlamaParseMode
 from docler.converters.base import DocumentConverter
@@ -99,10 +101,7 @@ class LlamaParseConverter(DocumentConverter[LlamaParseConfig]):
 
     def _convert_path_sync(self, file_path: StrPath, mime_type: str) -> Document:
         """Convert a document using LlamaParse."""
-        import base64
-
         from llama_parse import LlamaParse, ResultType
-        import upath
 
         path = upath.UPath(file_path)
         parser = LlamaParse(
