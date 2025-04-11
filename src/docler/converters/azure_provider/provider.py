@@ -4,8 +4,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, ClassVar
 
+import upath
+
 from docler.configs.converter_configs import AzureConfig, AzureFeatureFlag, AzureModel
-from docler.converters.azure_provider.utils import to_image, update_content
+from docler.converters.azure_provider.utils import get_metadata, to_image, update_content
 from docler.converters.base import DocumentConverter
 from docler.converters.exceptions import MissingConfigurationError
 from docler.log import get_logger
@@ -129,13 +131,9 @@ class AzureConverter(DocumentConverter[AzureConfig]):
             DocumentAnalysisFeature,
         )
         from azure.core.exceptions import HttpResponseError
-        import upath
 
         path = upath.UPath(file_path)
-        features = [
-            getattr(DocumentAnalysisFeature, feature) for feature in self.features
-        ]
-
+        features = [getattr(DocumentAnalysisFeature, f) for f in self.features]
         try:
             with path.open("rb") as f:
                 poller = self._client.begin_analyze_document(
@@ -148,16 +146,7 @@ class AzureConverter(DocumentConverter[AzureConfig]):
                 )
             result = poller.result()
             operation_id = poller.details["operation_id"]
-
-            metadata = {}
-            if result.documents:
-                doc = result.documents[0]  # Get first document
-                if doc.fields:
-                    metadata = {
-                        name: field.get("valueString") or field.get("content", "")
-                        for name, field in doc.fields.items()
-                    }
-
+            metadata = get_metadata(result)
             images = self._convert_azure_images(result, operation_id)
             # Process content to replace <figure> tags with markdown image references
             content = result.content
