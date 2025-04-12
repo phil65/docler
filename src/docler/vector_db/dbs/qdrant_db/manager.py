@@ -192,22 +192,27 @@ class QdrantVectorManager(VectorManagerBase[QdrantConfig]):
         **kwargs,
     ) -> BaseVectorDB:
         """Get a connection to an existing collection."""
+        from qdrant_client.http.models import VectorParams
+
+        collection_info = await self._client.get_collection(name)
         vector_size = kwargs.get("vector_size", 1536)
         metric: Metric = "cosine"
-        collection_info = await self._client.get_collection(name)
-        if hasattr(collection_info.config.params, "vector_size"):
-            vector_size = collection_info.config.params.vector_size  # pyright: ignore
-        if hasattr(collection_info.config.params, "distance"):
-            distance_str = str(collection_info.config.params.distance).lower()  # pyright: ignore
-            if distance_str == "cosine":
-                metric = "cosine"
-            elif distance_str in ("euclid", "euclidean"):
-                metric = "euclidean"
-            elif distance_str in ("dot", "dotproduct"):
-                metric = "dotproduct"
-            elif distance_str == "manhattan":
-                metric = "manhattan"
-
+        match collection_info.config.params.vectors:
+            # case dict() as dct:
+            #     vector_size = dct["xyz"].size
+            case VectorParams() as params:
+                vector_size = params.size
+                distance_str = str(params.distance).lower()
+                if distance_str == "cosine":
+                    metric = "cosine"
+                elif distance_str in ("euclid", "euclidean"):
+                    metric = "euclidean"
+                elif distance_str in ("dot", "dotproduct"):
+                    metric = "dotproduct"
+                elif distance_str == "manhattan":
+                    metric = "manhattan"
+            case _:
+                pass
         db = QdrantBackend(
             collection_name=name,
             location=self.location,
