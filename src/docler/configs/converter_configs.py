@@ -4,13 +4,13 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Annotated, Literal
 
-from docling.datamodel.pipeline_options import (  # noqa: TC002
-    EasyOcrOptions,
-    OcrMacOptions,
-    RapidOcrOptions,
-    TesseractCliOcrOptions,
-    TesseractOcrOptions,
-)
+# from docling.datamodel.pipeline_options import (
+#     EasyOcrOptions,
+#     OcrMacOptions,
+#     RapidOcrOptions,
+#     TesseractCliOcrOptions,
+#     TesseractOcrOptions,
+# )
 from pydantic import Field, HttpUrl, SecretStr
 from pydantic_settings import SettingsConfigDict
 
@@ -107,11 +107,11 @@ class DoclingConverterConfig(BaseConverterConfig):
 
     ocr_engine: (
         DoclingEngine
-        | EasyOcrOptions
-        | TesseractCliOcrOptions
-        | TesseractOcrOptions
-        | OcrMacOptions
-        | RapidOcrOptions
+        # | EasyOcrOptions
+        # | TesseractCliOcrOptions
+        # | TesseractOcrOptions
+        # | OcrMacOptions
+        # | RapidOcrOptions
     ) = "easy_ocr"
     """OCR engine to use."""
 
@@ -373,6 +373,37 @@ class AggregatedConverterConfig(BaseConverterConfig):
         return AggregatedConverter.from_config(self)
 
 
+class UnstructuredConverterConfig(BaseConverterConfig):
+    """Configuration for Unstructured-based converter."""
+
+    type: Literal["unstructured"] = "unstructured"
+    """Type discriminator for Unstructured converter."""
+
+    languages: set[SupportedLanguage] = Field(default_factory=lambda: {"en"})  # type: ignore
+    """List of supported languages for the converter."""
+
+    api_key: str | None = None
+    """API key for Unstructured (optional for local processing)."""
+
+    strategy: str = "hi_res"
+    """Strategy for document processing (hi_res, fast, etc.)."""
+
+    extract_images: bool = True
+    """Whether to extract and include images."""
+
+    extract_tables: bool = True
+    """Whether to extract tables as images."""
+
+    local_mode: bool = True
+    """Whether to use local processing or API."""
+
+    def get_provider(self) -> DocumentConverter:
+        """Get the converter instance."""
+        from docler.converters.unstructured_provider import UnstructuredConverter
+
+        return UnstructuredConverter(**self.get_config_fields())
+
+
 ConverterConfig = Annotated[
     DataLabConfig
     | DoclingConverterConfig
@@ -383,6 +414,7 @@ ConverterConfig = Annotated[
     | LlamaParseConfig
     | AzureConfig
     | UpstageConfig
+    | UnstructuredConverterConfig
     | AggregatedConverterConfig
     | MarkerConfig,
     Field(discriminator="type"),
