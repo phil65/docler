@@ -1,16 +1,22 @@
 # Build stage for installing dependencies
 FROM python:3.13-slim-bookworm AS builder
 
+# Add build argument with default value
+ARG EXTRAS="server,light"
+
 WORKDIR /build
 
 # Install system dependencies and curl for UV
 RUN apt-get update && apt-get install --no-install-recommends -y \
-    tesseract-ocr \
-    libtesseract-dev \
-    poppler-utils \
-    libpoppler-cpp-dev \
     build-essential \
     curl \
+    poppler-utils \
+    # Only install heavy OCR dependencies if needed
+    $(if echo "${EXTRAS}" | grep -q "all\|marker\|docling\|markitdown"; then \
+        echo "tesseract-ocr libtesseract-dev libpoppler-cpp-dev"; \
+    else \
+        echo ""; \
+    fi) \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install UV for faster dependency resolution
@@ -20,18 +26,26 @@ ENV PATH="/root/.local/bin:${PATH}"
 # Copy the entire project first (needed for version detection)
 COPY . .
 
-# Install dependencies with UV (much faster than pip)
-RUN uv pip install --system ".[server,all]"
+# Install dependencies with UV using the build arg
+RUN uv pip install --system ".[${EXTRAS}]"
 
 # Final stage with minimal runtime image
 FROM python:3.13-slim-bookworm
 
+# Pass build arg to final stage
+ARG EXTRAS="server,light"
+
 WORKDIR /app
 
-# Install only runtime dependencies
+# Install only runtime dependencies, conditionally based on extras
 RUN apt-get update && apt-get install --no-install-recommends -y \
-    tesseract-ocr \
     poppler-utils \
+    # Only install heavy OCR dependencies if needed
+    $(if echo "${EXTRAS}" | grep -q "all\|marker\|docling\|markitdown"; then \
+        echo "tesseract-ocr libtesseract-dev"; \
+    else \
+        echo ""; \
+    fi) \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Copy the installed Python packages and binaries
@@ -41,20 +55,12 @@ COPY --from=builder /usr/local/bin/ /usr/local/bin/
 # Copy application code
 COPY . .
 
-# Set environment variables for API keys and configuration
-ENV OPENAI_API_KEY=""
-ENV AZURE_DOC_INTELLIGENCE_ENDPOINT=""
-ENV AZURE_DOC_INTELLIGENCE_KEY=""
-ENV MISTRAL_API_KEY=""
-ENV LLAMAPARSE_API_KEY=""
-ENV PINECONE_API_KEY=""
-ENV DATALAB_API_KEY=""
-ENV UPSTAGE_API_KEY=""
+# Store which extras were installed for potential runtime checks
+ENV INSTALLED_EXTRAS="${EXTRAS}"
 ENV PORT="8000"
 
 # Expose the port for FastAPI
 EXPOSE 8000
 
-# HEALTHCHECK --interval=30s --start-period=60s CMD curl -f http://localhost:${PORT}/health || exit 1
 # Command to run the application
 CMD ["sh", "-c", "python -m docler_api api --host 0.0.0.0 --port ${PORT}"]

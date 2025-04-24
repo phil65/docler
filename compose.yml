@@ -1,7 +1,4 @@
-version: "3"
-
 services:
-  # Light version (default)
   docler-api:
     build:
       context: .
@@ -15,8 +12,8 @@ services:
     environment:
       - PYTHONPATH=/app
     restart: unless-stopped
-    profiles: ["default", "light"]
-
+    env_file:
+      - .env
   # Full version with all OCR libraries
   docler-api-full:
     build:
@@ -32,3 +29,5 @@ services:
       - PYTHONPATH=/app
     restart: unless-stopped
     profiles: ["full"]
+    env_file:
+      - .env
