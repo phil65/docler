@@ -1,10 +1,13 @@
-version: '3'
+version: "3"
 
 services:
+  # Light version (default)
   docler-api:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        EXTRAS: "server,light"
     ports:
       - "8000:8000"
     volumes:
@@ -12,3 +15,20 @@ services:
     environment:
       - PYTHONPATH=/app
     restart: unless-stopped
+    profiles: ["default", "light"]
+
+  # Full version with all OCR libraries
+  docler-api-full:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        EXTRAS: "server,all"
+    ports:
+      - "8001:8000"
+    volumes:
+      - ./src:/app/src
+    environment:
+      - PYTHONPATH=/app
+    restart: unless-stopped
+    profiles: ["full"]

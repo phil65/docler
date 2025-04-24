@@ -65,6 +65,18 @@ pinecone = ["pinecone[asyncio]"]
 qdrant = ["qdrant-client[fastembed]"]
 azure = ["azure-ai-documentintelligence"]
 server = ["uvicorn", "fastapi"]
+light = [
+    "mistralai",
+    "diff-match-patch",
+    "llmling-agent[pydantic-ai]",
+    "llama-index",
+    "llama-parse",
+    "chromadb",
+    "openai",
+    "pinecone[asyncio]",
+    "qdrant-client",
+    "azure-ai-documentintelligence",
+]
 all = [
     "marker-pdf",
     "mistralai",
