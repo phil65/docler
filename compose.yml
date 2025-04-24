@@ -20,7 +20,7 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        EXTRAS: "server,all"
+        EXTRAS: "all"
     ports:
       - "8001:8000"
     volumes:
