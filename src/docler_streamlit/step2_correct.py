@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import anyenv
-from st_diff_viewer import diff_viewer
 import streambricks as sb
 import streamlit as st
 
@@ -57,6 +56,8 @@ def show_step_2():
         if original_content == corrected_content:
             st.info("No corrections were made to the document.")
         else:
+            from st_diff_viewer import diff_viewer
+
             diff_viewer(
                 original_content,
                 corrected_content,

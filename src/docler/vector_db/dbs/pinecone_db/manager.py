@@ -136,8 +136,6 @@ if __name__ == "__main__":
 
     async def main():
         manager = PineconeVectorManager()
-        store = await manager.create_vector_store("test-store")
-        print(store)
         indexes = await manager.list_vector_stores()
         print(indexes)
         await manager.close()
