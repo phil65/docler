@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, ClassVar
 
-from pydantic import BaseModel
+from schemez import Schema
 
 from docler.common_types import DEFAULT_PROOF_READER_MODEL
 from docler.configs.chunker_configs import (
@@ -27,7 +27,7 @@ if TYPE_CHECKING:
     from docler.configs.file_db_configs import ChunkerShorthand
 
 
-class LineCorrection(BaseModel):
+class LineCorrection(Schema):
     """A correction to apply to a specific line."""
 
     line_number: int

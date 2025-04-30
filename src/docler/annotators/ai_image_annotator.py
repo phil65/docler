@@ -6,7 +6,7 @@ from itertools import batched
 from typing import TYPE_CHECKING, ClassVar
 
 import anyenv
-from pydantic import BaseModel
+from schemez import Schema
 from typing_extensions import TypeVar
 
 from docler.annotators.base import Annotator
@@ -22,7 +22,7 @@ if TYPE_CHECKING:
     from docler.models import ChunkedDocument, Image
 
 
-class DefaultImageMetadata(BaseModel):
+class DefaultImageMetadata(Schema):
     """Default metadata for an image."""
 
     description: str
@@ -41,7 +41,7 @@ class DefaultImageMetadata(BaseModel):
     """Dominant colors in the image."""
 
 
-TMetadata = TypeVar("TMetadata", bound=BaseModel, default=DefaultImageMetadata)
+TMetadata = TypeVar("TMetadata", bound=Schema, default=DefaultImageMetadata)
 
 
 class AIImageAnnotator[TMetadata](Annotator[AIImageAnnotatorConfig]):
@@ -50,7 +50,7 @@ class AIImageAnnotator[TMetadata](Annotator[AIImageAnnotatorConfig]):
     Analyzes images in chunks and adds descriptions and metadata.
 
     Type Parameters:
-        TMetadata: Type of metadata model to use. Must be a Pydantic BaseModel.
+        TMetadata: Type of metadata model to use. Must be a Pydantic Schema.
     """
 
     Config = AIImageAnnotatorConfig

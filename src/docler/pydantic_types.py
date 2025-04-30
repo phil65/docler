@@ -4,7 +4,8 @@ from __future__ import annotations
 
 from typing import Annotated, Any, Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, Field
+from schemez import Schema
 
 
 ModelIdentifier = Annotated[
@@ -42,7 +43,7 @@ MimeType = Annotated[
 ]
 
 
-class ImageClassification(BaseModel):
+class ImageClassification(Schema):
     """First-stage classification of an image."""
 
     image_type: Literal[
@@ -56,10 +57,8 @@ class ImageClassification(BaseModel):
     needs_diagram_analysis: bool = False
     """Whether this image should be sent for specialized diagram analysis."""
 
-    model_config = ConfigDict(use_attribute_docstrings=True)
 
-
-class DiagramAnalysis(BaseModel):
+class DiagramAnalysis(Schema):
     """Second-stage detailed analysis for diagrams."""
 
     diagram_type: Literal[
@@ -82,8 +81,6 @@ class DiagramAnalysis(BaseModel):
 
     key_insights: list[str] = Field(default_factory=list)
     """Key insights or important aspects of the diagram."""
-
-    model_config = ConfigDict(use_attribute_docstrings=True)
 
 
 # Helper function to extract field type metadata

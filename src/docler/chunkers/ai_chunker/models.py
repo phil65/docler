@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-from pydantic import BaseModel, ConfigDict
+from schemez import Schema
 
 
-class Chunk(BaseModel):
+class Chunk(Schema):
     """A chunk of text with semantic metadata."""
 
     start_row: int
@@ -20,10 +20,8 @@ class Chunk(BaseModel):
     references: list[int]
     """Line numbers that this chunk references or depends on"""
 
-    model_config = ConfigDict(use_attribute_docstrings=True)
 
-
-class Chunks(BaseModel):
+class Chunks(Schema):
     """Collection of chunks with their metadata."""
 
     chunks: list[Chunk]

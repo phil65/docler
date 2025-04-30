@@ -6,7 +6,7 @@ from itertools import batched
 from typing import TYPE_CHECKING, ClassVar, TypeVar
 
 import anyenv
-from pydantic import BaseModel
+from schemez import Schema
 
 from docler.annotators.base import Annotator
 from docler.common_types import DEFAULT_ANNOTATOR_MODEL
@@ -21,7 +21,7 @@ if TYPE_CHECKING:
     from docler.models import ChunkedDocument
 
 
-class DefaultMetadata(BaseModel):
+class DefaultMetadata(Schema):
     """Default metadata for a document or chunk."""
 
     topics: list[str]
@@ -34,7 +34,7 @@ class DefaultMetadata(BaseModel):
     """Main entities."""
 
 
-T = TypeVar("T", bound=BaseModel)
+T = TypeVar("T", bound=Schema)
 
 
 class AIDocumentAnnotator[TMetadata](Annotator[AIDocumentAnnotatorConfig]):
@@ -43,7 +43,7 @@ class AIDocumentAnnotator[TMetadata](Annotator[AIDocumentAnnotatorConfig]):
     Enhances documents and chunks with metadata.
 
     Type Parameters:
-        T: Type of metadata model to use. Must be a Pydantic BaseModel.
+        T: Type of metadata model to use. Must be a schemez Schema.
     """
 
     Config = AIDocumentAnnotatorConfig
