@@ -6,9 +6,13 @@ import base64
 from dataclasses import dataclass, field
 from datetime import datetime  # noqa: TC003
 from io import BytesIO
+import re
 from typing import TYPE_CHECKING, Any, Literal
 
-from pydantic import Base64Str, BaseModel, ConfigDict, Field
+from pydantic import Base64Str, Field
+from schemez import Schema
+import upath
+import upathtools
 
 from docler.pydantic_types import MimeType  # noqa: TC001
 
@@ -22,7 +26,7 @@ if TYPE_CHECKING:
 ImageReferenceFormat = Literal["inline_base64", "file_paths", "keep_internal"]
 
 
-class Image(BaseModel):
+class Image(Schema):
     """Represents an image within a document."""
 
     id: str
@@ -42,8 +46,6 @@ class Image(BaseModel):
 
     metadata: dict[str, Any] = Field(default_factory=dict)
     """Metadata of the image."""
-
-    model_config = ConfigDict(use_attribute_docstrings=True)
 
     def to_base64(self) -> str:
         """Convert image content to base64 string.
@@ -96,7 +98,6 @@ class Image(BaseModel):
         import mimetypes
 
         import upath
-        import upathtools
 
         path = upath.UPath(file_path)
         if not path.exists():
@@ -155,7 +156,7 @@ class Image(BaseModel):
             return None
 
 
-class Document(BaseModel):
+class Document(Schema):
     """Represents a processed document with its content and metadata."""
 
     content: str
@@ -188,7 +189,61 @@ class Document(BaseModel):
     metadata: dict[str, Any] = Field(default_factory=dict)
     """Metadata of the document."""
 
-    model_config = ConfigDict(use_attribute_docstrings=True, extra="forbid")
+    async def export_to_directory(self, output_dir: StrPath):
+        """Export the document content and images to a directory.
+
+        Saves the markdown content to 'document.md' and images to separate files
+        within the specified directory. Assumes markdown content uses relative paths.
+
+        Args:
+            output_dir: The directory path to export to.
+        """
+        dir_path = upath.UPath(output_dir)
+        dir_path.mkdir(parents=True, exist_ok=True)
+
+        # Save markdown content
+        md_path = dir_path / "document.md"
+        md_path.write_text(self.content, encoding="utf-8")
+
+        # Save images
+        for image in self.images:
+            if image.filename:
+                img_path = dir_path / image.filename
+                if isinstance(image.content, str):
+                    # Decode if base64 string
+                    img_bytes = base64.b64decode(image.to_base64())
+                else:
+                    img_bytes = image.content
+                img_path.write_bytes(img_bytes)
+
+    async def export_to_markdown_file(self, output_path: StrPath):
+        """Export the document as a single markdown file with inline images.
+
+        Saves the markdown content with images embedded as base64 data URLs.
+
+        Args:
+            output_path: The file path to save the markdown file to.
+        """
+        md_path = upath.UPath(output_path)
+        md_path.parent.mkdir(parents=True, exist_ok=True)
+
+        modified_content = self.content
+        for image in self.images:
+            if image.filename:
+                # Find the markdown reference: ![id](filename)
+                # Use regex for more robust matching, escaping special chars in filename
+                escaped_filename = re.escape(image.filename)
+                pattern = rf"!\[({re.escape(image.id)})\]\(({escaped_filename})\)"
+
+                # Generate the data URL
+                data_url = image.to_base64_url()
+
+                # Replace the file reference with the data URL
+                # Keep the original alt text (image.id)
+                replacement = f"![{image.id}]({data_url})"
+                modified_content = re.sub(pattern, replacement, modified_content)
+
+        md_path.write_text(modified_content, encoding="utf-8")
 
 
 class ChunkedDocument(Document):

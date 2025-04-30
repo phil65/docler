@@ -41,6 +41,7 @@ dependencies = [
     "pydantic",
     "pydantic-settings>=2.8.1",
     # Only add below (Copier)
+    "schemez>=0.0.1",
     "upathtools>=0.4.3",
 ]
 
