@@ -145,6 +145,15 @@ class AzureConverter(DocumentConverter[AzureConfig]):
                     output_content_format="markdown",
                 )
             result = poller.result()
+            # content_per_page = []
+            # page_num = 1
+            # for page in result.pages:
+            #     content = result.content[
+            #         page.spans[0]["offset"] : page.spans[0]["offset"]
+            #         + page.spans[0]["length"]
+            #     ]
+            #     content_per_page.append({"page_num": page_num, "content": content})
+            #     page_num += 1
             metadata = get_metadata(result)
             images = self._convert_azure_images(result, poller.details["operation_id"])
             content = result.content

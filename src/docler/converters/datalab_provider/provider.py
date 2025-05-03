@@ -30,6 +30,9 @@ POLL_INTERVAL = 2
 
 Mode = Literal["marker", "table_rec", "ocr", "layout"]
 
+# See https://www.datalab.to/app/reference
+# https://www.datalab.to/openapi.json
+
 
 class DataLabConverter(DocumentConverter[DataLabConfig]):
     """Document converter using DataLab's API."""
