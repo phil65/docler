@@ -13,6 +13,8 @@ from docler.utils import get_mime_from_pil, pil_to_bytes
 
 
 if TYPE_CHECKING:
+    from marker.output import HTMLOutput, JSONOutput, MarkdownOutput
+
     from docler.common_types import StrPath, SupportedLanguage
 
 
@@ -93,7 +95,9 @@ class MarkerConverter(DocumentConverter[MarkerConfig]):
         from marker.output import text_from_rendered
 
         local_file = upath.UPath(file_path)
-        rendered = self.converter(str(local_file))
+        rendered: MarkdownOutput | HTMLOutput | JSONOutput = self.converter(
+            str(local_file)
+        )
         content, _, pil_images = text_from_rendered(rendered)
         images: list[Image] = []
         image_replacements = {}

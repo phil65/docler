@@ -11,6 +11,7 @@ from typing import TYPE_CHECKING, Literal, overload
 
 if TYPE_CHECKING:
     import PIL.Image
+    from PIL.ImageFile import ImageFile
 
     from docler.common_types import StrPath
 
@@ -77,7 +78,7 @@ def check_mime(
     return mime
 
 
-def decode_base64_to_image(encoded_string, image_format="PNG"):
+def decode_base64_to_image(encoded_string, image_format="PNG") -> ImageFile:
     """Decode a base64 string to an image."""
     from PIL import Image
 
