@@ -79,7 +79,7 @@ class KreuzbergConverter(DocumentConverter[KreuzbergConfig]):
         from kreuzberg import ExtractionConfig, extract_file
 
         local_file = upath.UPath(file_path)
-        config = ExtractionConfig(force_ocr=self.force_ocr)
+        config = ExtractionConfig(force_ocr=self.force_ocr, extract_tables=True)
         result = anyenv.run_sync(extract_file(str(local_file), config=config))
 
         metadata = result.metadata
