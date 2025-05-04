@@ -13,7 +13,7 @@ from docler.utils import get_mime_from_pil, pil_to_bytes
 
 
 if TYPE_CHECKING:
-    from marker.output import HTMLOutput, JSONOutput, MarkdownOutput
+    from marker.output import MarkdownOutput
 
     from docler.common_types import StrPath, SupportedLanguage
 
@@ -96,16 +96,12 @@ class MarkerConverter(DocumentConverter[MarkerConfig]):
 
     def _convert_path_sync(self, file_path: StrPath, mime_type: str) -> Document:
         """Implementation of abstract method."""
-        from marker.output import text_from_rendered
-
         local_file = upath.UPath(file_path)
-        rendered: MarkdownOutput | HTMLOutput | JSONOutput = self.converter(
-            str(local_file)
-        )
-        content, _, pil_images = text_from_rendered(rendered)
+        rendered: MarkdownOutput = self.converter(str(local_file))
+        content = rendered.markdown
         images: list[Image] = []
         image_replacements = {}
-        for img_name, pil_img in pil_images.items():
+        for img_name, pil_img in rendered.images.items():
             # Create standardized image ID and filename
             image_count = len(images)
             id_ = f"img-{image_count}"
