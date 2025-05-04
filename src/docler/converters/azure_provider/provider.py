@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from typing import TYPE_CHECKING, ClassVar
 
 import upath
@@ -144,19 +145,28 @@ class AzureConverter(DocumentConverter[AzureConfig]):
                     locale=self.languages[0] if self.languages else "en",
                     output_content_format="markdown",
                 )
-            result = poller.result()
-            # content_per_page = []
-            # page_num = 1
-            # for page in result.pages:
-            #     content = result.content[
-            #         page.spans[0]["offset"] : page.spans[0]["offset"]
-            #         + page.spans[0]["length"]
-            #     ]
-            #     content_per_page.append({"page_num": page_num, "content": content})
-            #     page_num += 1
+            result: AnalyzeResult = poller.result()
+
+            content = result.content
+        except HttpResponseError as e:
+            msg = f"Azure Document Intelligence failed: {e.message}"
+            if e.error:
+                msg = f"{msg} (Error code: {e.error.code})"
+            raise ValueError(msg) from e
+        else:
             metadata = get_metadata(result)
             images = self._convert_azure_images(result, poller.details["operation_id"])
-            content = result.content
+            # --- Replace Azure page breaks ---
+            azure_marker = r"<!--\s*PageBreak\s*-->"
+            page_num = 1
+
+            def replace_marker(match: re.Match[str]) -> str:
+                nonlocal page_num
+                page_num += 1
+                return f"\n<!-- page_break page_num={page_num} -->\n"
+
+            content = re.sub(azure_marker, replace_marker, content)
+
             if images:
                 content = update_content(content, images)
             return Document(
@@ -168,12 +178,6 @@ class AzureConverter(DocumentConverter[AzureConfig]):
                 page_count=len(result.pages) if result.pages else None,
                 metadata=metadata,
             )
-
-        except HttpResponseError as e:
-            msg = f"Azure Document Intelligence failed: {e.message}"
-            if e.error:
-                msg = f"{msg} (Error code: {e.error.code})"
-            raise ValueError(msg) from e
 
 
 if __name__ == "__main__":
