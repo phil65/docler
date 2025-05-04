@@ -54,7 +54,7 @@ class UpstageConverter(DocumentConverter[UpstageConfig]):
         """Initialize the Upstage converter.
 
         Args:
-            languages: List of supported languages
+            languages: List of supported languages (currently unused by Upstage API)
             api_key: Upstage API key (falls back to UPSTAGE_API_KEY env var)
             base_url: API endpoint URL
             model: Model name for document parsing
@@ -111,6 +111,7 @@ class UpstageConverter(DocumentConverter[UpstageConfig]):
                 headers=headers,
                 files=files,
                 data=data,
+                timeout=300,
             )
             response.raise_for_status()
             result = response.json()
@@ -118,7 +119,7 @@ class UpstageConverter(DocumentConverter[UpstageConfig]):
             msg = f"Upstage API error: {e.response.text if e.response else str(e)}"
             raise ValueError(msg) from e
         except Exception as e:
-            msg = f"Failed to convert document: {e}"
+            msg = f"Failed to convert document via Upstage API: {e}"
             self.logger.exception(msg)
             raise ValueError(msg) from e
 
