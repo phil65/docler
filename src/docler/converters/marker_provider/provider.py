@@ -80,8 +80,11 @@ class MarkerConverter(DocumentConverter[MarkerConfig]):
         from marker.models import create_model_dict
 
         super().__init__(languages=languages)
-
-        self.config = {"output_format": "markdown", "highres_image_dpi": dpi}
+        self.config = {
+            "output_format": "markdown",
+            "highres_image_dpi": dpi,
+            "paginate_output": True,
+        }
         if languages:
             self.config["languages"] = ",".join(languages)
         if llm_provider:
@@ -91,7 +94,7 @@ class MarkerConverter(DocumentConverter[MarkerConfig]):
         self.converter = PdfConverter(
             artifact_dict=model_dict,
             llm_service=llm_cls_path,
-            config={"paginate_output": True},
+            config=self.config,
         )
 
     def _convert_path_sync(self, file_path: StrPath, mime_type: str) -> Document:
