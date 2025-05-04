@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import base64
 from typing import TYPE_CHECKING, ClassVar, Literal
 
 import anyenv
@@ -11,9 +10,9 @@ from upathtools import read_path
 
 from docler.configs.converter_configs import DataLabConfig
 from docler.converters.base import DocumentConverter
-from docler.converters.datalab_provider.utils import get_result, normalize_markdown_images
+from docler.converters.datalab_provider.utils import get_response, process_response
 from docler.log import get_logger
-from docler.models import Document, Image
+from docler.models import Document
 from docler.utils import get_api_key
 
 
@@ -107,25 +106,8 @@ class DataLabConverter(DocumentConverter[DataLabConfig]):
             form["use_llm"] = "true"
         if self.max_pages:
             form["max_pages"] = str(self.max_pages)
-        result = await get_result(form, files, self.api_key)
-        images: list[Image] = []
-        md_content = result["markdown"]
-        if result.get("images"):
-            image_replacements = {}
-            for i, (original_name, img_data) in enumerate(result["images"].items()):
-                img_id = f"img-{i}"
-                ext = original_name.split(".")[-1].lower()
-                fname = f"{img_id}.{ext}"
-                image_replacements[original_name] = (img_id, fname)
-                if img_data.startswith("data:"):
-                    img_data = img_data.split(",", 1)[1]
-                content = base64.b64decode(img_data)
-                mime = f"image/{ext}"
-                image = Image(id=img_id, content=content, mime_type=mime, filename=fname)
-                images.append(image)
-
-            md_content = normalize_markdown_images(md_content, image_replacements)
-
+        result = await get_response(form, files, self.api_key)
+        md_content, images = process_response(result)
         return Document(
             content=md_content,
             images=images,

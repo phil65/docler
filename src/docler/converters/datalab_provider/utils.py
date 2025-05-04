@@ -2,11 +2,14 @@
 
 from __future__ import annotations
 
+import base64
 import re
 import time
 from typing import Any
 
 import anyenv
+
+from docler.models import Image
 
 
 API_BASE = "https://www.datalab.to/api/v1"
@@ -14,7 +17,7 @@ MAX_POLLS = 300
 POLL_INTERVAL = 2
 
 
-def normalize_markdown_images(
+def _normalize_markdown_images(
     content: str, image_replacements: dict[str, tuple[str, str]]
 ) -> str:
     """Normalize image references in markdown content.
@@ -73,11 +76,11 @@ def normalize_markdown_images(
 #             image = Image(id=img_id, content=content, mime_type=mime, filename=fname)
 #             images.append(image)
 
-#         md_content = normalize_markdown_images(md_content, image_replacements)
+#         md_content = _normalize_markdown_images(md_content, image_replacements)
 #     return md_content, images
 
 
-async def get_result(
+async def get_response(
     form: dict[str, Any],
     files: dict[str, Any],
     api_key: str,
@@ -103,3 +106,24 @@ async def get_result(
         msg = f"Conversion failed: {result['error']}"
         raise ValueError(msg)
     return result
+
+
+def process_response(result: dict[str, Any]) -> tuple[str, list[Image]]:
+    images: list[Image] = []
+    md_content = result["markdown"]
+    if result.get("images"):
+        image_replacements = {}
+        for i, (original_name, img_data) in enumerate(result["images"].items()):
+            img_id = f"img-{i}"
+            ext = original_name.split(".")[-1].lower()
+            fname = f"{img_id}.{ext}"
+            image_replacements[original_name] = (img_id, fname)
+            if img_data.startswith("data:"):
+                img_data = img_data.split(",", 1)[1]
+            content = base64.b64decode(img_data)
+            mime = f"image/{ext}"
+            image = Image(id=img_id, content=content, mime_type=mime, filename=fname)
+            images.append(image)
+
+        md_content = _normalize_markdown_images(md_content, image_replacements)
+    return md_content, images
