@@ -23,9 +23,9 @@ def pil_to_bytes(image: PIL.Image.Image) -> bytes:
     return img_byte_arr.getvalue()
 
 
-def get_mime_from_pil(image: PIL.Image.Image) -> str:
+def get_mime_from_pil(image: PIL.Image.Image, fallback: str = "JPEG") -> str:
     """Get MIME type from PIL image format."""
-    fmt = image.format or "JPEG"
+    fmt = image.format or fallback
     return f"image/{fmt.lower()}"
 
 
@@ -110,10 +110,8 @@ def png_to_webp(content: str) -> str:
                 continue
 
             if png_image.width > 1080:  # noqa: PLR2004
-                webp_image = png_image.resize((
-                    1080,
-                    int(1080 * png_image.height / png_image.width),
-                ))
+                ratio = png_image.height / png_image.width
+                webp_image = png_image.resize((1080, int(1080 * ratio)))
             else:
                 webp_image = png_image
 
