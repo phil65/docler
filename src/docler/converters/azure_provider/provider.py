@@ -34,7 +34,7 @@ class AzureConverter(DocumentConverter[AzureConfig]):
     Config = AzureConfig
 
     NAME = "azure"
-    REQUIRED_PACKAGES: ClassVar = {""}
+    REQUIRED_PACKAGES: ClassVar = {"azure"}
     SUPPORTED_MIME_TYPES: ClassVar[set[str]] = {
         # PDF
         "application/pdf",
