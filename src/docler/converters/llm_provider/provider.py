@@ -16,6 +16,8 @@ from docler.models import Document
 
 
 if TYPE_CHECKING:
+    from llmling_agent.models.content import BaseContent
+
     from docler.common_types import StrPath, SupportedLanguage
 
 
@@ -65,12 +67,15 @@ class LLMConverter(DocumentConverter[LLMConverterConfig]):
         Returns:
             Converted document
         """
-        from llmling_agent import Agent, PDFBase64Content
+        from llmling_agent import Agent, ImageBase64Content, PDFBase64Content
         import upath
 
         path = upath.UPath(file_path)
-        pdf_bytes = path.read_bytes()
-        content = PDFBase64Content.from_bytes(pdf_bytes)
+        file_content = path.read_bytes()
+        if path.suffix == ".pdf":
+            content: BaseContent = PDFBase64Content.from_bytes(file_content)
+        else:
+            content = ImageBase64Content.from_bytes(file_content)
         agent = Agent[None](model=self.model, system_prompt=self.system_prompt)
         response = agent.run_sync(self.user_prompt, content)
         return Document(
