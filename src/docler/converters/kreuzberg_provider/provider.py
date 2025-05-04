@@ -31,6 +31,36 @@ if TYPE_CHECKING:
 
 logger = get_logger(__name__)
 
+# Kreuzberg metadata:
+
+# class Metadata(TypedDict, total=False):
+#     authors: NotRequired[list[str]]
+#     categories: NotRequired[list[str]]
+#     citations: NotRequired[list[str]]
+#     comments: NotRequired[str]
+#     copyright: NotRequired[str]
+#     created_at: NotRequired[str]
+#     created_by: NotRequired[str]
+#     description: NotRequired[str]
+#     fonts: NotRequired[list[str]]
+#     height: NotRequired[int]
+#     identifier: NotRequired[str]
+#     keywords: NotRequired[list[str]]
+#     languages: NotRequired[list[str]]
+#     license: NotRequired[str]
+#     modified_at: NotRequired[str]
+#     modified_by: NotRequired[str]
+#     organization: NotRequired[str | list[str]]
+#     publisher: NotRequired[str]
+#     references: NotRequired[list[str]]
+#     status: NotRequired[str]
+#     subject: NotRequired[str]
+#     subtitle: NotRequired[str]
+#     summary: NotRequired[str]
+#     title: NotRequired[str]
+#     version: NotRequired[str]
+#     width: NotRequired[int]
+
 
 class KreuzbergConverter(DocumentConverter[KreuzbergConfig]):
     """Document converter using Kreuzberg's extraction."""
@@ -84,22 +114,23 @@ class KreuzbergConverter(DocumentConverter[KreuzbergConfig]):
 
         metadata = result.metadata
         created: datetime | None = None
-        if date_str := metadata.get("date"):
+        if date_str := metadata.pop("created_at", None):
             try:
                 from dateutil import parser
 
                 created = parser.parse(date_str)
             except Exception:  # noqa: BLE001
                 pass
-        authors = metadata.get("authors")
+        authors = metadata.pop("authors", None)
         author = authors[0] if authors else None
         return Document(
             content=result.content,
-            title=metadata.get("title"),
-            author=metadata.get("creator") or author,
+            title=metadata.pop("title", None),
+            author=metadata.pop("created_by", None) or author,
             created=created,
             source_path=str(local_file),
             mime_type=result.mime_type or mime_type,
+            metadata=metadata,  # pyright: ignore
         )
 
 
