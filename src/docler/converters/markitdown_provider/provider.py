@@ -82,8 +82,11 @@ class MarkItDownConverter(DocumentConverter[MarkItDownConfig]):
         path = upath.UPath(file_path)
         try:
             result = self.converter.convert(str(path), keep_data_uris=True)
+            markdown = result.text_content.replace(
+                "<!-- Slide number:", "<!-- page_break page_num="
+            )
             return Document(
-                content=result.text_content,
+                content=markdown,
                 title=result.title or path.stem,
                 source_path=str(path),
                 mime_type=mime_type,
@@ -100,4 +103,4 @@ if __name__ == "__main__":
     pdf_path = "src/docler/resources/pdf_sample.pdf"
     converter = MarkItDownConverter()
     result = anyenv.run_sync(converter.convert_file(pdf_path))
-    print(result)
+    print(result.content)
