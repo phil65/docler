@@ -137,7 +137,7 @@ class AzureConverter(DocumentConverter[AzureConfig]):
         try:
             with path.open("rb") as f:
                 poller = self._client.begin_analyze_document(
-                    model_id="prebuilt-layout",
+                    model_id=self.model,
                     body=f,
                     features=features,
                     output=[AnalyzeOutputOption.FIGURES],
