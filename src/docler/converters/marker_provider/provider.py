@@ -88,7 +88,11 @@ class MarkerConverter(DocumentConverter[MarkerConfig]):
             self.config["use_llm"] = True
         model_dict = create_model_dict()
         llm_cls_path = PROVIDERS.get(llm_provider) if llm_provider else None
-        self.converter = PdfConverter(artifact_dict=model_dict, llm_service=llm_cls_path)
+        self.converter = PdfConverter(
+            artifact_dict=model_dict,
+            llm_service=llm_cls_path,
+            config={"paginate_output": True},
+        )
 
     def _convert_path_sync(self, file_path: StrPath, mime_type: str) -> Document:
         """Implementation of abstract method."""
