@@ -101,7 +101,7 @@ class DataLabConverter(DocumentConverter[DataLabConfig]):
             ValueError: If conversion fails.
         """
         path = upath.UPath(file_path)
-        form = {"output_format": "markdown"}
+        form = {"output_format": "markdown", "paginate": True}
         data = await read_path(path, mode="rb")
         files = {"file": (path.name, data, mime_type)}
         if self.languages:
