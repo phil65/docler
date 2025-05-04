@@ -82,6 +82,11 @@ class MarkItDownConverter(DocumentConverter[MarkItDownConfig]):
         path = upath.UPath(file_path)
         try:
             result = self.converter.convert(str(path), keep_data_uris=True)
+        except Exception as e:
+            msg = f"Failed to convert file {file_path}"
+            self.logger.exception(msg)
+            raise ValueError(msg) from e
+        else:
             markdown = result.text_content.replace(
                 "<!-- Slide number:", "<!-- page_break page_num="
             )
@@ -91,10 +96,6 @@ class MarkItDownConverter(DocumentConverter[MarkItDownConfig]):
                 source_path=str(path),
                 mime_type=mime_type,
             )
-        except Exception as e:
-            msg = f"Failed to convert file {file_path}"
-            self.logger.exception(msg)
-            raise ValueError(msg) from e
 
 
 if __name__ == "__main__":

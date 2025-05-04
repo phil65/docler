@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, ClassVar
 
+import upath
+
 from docler.common_types import DEFAULT_CONVERTER_MODEL
 from docler.configs.converter_configs import (
     LLM_SYSTEM_PROMPT,
@@ -68,7 +70,6 @@ class LLMConverter(DocumentConverter[LLMConverterConfig]):
             Converted document
         """
         from llmling_agent import Agent, ImageBase64Content, PDFBase64Content
-        import upath
 
         path = upath.UPath(file_path)
         file_content = path.read_bytes()
