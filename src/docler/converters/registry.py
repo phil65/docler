@@ -46,6 +46,9 @@ class ConverterRegistry:
 
         return registry
 
+    def get_converter_by_name(self, name: str):
+        return next(i for i in self._converters if name == i.NAME)
+
     def register(self, converter: DocumentConverter):
         """Register a converter."""
         self._converters.append(converter)
