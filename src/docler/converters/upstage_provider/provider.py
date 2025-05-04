@@ -15,6 +15,7 @@ from docler.configs.converter_configs import (
     UpstageOCRType,
 )
 from docler.converters.base import DocumentConverter
+from docler.markdown_utils import PAGE_BREAK_TYPE, create_metadata_comment
 from docler.models import Document, Image
 from docler.utils import get_api_key
 
@@ -176,7 +177,10 @@ class UpstageConverter(DocumentConverter[UpstageConfig]):
                     )
 
                 if found_index != -1:
-                    marker = f"\n\n<!-- page_break page_num={page_number} -->\n\n"
+                    page_data = {"next_page": page_number}
+                    marker = (
+                        f"\n\n{create_metadata_comment(PAGE_BREAK_TYPE, page_data)}\n\n"
+                    )
                     modified_markdown = (
                         modified_markdown[:found_index]
                         + marker

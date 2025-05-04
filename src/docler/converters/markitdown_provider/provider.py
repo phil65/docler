@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import re
+from re import Match
 from typing import TYPE_CHECKING, ClassVar
 
 import upath
@@ -9,6 +11,7 @@ import upath
 from docler.configs.converter_configs import MarkItDownConfig
 from docler.converters.base import DocumentConverter
 from docler.log import get_logger
+from docler.markdown_utils import PAGE_BREAK_TYPE, create_metadata_comment
 from docler.models import Document
 
 
@@ -87,9 +90,19 @@ class MarkItDownConverter(DocumentConverter[MarkItDownConfig]):
             self.logger.exception(msg)
             raise ValueError(msg) from e
         else:
-            markdown = result.text_content.replace(
-                "<!-- Slide number:", "<!-- page_break page_num="
-            )
+            # Replace the slide numbers with our standard page break format
+            def replace_slide_marker(match: Match[str]) -> str:
+                slide_num = match.group(1) if match.groups() else "?"
+                try:
+                    page_num = int(slide_num)
+                except ValueError:
+                    page_num = 1
+                page_data = {"next_page": page_num}
+                return create_metadata_comment(PAGE_BREAK_TYPE, page_data)
+
+            slide_pattern = r"<!-- Slide number:\s*(\d+)\s*-->"
+            markdown = re.sub(slide_pattern, replace_slide_marker, result.text_content)
+
             return Document(
                 content=markdown,
                 title=result.title or path.stem,

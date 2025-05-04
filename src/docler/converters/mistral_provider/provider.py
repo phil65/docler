@@ -12,7 +12,7 @@ from docler.converters.base import DocumentConverter
 from docler.converters.mistral_provider.utils import convert_image
 
 # Import the markdown utility
-from docler.markdown_utils import create_metadata_comment
+from docler.markdown_utils import PAGE_BREAK_TYPE, create_metadata_comment
 from docler.models import Document, Image
 from docler.utils import get_api_key
 
@@ -116,7 +116,7 @@ class MistralConverter(DocumentConverter[MistralConfig]):
             for i, page in enumerate(r.pages[1:], start=1):
                 page_num = i + 1  # Actual page number (starts from 1)
                 page_break_comment = create_metadata_comment(
-                    data_type="page_break",
+                    data_type=PAGE_BREAK_TYPE,
                     data={"next_page": page_num},
                 )
                 # Add comment, newline, then page markdown

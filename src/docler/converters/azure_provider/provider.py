@@ -12,6 +12,7 @@ from docler.converters.azure_provider.utils import get_metadata, to_image, updat
 from docler.converters.base import DocumentConverter
 from docler.converters.exceptions import MissingConfigurationError
 from docler.log import get_logger
+from docler.markdown_utils import PAGE_BREAK_TYPE, create_metadata_comment
 from docler.models import Document, Image
 from docler.utils import get_api_key
 
@@ -163,7 +164,8 @@ class AzureConverter(DocumentConverter[AzureConfig]):
             def replace_marker(match: re.Match[str]) -> str:
                 nonlocal page_num
                 page_num += 1
-                return f"\n<!-- page_break page_num={page_num} -->\n"
+                page_data = {"next_page": page_num}
+                return f"\n{create_metadata_comment(PAGE_BREAK_TYPE, page_data)}\n"
 
             content = re.sub(azure_marker, replace_marker, content)
 
