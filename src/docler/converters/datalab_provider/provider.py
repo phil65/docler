@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import base64
-import time
 from typing import TYPE_CHECKING, ClassVar, Literal
 
 import anyenv
@@ -12,7 +11,7 @@ from upathtools import read_path
 
 from docler.configs.converter_configs import DataLabConfig
 from docler.converters.base import DocumentConverter
-from docler.converters.datalab_provider.utils import normalize_markdown_images
+from docler.converters.datalab_provider.utils import get_result, normalize_markdown_images
 from docler.log import get_logger
 from docler.models import Document, Image
 from docler.utils import get_api_key
@@ -23,10 +22,6 @@ if TYPE_CHECKING:
 
 
 logger = get_logger(__name__)
-
-API_BASE = "https://www.datalab.to/api/v1"
-MAX_POLLS = 300
-POLL_INTERVAL = 2
 
 Mode = Literal["marker", "table_rec", "ocr", "layout"]
 
@@ -112,27 +107,7 @@ class DataLabConverter(DocumentConverter[DataLabConfig]):
             form["use_llm"] = "true"
         if self.max_pages:
             form["max_pages"] = str(self.max_pages)
-        headers = {"X-Api-Key": self.api_key}
-        url = f"{API_BASE}/marker"
-        response = await anyenv.post(url, data=form, files=files, headers=headers)
-        json_data = await response.json()
-        if not json_data["success"]:
-            msg = f"Failed to submit conversion: {json_data['error']}"
-            raise ValueError(msg)
-        check_url = json_data["request_check_url"]
-        for _ in range(MAX_POLLS):
-            time.sleep(POLL_INTERVAL)
-            result = await anyenv.get_json(check_url, headers=headers, return_type=dict)  # type: ignore
-            if result["status"] == "complete":
-                break
-        else:
-            msg = "Conversion timed out"
-            raise TimeoutError(msg)
-
-        if not result["success"]:
-            msg = f"Conversion failed: {result['error']}"
-            raise ValueError(msg)
-
+        result = await get_result(form, files, self.api_key)
         images: list[Image] = []
         md_content = result["markdown"]
         if result.get("images"):

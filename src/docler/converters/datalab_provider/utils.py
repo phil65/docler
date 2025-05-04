@@ -3,6 +3,15 @@
 from __future__ import annotations
 
 import re
+import time
+from typing import Any
+
+import anyenv
+
+
+API_BASE = "https://www.datalab.to/api/v1"
+MAX_POLLS = 300
+POLL_INTERVAL = 2
 
 
 def normalize_markdown_images(
@@ -66,3 +75,31 @@ def normalize_markdown_images(
 
 #         md_content = normalize_markdown_images(md_content, image_replacements)
 #     return md_content, images
+
+
+async def get_result(
+    form: dict[str, Any],
+    files: dict[str, Any],
+    api_key: str,
+) -> dict[str, Any]:
+    headers = {"X-Api-Key": api_key}
+    url = f"{API_BASE}/marker"
+    response = await anyenv.post(url, data=form, files=files, headers=headers)
+    json_data = await response.json()
+    if not json_data["success"]:
+        msg = f"Failed to submit conversion: {json_data['error']}"
+        raise ValueError(msg)
+    check_url = json_data["request_check_url"]
+    for _ in range(MAX_POLLS):
+        time.sleep(POLL_INTERVAL)
+        result = await anyenv.get_json(check_url, headers=headers, return_type=dict)  # type: ignore
+        if result["status"] == "complete":
+            break
+    else:
+        msg = "Conversion timed out"
+        raise TimeoutError(msg)
+
+    if not result["success"]:
+        msg = f"Conversion failed: {result['error']}"
+        raise ValueError(msg)
+    return result
