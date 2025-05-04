@@ -5,8 +5,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, ClassVar
 
 from docler.configs.converter_configs import (
-    MistralConfig,
     UpstageCategory,
+    UpstageConfig,
     UpstageOCRType,
     UpstageOutputFormat,
 )
@@ -24,10 +24,10 @@ DOCUMENT_PARSE_BASE_URL = "https://api.upstage.ai/v1/document-ai/document-parse"
 DOCUMENT_PARSE_DEFAULT_MODEL = "document-parse"
 
 
-class UpstageConverter(DocumentConverter[MistralConfig]):
+class UpstageConverter(DocumentConverter[UpstageConfig]):
     """Document converter using Upstage's Document AI API."""
 
-    Config = MistralConfig
+    Config = UpstageConfig
 
     NAME = "upstage"
     REQUIRED_PACKAGES: ClassVar = {"requests"}
