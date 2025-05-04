@@ -75,6 +75,9 @@ Convert this PDF document to markdown format
 Preserve the original formatting and structure where possible.
 Include any important tables or lists.
 Describe any images you see in brackets.
+Indicate Page breaks with a numbered XML comment,
+like <!-- page_break page_num={page_number} -->
+Only respond with the content, nothing else.
 """
 
 

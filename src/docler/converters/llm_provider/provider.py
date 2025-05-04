@@ -89,9 +89,6 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 
     pdf_path = "src/docler/resources/pdf_sample.pdf"
-    converter = LLMConverter(
-        languages=["en", "de"],
-        user_prompt="Convert this PDF to markdown, focusing on technical details.",
-    )
+    converter = LLMConverter(languages=["en", "de"])
     result = anyenv.run_sync(converter.convert_file(pdf_path))
-    print(result)
+    print(result.content)
