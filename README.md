@@ -73,7 +73,6 @@ We typically use an HTML `<figure>` element:
   <img src="images/system_architecture.png"
        alt="System Architecture Diagram"
        data-page-num="5"
-       data-bbox="[50, 100, 550, 400]"
        style="max-width: 100%; height: auto;"
        >
   <figcaption>Figure 2: High-level system data flow.</figcaption>
@@ -91,7 +90,7 @@ We typically use an HTML `<figure>` element:
     *   Other `data-*` attributes can be added for figure-level metadata.
 *   **`<img>`**: The visual representation.
     *   `src`, `alt`: Standard attributes.
-    *   `data-*`: Used for image-specific metadata like `data-page-num`, `data-bbox`.
+    *   `data-*`: Used for image-specific metadata like `data-page-num`
     *   `style`: Optional for basic presentation.
 *   **`<figcaption>`**: Optional standard HTML caption.
 *   **`<script type="text/docler-...">`**: Used to embed source code or other complex textual data.
