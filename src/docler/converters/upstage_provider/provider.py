@@ -2,13 +2,17 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, ClassVar
+import base64
+from collections import defaultdict
+from typing import TYPE_CHECKING, Any, ClassVar
+
+import requests
+import upath
 
 from docler.configs.converter_configs import (
     UpstageCategory,
     UpstageConfig,
     UpstageOCRType,
-    UpstageOutputFormat,
 )
 from docler.converters.base import DocumentConverter
 from docler.models import Document, Image
@@ -20,7 +24,7 @@ if TYPE_CHECKING:
 
 
 # API endpoints
-DOCUMENT_PARSE_BASE_URL = "https://api.upstage.ai/v1/document-ai/document-parse"
+DOCUMENT_PARSE_BASE_URL = "https://api.upstage.ai/v1/document-digitization"
 DOCUMENT_PARSE_DEFAULT_MODEL = "document-parse"
 
 
@@ -48,7 +52,6 @@ class UpstageConverter(DocumentConverter[UpstageConfig]):
         base_url: str = DOCUMENT_PARSE_BASE_URL,
         model: str = DOCUMENT_PARSE_DEFAULT_MODEL,
         ocr: UpstageOCRType = "auto",
-        output_format: UpstageOutputFormat = "markdown",
         base64_categories: set[UpstageCategory] | None = None,
     ):
         """Initialize the Upstage converter.
@@ -59,7 +62,6 @@ class UpstageConverter(DocumentConverter[UpstageConfig]):
             base_url: API endpoint URL
             model: Model name for document parsing
             ocr: OCR mode ('auto' or 'force')
-            output_format: Output format ('markdown', 'text', or 'html')
             base64_categories: Element categories to encode in base64
 
         Raises:
@@ -70,7 +72,6 @@ class UpstageConverter(DocumentConverter[UpstageConfig]):
         self.base_url = base_url
         self.model = model
         self.ocr = ocr
-        self.output_format = output_format
         self.base64_categories = base64_categories or {"figure", "chart"}
 
     @property
@@ -86,14 +87,11 @@ class UpstageConverter(DocumentConverter[UpstageConfig]):
             mime_type: MIME type of the file
 
         Returns:
-            Converted document with extracted text and metadata
+            Converted document with extracted text, images, and page break markers.
 
         Raises:
-            ValueError: If conversion fails
+            ValueError: If conversion fails or response is malformed.
         """
-        import requests
-        import upath
-
         path = upath.UPath(file_path)
         file_content = path.read_bytes()
         headers = {"Authorization": f"Bearer {self.api_key}"}
@@ -101,7 +99,7 @@ class UpstageConverter(DocumentConverter[UpstageConfig]):
         data = {
             "ocr": self.ocr,
             "model": self.model,
-            "output_formats": f"['{self.output_format}']",
+            "output_formats": "['markdown']",
             "base64_encoding": str(list(self.base64_categories)),
         }
 
@@ -123,69 +121,145 @@ class UpstageConverter(DocumentConverter[UpstageConfig]):
             self.logger.exception(msg)
             raise ValueError(msg) from e
 
-        # Extract content from response
-        content = result.get("content", {}).get(self.output_format, "")
-        if not content:
-            msg = "No content found in API response"
+        content_data = result.get("content", {})
+        initial_markdown = content_data.get("markdown")
+        if not initial_markdown:
+            msg = "No content found in Upstage API response."
+            # self.logger.warning("Full Upstage response: %s", result)
             raise ValueError(msg)
 
-        images: list[Image] = []
-        image_counter = 0  # Dedicated counter for images only
         elements = result.get("elements", [])
+        max_page = result.get("usage", {}).get("pages", 0)
+
+        modified_markdown = initial_markdown  # Start with the original markdown
+        if max_page > 1 and elements:
+            elements_by_page: dict[int, list[dict[str, Any]]] = defaultdict(list)
+            for element in elements:
+                page_num = element.get("page")
+                if page_num is not None:
+                    elements_by_page[page_num].append(element)
+
+            for page_num in elements_by_page:  # noqa: PLC0206
+                elements_by_page[page_num].sort(key=lambda x: x.get("id", 0))
+
+            insertion_offset = 0
+            for page_number in range(2, max_page + 1):
+                if (
+                    page_number not in elements_by_page
+                    or not elements_by_page[page_number]
+                ):
+                    continue
+
+                first_element = elements_by_page[page_number][0]
+                first_element_md = first_element.get("content", {}).get("markdown", "")
+                if not first_element_md:
+                    for elem in elements_by_page[page_number][1:]:
+                        first_element_md = elem.get("content", {}).get("markdown", "")
+                        if first_element_md:
+                            break
+                    if not first_element_md:
+                        msg = "Could not find non-empty element md anchor for page %d"
+                        self.logger.warning(msg, page_number)
+                        continue
+
+                # Find the position using the offset
+                search_start_index = 0
+                found_index = -1
+                temp_index = modified_markdown.find(first_element_md, search_start_index)
+                while temp_index != -1:
+                    if temp_index >= insertion_offset:
+                        found_index = temp_index
+                        break
+                    search_start_index = temp_index + 1
+                    temp_index = modified_markdown.find(
+                        first_element_md, search_start_index
+                    )
+
+                if found_index != -1:
+                    marker = f"\n\n<!-- page_break page_num={page_number} -->\n\n"
+                    modified_markdown = (
+                        modified_markdown[:found_index]
+                        + marker
+                        + modified_markdown[found_index:]
+                    )
+                    insertion_offset = found_index + len(marker)
+                else:
+                    self.logger.warning(
+                        "Could not find insertion point for page break before page %d",
+                        page_number,
+                    )
+
+        images: list[Image] = []
+        image_counter = 0
+        # Use a temporary variable for markdown content during image replacement
+        # to avoid interfering with the page break logic's offset calculations if
+        # image placeholders were part of the first element's markdown.
+        content_for_image_replacement = modified_markdown
+
         for element in elements:
-            if element.get("category") not in self.base64_categories:
-                continue
+            category = element.get("category")
+            base64_data = element.get("base64_encoding")
 
-            # Skip elements without base64 encoding
-            if not element.get("base64_encoding"):
-                continue
+            if category in self.base64_categories and base64_data:
+                image_id = f"img-{image_counter}"
+                image_counter += 1
 
-            image_id = f"img-{image_counter}"
-            image_counter += 1
-            # Handle base64 encoded images
-            img_data = element["base64_encoding"]
-            if img_data.startswith("data:image/"):
-                # Extract MIME type and remove prefix
-                mime_parts = img_data.split(";")[0].split(":")
-                img_mime_type = mime_parts[1] if len(mime_parts) > 1 else "image/png"
-                img_data = img_data.split(",", 1)[1]
-            else:
-                img_mime_type = "image/png"
+                if base64_data.startswith("data:image/"):
+                    mime_parts = base64_data.split(";")[0].split(":")
+                    img_mime_type = mime_parts[1] if len(mime_parts) > 1 else "image/png"
+                    img_data = base64_data.split(",", 1)[1]  # Get data after comma
+                else:
+                    img_mime_type = "image/png"
+                    img_data = base64_data  # Assume it's pure base64
 
-            # Determine file extension based on MIME type
-            ext = img_mime_type.split("/")[-1]
-            filename = f"{image_id}.{ext}"
+                img_bytes = base64.b64decode(img_data)
+                ext = img_mime_type.split("/")[-1]
+                # Handle potential complex mime types like 'svg+xml'
+                ext = ext.split("+")[0]
+                filename = f"{image_id}.{ext}"
 
-            image = Image(
-                id=image_id,
-                content=img_data,
-                mime_type=img_mime_type,
-                filename=filename,
-            )
-            images.append(image)
+                image = Image(
+                    id=image_id,
+                    content=img_bytes,  # Store as bytes
+                    mime_type=img_mime_type,
+                    filename=filename,
+                )
+                images.append(image)
 
-            # Replace image placeholders with actual references in the content
-            if "/image/placeholder" in content:
-                img_ref = f"![{image_id}]({filename})"
-                content = content.replace("![image](/image/placeholder)", img_ref, 1)
-        # Create document with extracted information
+                # Replace the *first* available placeholder in the markdown
+                placeholder = "![image](/image/placeholder)"
+                if placeholder in content_for_image_replacement:
+                    img_ref = f"![{image_id}]({filename})"
+                    content_for_image_replacement = content_for_image_replacement.replace(
+                        placeholder, img_ref, 1
+                    )
+                else:
+                    msg = "Found image data for %s but no placeholder left in markdown."
+                    self.logger.warning(msg, image_id)
+        modified_markdown = content_for_image_replacement
         return Document(
-            content=content,
+            content=modified_markdown,
             images=images,
             title=path.stem,
             source_path=str(path),
             mime_type=mime_type,
+            page_count=max_page,
+            metadata=result.get("metadata", {}),
         )
 
 
 if __name__ == "__main__":
+    import logging
+
     import anyenv
 
-    pdf_path = "src/docler/resources/pdf_sample.pdf"
+    logging.basicConfig(level=logging.INFO)  # Add basic logging for testing
 
-    # Initialize converter with custom base64 categories
+    pdf_path = "src/docler/resources/pdf_sample.pdf"  # Adjust path if needed
     converter = UpstageConverter()
-
-    # Convert document
-    result = anyenv.run_sync(converter.convert_file(pdf_path))
-    print(result.images)
+    result_doc = anyenv.run_sync(converter.convert_file(pdf_path))
+    print("--- Converted Markdown ---")
+    print(result_doc.content)
+    print("\n--- Extracted Images ---")
+    print(result_doc.images)
+    print(f"\nPage Count: {result_doc.page_count}")

@@ -337,9 +337,6 @@ class UpstageConfig(BaseConverterConfig):
     ocr: UpstageOCRType = "auto"
     """OCR mode ('auto' or 'force')."""
 
-    output_format: UpstageOutputFormat = "markdown"
-    """Output format ('markdown', 'text', or 'html')."""
-
     base64_categories: set[UpstageCategory] = Field(
         default_factory=lambda: {"figure", "chart"}  # type: ignore
     )
