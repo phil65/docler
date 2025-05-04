@@ -10,6 +10,9 @@ import upath
 from docler.configs.converter_configs import MistralConfig
 from docler.converters.base import DocumentConverter
 from docler.converters.mistral_provider.utils import convert_image
+
+# Import the markdown utility
+from docler.markdown_utils import create_metadata_comment
 from docler.models import Document, Image
 from docler.utils import get_api_key
 
@@ -104,7 +107,25 @@ class MistralConverter(DocumentConverter[MistralConfig]):
             if img.id and img.image_base64
         ]
 
-        content = "\n\n".join(page.markdown for page in r.pages)
+        # --- Assemble content with page breaks ---
+        content_parts: list[str] = []
+        if r.pages:
+            # Add first page content directly
+            content_parts.append(r.pages[0].markdown)
+            # Add subsequent pages with preceding page break comment
+            for i, page in enumerate(r.pages[1:], start=1):
+                page_num = i + 1  # Actual page number (starts from 1)
+                page_break_comment = create_metadata_comment(
+                    data_type="page_break",
+                    data={"next_page": page_num},
+                )
+                # Add comment, newline, then page markdown
+                # Using '\n\n' as separator like the original join for consistency
+                content_parts.append(f"\n\n{page_break_comment}\n\n")
+                content_parts.append(page.markdown)
+        content = "".join(content_parts)
+        # --- End content assembly ---
+
         return Document(
             content=content,
             images=images,
