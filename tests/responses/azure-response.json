@@ -1,0 +1,6550 @@
+{
+  "apiVersion": "2024-11-30",
+  "modelId": "prebuilt-layout",
+  "stringIndexType": "textElements",
+  "content": "# Lorem ipsum\n\n\n# Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc ac faucibus odio.\n\nVestibulum neque massa, scelerisque sit amet ligula eu, congue molestie mi. Praesent ut\nvarius sem. Nullam at porttitor arcu, nec lacinia nisi. Ut ac dolor vitae odio interdum\ncondimentum. Vivamus dapibus sodales ex, vitae malesuada ipsum cursus\nconvallis. Maecenas sed egestas nulla, ac condimentum orci. Mauris diam felis,\nvulputate ac suscipit et, iaculis non est. Curabitur semper arcu ac ligula semper, nec luctus\nnisl blandit. Integer lacinia ante ac libero lobortis imperdiet. Nullam mollis convallis ipsum,\nac accumsan nunc vehicula vitae. Nulla eget justo in felis tristique fringilla. Morbi sit amet\ntortor quis risus auctor condimentum. Morbi in ullamcorper elit. Nulla iaculis tellus sit amet\nmauris tempus fringilla.\n\nMaecenas mauris lectus, lobortis et purus mattis, blandit dictum tellus.\n\n. Maecenas non lorem quis tellus placerat varius.\n\n\u00b7 Nulla facilisi.\n\n. Aenean congue fringilla justo ut aliquam.\n\n\u00b7 Mauris id ex erat. Nunc vulputate neque vitae justo facilisis, non condimentum ante\nsagittis.\n\n\u00b7 Morbi viverra semper lorem nec molestie.\n\n. Maecenas tincidunt est efficitur ligula euismod, sit amet ornare est vulputate.\n\n\n<figure>\n\n12\n\n10\n\n8\n\n6\n\nColumn 1\n\nColumn 2\n\n4\n\nColumn 3\n\n2\n\n0\n\nRow 1\n\nRow 2\n\nRow 3\n\nRow 4\n\n</figure>\n\n\n<!-- PageBreak -->\n\nIn non mauris justo. Duis vehicula mi vel mi pretium, a viverra erat efficitur. Cras aliquam\nest ac eros varius, id iaculis dui auctor. Duis pretium neque ligula, et pulvinar mi placerat\net. Nulla nec nunc sit amet nunc posuere vestibulum. Ut id neque eget tortor mattis\ntristique. Donec ante est, blandit sit amet tristique vel, lacinia pulvinar arcu. Pellentesque\nscelerisque fermentum erat, id posuere justo pulvinar ut. Cras id eros sed enim aliquam\nlobortis. Sed lobortis nisl ut eros efficitur tincidunt. Cras justo mi, porttitor quis mattis vel,\nultricies ut purus. Ut facilisis et lacus eu cursus.\n\nIn eleifend velit vitae libero sollicitudin euismod. Fusce vitae vestibulum velit. Pellentesque\nvulputate lectus quis pellentesque commodo. Aliquam erat volutpat. Vestibulum in egestas\nvelit. Pellentesque fermentum nisl vitae fringilla venenatis. Etiam id mauris vitae orci\nmaximus ultricies.\n\n\n## Cras fringilla ipsum magna, in fringilla dui commodo a.\n\n\n<table>\n<tr>\n<th></th>\n<th>Lorem ipsum</th>\n<th>Lorem ipsum</th>\n<th>Lorem ipsum</th>\n</tr>\n<tr>\n<td>1</td>\n<td>In eleifend velit vitae libero sollicitudin euismod.</td>\n<td>Lorem</td>\n<td></td>\n</tr>\n<tr>\n<td>2</td>\n<td>Cras fringilla ipsum magna, in fringilla dui commodo a.</td>\n<td>Ipsum</td>\n<td></td>\n</tr>\n<tr>\n<td>3</td>\n<td>Aliquam erat volutpat.</td>\n<td>Lorem</td>\n<td></td>\n</tr>\n<tr>\n<td>4</td>\n<td>Fusce vitae vestibulum velit.</td>\n<td>Lorem</td>\n<td></td>\n</tr>\n<tr>\n<td>5</td>\n<td>Etiam vehicula luctus fermentum.</td>\n<td>Ipsum</td>\n<td></td>\n</tr>\n</table>\n\n\nEtiam vehicula luctus fermentum. In vel metus congue, pulvinar lectus vel, fermentum dui.\nMaecenas ante orci, egestas ut aliquet sit amet, sagittis a magna. Aliquam ante quam,\npellentesque ut dignissim quis, laoreet eget est. Aliquam erat volutpat. Class aptent taciti\nsociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Ut ullamcorper\njusto sapien, in cursus libero viverra eget. Vivamus auctor imperdiet urna, at pulvinar leo\nposuere laoreet. Suspendisse neque nisl, fringilla at iaculis scelerisque, ornare vel dolor. Ut\net pulvinar nunc. Pellentesque fringilla mollis efficitur. Nullam venenatis commodo\nimperdiet. Morbi velit neque, semper quis lorem quis, efficitur dignissim ipsum. Ut ac lorem\nsed turpis imperdiet eleifend sit amet id sapien.\n",
+  "pages": [
+    {
+      "pageNumber": 1,
+      "angle": -0.006000000052154064,
+      "width": 8.2639,
+      "height": 11.6944,
+      "unit": "inch",
+      "words": [
+        {
+          "content": "Lorem",
+          "polygon": [2.8619, 1.0102, 4.0272, 1.0132, 4.0242, 1.3972, 2.8591, 1.3853],
+          "confidence": 0.998,
+          "span": {
+            "offset": 2,
+            "length": 5
+          }
+        },
+        {
+          "content": "ipsum",
+          "polygon": [4.1792, 1.0127, 5.2999, 1.0175, 5.2999, 1.4047, 4.1764, 1.3986],
+          "confidence": 0.996,
+          "span": {
+            "offset": 8,
+            "length": 5
+          }
+        },
+        {
+          "content": "Lorem",
+          "polygon": [1.0192, 2.0347, 1.7881, 2.0347, 1.7873, 2.3153, 1.0184, 2.3128],
+          "confidence": 0.995,
+          "span": {
+            "offset": 18,
+            "length": 5
+          }
+        },
+        {
+          "content": "ipsum",
+          "polygon": [1.8853, 2.0342, 2.594, 2.0343, 2.5933, 2.3167, 1.8846, 2.3158],
+          "confidence": 0.996,
+          "span": {
+            "offset": 24,
+            "length": 5
+          }
+        },
+        {
+          "content": "dolor",
+          "polygon": [2.682, 2.0347, 3.2981, 2.0368, 3.2975, 2.3175, 2.6813, 2.3165],
+          "confidence": 0.998,
+          "span": {
+            "offset": 30,
+            "length": 5
+          }
+        },
+        {
+          "content": "sit",
+          "polygon": [3.3768, 2.0365, 3.6594, 2.0357, 3.6588, 2.3172, 3.3763, 2.3174],
+          "confidence": 0.998,
+          "span": {
+            "offset": 36,
+            "length": 3
+          }
+        },
+        {
+          "content": "amet,",
+          "polygon": [3.7335, 2.0357, 4.368, 2.0365, 4.3672, 2.3158, 3.7328, 2.3169],
+          "confidence": 0.994,
+          "span": {
+            "offset": 40,
+            "length": 5
+          }
+        },
+        {
+          "content": "consectetur",
+          "polygon": [4.456, 2.0368, 5.8642, 2.0384, 5.8635, 2.3231, 4.4553, 2.3158],
+          "confidence": 0.995,
+          "span": {
+            "offset": 46,
+            "length": 11
+          }
+        },
+        {
+          "content": "adipiscing",
+          "polygon": [5.9429, 2.0385, 7.1788, 2.0404, 7.1788, 2.3298, 5.9422, 2.3232],
+          "confidence": 0.995,
+          "span": {
+            "offset": 58,
+            "length": 10
+          }
+        },
+        {
+          "content": "elit.",
+          "polygon": [0.7768, 2.3256, 1.2031, 2.3271, 1.2027, 2.577, 0.7765, 2.5771],
+          "confidence": 0.995,
+          "span": {
+            "offset": 69,
+            "length": 5
+          }
+        },
+        {
+          "content": "Nunc",
+          "polygon": [1.2983, 2.3276, 1.9068, 2.327, 1.9064, 2.5807, 1.298, 2.5771],
+          "confidence": 0.986,
+          "span": {
+            "offset": 75,
+            "length": 4
+          }
+        },
+        {
+          "content": "ac",
+          "polygon": [1.9854, 2.3268, 2.2545, 2.3268, 2.2542, 2.5806, 1.9851, 2.5808],
+          "confidence": 0.996,
+          "span": {
+            "offset": 80,
+            "length": 2
+          }
+        },
+        {
+          "content": "faucibus",
+          "polygon": [2.329, 2.3268, 3.3473, 2.3294, 3.3469, 2.5795, 2.3287, 2.5806],
+          "confidence": 0.995,
+          "span": {
+            "offset": 83,
+            "length": 8
+          }
+        },
+        {
+          "content": "odio.",
+          "polygon": [3.43, 2.3284, 4.0206, 2.3279, 4.0206, 2.581, 3.4297, 2.5802],
+          "confidence": 0.996,
+          "span": {
+            "offset": 92,
+            "length": 5
+          }
+        },
+        {
+          "content": "Vestibulum",
+          "polygon": [0.7707, 3.026, 1.5895, 3.0271, 1.5895, 3.2138, 0.7708, 3.2116],
+          "confidence": 0.993,
+          "span": {
+            "offset": 99,
+            "length": 10
+          }
+        },
+        {
+          "content": "neque",
+          "polygon": [1.6656, 3.0274, 2.107, 3.029, 2.1069, 3.2144, 1.6656, 3.214],
+          "confidence": 0.996,
+          "span": {
+            "offset": 110,
+            "length": 5
+          }
+        },
+        {
+          "content": "massa,",
+          "polygon": [2.1831, 3.0293, 2.6793, 3.0294, 2.6794, 3.2143, 2.183, 3.2145],
+          "confidence": 0.992,
+          "span": {
+            "offset": 116,
+            "length": 6
+          }
+        },
+        {
+          "content": "scelerisque",
+          "polygon": [2.7554, 3.0294, 3.5712, 3.0298, 3.5714, 3.2148, 2.7555, 3.2144],
+          "confidence": 0.993,
+          "span": {
+            "offset": 123,
+            "length": 11
+          }
+        },
+        {
+          "content": "sit",
+          "polygon": [3.6413, 3.0298, 3.8087, 3.0291, 3.8088, 3.2148, 3.6414, 3.2148],
+          "confidence": 0.998,
+          "span": {
+            "offset": 135,
+            "length": 3
+          }
+        },
+        {
+          "content": "amet",
+          "polygon": [3.8756, 3.0288, 4.247, 3.0277, 4.2471, 3.2147, 3.8757, 3.2148],
+          "confidence": 0.992,
+          "span": {
+            "offset": 139,
+            "length": 4
+          }
+        },
+        {
+          "content": "ligula",
+          "polygon": [4.317, 3.0277, 4.6945, 3.028, 4.6946, 3.2148, 4.3171, 3.2148],
+          "confidence": 0.996,
+          "span": {
+            "offset": 144,
+            "length": 6
+          }
+        },
+        {
+          "content": "eu,",
+          "polygon": [4.7645, 3.0283, 4.9807, 3.0289, 4.9807, 3.2148, 4.7646, 3.2148],
+          "confidence": 0.992,
+          "span": {
+            "offset": 151,
+            "length": 3
+          }
+        },
+        {
+          "content": "congue",
+          "polygon": [5.0507, 3.0292, 5.5803, 3.0292, 5.5803, 3.2139, 5.0507, 3.2148],
+          "confidence": 0.997,
+          "span": {
+            "offset": 155,
+            "length": 6
+          }
+        },
+        {
+          "content": "molestie",
+          "polygon": [5.6534, 3.029, 6.2653, 3.0272, 6.2654, 3.2127, 5.6534, 3.2138],
+          "confidence": 0.993,
+          "span": {
+            "offset": 162,
+            "length": 8
+          }
+        },
+        {
+          "content": "mi.",
+          "polygon": [6.3383, 3.027, 6.5453, 3.0264, 6.5454, 3.2122, 6.3384, 3.2126],
+          "confidence": 0.992,
+          "span": {
+            "offset": 171,
+            "length": 3
+          }
+        },
+        {
+          "content": "Praesent",
+          "polygon": [6.6275, 3.0262, 7.2546, 3.0252, 7.2546, 3.2103, 6.6275, 3.2118],
+          "confidence": 0.994,
+          "span": {
+            "offset": 175,
+            "length": 8
+          }
+        },
+        {
+          "content": "ut",
+          "polygon": [7.3246, 3.0252, 7.4815, 3.0252, 7.4815, 3.2103, 7.3247, 3.2103],
+          "confidence": 0.998,
+          "span": {
+            "offset": 184,
+            "length": 2
+          }
+        },
+        {
+          "content": "varius",
+          "polygon": [0.7705, 3.2315, 1.2284, 3.232, 1.2289, 3.4125, 0.7708, 3.4112],
+          "confidence": 0.994,
+          "span": {
+            "offset": 187,
+            "length": 6
+          }
+        },
+        {
+          "content": "sem.",
+          "polygon": [1.3218, 3.2318, 1.6563, 3.2307, 1.6567, 3.4132, 1.3223, 3.4127],
+          "confidence": 0.992,
+          "span": {
+            "offset": 194,
+            "length": 4
+          }
+        },
+        {
+          "content": "Nullam",
+          "polygon": [1.7647, 3.2304, 2.2588, 3.2294, 2.2591, 3.4142, 1.7651, 3.4133],
+          "confidence": 0.997,
+          "span": {
+            "offset": 199,
+            "length": 6
+          }
+        },
+        {
+          "content": "at",
+          "polygon": [2.3552, 3.2296, 2.4999, 3.2299, 2.5002, 3.4145, 2.3556, 3.4143],
+          "confidence": 0.996,
+          "span": {
+            "offset": 206,
+            "length": 2
+          }
+        },
+        {
+          "content": "porttitor",
+          "polygon": [2.5902, 3.2301, 3.1868, 3.2295, 3.1876, 3.4147, 2.5906, 3.4147],
+          "confidence": 0.995,
+          "span": {
+            "offset": 209,
+            "length": 9
+          }
+        },
+        {
+          "content": "arcu,",
+          "polygon": [3.2742, 3.2295, 3.6267, 3.2296, 3.6276, 3.4147, 3.275, 3.4147],
+          "confidence": 0.994,
+          "span": {
+            "offset": 219,
+            "length": 5
+          }
+        },
+        {
+          "content": "nec",
+          "polygon": [3.7261, 3.2294, 3.9761, 3.2286, 3.9768, 3.4144, 3.727, 3.4146],
+          "confidence": 0.995,
+          "span": {
+            "offset": 225,
+            "length": 3
+          }
+        },
+        {
+          "content": "lacinia",
+          "polygon": [4.0756, 3.2282, 4.5275, 3.2271, 4.528, 3.4143, 4.0762, 3.4143],
+          "confidence": 0.994,
+          "span": {
+            "offset": 229,
+            "length": 7
+          }
+        },
+        {
+          "content": "nisi.",
+          "polygon": [4.6299, 3.227, 4.9071, 3.2269, 4.9075, 3.4142, 4.6304, 3.4143],
+          "confidence": 0.995,
+          "span": {
+            "offset": 237,
+            "length": 5
+          }
+        },
+        {
+          "content": "Ut",
+          "polygon": [5.0095, 3.2269, 5.1662, 3.2272, 5.1666, 3.4136, 5.0099, 3.4142],
+          "confidence": 0.998,
+          "span": {
+            "offset": 243,
+            "length": 2
+          }
+        },
+        {
+          "content": "ac",
+          "polygon": [5.2566, 3.2275, 5.4133, 3.228, 5.4136, 3.4122, 5.2569, 3.4131],
+          "confidence": 0.994,
+          "span": {
+            "offset": 246,
+            "length": 2
+          }
+        },
+        {
+          "content": "dolor",
+          "polygon": [5.5067, 3.2283, 5.8772, 3.2277, 5.8778, 3.4118, 5.507, 3.4117],
+          "confidence": 0.997,
+          "span": {
+            "offset": 249,
+            "length": 5
+          }
+        },
+        {
+          "content": "vitae",
+          "polygon": [5.9586, 3.2275, 6.3171, 3.2271, 6.3177, 3.4108, 5.9592, 3.4118],
+          "confidence": 0.995,
+          "span": {
+            "offset": 255,
+            "length": 5
+          }
+        },
+        {
+          "content": "odio",
+          "polygon": [6.4105, 3.227, 6.7148, 3.2273, 6.7152, 3.4092, 6.411, 3.4104],
+          "confidence": 0.989,
+          "span": {
+            "offset": 261,
+            "length": 4
+          }
+        },
+        {
+          "content": "interdum",
+          "polygon": [6.8112, 3.2274, 7.4758, 3.2268, 7.4758, 3.4086, 6.8116, 3.4089],
+          "confidence": 0.994,
+          "span": {
+            "offset": 266,
+            "length": 8
+          }
+        },
+        {
+          "content": "condimentum.",
+          "polygon": [0.7774, 3.4354, 1.831, 3.4354, 1.8313, 3.6193, 0.7777, 3.6156],
+          "confidence": 0.99,
+          "span": {
+            "offset": 275,
+            "length": 12
+          }
+        },
+        {
+          "content": "Vivamus",
+          "polygon": [1.9737, 3.4359, 2.6659, 3.4333, 2.6665, 3.6203, 1.974, 3.6193],
+          "confidence": 0.997,
+          "span": {
+            "offset": 288,
+            "length": 7
+          }
+        },
+        {
+          "content": "dapibus",
+          "polygon": [2.8086, 3.4333, 3.4493, 3.4343, 3.4499, 3.6203, 2.8093, 3.6203],
+          "confidence": 0.994,
+          "span": {
+            "offset": 296,
+            "length": 7
+          }
+        },
+        {
+          "content": "sodales",
+          "polygon": [3.595, 3.4345, 4.2114, 3.4332, 4.2118, 3.6203, 3.5955, 3.6203],
+          "confidence": 0.995,
+          "span": {
+            "offset": 304,
+            "length": 7
+          }
+        },
+        {
+          "content": "ex,",
+          "polygon": [4.3541, 3.434, 4.5849, 3.4353, 4.5854, 3.6203, 4.3545, 3.6203],
+          "confidence": 0.994,
+          "span": {
+            "offset": 312,
+            "length": 3
+          }
+        },
+        {
+          "content": "vitae",
+          "polygon": [4.7336, 3.4348, 5.1405, 3.4334, 5.1408, 3.6203, 4.7341, 3.6203],
+          "confidence": 0.995,
+          "span": {
+            "offset": 316,
+            "length": 5
+          }
+        },
+        {
+          "content": "malesuada",
+          "polygon": [5.2863, 3.4336, 6.1607, 3.4345, 6.1609, 3.6203, 5.2865, 3.6203],
+          "confidence": 0.994,
+          "span": {
+            "offset": 322,
+            "length": 9
+          }
+        },
+        {
+          "content": "ipsum",
+          "polygon": [6.3125, 3.4348, 6.7922, 3.4364, 6.7925, 3.62, 6.3127, 3.6203],
+          "confidence": 0.997,
+          "span": {
+            "offset": 332,
+            "length": 5
+          }
+        },
+        {
+          "content": "cursus",
+          "polygon": [6.938, 3.4369, 7.4815, 3.4364, 7.4815, 3.6195, 6.9382, 3.6193],
+          "confidence": 0.994,
+          "span": {
+            "offset": 338,
+            "length": 6
+          }
+        },
+        {
+          "content": "convallis.",
+          "polygon": [0.7753, 3.6412, 1.5521, 3.6397, 1.5526, 3.8239, 0.7757, 3.8231],
+          "confidence": 0.992,
+          "span": {
+            "offset": 345,
+            "length": 10
+          }
+        },
+        {
+          "content": "Maecenas",
+          "polygon": [1.6561, 3.6395, 2.4574, 3.6391, 2.4581, 3.8258, 1.6565, 3.824],
+          "confidence": 0.994,
+          "span": {
+            "offset": 356,
+            "length": 8
+          }
+        },
+        {
+          "content": "sed",
+          "polygon": [2.5491, 3.6392, 2.8274, 3.6392, 2.8283, 3.8258, 2.5499, 3.8258],
+          "confidence": 0.997,
+          "span": {
+            "offset": 365,
+            "length": 3
+          }
+        },
+        {
+          "content": "egestas",
+          "polygon": [2.9222, 3.6391, 3.5583, 3.6396, 3.5596, 3.8258, 2.9232, 3.8258],
+          "confidence": 0.993,
+          "span": {
+            "offset": 369,
+            "length": 7
+          }
+        },
+        {
+          "content": "nulla,",
+          "polygon": [3.6562, 3.6398, 4.0935, 3.6388, 4.0947, 3.8258, 3.6575, 3.8258],
+          "confidence": 0.993,
+          "span": {
+            "offset": 377,
+            "length": 6
+          }
+        },
+        {
+          "content": "ac",
+          "polygon": [4.1945, 3.6388, 4.3718, 3.6391, 4.3729, 3.8258, 4.1956, 3.8258],
+          "confidence": 0.995,
+          "span": {
+            "offset": 384,
+            "length": 2
+          }
+        },
+        {
+          "content": "condimentum",
+          "polygon": [4.4636, 3.6393, 5.5737, 3.6376, 5.5744, 3.825, 4.4646, 3.8258],
+          "confidence": 0.992,
+          "span": {
+            "offset": 387,
+            "length": 11
+          }
+        },
+        {
+          "content": "orci.",
+          "polygon": [5.6685, 3.6374, 6.0202, 3.6364, 6.0214, 3.8245, 5.6693, 3.8249],
+          "confidence": 0.994,
+          "span": {
+            "offset": 399,
+            "length": 5
+          }
+        },
+        {
+          "content": "Mauris",
+          "polygon": [6.1365, 3.6363, 6.6074, 3.6363, 6.608, 3.8228, 6.1375, 3.8242],
+          "confidence": 0.996,
+          "span": {
+            "offset": 405,
+            "length": 6
+          }
+        },
+        {
+          "content": "diam",
+          "polygon": [6.6961, 3.6364, 7.0478, 3.6366, 7.048, 3.8221, 6.6966, 3.8227],
+          "confidence": 0.992,
+          "span": {
+            "offset": 412,
+            "length": 4
+          }
+        },
+        {
+          "content": "felis,",
+          "polygon": [7.1335, 3.6367, 7.4758, 3.6373, 7.4758, 3.8226, 7.1337, 3.8222],
+          "confidence": 0.992,
+          "span": {
+            "offset": 417,
+            "length": 6
+          }
+        },
+        {
+          "content": "vulputate",
+          "polygon": [0.7715, 3.8503, 1.4767, 3.8486, 1.4771, 4.0314, 0.7719, 4.0314],
+          "confidence": 0.992,
+          "span": {
+            "offset": 424,
+            "length": 9
+          }
+        },
+        {
+          "content": "ac",
+          "polygon": [1.5375, 3.8484, 1.6926, 3.848, 1.6929, 4.0314, 1.5379, 4.0314],
+          "confidence": 0.992,
+          "span": {
+            "offset": 434,
+            "length": 2
+          }
+        },
+        {
+          "content": "suscipit",
+          "polygon": [1.7503, 3.8478, 2.3005, 3.8468, 2.3011, 4.0314, 1.7506, 4.0314],
+          "confidence": 0.992,
+          "span": {
+            "offset": 437,
+            "length": 8
+          }
+        },
+        {
+          "content": "et,",
+          "polygon": [2.3491, 3.8467, 2.5224, 3.846, 2.5232, 4.0314, 2.3498, 4.0314],
+          "confidence": 0.993,
+          "span": {
+            "offset": 446,
+            "length": 3
+          }
+        },
+        {
+          "content": "iaculis",
+          "polygon": [2.5589, 3.8459, 3.0391, 3.8461, 3.0401, 4.0314, 2.5597, 4.0314],
+          "confidence": 0.992,
+          "span": {
+            "offset": 450,
+            "length": 7
+          }
+        },
+        {
+          "content": "non",
+          "polygon": [3.0969, 3.8462, 3.3583, 3.846, 3.3593, 4.0314, 3.0978, 4.0314],
+          "confidence": 0.996,
+          "span": {
+            "offset": 458,
+            "length": 3
+          }
+        },
+        {
+          "content": "est.",
+          "polygon": [3.4161, 3.8459, 3.6653, 3.8455, 3.6663, 4.0314, 3.417, 4.0314],
+          "confidence": 0.993,
+          "span": {
+            "offset": 462,
+            "length": 4
+          }
+        },
+        {
+          "content": "Curabitur",
+          "polygon": [3.7291, 3.8457, 4.4161, 3.8461, 4.4165, 4.0309, 3.73, 4.0314],
+          "confidence": 0.993,
+          "span": {
+            "offset": 467,
+            "length": 9
+          }
+        },
+        {
+          "content": "semper",
+          "polygon": [4.4617, 3.846, 5.0119, 3.845, 5.0122, 4.0314, 4.462, 4.0309],
+          "confidence": 0.993,
+          "span": {
+            "offset": 477,
+            "length": 6
+          }
+        },
+        {
+          "content": "arcu",
+          "polygon": [5.0605, 3.8449, 5.3645, 3.8457, 5.3648, 4.0314, 5.0608, 4.0314],
+          "confidence": 0.991,
+          "span": {
+            "offset": 484,
+            "length": 4
+          }
+        },
+        {
+          "content": "ac",
+          "polygon": [5.4223, 3.8459, 5.5742, 3.8463, 5.5745, 4.0314, 5.4225, 4.0314],
+          "confidence": 0.989,
+          "span": {
+            "offset": 489,
+            "length": 2
+          }
+        },
+        {
+          "content": "ligula",
+          "polygon": [5.6107, 3.8464, 6.018, 3.8469, 6.0186, 4.0314, 5.611, 4.0314],
+          "confidence": 0.993,
+          "span": {
+            "offset": 492,
+            "length": 6
+          }
+        },
+        {
+          "content": "semper,",
+          "polygon": [6.0819, 3.847, 6.6624, 3.8471, 6.6628, 4.0314, 6.0824, 4.0314],
+          "confidence": 0.992,
+          "span": {
+            "offset": 499,
+            "length": 7
+          }
+        },
+        {
+          "content": "nec",
+          "polygon": [6.7263, 3.8471, 6.9755, 3.8469, 6.9758, 4.0303, 6.7266, 4.0314],
+          "confidence": 0.994,
+          "span": {
+            "offset": 507,
+            "length": 3
+          }
+        },
+        {
+          "content": "luctus",
+          "polygon": [7.0363, 3.8469, 7.4758, 3.8472, 7.4758, 4.0308, 7.0365, 4.0303],
+          "confidence": 0.993,
+          "span": {
+            "offset": 511,
+            "length": 6
+          }
+        },
+        {
+          "content": "nisl",
+          "polygon": [0.7763, 4.044, 1.0241, 4.0438, 1.0244, 4.2286, 0.7765, 4.2278],
+          "confidence": 0.987,
+          "span": {
+            "offset": 518,
+            "length": 4
+          }
+        },
+        {
+          "content": "blandit.",
+          "polygon": [1.0954, 4.0437, 1.619, 4.0439, 1.6193, 4.2302, 1.0957, 4.2289],
+          "confidence": 0.994,
+          "span": {
+            "offset": 523,
+            "length": 8
+          }
+        },
+        {
+          "content": "Integer",
+          "polygon": [1.6562, 4.044, 2.2015, 4.0429, 2.2018, 4.2312, 1.6565, 4.2303],
+          "confidence": 0.995,
+          "span": {
+            "offset": 532,
+            "length": 7
+          }
+        },
+        {
+          "content": "lacinia",
+          "polygon": [2.2387, 4.0428, 2.7252, 4.0421, 2.7256, 4.2322, 2.239, 4.2313],
+          "confidence": 0.993,
+          "span": {
+            "offset": 540,
+            "length": 7
+          }
+        },
+        {
+          "content": "ante",
+          "polygon": [2.7902, 4.0422, 3.1063, 4.0426, 3.107, 4.2324, 2.7907, 4.2322],
+          "confidence": 0.991,
+          "span": {
+            "offset": 548,
+            "length": 4
+          }
+        },
+        {
+          "content": "ac",
+          "polygon": [3.1682, 4.0426, 3.317, 4.0422, 3.3178, 4.2324, 3.1691, 4.2325],
+          "confidence": 0.993,
+          "span": {
+            "offset": 553,
+            "length": 2
+          }
+        },
+        {
+          "content": "libero",
+          "polygon": [3.3541, 4.0421, 3.7755, 4.041, 3.7762, 4.2323, 3.355, 4.2324],
+          "confidence": 0.995,
+          "span": {
+            "offset": 556,
+            "length": 6
+          }
+        },
+        {
+          "content": "lobortis",
+          "polygon": [3.8127, 4.041, 4.3704, 4.0405, 4.3706, 4.2327, 3.8133, 4.2324],
+          "confidence": 0.995,
+          "span": {
+            "offset": 563,
+            "length": 8
+          }
+        },
+        {
+          "content": "imperdiet.",
+          "polygon": [4.4076, 4.0405, 5.1729, 4.0409, 5.173, 4.2327, 4.4078, 4.2327],
+          "confidence": 0.992,
+          "span": {
+            "offset": 572,
+            "length": 10
+          }
+        },
+        {
+          "content": "Nullam",
+          "polygon": [5.2566, 4.0414, 5.7647, 4.0434, 5.7649, 4.2319, 5.2567, 4.2325],
+          "confidence": 0.997,
+          "span": {
+            "offset": 583,
+            "length": 6
+          }
+        },
+        {
+          "content": "mollis",
+          "polygon": [5.8174, 4.0435, 6.248, 4.0438, 6.2482, 4.2322, 5.8176, 4.232],
+          "confidence": 0.996,
+          "span": {
+            "offset": 590,
+            "length": 6
+          }
+        },
+        {
+          "content": "convallis",
+          "polygon": [6.3007, 4.0437, 6.9328, 4.0445, 6.9328, 4.2318, 6.3009, 4.2322],
+          "confidence": 0.995,
+          "span": {
+            "offset": 597,
+            "length": 9
+          }
+        },
+        {
+          "content": "ipsum,",
+          "polygon": [6.9824, 4.0447, 7.4643, 4.0453, 7.4643, 4.2354, 6.9824, 4.2318],
+          "confidence": 0.994,
+          "span": {
+            "offset": 607,
+            "length": 6
+          }
+        },
+        {
+          "content": "ac",
+          "polygon": [0.7811, 4.2588, 0.9703, 4.2582, 0.9705, 4.4366, 0.7812, 4.4361],
+          "confidence": 0.993,
+          "span": {
+            "offset": 614,
+            "length": 2
+          }
+        },
+        {
+          "content": "accumsan",
+          "polygon": [1.0192, 4.258, 1.7578, 4.2545, 1.7581, 4.4365, 1.0194, 4.4368],
+          "confidence": 0.995,
+          "span": {
+            "offset": 617,
+            "length": 8
+          }
+        },
+        {
+          "content": "nunc",
+          "polygon": [1.8127, 4.2544, 2.1729, 4.2535, 2.1732, 4.4367, 1.813, 4.4365],
+          "confidence": 0.992,
+          "span": {
+            "offset": 626,
+            "length": 4
+          }
+        },
+        {
+          "content": "vehicula",
+          "polygon": [2.237, 4.2534, 2.8291, 4.2515, 2.8296, 4.4368, 2.2373, 4.4368],
+          "confidence": 0.995,
+          "span": {
+            "offset": 631,
+            "length": 8
+          }
+        },
+        {
+          "content": "vitae.",
+          "polygon": [2.9024, 4.2515, 3.2778, 4.2507, 3.2784, 4.4368, 2.9029, 4.4368],
+          "confidence": 0.993,
+          "span": {
+            "offset": 640,
+            "length": 6
+          }
+        },
+        {
+          "content": "Nulla",
+          "polygon": [3.3572, 4.2503, 3.7082, 4.2487, 3.7084, 4.4368, 3.3577, 4.4368],
+          "confidence": 0.997,
+          "span": {
+            "offset": 647,
+            "length": 5
+          }
+        },
+        {
+          "content": "eget",
+          "polygon": [3.7753, 4.2485, 4.0989, 4.2479, 4.099, 4.4368, 3.7756, 4.4368],
+          "confidence": 0.992,
+          "span": {
+            "offset": 653,
+            "length": 4
+          }
+        },
+        {
+          "content": "justo",
+          "polygon": [4.1446, 4.2478, 4.5048, 4.2479, 4.505, 4.4368, 4.1448, 4.4368],
+          "confidence": 0.998,
+          "span": {
+            "offset": 658,
+            "length": 5
+          }
+        },
+        {
+          "content": "in",
+          "polygon": [4.572, 4.2479, 4.6818, 4.2476, 4.6821, 4.4368, 4.5722, 4.4367],
+          "confidence": 0.999,
+          "span": {
+            "offset": 664,
+            "length": 2
+          }
+        },
+        {
+          "content": "felis",
+          "polygon": [4.7459, 4.2474, 5.0389, 4.2464, 5.0392, 4.4368, 4.7462, 4.4368],
+          "confidence": 0.996,
+          "span": {
+            "offset": 667,
+            "length": 5
+          }
+        },
+        {
+          "content": "tristique",
+          "polygon": [5.0969, 4.2463, 5.6982, 4.248, 5.6985, 4.4368, 5.0972, 4.4368],
+          "confidence": 0.995,
+          "span": {
+            "offset": 673,
+            "length": 9
+          }
+        },
+        {
+          "content": "fringilla.",
+          "polygon": [5.7562, 4.248, 6.3392, 4.2477, 6.3395, 4.4357, 5.7565, 4.4368],
+          "confidence": 0.994,
+          "span": {
+            "offset": 683,
+            "length": 10
+          }
+        },
+        {
+          "content": "Morbi",
+          "polygon": [6.4155, 4.2476, 6.8031, 4.2479, 6.8034, 4.4338, 6.4158, 4.4353],
+          "confidence": 0.996,
+          "span": {
+            "offset": 694,
+            "length": 5
+          }
+        },
+        {
+          "content": "sit",
+          "polygon": [6.8703, 4.2481, 7.0381, 4.2484, 7.0384, 4.4332, 6.8705, 4.4336],
+          "confidence": 0.998,
+          "span": {
+            "offset": 700,
+            "length": 3
+          }
+        },
+        {
+          "content": "amet",
+          "polygon": [7.0961, 4.2485, 7.4872, 4.2491, 7.4872, 4.4334, 7.0963, 4.4332],
+          "confidence": 0.992,
+          "span": {
+            "offset": 704,
+            "length": 4
+          }
+        },
+        {
+          "content": "tortor",
+          "polygon": [0.7723, 4.4567, 1.2027, 4.4586, 1.2029, 4.6424, 0.7722, 4.6418],
+          "confidence": 0.995,
+          "span": {
+            "offset": 709,
+            "length": 6
+          }
+        },
+        {
+          "content": "quis",
+          "polygon": [1.2488, 4.4588, 1.5346, 4.4583, 1.5349, 4.6424, 1.2491, 4.6424],
+          "confidence": 0.992,
+          "span": {
+            "offset": 716,
+            "length": 4
+          }
+        },
+        {
+          "content": "risus",
+          "polygon": [1.5715, 4.4582, 1.9373, 4.4576, 1.9375, 4.6424, 1.5718, 4.6424],
+          "confidence": 0.996,
+          "span": {
+            "offset": 721,
+            "length": 5
+          }
+        },
+        {
+          "content": "auctor",
+          "polygon": [1.9957, 4.4575, 2.4598, 4.4568, 2.46, 4.6424, 1.9959, 4.6424],
+          "confidence": 0.996,
+          "span": {
+            "offset": 727,
+            "length": 6
+          }
+        },
+        {
+          "content": "condimentum.",
+          "polygon": [2.509, 4.4567, 3.551, 4.4551, 3.5513, 4.6424, 2.5092, 4.6424],
+          "confidence": 0.994,
+          "span": {
+            "offset": 734,
+            "length": 12
+          }
+        },
+        {
+          "content": "Morbi",
+          "polygon": [3.6186, 4.4548, 4.009, 4.4544, 4.0091, 4.6424, 3.6189, 4.6424],
+          "confidence": 0.995,
+          "span": {
+            "offset": 747,
+            "length": 5
+          }
+        },
+        {
+          "content": "in",
+          "polygon": [4.0766, 4.4544, 4.1904, 4.4542, 4.1904, 4.6424, 4.0767, 4.6424],
+          "confidence": 0.998,
+          "span": {
+            "offset": 753,
+            "length": 2
+          }
+        },
+        {
+          "content": "ullamcorper",
+          "polygon": [4.258, 4.4541, 5.1279, 4.4524, 5.128, 4.6424, 4.258, 4.6424],
+          "confidence": 0.992,
+          "span": {
+            "offset": 756,
+            "length": 11
+          }
+        },
+        {
+          "content": "elit.",
+          "polygon": [5.177, 4.4525, 5.4322, 4.453, 5.4323, 4.6418, 5.1772, 4.6424],
+          "confidence": 0.995,
+          "span": {
+            "offset": 768,
+            "length": 5
+          }
+        },
+        {
+          "content": "Nulla",
+          "polygon": [5.5059, 4.4532, 5.8533, 4.4526, 5.8534, 4.6414, 5.506, 4.6415],
+          "confidence": 0.995,
+          "span": {
+            "offset": 774,
+            "length": 5
+          }
+        },
+        {
+          "content": "iaculis",
+          "polygon": [5.924, 4.4524, 6.3697, 4.4516, 6.3699, 4.64, 5.9242, 4.6415],
+          "confidence": 0.993,
+          "span": {
+            "offset": 780,
+            "length": 7
+          }
+        },
+        {
+          "content": "tellus",
+          "polygon": [6.4219, 4.4515, 6.8123, 4.4521, 6.8125, 4.638, 6.4221, 4.6397],
+          "confidence": 0.995,
+          "span": {
+            "offset": 788,
+            "length": 6
+          }
+        },
+        {
+          "content": "sit",
+          "polygon": [6.8676, 4.4523, 7.0397, 4.4526, 7.0399, 4.6373, 6.8678, 4.6378],
+          "confidence": 0.998,
+          "span": {
+            "offset": 795,
+            "length": 3
+          }
+        },
+        {
+          "content": "amet",
+          "polygon": [7.092, 4.4526, 7.4815, 4.4521, 7.4815, 4.6382, 7.0922, 4.6374],
+          "confidence": 0.992,
+          "span": {
+            "offset": 799,
+            "length": 4
+          }
+        },
+        {
+          "content": "mauris",
+          "polygon": [0.7773, 4.6667, 1.281, 4.6671, 1.2813, 4.8466, 0.7778, 4.8444],
+          "confidence": 0.995,
+          "span": {
+            "offset": 804,
+            "length": 6
+          }
+        },
+        {
+          "content": "tempus",
+          "polygon": [1.3313, 4.6669, 1.8765, 4.6653, 1.8767, 4.8472, 1.3317, 4.8466],
+          "confidence": 0.998,
+          "span": {
+            "offset": 811,
+            "length": 6
+          }
+        },
+        {
+          "content": "fringilla.",
+          "polygon": [1.9298, 4.6652, 2.5186, 4.6644, 2.5186, 4.8479, 1.93, 4.8476],
+          "confidence": 0.994,
+          "span": {
+            "offset": 818,
+            "length": 10
+          }
+        },
+        {
+          "content": "Maecenas",
+          "polygon": [0.7765, 5.0199, 1.5043, 5.0244, 1.5043, 5.2019, 0.7765, 5.2003],
+          "confidence": 0.992,
+          "span": {
+            "offset": 830,
+            "length": 8
+          }
+        },
+        {
+          "content": "mauris",
+          "polygon": [1.5401, 5.0244, 2.0532, 5.0222, 2.0532, 5.203, 1.5401, 5.202],
+          "confidence": 0.995,
+          "span": {
+            "offset": 839,
+            "length": 6
+          }
+        },
+        {
+          "content": "lectus,",
+          "polygon": [2.089, 5.0221, 2.5811, 5.0224, 2.5812, 5.2056, 2.089, 5.2031],
+          "confidence": 0.993,
+          "span": {
+            "offset": 846,
+            "length": 7
+          }
+        },
+        {
+          "content": "lobortis",
+          "polygon": [2.6468, 5.0225, 3.1807, 5.0218, 3.1807, 5.2059, 2.6468, 5.2059],
+          "confidence": 0.992,
+          "span": {
+            "offset": 854,
+            "length": 8
+          }
+        },
+        {
+          "content": "et",
+          "polygon": [3.2344, 5.0217, 3.3776, 5.0213, 3.3775, 5.2058, 3.2343, 5.2059],
+          "confidence": 0.997,
+          "span": {
+            "offset": 863,
+            "length": 2
+          }
+        },
+        {
+          "content": "purus",
+          "polygon": [3.4342, 5.0212, 3.831, 5.0207, 3.8308, 5.2053, 3.4341, 5.2058],
+          "confidence": 0.995,
+          "span": {
+            "offset": 866,
+            "length": 5
+          }
+        },
+        {
+          "content": "mattis,",
+          "polygon": [3.8906, 5.0207, 4.3798, 5.0211, 4.3795, 5.2045, 3.8904, 5.2051],
+          "confidence": 0.993,
+          "span": {
+            "offset": 872,
+            "length": 7
+          }
+        },
+        {
+          "content": "blandit",
+          "polygon": [4.4454, 5.0211, 4.9406, 5.02, 4.9403, 5.2052, 4.4452, 5.2046],
+          "confidence": 0.994,
+          "span": {
+            "offset": 880,
+            "length": 7
+          }
+        },
+        {
+          "content": "dictum",
+          "polygon": [4.9943, 5.0199, 5.4834, 5.0204, 5.4833, 5.2015, 4.994, 5.2048],
+          "confidence": 0.995,
+          "span": {
+            "offset": 888,
+            "length": 6
+          }
+        },
+        {
+          "content": "tellus.",
+          "polygon": [5.5371, 5.0206, 5.9795, 5.0219, 5.9795, 5.2004, 5.537, 5.2012],
+          "confidence": 0.992,
+          "span": {
+            "offset": 895,
+            "length": 7
+          }
+        },
+        {
+          "content": ".",
+          "polygon": [1.0388, 5.4022, 1.1009, 5.4024, 1.1015, 5.5681, 1.0395, 5.5677],
+          "confidence": 0.659,
+          "span": {
+            "offset": 904,
+            "length": 1
+          }
+        },
+        {
+          "content": "Maecenas",
+          "polygon": [1.2985, 5.4029, 2.0974, 5.402, 2.0976, 5.5717, 1.2988, 5.5691],
+          "confidence": 0.994,
+          "span": {
+            "offset": 906,
+            "length": 8
+          }
+        },
+        {
+          "content": "non",
+          "polygon": [2.1624, 5.4018, 2.4531, 5.4013, 2.4534, 5.5732, 2.1626, 5.5719],
+          "confidence": 0.992,
+          "span": {
+            "offset": 915,
+            "length": 3
+          }
+        },
+        {
+          "content": "lorem",
+          "polygon": [2.5209, 5.4012, 2.9754, 5.4002, 2.9755, 5.5757, 2.5211, 5.5735],
+          "confidence": 0.995,
+          "span": {
+            "offset": 919,
+            "length": 5
+          }
+        },
+        {
+          "content": "quis",
+          "polygon": [3.0404, 5.4003, 3.3735, 5.3992, 3.3735, 5.5762, 3.0404, 5.5758],
+          "confidence": 0.989,
+          "span": {
+            "offset": 925,
+            "length": 4
+          }
+        },
+        {
+          "content": "tellus",
+          "polygon": [3.4299, 5.399, 3.8845, 5.3989, 3.8844, 5.5744, 3.4299, 5.5762],
+          "confidence": 0.997,
+          "span": {
+            "offset": 930,
+            "length": 6
+          }
+        },
+        {
+          "content": "placerat",
+          "polygon": [3.9494, 5.3988, 4.6157, 5.3997, 4.6155, 5.5732, 3.9493, 5.5743],
+          "confidence": 0.994,
+          "span": {
+            "offset": 937,
+            "length": 8
+          }
+        },
+        {
+          "content": "varius.",
+          "polygon": [4.6665, 5.3998, 5.2313, 5.4005, 5.2313, 5.5718, 4.6663, 5.5729],
+          "confidence": 0.995,
+          "span": {
+            "offset": 946,
+            "length": 7
+          }
+        },
+        {
+          "content": "\u00b7",
+          "polygon": [1.0368, 5.7886, 1.0994, 5.7877, 1.1007, 5.9418, 1.0381, 5.9413],
+          "confidence": 0.733,
+          "span": {
+            "offset": 955,
+            "length": 1
+          }
+        },
+        {
+          "content": "Nulla",
+          "polygon": [1.2976, 5.7872, 1.6625, 5.7846, 1.6626, 5.9438, 1.2981, 5.9427],
+          "confidence": 0.996,
+          "span": {
+            "offset": 957,
+            "length": 5
+          }
+        },
+        {
+          "content": "facilisi.",
+          "polygon": [1.7173, 5.785, 2.2152, 5.7817, 2.2155, 5.9443, 1.7174, 5.944],
+          "confidence": 0.992,
+          "span": {
+            "offset": 963,
+            "length": 9
+          }
+        },
+        {
+          "content": ".",
+          "polygon": [1.0367, 6.1724, 1.0999, 6.1725, 1.1013, 6.3333, 1.0382, 6.3329],
+          "confidence": 0.651,
+          "span": {
+            "offset": 974,
+            "length": 1
+          }
+        },
+        {
+          "content": "Aenean",
+          "polygon": [1.2811, 6.1728, 1.8138, 6.1699, 1.8143, 6.3344, 1.2822, 6.3342],
+          "confidence": 0.997,
+          "span": {
+            "offset": 976,
+            "length": 6
+          }
+        },
+        {
+          "content": "congue",
+          "polygon": [1.8825, 6.1702, 2.4179, 6.167, 2.4182, 6.337, 1.883, 6.3353],
+          "confidence": 0.994,
+          "span": {
+            "offset": 983,
+            "length": 6
+          }
+        },
+        {
+          "content": "fringilla",
+          "polygon": [2.4536, 6.1668, 3.0028, 6.1652, 3.003, 6.3381, 2.4539, 6.3371],
+          "confidence": 0.994,
+          "span": {
+            "offset": 990,
+            "length": 9
+          }
+        },
+        {
+          "content": "justo",
+          "polygon": [3.0358, 6.1655, 3.4065, 6.1666, 3.4066, 6.3383, 3.0359, 6.3383],
+          "confidence": 0.998,
+          "span": {
+            "offset": 1000,
+            "length": 5
+          }
+        },
+        {
+          "content": "ut",
+          "polygon": [3.4532, 6.1668, 3.6262, 6.1679, 3.6262, 6.3376, 3.4533, 6.3382],
+          "confidence": 0.998,
+          "span": {
+            "offset": 1006,
+            "length": 2
+          }
+        },
+        {
+          "content": "aliquam.",
+          "polygon": [3.6619, 6.168, 4.3233, 6.1699, 4.3233, 6.3355, 3.6619, 6.3375],
+          "confidence": 0.993,
+          "span": {
+            "offset": 1009,
+            "length": 8
+          }
+        },
+        {
+          "content": "\u00b7",
+          "polygon": [1.0415, 6.5686, 1.1082, 6.5684, 1.1084, 6.7406, 1.0416, 6.7402],
+          "confidence": 0.25,
+          "span": {
+            "offset": 1019,
+            "length": 1
+          }
+        },
+        {
+          "content": "Mauris",
+          "polygon": [1.2825, 6.5681, 1.7616, 6.5687, 1.7618, 6.7434, 1.2827, 6.7414],
+          "confidence": 0.995,
+          "span": {
+            "offset": 1021,
+            "length": 6
+          }
+        },
+        {
+          "content": "id",
+          "polygon": [1.7965, 6.5688, 1.9446, 6.5694, 1.9447, 6.744, 1.7967, 6.7435],
+          "confidence": 0.996,
+          "span": {
+            "offset": 1028,
+            "length": 2
+          }
+        },
+        {
+          "content": "ex",
+          "polygon": [1.994, 6.5696, 2.1769, 6.5704, 2.1771, 6.7455, 1.9941, 6.7443],
+          "confidence": 0.992,
+          "span": {
+            "offset": 1031,
+            "length": 2
+          }
+        },
+        {
+          "content": "erat.",
+          "polygon": [2.2263, 6.5707, 2.5748, 6.5702, 2.5749, 6.7469, 2.2264, 6.7458],
+          "confidence": 0.996,
+          "span": {
+            "offset": 1034,
+            "length": 5
+          }
+        },
+        {
+          "content": "Nunc",
+          "polygon": [2.6096, 6.5699, 2.9929, 6.5678, 2.9932, 6.7471, 2.6097, 6.7469],
+          "confidence": 0.991,
+          "span": {
+            "offset": 1040,
+            "length": 4
+          }
+        },
+        {
+          "content": "vulputate",
+          "polygon": [3.051, 6.568, 3.7422, 6.569, 3.7425, 6.7489, 3.0514, 6.7474],
+          "confidence": 0.994,
+          "span": {
+            "offset": 1045,
+            "length": 9
+          }
+        },
+        {
+          "content": "neque",
+          "polygon": [3.8061, 6.5691, 4.2504, 6.5667, 4.2507, 6.7483, 3.8064, 6.7489],
+          "confidence": 0.995,
+          "span": {
+            "offset": 1055,
+            "length": 5
+          }
+        },
+        {
+          "content": "vitae",
+          "polygon": [4.3055, 6.5668, 4.6656, 6.5679, 4.6659, 6.7481, 4.3058, 6.7482],
+          "confidence": 0.995,
+          "span": {
+            "offset": 1061,
+            "length": 5
+          }
+        },
+        {
+          "content": "justo",
+          "polygon": [4.7121, 6.568, 5.0722, 6.5678, 5.0725, 6.7489, 4.7124, 6.7481],
+          "confidence": 0.994,
+          "span": {
+            "offset": 1067,
+            "length": 5
+          }
+        },
+        {
+          "content": "facilisis,",
+          "polygon": [5.1274, 6.5678, 5.6995, 6.5687, 5.6995, 6.748, 5.1277, 6.749],
+          "confidence": 0.993,
+          "span": {
+            "offset": 1073,
+            "length": 10
+          }
+        },
+        {
+          "content": "non",
+          "polygon": [5.7663, 6.5687, 6.0218, 6.5684, 6.0219, 6.7459, 5.7663, 6.7475],
+          "confidence": 0.993,
+          "span": {
+            "offset": 1084,
+            "length": 3
+          }
+        },
+        {
+          "content": "condimentum",
+          "polygon": [6.0857, 6.5684, 7.0847, 6.5674, 7.0849, 6.7408, 6.0858, 6.7455],
+          "confidence": 0.995,
+          "span": {
+            "offset": 1088,
+            "length": 11
+          }
+        },
+        {
+          "content": "ante",
+          "polygon": [7.1486, 6.5673, 7.4872, 6.5673, 7.4872, 6.7401, 7.1488, 6.7407],
+          "confidence": 0.992,
+          "span": {
+            "offset": 1100,
+            "length": 4
+          }
+        },
+        {
+          "content": "sagittis.",
+          "polygon": [1.2741, 6.8073, 1.8618, 6.7995, 1.8618, 6.9647, 1.2751, 6.9662],
+          "confidence": 0.995,
+          "span": {
+            "offset": 1105,
+            "length": 9
+          }
+        },
+        {
+          "content": "\u00b7",
+          "polygon": [1.0351, 7.169, 1.1009, 7.169, 1.102, 7.3308, 1.0365, 7.3303],
+          "confidence": 0.4,
+          "span": {
+            "offset": 1116,
+            "length": 1
+          }
+        },
+        {
+          "content": "Morbi",
+          "polygon": [1.2981, 7.1688, 1.6843, 7.1663, 1.6846, 7.3323, 1.2986, 7.3321],
+          "confidence": 0.996,
+          "span": {
+            "offset": 1118,
+            "length": 5
+          }
+        },
+        {
+          "content": "viverra",
+          "polygon": [1.7418, 7.166, 2.2376, 7.1662, 2.2377, 7.3355, 1.7421, 7.3321],
+          "confidence": 0.997,
+          "span": {
+            "offset": 1124,
+            "length": 7
+          }
+        },
+        {
+          "content": "semper",
+          "polygon": [2.3006, 7.166, 2.8484, 7.1655, 2.8485, 7.3355, 2.3007, 7.3355],
+          "confidence": 0.998,
+          "span": {
+            "offset": 1132,
+            "length": 6
+          }
+        },
+        {
+          "content": "lorem",
+          "polygon": [2.9032, 7.1652, 3.3004, 7.1659, 3.3005, 7.3357, 2.9033, 7.3354],
+          "confidence": 0.998,
+          "span": {
+            "offset": 1139,
+            "length": 5
+          }
+        },
+        {
+          "content": "nec",
+          "polygon": [3.3661, 7.1657, 3.6126, 7.167, 3.6128, 7.334, 3.3662, 7.3356],
+          "confidence": 0.992,
+          "span": {
+            "offset": 1145,
+            "length": 3
+          }
+        },
+        {
+          "content": "molestie.",
+          "polygon": [3.6729, 7.1671, 4.3347, 7.1644, 4.3347, 7.332, 3.673, 7.3337],
+          "confidence": 0.995,
+          "span": {
+            "offset": 1149,
+            "length": 9
+          }
+        },
+        {
+          "content": ".",
+          "polygon": [1.0371, 7.5499, 1.0986, 7.5498, 1.0996, 7.7132, 1.0382, 7.7128],
+          "confidence": 0.2,
+          "span": {
+            "offset": 1160,
+            "length": 1
+          }
+        },
+        {
+          "content": "Maecenas",
+          "polygon": [1.2972, 7.5495, 2.0159, 7.5494, 2.0162, 7.7167, 1.2978, 7.7145],
+          "confidence": 0.993,
+          "span": {
+            "offset": 1162,
+            "length": 8
+          }
+        },
+        {
+          "content": "tincidunt",
+          "polygon": [2.0635, 7.5494, 2.7095, 7.5481, 2.7097, 7.7181, 2.0637, 7.7169],
+          "confidence": 0.994,
+          "span": {
+            "offset": 1171,
+            "length": 9
+          }
+        },
+        {
+          "content": "est",
+          "polygon": [2.7598, 7.548, 2.978, 7.5476, 2.9782, 7.719, 2.7601, 7.7182],
+          "confidence": 0.997,
+          "span": {
+            "offset": 1181,
+            "length": 3
+          }
+        },
+        {
+          "content": "efficitur",
+          "polygon": [3.0283, 7.5475, 3.5765, 7.5473, 3.5768, 7.7193, 3.0286, 7.7192],
+          "confidence": 0.993,
+          "span": {
+            "offset": 1185,
+            "length": 9
+          }
+        },
+        {
+          "content": "ligula",
+          "polygon": [3.61, 7.5472, 4.0156, 7.5457, 4.0159, 7.7201, 3.6103, 7.7194],
+          "confidence": 0.995,
+          "span": {
+            "offset": 1195,
+            "length": 6
+          }
+        },
+        {
+          "content": "euismod,",
+          "polygon": [4.0799, 7.5459, 4.7287, 7.5475, 4.7289, 7.7202, 4.0802, 7.72],
+          "confidence": 0.992,
+          "span": {
+            "offset": 1202,
+            "length": 8
+          }
+        },
+        {
+          "content": "sit",
+          "polygon": [4.793, 7.5477, 4.9608, 7.5476, 4.9609, 7.7202, 4.7932, 7.7202],
+          "confidence": 0.998,
+          "span": {
+            "offset": 1211,
+            "length": 3
+          }
+        },
+        {
+          "content": "amet",
+          "polygon": [5.0112, 7.5475, 5.3859, 7.5478, 5.3859, 7.7202, 5.0113, 7.7202],
+          "confidence": 0.992,
+          "span": {
+            "offset": 1215,
+            "length": 4
+          }
+        },
+        {
+          "content": "ornare",
+          "polygon": [5.4363, 7.5481, 5.9005, 7.5489, 5.9006, 7.7201, 5.4363, 7.7202],
+          "confidence": 0.995,
+          "span": {
+            "offset": 1220,
+            "length": 6
+          }
+        },
+        {
+          "content": "est",
+          "polygon": [5.9593, 7.5487, 6.1746, 7.5481, 6.1747, 7.72, 5.9593, 7.72],
+          "confidence": 0.998,
+          "span": {
+            "offset": 1227,
+            "length": 3
+          }
+        },
+        {
+          "content": "vulputate.",
+          "polygon": [6.2221, 7.5481, 6.9618, 7.5476, 6.9618, 7.72, 6.2223, 7.72],
+          "confidence": 0.992,
+          "span": {
+            "offset": 1231,
+            "length": 10
+          }
+        },
+        {
+          "content": "12",
+          "polygon": [2.1592, 8.0905, 2.3187, 8.0895, 2.3187, 8.2204, 2.1592, 8.2219],
+          "confidence": 0.998,
+          "span": {
+            "offset": 1254,
+            "length": 2
+          }
+        },
+        {
+          "content": "10",
+          "polygon": [2.1618, 8.3955, 2.313, 8.396, 2.313, 8.5237, 2.1622, 8.5229],
+          "confidence": 0.999,
+          "span": {
+            "offset": 1258,
+            "length": 2
+          }
+        },
+        {
+          "content": "8",
+          "polygon": [2.2284, 8.7035, 2.3187, 8.7033, 2.3187, 8.8279, 2.2279, 8.8279],
+          "confidence": 0.997,
+          "span": {
+            "offset": 1262,
+            "length": 1
+          }
+        },
+        {
+          "content": "6",
+          "polygon": [2.2325, 9.0106, 2.313, 9.0105, 2.313, 9.1287, 2.2322, 9.1294],
+          "confidence": 0.993,
+          "span": {
+            "offset": 1265,
+            "length": 1
+          }
+        },
+        {
+          "content": "Column",
+          "polygon": [5.8549, 8.8954, 6.308, 8.8941, 6.3083, 9.0328, 5.8554, 9.0335],
+          "confidence": 0.989,
+          "span": {
+            "offset": 1268,
+            "length": 6
+          }
+        },
+        {
+          "content": "1",
+          "polygon": [6.3556, 8.8939, 6.4306, 8.894, 6.4306, 9.0326, 6.3559, 9.0325],
+          "confidence": 0.994,
+          "span": {
+            "offset": 1275,
+            "length": 1
+          }
+        },
+        {
+          "content": "Column",
+          "polygon": [5.849, 9.0881, 6.3091, 9.0867, 6.3098, 9.2275, 5.8497, 9.2276],
+          "confidence": 0.977,
+          "span": {
+            "offset": 1278,
+            "length": 6
+          }
+        },
+        {
+          "content": "2",
+          "polygon": [6.3528, 9.0864, 6.4364, 9.0866, 6.4364, 9.2276, 6.3535, 9.2276],
+          "confidence": 0.994,
+          "span": {
+            "offset": 1285,
+            "length": 1
+          }
+        },
+        {
+          "content": "4",
+          "polygon": [2.2292, 9.3147, 2.313, 9.3155, 2.313, 9.4307, 2.2289, 9.4317],
+          "confidence": 0.997,
+          "span": {
+            "offset": 1288,
+            "length": 1
+          }
+        },
+        {
+          "content": "Column",
+          "polygon": [5.8534, 9.2884, 6.3095, 9.2896, 6.3101, 9.4256, 5.854, 9.425],
+          "confidence": 0.992,
+          "span": {
+            "offset": 1291,
+            "length": 6
+          }
+        },
+        {
+          "content": "3",
+          "polygon": [6.3517, 9.2895, 6.4364, 9.288, 6.4364, 9.4254, 6.3523, 9.4254],
+          "confidence": 0.997,
+          "span": {
+            "offset": 1298,
+            "length": 1
+          }
+        },
+        {
+          "content": "2",
+          "polygon": [2.2288, 9.619, 2.3162, 9.621, 2.3162, 9.7416, 2.2285, 9.7408],
+          "confidence": 0.995,
+          "span": {
+            "offset": 1301,
+            "length": 1
+          }
+        },
+        {
+          "content": "0",
+          "polygon": [2.2277, 9.9217, 2.313, 9.9225, 2.313, 10.0407, 2.2277, 10.0413],
+          "confidence": 0.978,
+          "span": {
+            "offset": 1304,
+            "length": 1
+          }
+        },
+        {
+          "content": "Row",
+          "polygon": [2.612, 10.0969, 2.8849, 10.0985, 2.8854, 10.2287, 2.6123, 10.2284],
+          "confidence": 0.998,
+          "span": {
+            "offset": 1307,
+            "length": 3
+          }
+        },
+        {
+          "content": "1",
+          "polygon": [2.9211, 10.098, 2.9983, 10.0978, 2.9983, 10.2283, 2.9218, 10.2291],
+          "confidence": 0.995,
+          "span": {
+            "offset": 1311,
+            "length": 1
+          }
+        },
+        {
+          "content": "Row",
+          "polygon": [3.4038, 10.0951, 3.68, 10.0961, 3.6805, 10.2293, 3.4041, 10.2292],
+          "confidence": 0.996,
+          "span": {
+            "offset": 1314,
+            "length": 3
+          }
+        },
+        {
+          "content": "2",
+          "polygon": [3.7148, 10.0959, 3.8036, 10.0962, 3.8036, 10.229, 3.7154, 10.2296],
+          "confidence": 0.995,
+          "span": {
+            "offset": 1318,
+            "length": 1
+          }
+        },
+        {
+          "content": "Row",
+          "polygon": [4.203, 10.0945, 4.4774, 10.0947, 4.4778, 10.2295, 4.2031, 10.2298],
+          "confidence": 0.998,
+          "span": {
+            "offset": 1321,
+            "length": 3
+          }
+        },
+        {
+          "content": "3",
+          "polygon": [4.5104, 10.0948, 4.5974, 10.0952, 4.5974, 10.2287, 4.5107, 10.2297],
+          "confidence": 0.996,
+          "span": {
+            "offset": 1325,
+            "length": 1
+          }
+        },
+        {
+          "content": "Row",
+          "polygon": [4.9999, 10.0973, 5.2753, 10.0984, 5.2754, 10.2288, 5, 10.2292],
+          "confidence": 0.998,
+          "span": {
+            "offset": 1328,
+            "length": 3
+          }
+        },
+        {
+          "content": "4",
+          "polygon": [5.3074, 10.0983, 5.3969, 10.0984, 5.3969, 10.2284, 5.3074, 10.2293],
+          "confidence": 0.987,
+          "span": {
+            "offset": 1332,
+            "length": 1
+          }
+        }
+      ],
+      "lines": [
+        {
+          "content": "Lorem ipsum",
+          "polygon": [2.8607, 1.005, 5.2981, 1.013, 5.2965, 1.404, 2.8591, 1.3939],
+          "spans": [
+            {
+              "offset": 2,
+              "length": 11
+            }
+          ]
+        },
+        {
+          "content": "Lorem ipsum dolor sit amet, consectetur adipiscing",
+          "polygon": [1.0192, 2.0328, 7.1736, 2.0379, 7.1726, 2.3281, 1.0183, 2.3084],
+          "spans": [
+            {
+              "offset": 18,
+              "length": 50
+            }
+          ]
+        },
+        {
+          "content": "elit. Nunc ac faucibus odio.",
+          "polygon": [0.7767, 2.3252, 4.0204, 2.3271, 4.0202, 2.5791, 0.7765, 2.5771],
+          "spans": [
+            {
+              "offset": 69,
+              "length": 28
+            }
+          ]
+        },
+        {
+          "content": "Vestibulum neque massa, scelerisque sit amet ligula eu, congue molestie mi. Praesent ut",
+          "polygon": [0.7707, 3.0259, 7.4796, 3.0252, 7.4797, 3.2118, 0.7707, 3.2126],
+          "spans": [
+            {
+              "offset": 99,
+              "length": 87
+            }
+          ]
+        },
+        {
+          "content": "varius sem. Nullam at porttitor arcu, nec lacinia nisi. Ut ac dolor vitae odio interdum",
+          "polygon": [0.7705, 3.2298, 7.472, 3.2263, 7.4721, 3.4092, 0.7706, 3.4142],
+          "spans": [
+            {
+              "offset": 187,
+              "length": 87
+            }
+          ]
+        },
+        {
+          "content": "condimentum. Vivamus dapibus sodales ex, vitae malesuada ipsum cursus",
+          "polygon": [0.7774, 3.4335, 7.4799, 3.432, 7.4799, 3.6191, 0.7774, 3.6203],
+          "spans": [
+            {
+              "offset": 275,
+              "length": 69
+            }
+          ]
+        },
+        {
+          "content": "convallis. Maecenas sed egestas nulla, ac condimentum orci. Mauris diam felis,",
+          "polygon": [0.7753, 3.6399, 7.4715, 3.635, 7.4716, 3.8222, 0.7755, 3.8258],
+          "spans": [
+            {
+              "offset": 345,
+              "length": 78
+            }
+          ]
+        },
+        {
+          "content": "vulputate ac suscipit et, iaculis non est. Curabitur semper arcu ac ligula semper, nec luctus",
+          "polygon": [0.7715, 3.8453, 7.4734, 3.8447, 7.4734, 4.0303, 0.7715, 4.0309],
+          "spans": [
+            {
+              "offset": 424,
+              "length": 93
+            }
+          ]
+        },
+        {
+          "content": "nisl blandit. Integer lacinia ante ac libero lobortis imperdiet. Nullam mollis convallis ipsum,",
+          "polygon": [0.7763, 4.0376, 7.4613, 4.042, 7.4612, 4.2322, 0.7761, 4.2278],
+          "spans": [
+            {
+              "offset": 518,
+              "length": 95
+            }
+          ]
+        },
+        {
+          "content": "ac accumsan nunc vehicula vitae. Nulla eget justo in felis tristique fringilla. Morbi sit amet",
+          "polygon": [0.781, 4.2498, 7.4829, 4.2443, 7.4831, 4.4332, 0.7812, 4.4368],
+          "spans": [
+            {
+              "offset": 614,
+              "length": 94
+            }
+          ]
+        },
+        {
+          "content": "tortor quis risus auctor condimentum. Morbi in ullamcorper elit. Nulla iaculis tellus sit amet",
+          "polygon": [0.7721, 4.4552, 7.4801, 4.4507, 7.4803, 4.6386, 0.7722, 4.6424],
+          "spans": [
+            {
+              "offset": 709,
+              "length": 94
+            }
+          ]
+        },
+        {
+          "content": "mauris tempus fringilla.",
+          "polygon": [0.7773, 4.6664, 2.5179, 4.6644, 2.5181, 4.8448, 0.7775, 4.8468],
+          "spans": [
+            {
+              "offset": 804,
+              "length": 24
+            }
+          ]
+        },
+        {
+          "content": "Maecenas mauris lectus, lobortis et purus mattis, blandit dictum tellus.",
+          "polygon": [0.7765, 5.0199, 5.9779, 5.0192, 5.9779, 5.2025, 0.7765, 5.2033],
+          "spans": [
+            {
+              "offset": 830,
+              "length": 72
+            }
+          ]
+        },
+        {
+          "content": ". Maecenas non lorem quis tellus placerat varius.",
+          "polygon": [1.0388, 5.4022, 5.2296, 5.3965, 5.2298, 5.5708, 1.039, 5.5766],
+          "spans": [
+            {
+              "offset": 904,
+              "length": 49
+            }
+          ]
+        },
+        {
+          "content": "\u00b7 Nulla facilisi.",
+          "polygon": [1.0368, 5.787, 2.2103, 5.7802, 2.2112, 5.942, 1.0378, 5.9443],
+          "spans": [
+            {
+              "offset": 955,
+              "length": 17
+            }
+          ]
+        },
+        {
+          "content": ". Aenean congue fringilla justo ut aliquam.",
+          "polygon": [1.0368, 6.1615, 4.319, 6.1667, 4.3187, 6.3376, 1.0365, 6.3324],
+          "spans": [
+            {
+              "offset": 974,
+              "length": 43
+            }
+          ]
+        },
+        {
+          "content": "\u00b7 Mauris id ex erat. Nunc vulputate neque vitae justo facilisis, non condimentum ante",
+          "polygon": [1.0415, 6.5663, 7.4827, 6.5669, 7.4827, 6.7463, 1.0414, 6.7457],
+          "spans": [
+            {
+              "offset": 1019,
+              "length": 85
+            }
+          ]
+        },
+        {
+          "content": "sagittis.",
+          "polygon": [1.2741, 6.8015, 1.8561, 6.7992, 1.8567, 6.9619, 1.2747, 6.9641],
+          "spans": [
+            {
+              "offset": 1105,
+              "length": 9
+            }
+          ]
+        },
+        {
+          "content": "\u00b7 Morbi viverra semper lorem nec molestie.",
+          "polygon": [1.0351, 7.1659, 4.3308, 7.1644, 4.3309, 7.3325, 1.0352, 7.334],
+          "spans": [
+            {
+              "offset": 1116,
+              "length": 42
+            }
+          ]
+        },
+        {
+          "content": ". Maecenas tincidunt est efficitur ligula euismod, sit amet ornare est vulputate.",
+          "polygon": [1.0371, 7.5446, 6.9616, 7.5468, 6.9615, 7.7184, 1.037, 7.7161],
+          "spans": [
+            {
+              "offset": 1160,
+              "length": 81
+            }
+          ]
+        },
+        {
+          "content": "12",
+          "polygon": [2.1588, 8.0903, 2.3152, 8.0894, 2.316, 8.2188, 2.1592, 8.2197],
+          "spans": [
+            {
+              "offset": 1254,
+              "length": 2
+            }
+          ]
+        },
+        {
+          "content": "10",
+          "polygon": [2.1618, 8.3948, 2.3122, 8.3946, 2.3124, 8.5216, 2.1619, 8.5217],
+          "spans": [
+            {
+              "offset": 1258,
+              "length": 2
+            }
+          ]
+        },
+        {
+          "content": "8",
+          "polygon": [2.2284, 8.7028, 2.3145, 8.7031, 2.3141, 8.8279, 2.228, 8.8276],
+          "spans": [
+            {
+              "offset": 1262,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "content": "6",
+          "polygon": [2.2323, 9.01, 2.3105, 9.01, 2.3104, 9.1276, 2.2322, 9.1276],
+          "spans": [
+            {
+              "offset": 1265,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "content": "Column 1",
+          "polygon": [5.719, 8.895, 6.4295, 8.8938, 6.4298, 9.0308, 5.7192, 9.032],
+          "spans": [
+            {
+              "offset": 1268,
+              "length": 8
+            }
+          ]
+        },
+        {
+          "content": "Column 2",
+          "polygon": [5.7202, 9.0871, 6.4352, 9.0862, 6.4354, 9.2256, 5.7204, 9.2265],
+          "spans": [
+            {
+              "offset": 1278,
+              "length": 8
+            }
+          ]
+        },
+        {
+          "content": "4",
+          "polygon": [2.229, 9.3142, 2.311, 9.3143, 2.3109, 9.4301, 2.2289, 9.43],
+          "spans": [
+            {
+              "offset": 1288,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "content": "Column 3",
+          "polygon": [5.7378, 9.2884, 6.4353, 9.288, 6.4353, 9.4236, 5.7379, 9.424],
+          "spans": [
+            {
+              "offset": 1291,
+              "length": 8
+            }
+          ]
+        },
+        {
+          "content": "2",
+          "polygon": [2.2288, 9.619, 2.3133, 9.6191, 2.3131, 9.7399, 2.2285, 9.7398],
+          "spans": [
+            {
+              "offset": 1301,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "content": "0",
+          "polygon": [2.2277, 9.9217, 2.3103, 9.9218, 2.3103, 10.0399, 2.2277, 10.0398],
+          "spans": [
+            {
+              "offset": 1304,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "content": "Row 1",
+          "polygon": [2.612, 10.0969, 2.9961, 10.0979, 2.9958, 10.2273, 2.6116, 10.2263],
+          "spans": [
+            {
+              "offset": 1307,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "content": "Row 2",
+          "polygon": [3.4038, 10.0951, 3.7991, 10.0957, 3.7989, 10.2275, 3.4036, 10.227],
+          "spans": [
+            {
+              "offset": 1314,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "content": "Row 3",
+          "polygon": [4.203, 10.0945, 4.5956, 10.0944, 4.5957, 10.2274, 4.2031, 10.2275],
+          "spans": [
+            {
+              "offset": 1321,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "content": "Row 4",
+          "polygon": [4.9999, 10.0973, 5.3937, 10.0975, 5.3937, 10.2272, 4.9999, 10.2271],
+          "spans": [
+            {
+              "offset": 1328,
+              "length": 5
+            }
+          ]
+        }
+      ],
+      "spans": [
+        {
+          "offset": 0,
+          "length": 1367
+        }
+      ]
+    },
+    {
+      "pageNumber": 2,
+      "angle": 0.013965900056064129,
+      "width": 8.2639,
+      "height": 11.6944,
+      "unit": "inch",
+      "words": [
+        {
+          "content": "In",
+          "polygon": [0.7757, 1.1469, 0.913, 1.1467, 0.9131, 1.3261, 0.7758, 1.3254],
+          "confidence": 0.988,
+          "span": {
+            "offset": 1367,
+            "length": 2
+          }
+        },
+        {
+          "content": "non",
+          "polygon": [0.9846, 1.1465, 1.2411, 1.1461, 1.2414, 1.3279, 0.9847, 1.3265],
+          "confidence": 0.995,
+          "span": {
+            "offset": 1370,
+            "length": 3
+          }
+        },
+        {
+          "content": "mauris",
+          "polygon": [1.3157, 1.1459, 1.805, 1.1447, 1.8052, 1.3271, 1.316, 1.3278],
+          "confidence": 0.995,
+          "span": {
+            "offset": 1374,
+            "length": 6
+          }
+        },
+        {
+          "content": "justo.",
+          "polygon": [1.8557, 1.1446, 2.2495, 1.1441, 2.2499, 1.3274, 1.856, 1.3271],
+          "confidence": 0.994,
+          "span": {
+            "offset": 1381,
+            "length": 6
+          }
+        },
+        {
+          "content": "Duis",
+          "polygon": [2.3271, 1.1442, 2.6344, 1.1447, 2.6347, 1.3281, 2.3274, 1.3276],
+          "confidence": 0.989,
+          "span": {
+            "offset": 1388,
+            "length": 4
+          }
+        },
+        {
+          "content": "vehicula",
+          "polygon": [2.697, 1.1448, 3.2937, 1.1458, 3.2942, 1.3286, 2.6974, 1.3282],
+          "confidence": 0.993,
+          "span": {
+            "offset": 1393,
+            "length": 8
+          }
+        },
+        {
+          "content": "mi",
+          "polygon": [3.3713, 1.1457, 3.5354, 1.1456, 3.5356, 1.3289, 3.3717, 1.3287],
+          "confidence": 0.997,
+          "span": {
+            "offset": 1402,
+            "length": 2
+          }
+        },
+        {
+          "content": "vel",
+          "polygon": [3.601, 1.1455, 3.8069, 1.1454, 3.807, 1.3293, 3.6012, 1.329],
+          "confidence": 0.996,
+          "span": {
+            "offset": 1405,
+            "length": 3
+          }
+        },
+        {
+          "content": "mi",
+          "polygon": [3.8814, 1.1454, 4.0425, 1.1454, 4.0427, 1.3297, 3.8816, 1.3295],
+          "confidence": 0.998,
+          "span": {
+            "offset": 1409,
+            "length": 2
+          }
+        },
+        {
+          "content": "pretium,",
+          "polygon": [4.1171, 1.1453, 4.7168, 1.1458, 4.717, 1.3293, 4.1173, 1.3298],
+          "confidence": 0.994,
+          "span": {
+            "offset": 1412,
+            "length": 8
+          }
+        },
+        {
+          "content": "a",
+          "polygon": [4.7884, 1.1458, 4.86, 1.1457, 4.8602, 1.3291, 4.7886, 1.3292],
+          "confidence": 0.994,
+          "span": {
+            "offset": 1421,
+            "length": 1
+          }
+        },
+        {
+          "content": "viverra",
+          "polygon": [4.9286, 1.1457, 5.4268, 1.1463, 5.4271, 1.328, 4.9289, 1.329],
+          "confidence": 0.994,
+          "span": {
+            "offset": 1423,
+            "length": 7
+          }
+        },
+        {
+          "content": "erat",
+          "polygon": [5.4955, 1.1465, 5.7878, 1.1472, 5.7881, 1.3272, 5.4957, 1.3278],
+          "confidence": 0.992,
+          "span": {
+            "offset": 1431,
+            "length": 4
+          }
+        },
+        {
+          "content": "efficitur.",
+          "polygon": [5.8505, 1.1474, 6.468, 1.1466, 6.4684, 1.3272, 5.8507, 1.3271],
+          "confidence": 0.992,
+          "span": {
+            "offset": 1436,
+            "length": 10
+          }
+        },
+        {
+          "content": "Cras",
+          "polygon": [6.5038, 1.1465, 6.8171, 1.1477, 6.8174, 1.3278, 6.5042, 1.3273],
+          "confidence": 0.992,
+          "span": {
+            "offset": 1447,
+            "length": 4
+          }
+        },
+        {
+          "content": "aliquam",
+          "polygon": [6.8827, 1.148, 7.4701, 1.1485, 7.4701, 1.3305, 6.883, 1.3279],
+          "confidence": 0.993,
+          "span": {
+            "offset": 1452,
+            "length": 7
+          }
+        },
+        {
+          "content": "est",
+          "polygon": [0.7761, 1.3482, 1.0102, 1.3482, 1.0105, 1.5254, 0.7764, 1.5249],
+          "confidence": 0.992,
+          "span": {
+            "offset": 1460,
+            "length": 3
+          }
+        },
+        {
+          "content": "ac",
+          "polygon": [1.0702, 1.3482, 1.2322, 1.3481, 1.2326, 1.526, 1.0706, 1.5256],
+          "confidence": 0.992,
+          "span": {
+            "offset": 1464,
+            "length": 2
+          }
+        },
+        {
+          "content": "eros",
+          "polygon": [1.2982, 1.3479, 1.5983, 1.3463, 1.5986, 1.5262, 1.2986, 1.5261],
+          "confidence": 0.993,
+          "span": {
+            "offset": 1467,
+            "length": 4
+          }
+        },
+        {
+          "content": "varius,",
+          "polygon": [1.6643, 1.346, 2.1414, 1.3455, 2.1417, 1.5265, 1.6646, 1.5263],
+          "confidence": 0.992,
+          "span": {
+            "offset": 1472,
+            "length": 7
+          }
+        },
+        {
+          "content": "id",
+          "polygon": [2.2194, 1.3455, 2.3334, 1.3451, 2.3339, 1.5266, 2.2198, 1.5266],
+          "confidence": 0.995,
+          "span": {
+            "offset": 1480,
+            "length": 2
+          }
+        },
+        {
+          "content": "iaculis",
+          "polygon": [2.4084, 1.3449, 2.8555, 1.3444, 2.8563, 1.5271, 2.4089, 1.5266],
+          "confidence": 0.992,
+          "span": {
+            "offset": 1483,
+            "length": 7
+          }
+        },
+        {
+          "content": "dui",
+          "polygon": [2.9185, 1.3446, 3.1315, 1.3452, 3.1323, 1.5278, 2.9193, 1.5273],
+          "confidence": 0.995,
+          "span": {
+            "offset": 1491,
+            "length": 3
+          }
+        },
+        {
+          "content": "auctor.",
+          "polygon": [3.2036, 1.3453, 3.6896, 1.3454, 3.6902, 1.5285, 3.2043, 1.5279],
+          "confidence": 0.993,
+          "span": {
+            "offset": 1495,
+            "length": 7
+          }
+        },
+        {
+          "content": "Duis",
+          "polygon": [3.7677, 1.3453, 4.0737, 1.345, 4.0741, 1.5299, 3.7682, 1.5288],
+          "confidence": 0.992,
+          "span": {
+            "offset": 1503,
+            "length": 4
+          }
+        },
+        {
+          "content": "pretium",
+          "polygon": [4.1427, 1.345, 4.6978, 1.3449, 4.6981, 1.5303, 4.143, 1.5302],
+          "confidence": 0.994,
+          "span": {
+            "offset": 1508,
+            "length": 7
+          }
+        },
+        {
+          "content": "neque",
+          "polygon": [4.7728, 1.3449, 5.2139, 1.3449, 5.2143, 1.5303, 4.7732, 1.5303],
+          "confidence": 0.995,
+          "span": {
+            "offset": 1516,
+            "length": 5
+          }
+        },
+        {
+          "content": "ligula,",
+          "polygon": [5.2859, 1.3452, 5.745, 1.3463, 5.7454, 1.5303, 5.2863, 1.5303],
+          "confidence": 0.994,
+          "span": {
+            "offset": 1522,
+            "length": 7
+          }
+        },
+        {
+          "content": "et",
+          "polygon": [5.781, 1.3463, 5.9221, 1.3465, 5.9224, 1.5303, 5.7814, 1.5303],
+          "confidence": 0.998,
+          "span": {
+            "offset": 1530,
+            "length": 2
+          }
+        },
+        {
+          "content": "pulvinar",
+          "polygon": [5.9881, 1.3466, 6.5762, 1.3451, 6.5765, 1.5303, 5.9885, 1.5303],
+          "confidence": 0.994,
+          "span": {
+            "offset": 1533,
+            "length": 8
+          }
+        },
+        {
+          "content": "mi",
+          "polygon": [6.6392, 1.345, 6.8042, 1.3448, 6.8046, 1.5303, 6.6396, 1.5303],
+          "confidence": 0.996,
+          "span": {
+            "offset": 1542,
+            "length": 2
+          }
+        },
+        {
+          "content": "placerat",
+          "polygon": [6.8792, 1.3448, 7.4872, 1.3464, 7.4872, 1.5301, 6.8796, 1.5303],
+          "confidence": 0.993,
+          "span": {
+            "offset": 1545,
+            "length": 8
+          }
+        },
+        {
+          "content": "et.",
+          "polygon": [0.7778, 1.5535, 0.9691, 1.5531, 0.9694, 1.7283, 0.7782, 1.7279],
+          "confidence": 0.989,
+          "span": {
+            "offset": 1554,
+            "length": 3
+          }
+        },
+        {
+          "content": "Nulla",
+          "polygon": [1.075, 1.553, 1.4281, 1.5529, 1.4284, 1.7292, 1.0753, 1.7285],
+          "confidence": 0.994,
+          "span": {
+            "offset": 1558,
+            "length": 5
+          }
+        },
+        {
+          "content": "nec",
+          "polygon": [1.5311, 1.5531, 1.7813, 1.5534, 1.7815, 1.7299, 1.5314, 1.7294],
+          "confidence": 0.992,
+          "span": {
+            "offset": 1564,
+            "length": 3
+          }
+        },
+        {
+          "content": "nunc",
+          "polygon": [1.8755, 1.5534, 2.2198, 1.5534, 2.2201, 1.7311, 1.8757, 1.7302],
+          "confidence": 0.989,
+          "span": {
+            "offset": 1568,
+            "length": 4
+          }
+        },
+        {
+          "content": "sit",
+          "polygon": [2.314, 1.5535, 2.4846, 1.5536, 2.485, 1.7324, 2.3143, 1.7316],
+          "confidence": 0.995,
+          "span": {
+            "offset": 1573,
+            "length": 3
+          }
+        },
+        {
+          "content": "amet",
+          "polygon": [2.5729, 1.5536, 2.9467, 1.5539, 2.9472, 1.7334, 2.5733, 1.7328],
+          "confidence": 0.992,
+          "span": {
+            "offset": 1577,
+            "length": 4
+          }
+        },
+        {
+          "content": "nunc",
+          "polygon": [3.0408, 1.5539, 3.3881, 1.5543, 3.3885, 1.7337, 3.0414, 1.7334],
+          "confidence": 0.992,
+          "span": {
+            "offset": 1582,
+            "length": 4
+          }
+        },
+        {
+          "content": "posuere",
+          "polygon": [3.4823, 1.5544, 4.0561, 1.5541, 4.0564, 1.7332, 3.4826, 1.7339],
+          "confidence": 0.994,
+          "span": {
+            "offset": 1587,
+            "length": 7
+          }
+        },
+        {
+          "content": "vestibulum.",
+          "polygon": [4.1474, 1.554, 4.989, 1.5515, 4.9893, 1.7344, 4.1476, 1.7331],
+          "confidence": 0.993,
+          "span": {
+            "offset": 1595,
+            "length": 11
+          }
+        },
+        {
+          "content": "Ut",
+          "polygon": [5.092, 1.5512, 5.248, 1.5513, 5.2482, 1.7342, 5.0923, 1.7347],
+          "confidence": 0.992,
+          "span": {
+            "offset": 1607,
+            "length": 2
+          }
+        },
+        {
+          "content": "id",
+          "polygon": [5.3422, 1.5513, 5.4599, 1.5514, 5.4601, 1.7334, 5.3424, 1.7338],
+          "confidence": 0.992,
+          "span": {
+            "offset": 1610,
+            "length": 2
+          }
+        },
+        {
+          "content": "neque",
+          "polygon": [5.5629, 1.5515, 6.0043, 1.5514, 6.0046, 1.7339, 5.563, 1.7331],
+          "confidence": 0.992,
+          "span": {
+            "offset": 1613,
+            "length": 5
+          }
+        },
+        {
+          "content": "eget",
+          "polygon": [6.0985, 1.5513, 6.4251, 1.5511, 6.4255, 1.7339, 6.0988, 1.734],
+          "confidence": 0.992,
+          "span": {
+            "offset": 1619,
+            "length": 4
+          }
+        },
+        {
+          "content": "tortor",
+          "polygon": [6.5075, 1.551, 6.9254, 1.5519, 6.9256, 1.7328, 6.5079, 1.7338],
+          "confidence": 0.996,
+          "span": {
+            "offset": 1624,
+            "length": 6
+          }
+        },
+        {
+          "content": "mattis",
+          "polygon": [7.0167, 1.552, 7.4758, 1.5517, 7.4758, 1.7315, 7.0169, 1.7326],
+          "confidence": 0.995,
+          "span": {
+            "offset": 1631,
+            "length": 6
+          }
+        },
+        {
+          "content": "tristique.",
+          "polygon": [0.7707, 1.7542, 1.428, 1.7538, 1.4282, 1.9403, 0.7707, 1.9403],
+          "confidence": 0.99,
+          "span": {
+            "offset": 1638,
+            "length": 10
+          }
+        },
+        {
+          "content": "Donec",
+          "polygon": [1.5051, 1.7536, 1.9526, 1.7534, 1.9527, 1.9401, 1.5053, 1.9402],
+          "confidence": 0.994,
+          "span": {
+            "offset": 1649,
+            "length": 5
+          }
+        },
+        {
+          "content": "ante",
+          "polygon": [2.0204, 1.7535, 2.3383, 1.754, 2.3385, 1.9406, 2.0206, 1.9402],
+          "confidence": 0.989,
+          "span": {
+            "offset": 1655,
+            "length": 4
+          }
+        },
+        {
+          "content": "est,",
+          "polygon": [2.4031, 1.754, 2.6561, 1.7541, 2.6564, 1.9413, 2.4033, 1.9408],
+          "confidence": 0.981,
+          "span": {
+            "offset": 1660,
+            "length": 4
+          }
+        },
+        {
+          "content": "blandit",
+          "polygon": [2.7364, 1.7541, 3.2301, 1.7536, 3.2306, 1.9413, 2.7367, 1.9414],
+          "confidence": 0.994,
+          "span": {
+            "offset": 1665,
+            "length": 7
+          }
+        },
+        {
+          "content": "sit",
+          "polygon": [3.2918, 1.7537, 3.4615, 1.7539, 3.4619, 1.9414, 3.2922, 1.9413],
+          "confidence": 0.996,
+          "span": {
+            "offset": 1673,
+            "length": 3
+          }
+        },
+        {
+          "content": "amet",
+          "polygon": [3.5202, 1.754, 3.8936, 1.7538, 3.8937, 1.9423, 3.5205, 1.9414],
+          "confidence": 0.992,
+          "span": {
+            "offset": 1677,
+            "length": 4
+          }
+        },
+        {
+          "content": "tristique",
+          "polygon": [3.9522, 1.7537, 4.5509, 1.7535, 4.551, 1.9439, 3.9524, 1.9425],
+          "confidence": 0.993,
+          "span": {
+            "offset": 1682,
+            "length": 9
+          }
+        },
+        {
+          "content": "vel,",
+          "polygon": [4.6157, 1.7535, 4.8656, 1.7529, 4.8658, 1.9448, 4.6158, 1.9441],
+          "confidence": 0.986,
+          "span": {
+            "offset": 1692,
+            "length": 4
+          }
+        },
+        {
+          "content": "lacinia",
+          "polygon": [4.9428, 1.7527, 5.3964, 1.7534, 5.3966, 1.9441, 4.9429, 1.9451],
+          "confidence": 0.992,
+          "span": {
+            "offset": 1697,
+            "length": 7
+          }
+        },
+        {
+          "content": "pulvinar",
+          "polygon": [5.4674, 1.7537, 6.0598, 1.7546, 6.0602, 1.9426, 5.4676, 1.9438],
+          "confidence": 0.993,
+          "span": {
+            "offset": 1705,
+            "length": 8
+          }
+        },
+        {
+          "content": "arcu.",
+          "polygon": [6.1154, 1.7545, 6.4641, 1.7536, 6.4644, 1.9427, 6.1157, 1.9426],
+          "confidence": 0.992,
+          "span": {
+            "offset": 1714,
+            "length": 5
+          }
+        },
+        {
+          "content": "Pellentesque",
+          "polygon": [6.5412, 1.7536, 7.4758, 1.7565, 7.4758, 1.9454, 6.5415, 1.9426],
+          "confidence": 0.993,
+          "span": {
+            "offset": 1720,
+            "length": 12
+          }
+        },
+        {
+          "content": "scelerisque",
+          "polygon": [0.7739, 1.9605, 1.6066, 1.9614, 1.6068, 2.1468, 0.7742, 2.146],
+          "confidence": 0.993,
+          "span": {
+            "offset": 1733,
+            "length": 11
+          }
+        },
+        {
+          "content": "fermentum",
+          "polygon": [1.6772, 1.9614, 2.4853, 1.9622, 2.4857, 2.147, 1.6774, 2.1467],
+          "confidence": 0.994,
+          "span": {
+            "offset": 1745,
+            "length": 9
+          }
+        },
+        {
+          "content": "erat,",
+          "polygon": [2.5621, 1.9621, 2.8909, 1.9615, 2.8915, 2.147, 2.5625, 2.147],
+          "confidence": 0.992,
+          "span": {
+            "offset": 1755,
+            "length": 5
+          }
+        },
+        {
+          "content": "id",
+          "polygon": [2.9769, 1.9612, 3.0875, 1.9609, 3.0882, 2.147, 2.9775, 2.147],
+          "confidence": 0.996,
+          "span": {
+            "offset": 1761,
+            "length": 2
+          }
+        },
+        {
+          "content": "posuere",
+          "polygon": [3.1735, 1.9607, 3.745, 1.96, 3.7453, 2.147, 3.1743, 2.147],
+          "confidence": 0.994,
+          "span": {
+            "offset": 1764,
+            "length": 7
+          }
+        },
+        {
+          "content": "justo",
+          "polygon": [3.8096, 1.96, 4.166, 1.9598, 4.1663, 2.147, 3.8098, 2.147],
+          "confidence": 0.996,
+          "span": {
+            "offset": 1772,
+            "length": 5
+          }
+        },
+        {
+          "content": "pulvinar",
+          "polygon": [4.2458, 1.9598, 4.8327, 1.959, 4.833, 2.147, 4.2461, 2.147],
+          "confidence": 0.993,
+          "span": {
+            "offset": 1778,
+            "length": 8
+          }
+        },
+        {
+          "content": "ut.",
+          "polygon": [4.9034, 1.9588, 5.1215, 1.9585, 5.1218, 2.147, 4.9036, 2.147],
+          "confidence": 0.993,
+          "span": {
+            "offset": 1787,
+            "length": 3
+          }
+        },
+        {
+          "content": "Cras",
+          "polygon": [5.1615, 1.9586, 5.4779, 1.9595, 5.4781, 2.1463, 5.1617, 2.147],
+          "confidence": 0.984,
+          "span": {
+            "offset": 1791,
+            "length": 4
+          }
+        },
+        {
+          "content": "id",
+          "polygon": [5.5578, 1.9597, 5.6715, 1.9595, 5.6717, 2.146, 5.558, 2.146],
+          "confidence": 0.996,
+          "span": {
+            "offset": 1796,
+            "length": 2
+          }
+        },
+        {
+          "content": "eros",
+          "polygon": [5.7514, 1.9594, 6.0525, 1.959, 6.0528, 2.1461, 5.7516, 2.146],
+          "confidence": 0.992,
+          "span": {
+            "offset": 1799,
+            "length": 4
+          }
+        },
+        {
+          "content": "sed",
+          "polygon": [6.1293, 1.9592, 6.372, 1.9597, 6.3723, 2.1468, 6.1296, 2.1462],
+          "confidence": 0.995,
+          "span": {
+            "offset": 1804,
+            "length": 3
+          }
+        },
+        {
+          "content": "enim",
+          "polygon": [6.4519, 1.9598, 6.8052, 1.9601, 6.8055, 2.147, 6.4521, 2.1469],
+          "confidence": 0.992,
+          "span": {
+            "offset": 1808,
+            "length": 4
+          }
+        },
+        {
+          "content": "aliquam",
+          "polygon": [6.8851, 1.9601, 7.4701, 1.9607, 7.4701, 2.147, 6.8854, 2.147],
+          "confidence": 0.994,
+          "span": {
+            "offset": 1813,
+            "length": 7
+          }
+        },
+        {
+          "content": "lobortis.",
+          "polygon": [0.7753, 2.1599, 1.3644, 2.1614, 1.3649, 2.3485, 0.7756, 2.3472],
+          "confidence": 0.989,
+          "span": {
+            "offset": 1821,
+            "length": 9
+          }
+        },
+        {
+          "content": "Sed",
+          "polygon": [1.442, 2.1614, 1.6931, 2.1613, 1.6934, 2.3488, 1.4423, 2.3485],
+          "confidence": 0.998,
+          "span": {
+            "offset": 1831,
+            "length": 3
+          }
+        },
+        {
+          "content": "lobortis",
+          "polygon": [1.7303, 2.1613, 2.304, 2.1625, 2.3043, 2.3503, 1.7306, 2.3489],
+          "confidence": 0.995,
+          "span": {
+            "offset": 1835,
+            "length": 8
+          }
+        },
+        {
+          "content": "nisl",
+          "polygon": [2.3722, 2.1626, 2.6017, 2.1629, 2.602, 2.3501, 2.3725, 2.3503],
+          "confidence": 0.977,
+          "span": {
+            "offset": 1844,
+            "length": 4
+          }
+        },
+        {
+          "content": "ut",
+          "polygon": [2.6761, 2.1629, 2.8157, 2.163, 2.8161, 2.3501, 2.6764, 2.3501],
+          "confidence": 0.998,
+          "span": {
+            "offset": 1849,
+            "length": 2
+          }
+        },
+        {
+          "content": "eros",
+          "polygon": [2.8746, 2.163, 3.1754, 2.1631, 3.1761, 2.3502, 2.8751, 2.3501],
+          "confidence": 0.992,
+          "span": {
+            "offset": 1852,
+            "length": 4
+          }
+        },
+        {
+          "content": "efficitur",
+          "polygon": [3.2405, 2.1631, 3.8017, 2.1633, 3.8021, 2.3516, 3.2412, 2.3503],
+          "confidence": 0.992,
+          "span": {
+            "offset": 1857,
+            "length": 9
+          }
+        },
+        {
+          "content": "tincidunt.",
+          "polygon": [3.8545, 2.1633, 4.5336, 2.1633, 4.5338, 2.3512, 3.8548, 2.3518],
+          "confidence": 0.992,
+          "span": {
+            "offset": 1867,
+            "length": 10
+          }
+        },
+        {
+          "content": "Cras",
+          "polygon": [4.6049, 2.1632, 4.9243, 2.1632, 4.9245, 2.3532, 4.6051, 2.351],
+          "confidence": 0.991,
+          "span": {
+            "offset": 1878,
+            "length": 4
+          }
+        },
+        {
+          "content": "justo",
+          "polygon": [4.977, 2.1632, 5.3274, 2.1631, 5.3276, 2.3546, 4.9772, 2.3535],
+          "confidence": 0.998,
+          "span": {
+            "offset": 1883,
+            "length": 5
+          }
+        },
+        {
+          "content": "mi,",
+          "polygon": [5.3646, 2.1631, 5.6096, 2.1631, 5.6098, 2.355, 5.3648, 2.3546],
+          "confidence": 0.992,
+          "span": {
+            "offset": 1889,
+            "length": 3
+          }
+        },
+        {
+          "content": "porttitor",
+          "polygon": [5.684, 2.1632, 6.2825, 2.1635, 6.2827, 2.3554, 5.6842, 2.3551],
+          "confidence": 0.993,
+          "span": {
+            "offset": 1893,
+            "length": 9
+          }
+        },
+        {
+          "content": "quis",
+          "polygon": [6.3383, 2.1635, 6.6298, 2.1635, 6.63, 2.3552, 6.3385, 2.3554],
+          "confidence": 0.986,
+          "span": {
+            "offset": 1903,
+            "length": 4
+          }
+        },
+        {
+          "content": "mattis",
+          "polygon": [6.7011, 2.1636, 7.1476, 2.1642, 7.1479, 2.3552, 6.7014, 2.3551],
+          "confidence": 0.995,
+          "span": {
+            "offset": 1908,
+            "length": 6
+          }
+        },
+        {
+          "content": "vel,",
+          "polygon": [7.2066, 2.1643, 7.4701, 2.1648, 7.4701, 2.3565, 7.2068, 2.3554],
+          "confidence": 0.989,
+          "span": {
+            "offset": 1915,
+            "length": 4
+          }
+        },
+        {
+          "content": "ultricies",
+          "polygon": [0.7768, 2.3702, 1.3597, 2.3709, 1.36, 2.5467, 0.7776, 2.5467],
+          "confidence": 0.989,
+          "span": {
+            "offset": 1920,
+            "length": 9
+          }
+        },
+        {
+          "content": "ut",
+          "polygon": [1.418, 2.3708, 1.5579, 2.3707, 1.5583, 2.5467, 1.4183, 2.5467],
+          "confidence": 0.983,
+          "span": {
+            "offset": 1930,
+            "length": 2
+          }
+        },
+        {
+          "content": "purus.",
+          "polygon": [1.6133, 2.3708, 2.0534, 2.3694, 2.0539, 2.5467, 1.6137, 2.5467],
+          "confidence": 0.992,
+          "span": {
+            "offset": 1933,
+            "length": 6
+          }
+        },
+        {
+          "content": "Ut",
+          "polygon": [2.1175, 2.3691, 2.272, 2.3686, 2.2722, 2.5467, 2.1179, 2.5467],
+          "confidence": 0.995,
+          "span": {
+            "offset": 1940,
+            "length": 2
+          }
+        },
+        {
+          "content": "facilisis",
+          "polygon": [2.3216, 2.3686, 2.852, 2.3687, 2.8521, 2.5467, 2.3218, 2.5467],
+          "confidence": 0.987,
+          "span": {
+            "offset": 1943,
+            "length": 9
+          }
+        },
+        {
+          "content": "et",
+          "polygon": [2.9045, 2.3689, 3.0386, 2.3692, 3.0386, 2.5467, 2.9046, 2.5467],
+          "confidence": 0.992,
+          "span": {
+            "offset": 1953,
+            "length": 2
+          }
+        },
+        {
+          "content": "lacus",
+          "polygon": [3.0735, 2.3692, 3.467, 2.3689, 3.467, 2.5465, 3.0736, 2.5467],
+          "confidence": 0.992,
+          "span": {
+            "offset": 1956,
+            "length": 5
+          }
+        },
+        {
+          "content": "eu",
+          "polygon": [3.5224, 2.3689, 3.6914, 2.3693, 3.6914, 2.5465, 3.5224, 2.5464],
+          "confidence": 0.992,
+          "span": {
+            "offset": 1962,
+            "length": 2
+          }
+        },
+        {
+          "content": "cursus.",
+          "polygon": [3.7497, 2.3694, 4.2719, 2.3708, 4.2719, 2.5463, 3.7497, 2.5465],
+          "confidence": 0.992,
+          "span": {
+            "offset": 1965,
+            "length": 7
+          }
+        },
+        {
+          "content": "In",
+          "polygon": [0.7752, 2.73, 0.9129, 2.7299, 0.9131, 2.9118, 0.7752, 2.9116],
+          "confidence": 0.993,
+          "span": {
+            "offset": 1974,
+            "length": 2
+          }
+        },
+        {
+          "content": "eleifend",
+          "polygon": [0.9758, 2.7298, 1.5479, 2.7298, 1.5479, 2.9124, 0.976, 2.912],
+          "confidence": 0.995,
+          "span": {
+            "offset": 1977,
+            "length": 8
+          }
+        },
+        {
+          "content": "velit",
+          "polygon": [1.6078, 2.7298, 1.9193, 2.7298, 1.9192, 2.9124, 1.6078, 2.9123],
+          "confidence": 0.996,
+          "span": {
+            "offset": 1986,
+            "length": 5
+          }
+        },
+        {
+          "content": "vitae",
+          "polygon": [1.9732, 2.7298, 2.3206, 2.7299, 2.3206, 2.9127, 1.9731, 2.9125],
+          "confidence": 0.995,
+          "span": {
+            "offset": 1992,
+            "length": 5
+          }
+        },
+        {
+          "content": "libero",
+          "polygon": [2.3566, 2.73, 2.7878, 2.7309, 2.7878, 2.9128, 2.3565, 2.9127],
+          "confidence": 0.997,
+          "span": {
+            "offset": 1998,
+            "length": 6
+          }
+        },
+        {
+          "content": "sollicitudin",
+          "polygon": [2.8477, 2.7311, 3.6145, 2.7321, 3.6144, 2.9132, 2.8477, 2.9128],
+          "confidence": 0.994,
+          "span": {
+            "offset": 2005,
+            "length": 12
+          }
+        },
+        {
+          "content": "euismod.",
+          "polygon": [3.6774, 2.732, 4.3303, 2.7316, 4.3303, 2.9136, 3.6773, 2.9133],
+          "confidence": 0.994,
+          "span": {
+            "offset": 2018,
+            "length": 8
+          }
+        },
+        {
+          "content": "Fusce",
+          "polygon": [4.4022, 2.7317, 4.8035, 2.7317, 4.8035, 2.9143, 4.4022, 2.9136],
+          "confidence": 0.997,
+          "span": {
+            "offset": 2027,
+            "length": 5
+          }
+        },
+        {
+          "content": "vitae",
+          "polygon": [4.8574, 2.7316, 5.2139, 2.7312, 5.2138, 2.9146, 4.8574, 2.9144],
+          "confidence": 0.993,
+          "span": {
+            "offset": 2033,
+            "length": 5
+          }
+        },
+        {
+          "content": "vestibulum",
+          "polygon": [5.2678, 2.7313, 6.0675, 2.732, 6.0675, 2.9147, 5.2677, 2.9145],
+          "confidence": 0.995,
+          "span": {
+            "offset": 2039,
+            "length": 10
+          }
+        },
+        {
+          "content": "velit.",
+          "polygon": [6.1274, 2.7318, 6.4718, 2.7307, 6.4718, 2.9142, 6.1274, 2.9146],
+          "confidence": 0.995,
+          "span": {
+            "offset": 2050,
+            "length": 6
+          }
+        },
+        {
+          "content": "Pellentesque",
+          "polygon": [6.5467, 2.7307, 7.4758, 2.7323, 7.4758, 2.9179, 6.5466, 2.9143],
+          "confidence": 0.995,
+          "span": {
+            "offset": 2057,
+            "length": 12
+          }
+        },
+        {
+          "content": "vulputate",
+          "polygon": [0.7714, 2.937, 1.4694, 2.9354, 1.4697, 3.1212, 0.7718, 3.1207],
+          "confidence": 0.995,
+          "span": {
+            "offset": 2070,
+            "length": 9
+          }
+        },
+        {
+          "content": "lectus",
+          "polygon": [1.5061, 2.9353, 1.9653, 2.9346, 1.9655, 3.1223, 1.5064, 3.1213],
+          "confidence": 0.994,
+          "span": {
+            "offset": 2080,
+            "length": 6
+          }
+        },
+        {
+          "content": "quis",
+          "polygon": [2.0204, 2.9345, 2.3142, 2.9346, 2.3145, 3.1223, 2.0206, 3.1224],
+          "confidence": 0.992,
+          "span": {
+            "offset": 2087,
+            "length": 4
+          }
+        },
+        {
+          "content": "pellentesque",
+          "polygon": [2.3724, 2.9346, 3.303, 2.9343, 3.3035, 3.1205, 2.3727, 3.1221],
+          "confidence": 0.993,
+          "span": {
+            "offset": 2092,
+            "length": 12
+          }
+        },
+        {
+          "content": "commodo.",
+          "polygon": [3.3581, 2.9342, 4.1111, 2.9331, 4.1113, 3.12, 3.3586, 3.1204],
+          "confidence": 0.995,
+          "span": {
+            "offset": 2105,
+            "length": 8
+          }
+        },
+        {
+          "content": "Aliquam",
+          "polygon": [4.1693, 2.9331, 4.7601, 2.933, 4.7603, 3.1202, 4.1695, 3.12],
+          "confidence": 0.995,
+          "span": {
+            "offset": 2114,
+            "length": 7
+          }
+        },
+        {
+          "content": "erat",
+          "polygon": [4.8213, 2.9328, 5.1152, 2.9317, 5.1154, 3.1208, 4.8215, 3.1204],
+          "confidence": 0.992,
+          "span": {
+            "offset": 2122,
+            "length": 4
+          }
+        },
+        {
+          "content": "volutpat.",
+          "polygon": [5.1641, 2.9319, 5.8008, 2.9327, 5.8011, 3.1194, 5.1643, 3.1206],
+          "confidence": 0.994,
+          "span": {
+            "offset": 2127,
+            "length": 9
+          }
+        },
+        {
+          "content": "Vestibulum",
+          "polygon": [5.859, 2.9327, 6.661, 2.9326, 6.6612, 3.121, 5.8592, 3.1195],
+          "confidence": 0.995,
+          "span": {
+            "offset": 2137,
+            "length": 10
+          }
+        },
+        {
+          "content": "in",
+          "polygon": [6.7284, 2.9329, 6.8416, 2.9333, 6.8418, 3.1209, 6.7285, 3.121],
+          "confidence": 0.996,
+          "span": {
+            "offset": 2148,
+            "length": 2
+          }
+        },
+        {
+          "content": "egestas",
+          "polygon": [6.9059, 2.9335, 7.4814, 2.934, 7.4815, 3.1213, 6.9061, 3.1209],
+          "confidence": 0.996,
+          "span": {
+            "offset": 2151,
+            "length": 7
+          }
+        },
+        {
+          "content": "velit.",
+          "polygon": [0.7715, 3.1374, 1.1349, 3.1364, 1.1351, 3.3205, 0.7718, 3.3199],
+          "confidence": 0.995,
+          "span": {
+            "offset": 2159,
+            "length": 6
+          }
+        },
+        {
+          "content": "Pellentesque",
+          "polygon": [1.2448, 3.1361, 2.1639, 3.1354, 2.1642, 3.3219, 1.2451, 3.3207],
+          "confidence": 0.994,
+          "span": {
+            "offset": 2166,
+            "length": 12
+          }
+        },
+        {
+          "content": "fermentum",
+          "polygon": [2.2555, 3.1354, 3.0617, 3.1361, 3.0619, 3.3217, 2.2558, 3.3217],
+          "confidence": 0.995,
+          "span": {
+            "offset": 2179,
+            "length": 9
+          }
+        },
+        {
+          "content": "nisl",
+          "polygon": [3.1655, 3.1362, 3.3976, 3.1359, 3.3978, 3.3226, 3.1658, 3.3218],
+          "confidence": 0.989,
+          "span": {
+            "offset": 2189,
+            "length": 4
+          }
+        },
+        {
+          "content": "vitae",
+          "polygon": [3.4983, 3.1358, 3.8556, 3.1355, 3.8558, 3.3233, 3.4986, 3.323],
+          "confidence": 0.995,
+          "span": {
+            "offset": 2194,
+            "length": 5
+          }
+        },
+        {
+          "content": "fringilla",
+          "polygon": [3.9472, 3.1355, 4.4846, 3.1349, 4.4848, 3.3219, 3.9474, 3.3233],
+          "confidence": 0.994,
+          "span": {
+            "offset": 2200,
+            "length": 9
+          }
+        },
+        {
+          "content": "venenatis.",
+          "polygon": [4.5854, 3.1347, 5.3335, 3.1335, 5.3336, 3.3214, 4.5856, 3.3216],
+          "confidence": 0.993,
+          "span": {
+            "offset": 2210,
+            "length": 10
+          }
+        },
+        {
+          "content": "Etiam",
+          "polygon": [5.4404, 3.1336, 5.8434, 3.1332, 5.8436, 3.3207, 5.4405, 3.321],
+          "confidence": 0.997,
+          "span": {
+            "offset": 2221,
+            "length": 5
+          }
+        },
+        {
+          "content": "id",
+          "polygon": [5.9534, 3.1331, 6.0663, 3.1329, 6.0665, 3.3207, 5.9535, 3.3207],
+          "confidence": 0.998,
+          "span": {
+            "offset": 2227,
+            "length": 2
+          }
+        },
+        {
+          "content": "mauris",
+          "polygon": [6.1702, 3.133, 6.6587, 3.1336, 6.659, 3.3198, 6.1703, 3.3206],
+          "confidence": 0.998,
+          "span": {
+            "offset": 2230,
+            "length": 6
+          }
+        },
+        {
+          "content": "vitae",
+          "polygon": [6.7534, 3.1338, 7.1107, 3.1346, 7.1109, 3.319, 6.7536, 3.3196],
+          "confidence": 0.995,
+          "span": {
+            "offset": 2237,
+            "length": 5
+          }
+        },
+        {
+          "content": "orci",
+          "polygon": [7.2053, 3.1348, 7.4815, 3.1353, 7.4815, 3.3195, 7.2056, 3.3192],
+          "confidence": 0.992,
+          "span": {
+            "offset": 2243,
+            "length": 4
+          }
+        },
+        {
+          "content": "maximus",
+          "polygon": [0.7771, 3.3545, 1.4495, 3.3516, 1.4498, 3.5173, 0.7776, 3.5175],
+          "confidence": 0.993,
+          "span": {
+            "offset": 2248,
+            "length": 7
+          }
+        },
+        {
+          "content": "ultricies.",
+          "polygon": [1.5089, 3.3519, 2.1245, 3.3522, 2.1245, 3.5171, 1.5092, 3.5167],
+          "confidence": 0.992,
+          "span": {
+            "offset": 2256,
+            "length": 10
+          }
+        },
+        {
+          "content": "Cras",
+          "polygon": [1.0293, 4.245, 1.5836, 4.2487, 1.5825, 4.5319, 1.0285, 4.5283],
+          "confidence": 0.992,
+          "span": {
+            "offset": 2272,
+            "length": 4
+          }
+        },
+        {
+          "content": "fringilla",
+          "polygon": [1.6674, 4.249, 2.5386, 4.2495, 2.5374, 4.5339, 1.6664, 4.5325],
+          "confidence": 0.994,
+          "span": {
+            "offset": 2277,
+            "length": 9
+          }
+        },
+        {
+          "content": "ipsum",
+          "polygon": [2.5945, 4.2498, 3.2606, 4.2548, 3.2601, 4.5339, 2.5933, 4.5339],
+          "confidence": 0.998,
+          "span": {
+            "offset": 2287,
+            "length": 5
+          }
+        },
+        {
+          "content": "magna,",
+          "polygon": [3.3957, 4.2542, 4.2994, 4.2506, 4.299, 4.5339, 3.3952, 4.5339],
+          "confidence": 0.996,
+          "span": {
+            "offset": 2293,
+            "length": 6
+          }
+        },
+        {
+          "content": "in",
+          "polygon": [4.3972, 4.2503, 4.5929, 4.2498, 4.5925, 4.5339, 4.3969, 4.5339],
+          "confidence": 0.999,
+          "span": {
+            "offset": 2300,
+            "length": 2
+          }
+        },
+        {
+          "content": "fringilla",
+          "polygon": [4.6767, 4.2494, 5.5804, 4.2463, 5.58, 4.5339, 4.6764, 4.5339],
+          "confidence": 0.995,
+          "span": {
+            "offset": 2303,
+            "length": 9
+          }
+        },
+        {
+          "content": "dui",
+          "polygon": [5.6503, 4.247, 6.0043, 4.2498, 6.0039, 4.5311, 5.6499, 4.5336],
+          "confidence": 0.998,
+          "span": {
+            "offset": 2313,
+            "length": 3
+          }
+        },
+        {
+          "content": "commodo",
+          "polygon": [6.0928, 4.2495, 7.2873, 4.247, 7.2873, 4.5263, 6.0925, 4.5306],
+          "confidence": 0.997,
+          "span": {
+            "offset": 2317,
+            "length": 7
+          }
+        },
+        {
+          "content": "a.",
+          "polygon": [0.7765, 4.5961, 0.9937, 4.5981, 0.9937, 4.7851, 0.7765, 4.785],
+          "confidence": 0.989,
+          "span": {
+            "offset": 2325,
+            "length": 2
+          }
+        },
+        {
+          "content": "Lorem",
+          "polygon": [1.3178, 5.2953, 1.7727, 5.2976, 1.7724, 5.4755, 1.3182, 5.4746],
+          "confidence": 0.997,
+          "span": {
+            "offset": 2357,
+            "length": 5
+          }
+        },
+        {
+          "content": "ipsum",
+          "polygon": [1.8369, 5.2993, 2.2787, 5.2998, 2.2787, 5.4792, 1.8365, 5.4749],
+          "confidence": 0.996,
+          "span": {
+            "offset": 2363,
+            "length": 5
+          }
+        },
+        {
+          "content": "Lorem",
+          "polygon": [5.2546, 5.2976, 5.7101, 5.2994, 5.7099, 5.4726, 5.2549, 5.471],
+          "confidence": 0.998,
+          "span": {
+            "offset": 2378,
+            "length": 5
+          }
+        },
+        {
+          "content": "ipsum",
+          "polygon": [5.7755, 5.3006, 6.2193, 5.3024, 6.2193, 5.4757, 5.7755, 5.4721],
+          "confidence": 0.998,
+          "span": {
+            "offset": 2384,
+            "length": 5
+          }
+        },
+        {
+          "content": "Lorem",
+          "polygon": [6.3346, 5.298, 6.7932, 5.2987, 6.7931, 5.4723, 6.3349, 5.4701],
+          "confidence": 0.998,
+          "span": {
+            "offset": 2399,
+            "length": 5
+          }
+        },
+        {
+          "content": "ipsum",
+          "polygon": [6.8558, 5.3003, 7.2987, 5.3025, 7.2987, 5.4761, 6.8558, 5.4718],
+          "confidence": 0.998,
+          "span": {
+            "offset": 2405,
+            "length": 5
+          }
+        },
+        {
+          "content": "1",
+          "polygon": [0.8254, 5.7041, 0.9138, 5.7051, 0.9138, 5.8464, 0.8253, 5.8459],
+          "confidence": 0.995,
+          "span": {
+            "offset": 2431,
+            "length": 1
+          }
+        },
+        {
+          "content": "In",
+          "polygon": [1.3096, 5.6867, 1.4506, 5.6875, 1.4509, 5.8655, 1.31, 5.864],
+          "confidence": 0.993,
+          "span": {
+            "offset": 2442,
+            "length": 2
+          }
+        },
+        {
+          "content": "eleifend",
+          "polygon": [1.511, 5.6879, 2.0835, 5.6897, 2.0837, 5.866, 1.5113, 5.8661],
+          "confidence": 0.995,
+          "span": {
+            "offset": 2445,
+            "length": 8
+          }
+        },
+        {
+          "content": "velit",
+          "polygon": [2.1439, 5.69, 2.4518, 5.6905, 2.452, 5.8656, 2.1441, 5.8659],
+          "confidence": 0.995,
+          "span": {
+            "offset": 2454,
+            "length": 5
+          }
+        },
+        {
+          "content": "vitae",
+          "polygon": [2.5036, 5.6903, 2.8517, 5.6896, 2.8517, 5.8648, 2.5038, 5.8655],
+          "confidence": 0.996,
+          "span": {
+            "offset": 2460,
+            "length": 5
+          }
+        },
+        {
+          "content": "libero",
+          "polygon": [2.8862, 5.6898, 3.312, 5.6908, 3.3121, 5.8656, 2.8862, 5.8649],
+          "confidence": 0.998,
+          "span": {
+            "offset": 2466,
+            "length": 6
+          }
+        },
+        {
+          "content": "sollicitudin",
+          "polygon": [3.3667, 5.6909, 4.1377, 5.6917, 4.1377, 5.8663, 3.3668, 5.8655],
+          "confidence": 0.995,
+          "span": {
+            "offset": 2473,
+            "length": 12
+          }
+        },
+        {
+          "content": "euismod.",
+          "polygon": [4.1953, 5.6918, 4.8601, 5.6913, 4.8601, 5.8682, 4.1953, 5.8666],
+          "confidence": 0.993,
+          "span": {
+            "offset": 2486,
+            "length": 8
+          }
+        },
+        {
+          "content": "Lorem",
+          "polygon": [5.2537, 5.7024, 5.7225, 5.7056, 5.7225, 5.858, 5.2535, 5.8569],
+          "confidence": 0.998,
+          "span": {
+            "offset": 2504,
+            "length": 5
+          }
+        },
+        {
+          "content": "2",
+          "polygon": [0.8201, 6.1057, 0.9195, 6.1083, 0.9195, 6.2526, 0.82, 6.2526],
+          "confidence": 0.989,
+          "span": {
+            "offset": 2540,
+            "length": 1
+          }
+        },
+        {
+          "content": "Cras",
+          "polygon": [1.3129, 6.0928, 1.6349, 6.0932, 1.6353, 6.2812, 1.3135, 6.2812],
+          "confidence": 0.992,
+          "span": {
+            "offset": 2551,
+            "length": 4
+          }
+        },
+        {
+          "content": "fringilla",
+          "polygon": [1.6721, 6.0932, 2.2294, 6.0924, 2.2297, 6.2812, 1.6725, 6.2812],
+          "confidence": 0.995,
+          "span": {
+            "offset": 2556,
+            "length": 9
+          }
+        },
+        {
+          "content": "ipsum",
+          "polygon": [2.2665, 6.0925, 2.7278, 6.0931, 2.7281, 6.2812, 2.2668, 6.2812],
+          "confidence": 0.998,
+          "span": {
+            "offset": 2566,
+            "length": 5
+          }
+        },
+        {
+          "content": "magna,",
+          "polygon": [2.7898, 6.093, 3.3254, 6.0935, 3.3257, 6.2812, 2.79, 6.2812],
+          "confidence": 0.996,
+          "span": {
+            "offset": 2572,
+            "length": 6
+          }
+        },
+        {
+          "content": "in",
+          "polygon": [3.3904, 6.0933, 3.5049, 6.093, 3.5052, 6.2812, 3.3907, 6.2812],
+          "confidence": 0.999,
+          "span": {
+            "offset": 2579,
+            "length": 2
+          }
+        },
+        {
+          "content": "fringilla",
+          "polygon": [3.5607, 6.0931, 4.0963, 6.0924, 4.0966, 6.2812, 3.561, 6.2812],
+          "confidence": 0.996,
+          "span": {
+            "offset": 2582,
+            "length": 9
+          }
+        },
+        {
+          "content": "dui",
+          "polygon": [4.1582, 6.0929, 4.3687, 6.0943, 4.3691, 6.2811, 4.1585, 6.2812],
+          "confidence": 0.998,
+          "span": {
+            "offset": 2592,
+            "length": 3
+          }
+        },
+        {
+          "content": "commodo",
+          "polygon": [4.4275, 6.0941, 5.1628, 6.0924, 5.1628, 6.2794, 4.4279, 6.2812],
+          "confidence": 0.996,
+          "span": {
+            "offset": 2596,
+            "length": 7
+          }
+        },
+        {
+          "content": "a.",
+          "polygon": [1.3171, 6.3358, 1.4563, 6.3357, 1.4563, 6.4636, 1.3171, 6.4639],
+          "confidence": 0.992,
+          "span": {
+            "offset": 2604,
+            "length": 2
+          }
+        },
+        {
+          "content": "Ipsum",
+          "polygon": [5.2501, 6.105, 5.7168, 6.1077, 5.7168, 6.2755, 5.2505, 6.2755],
+          "confidence": 0.888,
+          "span": {
+            "offset": 2616,
+            "length": 5
+          }
+        },
+        {
+          "content": "3",
+          "polygon": [0.8196, 6.7155, 0.9195, 6.7166, 0.9195, 6.8665, 0.8192, 6.8656],
+          "confidence": 0.996,
+          "span": {
+            "offset": 2652,
+            "length": 1
+          }
+        },
+        {
+          "content": "Aliquam",
+          "polygon": [1.3095, 6.7101, 1.9133, 6.7127, 1.9132, 6.8894, 1.3094, 6.89],
+          "confidence": 0.996,
+          "span": {
+            "offset": 2663,
+            "length": 7
+          }
+        },
+        {
+          "content": "erat",
+          "polygon": [1.9743, 6.7134, 2.2646, 6.7136, 2.2644, 6.8895, 1.9742, 6.8892],
+          "confidence": 0.992,
+          "span": {
+            "offset": 2671,
+            "length": 4
+          }
+        },
+        {
+          "content": "volutpat.",
+          "polygon": [2.3139, 6.7137, 2.964, 6.7145, 2.964, 6.8909, 2.3137, 6.8896],
+          "confidence": 0.994,
+          "span": {
+            "offset": 2676,
+            "length": 9
+          }
+        },
+        {
+          "content": "Lorem",
+          "polygon": [5.2557, 6.72, 5.7225, 6.7245, 5.7225, 6.8744, 5.2553, 6.872],
+          "confidence": 0.996,
+          "span": {
+            "offset": 2695,
+            "length": 5
+          }
+        },
+        {
+          "content": "4",
+          "polygon": [0.8198, 7.1196, 0.9252, 7.1211, 0.9252, 7.2607, 0.8196, 7.2624],
+          "confidence": 0.996,
+          "span": {
+            "offset": 2731,
+            "length": 1
+          }
+        },
+        {
+          "content": "Fusce",
+          "polygon": [1.3128, 7.1055, 1.7353, 7.1064, 1.7354, 7.2796, 1.3134, 7.2797],
+          "confidence": 0.998,
+          "span": {
+            "offset": 2742,
+            "length": 5
+          }
+        },
+        {
+          "content": "vitae",
+          "polygon": [1.7891, 7.1066, 2.1435, 7.1074, 2.1436, 7.2802, 1.7893, 7.2796],
+          "confidence": 0.996,
+          "span": {
+            "offset": 2748,
+            "length": 5
+          }
+        },
+        {
+          "content": "vestibulum",
+          "polygon": [2.1974, 7.1074, 2.9941, 7.1076, 2.994, 7.2805, 2.1975, 7.2805],
+          "confidence": 0.995,
+          "span": {
+            "offset": 2754,
+            "length": 10
+          }
+        },
+        {
+          "content": "velit.",
+          "polygon": [3.0536, 7.1076, 3.4095, 7.1077, 3.4095, 7.2805, 3.0535, 7.2805],
+          "confidence": 0.993,
+          "span": {
+            "offset": 2765,
+            "length": 6
+          }
+        },
+        {
+          "content": "Lorem",
+          "polygon": [5.254, 7.1185, 5.7225, 7.1209, 5.7225, 7.2734, 5.2539, 7.2727],
+          "confidence": 0.998,
+          "span": {
+            "offset": 2781,
+            "length": 5
+          }
+        },
+        {
+          "content": "5",
+          "polygon": [0.8217, 7.5241, 0.9195, 7.5267, 0.9195, 7.6688, 0.8217, 7.6688],
+          "confidence": 0.995,
+          "span": {
+            "offset": 2817,
+            "length": 1
+          }
+        },
+        {
+          "content": "Etiam",
+          "polygon": [1.3155, 7.5139, 1.7395, 7.5149, 1.7395, 7.6856, 1.3155, 7.6846],
+          "confidence": 0.996,
+          "span": {
+            "offset": 2828,
+            "length": 5
+          }
+        },
+        {
+          "content": "vehicula",
+          "polygon": [1.7957, 7.5147, 2.3938, 7.5136, 2.3938, 7.6858, 1.7956, 7.6855],
+          "confidence": 0.992,
+          "span": {
+            "offset": 2834,
+            "length": 8
+          }
+        },
+        {
+          "content": "luctus",
+          "polygon": [2.4584, 7.5137, 2.8852, 7.515, 2.8851, 7.6859, 2.4584, 7.6859],
+          "confidence": 0.996,
+          "span": {
+            "offset": 2843,
+            "length": 6
+          }
+        },
+        {
+          "content": "fermentum.",
+          "polygon": [2.9329, 7.515, 3.7921, 7.5171, 3.7921, 7.6859, 2.9328, 7.6859],
+          "confidence": 0.994,
+          "span": {
+            "offset": 2850,
+            "length": 10
+          }
+        },
+        {
+          "content": "Ipsum",
+          "polygon": [5.2529, 7.5242, 5.7168, 7.5274, 5.7168, 7.6913, 5.2533, 7.6916],
+          "confidence": 0.883,
+          "span": {
+            "offset": 2870,
+            "length": 5
+          }
+        },
+        {
+          "content": "Etiam",
+          "polygon": [0.7788, 8.2328, 1.1996, 8.2335, 1.1999, 8.415, 0.7788, 8.4135],
+          "confidence": 0.994,
+          "span": {
+            "offset": 2908,
+            "length": 5
+          }
+        },
+        {
+          "content": "vehicula",
+          "polygon": [1.2571, 8.2336, 1.8565, 8.2321, 1.8566, 8.4168, 1.2574, 8.4152],
+          "confidence": 0.993,
+          "span": {
+            "offset": 2914,
+            "length": 8
+          }
+        },
+        {
+          "content": "luctus",
+          "polygon": [1.9232, 8.2324, 2.35, 8.2341, 2.3501, 8.4178, 1.9232, 8.417],
+          "confidence": 0.995,
+          "span": {
+            "offset": 2923,
+            "length": 6
+          }
+        },
+        {
+          "content": "fermentum.",
+          "polygon": [2.4015, 8.2342, 3.2491, 8.2353, 3.2495, 8.4193, 2.4016, 8.4178],
+          "confidence": 0.993,
+          "span": {
+            "offset": 2930,
+            "length": 10
+          }
+        },
+        {
+          "content": "In",
+          "polygon": [3.3187, 8.2354, 3.4338, 8.2357, 3.4341, 8.4193, 3.3191, 8.4193],
+          "confidence": 0.989,
+          "span": {
+            "offset": 2941,
+            "length": 2
+          }
+        },
+        {
+          "content": "vel",
+          "polygon": [3.4943, 8.2358, 3.7002, 8.236, 3.7004, 8.4195, 3.4946, 8.4192],
+          "confidence": 0.994,
+          "span": {
+            "offset": 2944,
+            "length": 3
+          }
+        },
+        {
+          "content": "metus",
+          "polygon": [3.7668, 8.2359, 4.2088, 8.2354, 4.2089, 8.4212, 3.7669, 8.4198],
+          "confidence": 0.994,
+          "span": {
+            "offset": 2948,
+            "length": 5
+          }
+        },
+        {
+          "content": "congue,",
+          "polygon": [4.2693, 8.2354, 4.8354, 8.2345, 4.8356, 8.4216, 4.2694, 8.4211],
+          "confidence": 0.993,
+          "span": {
+            "offset": 2954,
+            "length": 7
+          }
+        },
+        {
+          "content": "pulvinar",
+          "polygon": [4.902, 8.2343, 5.4772, 8.2349, 5.4773, 8.4207, 4.9022, 8.4218],
+          "confidence": 0.995,
+          "span": {
+            "offset": 2962,
+            "length": 8
+          }
+        },
+        {
+          "content": "lectus",
+          "polygon": [5.5136, 8.235, 5.9677, 8.2353, 5.9678, 8.4209, 5.5136, 8.4206],
+          "confidence": 0.996,
+          "span": {
+            "offset": 2971,
+            "length": 6
+          }
+        },
+        {
+          "content": "vel,",
+          "polygon": [6.0191, 8.2353, 6.2704, 8.2345, 6.2705, 8.4197, 6.0192, 8.421],
+          "confidence": 0.992,
+          "span": {
+            "offset": 2978,
+            "length": 4
+          }
+        },
+        {
+          "content": "fermentum",
+          "polygon": [6.3309, 8.2343, 7.1362, 8.2318, 7.1364, 8.4184, 6.331, 8.4194],
+          "confidence": 0.994,
+          "span": {
+            "offset": 2983,
+            "length": 9
+          }
+        },
+        {
+          "content": "dui.",
+          "polygon": [7.1968, 8.2318, 7.4643, 8.2315, 7.4643, 8.4178, 7.197, 8.4183],
+          "confidence": 0.991,
+          "span": {
+            "offset": 2993,
+            "length": 4
+          }
+        },
+        {
+          "content": "Maecenas",
+          "polygon": [0.7785, 8.4419, 1.5141, 8.443, 1.5142, 8.6265, 0.7782, 8.6238],
+          "confidence": 0.992,
+          "span": {
+            "offset": 2998,
+            "length": 8
+          }
+        },
+        {
+          "content": "ante",
+          "polygon": [1.5945, 8.443, 1.9128, 8.4421, 1.913, 8.6278, 1.5946, 8.6266],
+          "confidence": 0.992,
+          "span": {
+            "offset": 3007,
+            "length": 4
+          }
+        },
+        {
+          "content": "orci,",
+          "polygon": [1.9963, 8.4417, 2.2961, 8.4406, 2.2962, 8.6295, 1.9964, 8.6282],
+          "confidence": 0.993,
+          "span": {
+            "offset": 3012,
+            "length": 5
+          }
+        },
+        {
+          "content": "egestas",
+          "polygon": [2.3796, 8.4406, 2.9421, 8.4413, 2.9423, 8.6312, 2.3797, 8.6298],
+          "confidence": 0.995,
+          "span": {
+            "offset": 3018,
+            "length": 7
+          }
+        },
+        {
+          "content": "ut",
+          "polygon": [3.0256, 8.4415, 3.1677, 8.4418, 3.168, 8.6316, 3.0258, 8.6314],
+          "confidence": 0.997,
+          "span": {
+            "offset": 3026,
+            "length": 2
+          }
+        },
+        {
+          "content": "aliquet",
+          "polygon": [3.2419, 8.4418, 3.7427, 8.442, 3.7429, 8.6328, 3.2422, 8.6318],
+          "confidence": 0.992,
+          "span": {
+            "offset": 3029,
+            "length": 7
+          }
+        },
+        {
+          "content": "sit",
+          "polygon": [3.8168, 8.4421, 3.9868, 8.4424, 3.987, 8.633, 3.817, 8.6329],
+          "confidence": 0.994,
+          "span": {
+            "offset": 3037,
+            "length": 3
+          }
+        },
+        {
+          "content": "amet,",
+          "polygon": [4.0641, 8.4426, 4.4721, 8.4429, 4.4723, 8.6321, 4.0643, 8.633],
+          "confidence": 0.994,
+          "span": {
+            "offset": 3041,
+            "length": 5
+          }
+        },
+        {
+          "content": "sagittis",
+          "polygon": [4.5587, 8.4429, 5.078, 8.4416, 5.078, 8.6338, 4.5588, 8.6318],
+          "confidence": 0.993,
+          "span": {
+            "offset": 3047,
+            "length": 8
+          }
+        },
+        {
+          "content": "a",
+          "polygon": [5.1583, 8.4416, 5.2325, 8.4415, 5.2325, 8.6335, 5.1584, 8.6338],
+          "confidence": 0.994,
+          "span": {
+            "offset": 3056,
+            "length": 1
+          }
+        },
+        {
+          "content": "magna.",
+          "polygon": [5.3252, 8.4415, 5.8569, 8.4425, 5.8569, 8.6324, 5.3252, 8.6332],
+          "confidence": 0.995,
+          "span": {
+            "offset": 3058,
+            "length": 6
+          }
+        },
+        {
+          "content": "Aliquam",
+          "polygon": [5.9372, 8.4428, 6.5276, 8.442, 6.5277, 8.6322, 5.9373, 8.6325],
+          "confidence": 0.995,
+          "span": {
+            "offset": 3065,
+            "length": 7
+          }
+        },
+        {
+          "content": "ante",
+          "polygon": [6.6141, 8.4421, 6.9325, 8.4425, 6.9325, 8.6313, 6.6142, 8.632],
+          "confidence": 0.992,
+          "span": {
+            "offset": 3073,
+            "length": 4
+          }
+        },
+        {
+          "content": "quam,",
+          "polygon": [7.016, 8.4426, 7.4701, 8.4437, 7.4701, 8.6331, 7.016, 8.6313],
+          "confidence": 0.994,
+          "span": {
+            "offset": 3078,
+            "length": 5
+          }
+        },
+        {
+          "content": "pellentesque",
+          "polygon": [0.7785, 8.6522, 1.7254, 8.6506, 1.7255, 8.8381, 0.7785, 8.8394],
+          "confidence": 0.993,
+          "span": {
+            "offset": 3084,
+            "length": 12
+          }
+        },
+        {
+          "content": "ut",
+          "polygon": [1.7933, 8.6503, 1.9352, 8.6497, 1.9353, 8.8381, 1.7934, 8.8381],
+          "confidence": 0.997,
+          "span": {
+            "offset": 3097,
+            "length": 2
+          }
+        },
+        {
+          "content": "dignissim",
+          "polygon": [1.9938, 8.6495, 2.6724, 8.6474, 2.6725, 8.8375, 1.9939, 8.8381],
+          "confidence": 0.993,
+          "span": {
+            "offset": 3100,
+            "length": 9
+          }
+        },
+        {
+          "content": "quis,",
+          "polygon": [2.7433, 8.6474, 3.0733, 8.6478, 3.0735, 8.8363, 2.7435, 8.8373],
+          "confidence": 0.993,
+          "span": {
+            "offset": 3110,
+            "length": 5
+          }
+        },
+        {
+          "content": "laoreet",
+          "polygon": [3.1505, 8.6479, 3.6532, 8.648, 3.6534, 8.8363, 3.1507, 8.836],
+          "confidence": 0.992,
+          "span": {
+            "offset": 3116,
+            "length": 7
+          }
+        },
+        {
+          "content": "eget",
+          "polygon": [3.7149, 8.648, 4.0388, 8.6478, 4.0389, 8.8366, 3.7151, 8.8364],
+          "confidence": 0.992,
+          "span": {
+            "offset": 3124,
+            "length": 4
+          }
+        },
+        {
+          "content": "est.",
+          "polygon": [4.0974, 8.6477, 4.3503, 8.6472, 4.3504, 8.8362, 4.0975, 8.8367],
+          "confidence": 0.993,
+          "span": {
+            "offset": 3129,
+            "length": 4
+          }
+        },
+        {
+          "content": "Aliquam",
+          "polygon": [4.4182, 8.6471, 5.0073, 8.6461, 5.0075, 8.8356, 4.4183, 8.8361],
+          "confidence": 0.995,
+          "span": {
+            "offset": 3134,
+            "length": 7
+          }
+        },
+        {
+          "content": "erat",
+          "polygon": [5.0752, 8.646, 5.3682, 8.6468, 5.3683, 8.8352, 5.0753, 8.8356],
+          "confidence": 0.987,
+          "span": {
+            "offset": 3142,
+            "length": 4
+          }
+        },
+        {
+          "content": "volutpat.",
+          "polygon": [5.4268, 8.647, 6.0622, 8.6473, 6.0624, 8.8363, 5.4268, 8.8352],
+          "confidence": 0.994,
+          "span": {
+            "offset": 3147,
+            "length": 9
+          }
+        },
+        {
+          "content": "Class",
+          "polygon": [6.1362, 8.6473, 6.5095, 8.6471, 6.5095, 8.8343, 6.1364, 8.836],
+          "confidence": 0.998,
+          "span": {
+            "offset": 3157,
+            "length": 5
+          }
+        },
+        {
+          "content": "aptent",
+          "polygon": [6.5742, 8.6468, 7.0492, 8.6447, 7.0493, 8.832, 6.5743, 8.834],
+          "confidence": 0.997,
+          "span": {
+            "offset": 3163,
+            "length": 6
+          }
+        },
+        {
+          "content": "taciti",
+          "polygon": [7.1017, 8.6447, 7.4758, 8.6445, 7.4758, 8.8322, 7.1017, 8.8321],
+          "confidence": 0.996,
+          "span": {
+            "offset": 3170,
+            "length": 6
+          }
+        },
+        {
+          "content": "sociosqu",
+          "polygon": [0.7755, 8.8584, 1.411, 8.8581, 1.4113, 9.0384, 0.7753, 9.0376],
+          "confidence": 0.992,
+          "span": {
+            "offset": 3177,
+            "length": 8
+          }
+        },
+        {
+          "content": "ad",
+          "polygon": [1.498, 8.8576, 1.6658, 8.8566, 1.666, 9.038, 1.4982, 9.0382],
+          "confidence": 0.997,
+          "span": {
+            "offset": 3186,
+            "length": 2
+          }
+        },
+        {
+          "content": "litora",
+          "polygon": [1.7558, 8.8561, 2.1125, 8.8555, 2.1126, 9.0381, 1.756, 9.0379],
+          "confidence": 0.995,
+          "span": {
+            "offset": 3189,
+            "length": 6
+          }
+        },
+        {
+          "content": "torquent",
+          "polygon": [2.1964, 8.8554, 2.823, 8.8562, 2.8232, 9.0392, 2.1965, 9.0382],
+          "confidence": 0.995,
+          "span": {
+            "offset": 3196,
+            "length": 8
+          }
+        },
+        {
+          "content": "per",
+          "polygon": [2.9039, 8.8562, 3.1407, 8.8562, 3.141, 9.0386, 2.9041, 9.0392],
+          "confidence": 0.997,
+          "span": {
+            "offset": 3205,
+            "length": 3
+          }
+        },
+        {
+          "content": "conubia",
+          "polygon": [3.2127, 8.8563, 3.7763, 8.8568, 3.7765, 9.0392, 3.213, 9.0385],
+          "confidence": 0.994,
+          "span": {
+            "offset": 3209,
+            "length": 7
+          }
+        },
+        {
+          "content": "nostra,",
+          "polygon": [3.8692, 8.8568, 4.3578, 8.8559, 4.3581, 9.0392, 3.8694, 9.0392],
+          "confidence": 0.993,
+          "span": {
+            "offset": 3217,
+            "length": 7
+          }
+        },
+        {
+          "content": "per",
+          "polygon": [4.4478, 8.8556, 4.6876, 8.855, 4.6879, 9.0392, 4.448, 9.0392],
+          "confidence": 0.999,
+          "span": {
+            "offset": 3225,
+            "length": 3
+          }
+        },
+        {
+          "content": "inceptos",
+          "polygon": [4.7655, 8.8548, 5.3681, 8.8546, 5.3682, 9.0387, 4.7658, 9.0392],
+          "confidence": 0.995,
+          "span": {
+            "offset": 3229,
+            "length": 8
+          }
+        },
+        {
+          "content": "himenaeos.",
+          "polygon": [5.452, 8.8547, 6.2794, 8.8538, 6.2797, 9.0364, 5.4522, 9.0383],
+          "confidence": 0.993,
+          "span": {
+            "offset": 3238,
+            "length": 10
+          }
+        },
+        {
+          "content": "Ut",
+          "polygon": [6.3694, 8.8535, 6.5282, 8.853, 6.5285, 9.036, 6.3696, 9.0362],
+          "confidence": 0.999,
+          "span": {
+            "offset": 3249,
+            "length": 2
+          }
+        },
+        {
+          "content": "ullamcorper",
+          "polygon": [6.6062, 8.8527, 7.4872, 8.853, 7.4872, 9.0376, 6.6064, 9.0359],
+          "confidence": 0.993,
+          "span": {
+            "offset": 3252,
+            "length": 11
+          }
+        },
+        {
+          "content": "justo",
+          "polygon": [0.766, 9.0538, 1.1375, 9.0555, 1.1375, 9.2412, 0.7657, 9.2423],
+          "confidence": 0.995,
+          "span": {
+            "offset": 3264,
+            "length": 5
+          }
+        },
+        {
+          "content": "sapien,",
+          "polygon": [1.2075, 9.0558, 1.719, 9.0544, 1.7192, 9.2398, 1.2076, 9.241],
+          "confidence": 0.993,
+          "span": {
+            "offset": 3270,
+            "length": 7
+          }
+        },
+        {
+          "content": "in",
+          "polygon": [1.7951, 9.0543, 1.9108, 9.0543, 1.911, 9.2393, 1.7953, 9.2396],
+          "confidence": 0.995,
+          "span": {
+            "offset": 3278,
+            "length": 2
+          }
+        },
+        {
+          "content": "cursus",
+          "polygon": [1.9839, 9.0543, 2.4498, 9.0543, 2.4499, 9.2382, 1.9841, 9.2391],
+          "confidence": 0.997,
+          "span": {
+            "offset": 3281,
+            "length": 6
+          }
+        },
+        {
+          "content": "libero",
+          "polygon": [2.5259, 9.0542, 2.9187, 9.0543, 2.9188, 9.2384, 2.526, 9.2381],
+          "confidence": 0.996,
+          "span": {
+            "offset": 3288,
+            "length": 6
+          }
+        },
+        {
+          "content": "viverra",
+          "polygon": [2.9826, 9.0543, 3.482, 9.0535, 3.4822, 9.2392, 2.9827, 9.2385],
+          "confidence": 0.995,
+          "span": {
+            "offset": 3295,
+            "length": 7
+          }
+        },
+        {
+          "content": "eget.",
+          "polygon": [3.5551, 9.0533, 3.9144, 9.0533, 3.9146, 9.2389, 3.5553, 9.2392],
+          "confidence": 0.995,
+          "span": {
+            "offset": 3303,
+            "length": 5
+          }
+        },
+        {
+          "content": "Vivamus",
+          "polygon": [3.9844, 9.0534, 4.6025, 9.0539, 4.6026, 9.2382, 3.9847, 9.2388],
+          "confidence": 0.995,
+          "span": {
+            "offset": 3309,
+            "length": 7
+          }
+        },
+        {
+          "content": "auctor",
+          "polygon": [4.6725, 9.0536, 5.1414, 9.0517, 5.1415, 9.2394, 4.6727, 9.2384],
+          "confidence": 0.994,
+          "span": {
+            "offset": 3317,
+            "length": 6
+          }
+        },
+        {
+          "content": "imperdiet",
+          "polygon": [5.2054, 9.0517, 5.8966, 9.0528, 5.8965, 9.2388, 5.2054, 9.2393],
+          "confidence": 0.994,
+          "span": {
+            "offset": 3324,
+            "length": 9
+          }
+        },
+        {
+          "content": "urna,",
+          "polygon": [5.9666, 9.053, 6.3229, 9.0523, 6.323, 9.2389, 5.9665, 9.2389],
+          "confidence": 0.992,
+          "span": {
+            "offset": 3334,
+            "length": 5
+          }
+        },
+        {
+          "content": "at",
+          "polygon": [6.399, 9.0521, 6.539, 9.0517, 6.5393, 9.2388, 6.3992, 9.2389],
+          "confidence": 0.998,
+          "span": {
+            "offset": 3340,
+            "length": 2
+          }
+        },
+        {
+          "content": "pulvinar",
+          "polygon": [6.6091, 9.0518, 7.1967, 9.0515, 7.1968, 9.2373, 6.6093, 9.2387],
+          "confidence": 0.995,
+          "span": {
+            "offset": 3343,
+            "length": 8
+          }
+        },
+        {
+          "content": "leo",
+          "polygon": [7.2607, 9.0513, 7.4815, 9.0505, 7.4815, 9.2364, 7.2607, 9.2371],
+          "confidence": 0.997,
+          "span": {
+            "offset": 3352,
+            "length": 3
+          }
+        },
+        {
+          "content": "posuere",
+          "polygon": [0.7751, 9.2646, 1.3649, 9.2623, 1.3653, 9.4446, 0.7752, 9.4446],
+          "confidence": 0.994,
+          "span": {
+            "offset": 3356,
+            "length": 7
+          }
+        },
+        {
+          "content": "laoreet.",
+          "polygon": [1.4291, 9.262, 1.967, 9.2601, 1.9673, 9.4446, 1.4294, 9.4446],
+          "confidence": 0.992,
+          "span": {
+            "offset": 3364,
+            "length": 8
+          }
+        },
+        {
+          "content": "Suspendisse",
+          "polygon": [2.0343, 9.26, 2.9267, 9.2579, 2.9271, 9.4446, 2.0345, 9.4446],
+          "confidence": 0.993,
+          "span": {
+            "offset": 3373,
+            "length": 11
+          }
+        },
+        {
+          "content": "neque",
+          "polygon": [2.9634, 9.2578, 3.4279, 9.257, 3.4283, 9.4446, 2.9638, 9.4446],
+          "confidence": 0.996,
+          "span": {
+            "offset": 3385,
+            "length": 5
+          }
+        },
+        {
+          "content": "nisl,",
+          "polygon": [3.4646, 9.257, 3.7763, 9.2566, 3.7766, 9.4446, 3.465, 9.4446],
+          "confidence": 0.936,
+          "span": {
+            "offset": 3391,
+            "length": 5
+          }
+        },
+        {
+          "content": "fringilla",
+          "polygon": [3.8344, 9.2566, 4.3753, 9.2565, 4.3756, 9.4446, 3.8347, 9.4446],
+          "confidence": 0.995,
+          "span": {
+            "offset": 3397,
+            "length": 9
+          }
+        },
+        {
+          "content": "at",
+          "polygon": [4.4395, 9.2565, 4.5648, 9.2567, 4.5651, 9.4446, 4.4398, 9.4446],
+          "confidence": 0.996,
+          "span": {
+            "offset": 3407,
+            "length": 2
+          }
+        },
+        {
+          "content": "iaculis",
+          "polygon": [4.6015, 9.2567, 5.0813, 9.2561, 5.0815, 9.4446, 4.6018, 9.4446],
+          "confidence": 0.992,
+          "span": {
+            "offset": 3410,
+            "length": 7
+          }
+        },
+        {
+          "content": "scelerisque,",
+          "polygon": [5.1425, 9.256, 5.9982, 9.2572, 5.9984, 9.4432, 5.1426, 9.4446],
+          "confidence": 0.992,
+          "span": {
+            "offset": 3418,
+            "length": 12
+          }
+        },
+        {
+          "content": "ornare",
+          "polygon": [6.0624, 9.2573, 6.5269, 9.2563, 6.5275, 9.442, 6.0627, 9.4432],
+          "confidence": 0.993,
+          "span": {
+            "offset": 3431,
+            "length": 6
+          }
+        },
+        {
+          "content": "vel",
+          "polygon": [6.585, 9.2562, 6.7867, 9.2558, 6.7871, 9.441, 6.5855, 9.4418],
+          "confidence": 0.993,
+          "span": {
+            "offset": 3438,
+            "length": 3
+          }
+        },
+        {
+          "content": "dolor.",
+          "polygon": [6.8509, 9.2557, 7.2421, 9.2559, 7.2424, 9.4397, 6.8513, 9.4407],
+          "confidence": 0.994,
+          "span": {
+            "offset": 3442,
+            "length": 6
+          }
+        },
+        {
+          "content": "Ut",
+          "polygon": [7.3093, 9.256, 7.4815, 9.2563, 7.4815, 9.4393, 7.3097, 9.4396],
+          "confidence": 0.998,
+          "span": {
+            "offset": 3449,
+            "length": 2
+          }
+        },
+        {
+          "content": "et",
+          "polygon": [0.7769, 9.468, 0.9347, 9.4677, 0.9346, 9.6502, 0.7768, 9.6502],
+          "confidence": 0.996,
+          "span": {
+            "offset": 3452,
+            "length": 2
+          }
+        },
+        {
+          "content": "pulvinar",
+          "polygon": [1.0621, 9.4674, 1.6507, 9.4656, 1.6508, 9.6487, 1.0621, 9.6501],
+          "confidence": 0.994,
+          "span": {
+            "offset": 3455,
+            "length": 8
+          }
+        },
+        {
+          "content": "nunc.",
+          "polygon": [1.7781, 9.4652, 2.1635, 9.464, 2.1635, 9.6493, 1.7783, 9.6487],
+          "confidence": 0.995,
+          "span": {
+            "offset": 3464,
+            "length": 5
+          }
+        },
+        {
+          "content": "Pellentesque",
+          "polygon": [2.303, 9.4637, 3.2223, 9.462, 3.2225, 9.6487, 2.3031, 9.6491],
+          "confidence": 0.995,
+          "span": {
+            "offset": 3470,
+            "length": 12
+          }
+        },
+        {
+          "content": "fringilla",
+          "polygon": [3.3467, 9.462, 3.8837, 9.4619, 3.884, 9.6492, 3.3469, 9.6488],
+          "confidence": 0.994,
+          "span": {
+            "offset": 3483,
+            "length": 9
+          }
+        },
+        {
+          "content": "mollis",
+          "polygon": [4.0263, 9.4619, 4.439, 9.4616, 4.4392, 9.6478, 4.0266, 9.6494],
+          "confidence": 0.995,
+          "span": {
+            "offset": 3493,
+            "length": 6
+          }
+        },
+        {
+          "content": "efficitur.",
+          "polygon": [4.5694, 9.4614, 5.1459, 9.46, 5.1461, 9.648, 4.5696, 9.6471],
+          "confidence": 0.993,
+          "span": {
+            "offset": 3500,
+            "length": 10
+          }
+        },
+        {
+          "content": "Nullam",
+          "polygon": [5.2915, 9.46, 5.7861, 9.4602, 5.7862, 9.6458, 5.2917, 9.6473],
+          "confidence": 0.996,
+          "span": {
+            "offset": 3511,
+            "length": 6
+          }
+        },
+        {
+          "content": "venenatis",
+          "polygon": [5.9165, 9.4602, 6.6234, 9.4609, 6.6235, 9.6454, 5.9166, 9.6457],
+          "confidence": 0.993,
+          "span": {
+            "offset": 3518,
+            "length": 9
+          }
+        },
+        {
+          "content": "commodo",
+          "polygon": [6.7539, 9.4614, 7.4815, 9.4609, 7.4815, 9.6436, 6.7539, 9.6455],
+          "confidence": 0.995,
+          "span": {
+            "offset": 3528,
+            "length": 7
+          }
+        },
+        {
+          "content": "imperdiet.",
+          "polygon": [0.7733, 9.6683, 1.5133, 9.6675, 1.5135, 9.8544, 0.7732, 9.8544],
+          "confidence": 0.992,
+          "span": {
+            "offset": 3536,
+            "length": 10
+          }
+        },
+        {
+          "content": "Morbi",
+          "polygon": [1.5503, 9.6675, 1.9789, 9.6677, 1.9789, 9.8557, 1.5504, 9.8545],
+          "confidence": 0.995,
+          "span": {
+            "offset": 3547,
+            "length": 5
+          }
+        },
+        {
+          "content": "velit",
+          "polygon": [2.0344, 9.6677, 2.3489, 9.6678, 2.3489, 9.8558, 2.0344, 9.8558],
+          "confidence": 0.996,
+          "span": {
+            "offset": 3553,
+            "length": 5
+          }
+        },
+        {
+          "content": "neque,",
+          "polygon": [2.4044, 9.6679, 2.8885, 9.6688, 2.8886, 9.8558, 2.4044, 9.8558],
+          "confidence": 0.995,
+          "span": {
+            "offset": 3559,
+            "length": 6
+          }
+        },
+        {
+          "content": "semper",
+          "polygon": [2.9471, 9.669, 3.499, 9.6692, 3.4992, 9.8558, 2.9472, 9.8558],
+          "confidence": 0.998,
+          "span": {
+            "offset": 3566,
+            "length": 6
+          }
+        },
+        {
+          "content": "quis",
+          "polygon": [3.5452, 9.6691, 3.8196, 9.6693, 3.8199, 9.8558, 3.5455, 9.8558],
+          "confidence": 0.992,
+          "span": {
+            "offset": 3573,
+            "length": 4
+          }
+        },
+        {
+          "content": "lorem",
+          "polygon": [3.8566, 9.6694, 4.2945, 9.6697, 4.2946, 9.8558, 3.8569, 9.8558],
+          "confidence": 0.997,
+          "span": {
+            "offset": 3578,
+            "length": 5
+          }
+        },
+        {
+          "content": "quis,",
+          "polygon": [4.3561, 9.6695, 4.6891, 9.6684, 4.6893, 9.8558, 4.3563, 9.8558],
+          "confidence": 0.992,
+          "span": {
+            "offset": 3584,
+            "length": 5
+          }
+        },
+        {
+          "content": "efficitur",
+          "polygon": [4.7477, 9.6681, 5.3089, 9.6663, 5.3089, 9.8558, 4.7479, 9.8558],
+          "confidence": 0.995,
+          "span": {
+            "offset": 3590,
+            "length": 9
+          }
+        },
+        {
+          "content": "dignissim",
+          "polygon": [5.3551, 9.6662, 5.9748, 9.6667, 5.9749, 9.8558, 5.3552, 9.8558],
+          "confidence": 0.995,
+          "span": {
+            "offset": 3600,
+            "length": 9
+          }
+        },
+        {
+          "content": "ipsum.",
+          "polygon": [6.0643, 9.6668, 6.5668, 9.6655, 6.5671, 9.8552, 6.0643, 9.8558],
+          "confidence": 0.993,
+          "span": {
+            "offset": 3610,
+            "length": 6
+          }
+        },
+        {
+          "content": "Ut",
+          "polygon": [6.6347, 9.6657, 6.7919, 9.666, 6.792, 9.8539, 6.6349, 9.8548],
+          "confidence": 0.998,
+          "span": {
+            "offset": 3617,
+            "length": 2
+          }
+        },
+        {
+          "content": "ac",
+          "polygon": [6.8413, 9.6661, 6.9893, 9.6664, 6.9892, 9.8528, 6.8413, 9.8536],
+          "confidence": 0.992,
+          "span": {
+            "offset": 3620,
+            "length": 2
+          }
+        },
+        {
+          "content": "lorem",
+          "polygon": [7.0262, 9.6665, 7.4815, 9.6673, 7.4815, 9.8528, 7.0262, 9.8527],
+          "confidence": 0.99,
+          "span": {
+            "offset": 3623,
+            "length": 5
+          }
+        },
+        {
+          "content": "sed",
+          "polygon": [0.7724, 9.8729, 1.034, 9.8735, 1.0344, 10.0542, 0.7729, 10.0538],
+          "confidence": 0.998,
+          "span": {
+            "offset": 3629,
+            "length": 3
+          }
+        },
+        {
+          "content": "turpis",
+          "polygon": [1.0905, 9.8732, 1.5036, 9.8726, 1.5039, 10.054, 1.0909, 10.0543],
+          "confidence": 0.996,
+          "span": {
+            "offset": 3633,
+            "length": 6
+          }
+        },
+        {
+          "content": "imperdiet",
+          "polygon": [1.566, 9.8725, 2.2555, 9.8705, 2.2556, 10.0524, 1.5663, 10.0541],
+          "confidence": 0.995,
+          "span": {
+            "offset": 3640,
+            "length": 9
+          }
+        },
+        {
+          "content": "eleifend",
+          "polygon": [2.306, 9.8704, 2.8797, 9.8718, 2.8798, 10.0516, 2.3061, 10.0522],
+          "confidence": 0.995,
+          "span": {
+            "offset": 3650,
+            "length": 8
+          }
+        },
+        {
+          "content": "sit",
+          "polygon": [2.9391, 9.8719, 3.1085, 9.872, 3.1086, 10.0514, 2.9392, 10.0514],
+          "confidence": 0.998,
+          "span": {
+            "offset": 3659,
+            "length": 3
+          }
+        },
+        {
+          "content": "amet",
+          "polygon": [3.162, 9.8718, 3.5187, 9.872, 3.5187, 10.0529, 3.162, 10.0517],
+          "confidence": 0.992,
+          "span": {
+            "offset": 3663,
+            "length": 4
+          }
+        },
+        {
+          "content": "id",
+          "polygon": [3.5543, 9.872, 3.7029, 9.8721, 3.7029, 10.0533, 3.5543, 10.053],
+          "confidence": 0.998,
+          "span": {
+            "offset": 3668,
+            "length": 2
+          }
+        },
+        {
+          "content": "sapien.",
+          "polygon": [3.7624, 9.8721, 4.289, 9.872, 4.289, 10.0524, 3.7623, 10.0534],
+          "confidence": 0.995,
+          "span": {
+            "offset": 3671,
+            "length": 7
+          }
+        }
+      ],
+      "lines": [
+        {
+          "content": "In non mauris justo. Duis vehicula mi vel mi pretium, a viverra erat efficitur. Cras aliquam",
+          "polygon": [0.7757, 1.1432, 7.4698, 1.147, 7.4696, 1.3287, 0.7756, 1.3249],
+          "spans": [
+            {
+              "offset": 1367,
+              "length": 92
+            }
+          ]
+        },
+        {
+          "content": "est ac eros varius, id iaculis dui auctor. Duis pretium neque ligula, et pulvinar mi placerat",
+          "polygon": [0.7761, 1.3437, 7.4832, 1.3447, 7.4831, 1.5285, 0.7761, 1.5276],
+          "spans": [
+            {
+              "offset": 1460,
+              "length": 93
+            }
+          ]
+        },
+        {
+          "content": "et. Nulla nec nunc sit amet nunc posuere vestibulum. Ut id neque eget tortor mattis",
+          "polygon": [0.7778, 1.5528, 7.4753, 1.5502, 7.4754, 1.7308, 0.7778, 1.7334],
+          "spans": [
+            {
+              "offset": 1554,
+              "length": 83
+            }
+          ]
+        },
+        {
+          "content": "tristique. Donec ante est, blandit sit amet tristique vel, lacinia pulvinar arcu. Pellentesque",
+          "polygon": [0.7707, 1.7524, 7.4712, 1.7523, 7.4712, 1.9422, 0.7707, 1.9423],
+          "spans": [
+            {
+              "offset": 1638,
+              "length": 94
+            }
+          ]
+        },
+        {
+          "content": "scelerisque fermentum erat, id posuere justo pulvinar ut. Cras id eros sed enim aliquam",
+          "polygon": [0.7739, 1.9593, 7.4699, 1.9578, 7.4699, 2.1459, 0.774, 2.147],
+          "spans": [
+            {
+              "offset": 1733,
+              "length": 87
+            }
+          ]
+        },
+        {
+          "content": "lobortis. Sed lobortis nisl ut eros efficitur tincidunt. Cras justo mi, porttitor quis mattis vel,",
+          "polygon": [0.7753, 2.1596, 7.4697, 2.164, 7.4696, 2.3532, 0.7751, 2.3489],
+          "spans": [
+            {
+              "offset": 1821,
+              "length": 98
+            }
+          ]
+        },
+        {
+          "content": "ultricies ut purus. Ut facilisis et lacus eu cursus.",
+          "polygon": [0.7768, 2.3696, 4.2679, 2.3671, 4.268, 2.5444, 0.777, 2.5467],
+          "spans": [
+            {
+              "offset": 1920,
+              "length": 52
+            }
+          ]
+        },
+        {
+          "content": "In eleifend velit vitae libero sollicitudin euismod. Fusce vitae vestibulum velit. Pellentesque",
+          "polygon": [0.7752, 2.7295, 7.4743, 2.7316, 7.4741, 2.9166, 0.7749, 2.9089],
+          "spans": [
+            {
+              "offset": 1974,
+              "length": 95
+            }
+          ]
+        },
+        {
+          "content": "vulputate lectus quis pellentesque commodo. Aliquam erat volutpat. Vestibulum in egestas",
+          "polygon": [0.7714, 2.9328, 7.4779, 2.9311, 7.478, 3.1181, 0.7715, 3.1198],
+          "spans": [
+            {
+              "offset": 2070,
+              "length": 88
+            }
+          ]
+        },
+        {
+          "content": "velit. Pellentesque fermentum nisl vitae fringilla venenatis. Etiam id mauris vitae orci",
+          "polygon": [0.7715, 3.1364, 7.4768, 3.1315, 7.4769, 3.3176, 0.7716, 3.3225],
+          "spans": [
+            {
+              "offset": 2159,
+              "length": 88
+            }
+          ]
+        },
+        {
+          "content": "maximus ultricies.",
+          "polygon": [0.7771, 3.3515, 2.1213, 3.351, 2.1213, 3.5148, 0.7771, 3.5153],
+          "spans": [
+            {
+              "offset": 2248,
+              "length": 18
+            }
+          ]
+        },
+        {
+          "content": "Cras fringilla ipsum magna, in fringilla dui commodo",
+          "polygon": [1.0286, 4.245, 7.2832, 4.2457, 7.2831, 4.5339, 1.0285, 4.5333],
+          "spans": [
+            {
+              "offset": 2272,
+              "length": 52
+            }
+          ]
+        },
+        {
+          "content": "a.",
+          "polygon": [0.7765, 4.5961, 0.9901, 4.5972, 0.9891, 4.7834, 0.7755, 4.7823],
+          "spans": [
+            {
+              "offset": 2325,
+              "length": 2
+            }
+          ]
+        },
+        {
+          "content": "Lorem ipsum",
+          "polygon": [1.3178, 5.295, 2.2734, 5.2994, 2.2726, 5.4761, 1.3169, 5.4716],
+          "spans": [
+            {
+              "offset": 2357,
+              "length": 11
+            }
+          ]
+        },
+        {
+          "content": "Lorem ipsum",
+          "polygon": [5.2546, 5.2962, 6.2158, 5.3015, 6.2149, 5.4751, 5.2542, 5.4698],
+          "spans": [
+            {
+              "offset": 2378,
+              "length": 11
+            }
+          ]
+        },
+        {
+          "content": "Lorem ipsum",
+          "polygon": [6.3346, 5.2943, 7.2974, 5.3013, 7.2962, 5.4748, 6.3336, 5.4678],
+          "spans": [
+            {
+              "offset": 2399,
+              "length": 11
+            }
+          ]
+        },
+        {
+          "content": "1",
+          "polygon": [0.8254, 5.7039, 0.913, 5.7039, 0.9129, 5.8442, 0.8253, 5.8442],
+          "spans": [
+            {
+              "offset": 2431,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "content": "In eleifend velit vitae libero sollicitudin euismod.",
+          "polygon": [1.3096, 5.6867, 4.859, 5.6912, 4.8588, 5.8679, 1.3094, 5.8634],
+          "spans": [
+            {
+              "offset": 2442,
+              "length": 52
+            }
+          ]
+        },
+        {
+          "content": "Lorem",
+          "polygon": [5.2537, 5.7016, 5.7224, 5.7032, 5.7218, 5.8559, 5.2532, 5.8543],
+          "spans": [
+            {
+              "offset": 2504,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "content": "2",
+          "polygon": [0.8201, 6.1057, 0.9175, 6.1058, 0.9173, 6.2524, 0.8199, 6.2523],
+          "spans": [
+            {
+              "offset": 2540,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "content": "Cras fringilla ipsum magna, in fringilla dui commodo",
+          "polygon": [1.3129, 6.0923, 5.1597, 6.092, 5.1597, 6.28, 1.313, 6.2803],
+          "spans": [
+            {
+              "offset": 2551,
+              "length": 52
+            }
+          ]
+        },
+        {
+          "content": "a.",
+          "polygon": [1.3171, 6.3355, 1.4544, 6.3355, 1.4544, 6.4628, 1.3171, 6.4627],
+          "spans": [
+            {
+              "offset": 2604,
+              "length": 2
+            }
+          ]
+        },
+        {
+          "content": "Ipsum",
+          "polygon": [5.2501, 6.105, 5.7124, 6.1061, 5.712, 6.2741, 5.2498, 6.2731],
+          "spans": [
+            {
+              "offset": 2616,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "content": "3",
+          "polygon": [0.8196, 6.7151, 0.9176, 6.7153, 0.9173, 6.8648, 0.8192, 6.8646],
+          "spans": [
+            {
+              "offset": 2652,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "content": "Aliquam erat volutpat.",
+          "polygon": [1.3095, 6.7101, 2.9624, 6.7117, 2.9622, 6.8886, 1.3094, 6.887],
+          "spans": [
+            {
+              "offset": 2663,
+              "length": 22
+            }
+          ]
+        },
+        {
+          "content": "Lorem",
+          "polygon": [5.2557, 6.7197, 5.721, 6.7228, 5.72, 6.8726, 5.2547, 6.8695],
+          "spans": [
+            {
+              "offset": 2695,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "content": "4",
+          "polygon": [0.8198, 7.1189, 0.92, 7.119, 0.9199, 7.2601, 0.8196, 7.26],
+          "spans": [
+            {
+              "offset": 2731,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "content": "Fusce vitae vestibulum velit.",
+          "polygon": [1.3128, 7.1055, 3.4064, 7.1076, 3.4063, 7.2794, 1.3126, 7.2773],
+          "spans": [
+            {
+              "offset": 2742,
+              "length": 29
+            }
+          ]
+        },
+        {
+          "content": "Lorem",
+          "polygon": [5.254, 7.1178, 5.7206, 7.1188, 5.7202, 7.2711, 5.2537, 7.2702],
+          "spans": [
+            {
+              "offset": 2781,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "content": "5",
+          "polygon": [0.8217, 7.5239, 0.9147, 7.5241, 0.9144, 7.6684, 0.8215, 7.6682],
+          "spans": [
+            {
+              "offset": 2817,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "content": "Etiam vehicula luctus fermentum.",
+          "polygon": [1.3155, 7.5121, 3.791, 7.5153, 3.7908, 7.6856, 1.3153, 7.6825],
+          "spans": [
+            {
+              "offset": 2828,
+              "length": 32
+            }
+          ]
+        },
+        {
+          "content": "Ipsum",
+          "polygon": [5.2529, 7.5242, 5.7113, 7.5236, 5.7115, 7.6899, 5.2532, 7.6906],
+          "spans": [
+            {
+              "offset": 2870,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "content": "Etiam vehicula luctus fermentum. In vel metus congue, pulvinar lectus vel, fermentum dui.",
+          "polygon": [0.7788, 8.2315, 7.4635, 8.2315, 7.4635, 8.4192, 0.7788, 8.4192],
+          "spans": [
+            {
+              "offset": 2908,
+              "length": 89
+            }
+          ]
+        },
+        {
+          "content": "Maecenas ante orci, egestas ut aliquet sit amet, sagittis a magna. Aliquam ante quam,",
+          "polygon": [0.7782, 8.4402, 7.4677, 8.4418, 7.4676, 8.6315, 0.7782, 8.6299],
+          "spans": [
+            {
+              "offset": 2998,
+              "length": 85
+            }
+          ]
+        },
+        {
+          "content": "pellentesque ut dignissim quis, laoreet eget est. Aliquam erat volutpat. Class aptent taciti",
+          "polygon": [0.7784, 8.6486, 7.4748, 8.6441, 7.4749, 8.8323, 0.7785, 8.8369],
+          "spans": [
+            {
+              "offset": 3084,
+              "length": 92
+            }
+          ]
+        },
+        {
+          "content": "sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Ut ullamcorper",
+          "polygon": [0.7752, 8.8566, 7.4847, 8.8508, 7.4849, 9.0348, 0.7753, 9.0392],
+          "spans": [
+            {
+              "offset": 3177,
+              "length": 86
+            }
+          ]
+        },
+        {
+          "content": "justo sapien, in cursus libero viverra eget. Vivamus auctor imperdiet urna, at pulvinar leo",
+          "polygon": [0.7656, 9.0538, 7.4784, 9.0497, 7.4785, 9.2352, 0.7657, 9.2392],
+          "spans": [
+            {
+              "offset": 3264,
+              "length": 91
+            }
+          ]
+        },
+        {
+          "content": "posuere laoreet. Suspendisse neque nisl, fringilla at iaculis scelerisque, ornare vel dolor. Ut",
+          "polygon": [0.7751, 9.2581, 7.4794, 9.2542, 7.4795, 9.4415, 0.7752, 9.4446],
+          "spans": [
+            {
+              "offset": 3356,
+              "length": 95
+            }
+          ]
+        },
+        {
+          "content": "et pulvinar nunc. Pellentesque fringilla mollis efficitur. Nullam venenatis commodo",
+          "polygon": [0.7767, 9.4646, 7.4795, 9.4574, 7.4797, 9.6428, 0.7768, 9.65],
+          "spans": [
+            {
+              "offset": 3452,
+              "length": 83
+            }
+          ]
+        },
+        {
+          "content": "imperdiet. Morbi velit neque, semper quis lorem quis, efficitur dignissim ipsum. Ut ac lorem",
+          "polygon": [0.7731, 9.6675, 7.4773, 9.6651, 7.4774, 9.854, 0.7732, 9.8558],
+          "spans": [
+            {
+              "offset": 3536,
+              "length": 92
+            }
+          ]
+        },
+        {
+          "content": "sed turpis imperdiet eleifend sit amet id sapien.",
+          "polygon": [0.7724, 9.8712, 4.284, 9.8692, 4.2841, 10.0506, 0.7725, 10.0526],
+          "spans": [
+            {
+              "offset": 3629,
+              "length": 49
+            }
+          ]
+        }
+      ],
+      "spans": [
+        {
+          "offset": 1367,
+          "length": 2312
+        }
+      ]
+    }
+  ],
+  "tables": [
+    {
+      "rowCount": 6,
+      "columnCount": 4,
+      "cells": [
+        {
+          "kind": "columnHeader",
+          "rowIndex": 0,
+          "columnIndex": 0,
+          "content": "",
+          "boundingRegions": [
+            {
+              "pageNumber": 2,
+              "polygon": [0.7931, 5.2505, 1.2988, 5.2505, 1.2988, 5.6596, 0.7862, 5.6596]
+            }
+          ],
+          "spans": [
+            {
+              "offset": 2347,
+              "length": 0
+            }
+          ]
+        },
+        {
+          "kind": "columnHeader",
+          "rowIndex": 0,
+          "columnIndex": 1,
+          "content": "Lorem ipsum",
+          "boundingRegions": [
+            {
+              "pageNumber": 2,
+              "polygon": [1.2988, 5.2505, 5.2194, 5.2505, 5.2194, 5.6596, 1.2988, 5.6596]
+            }
+          ],
+          "spans": [
+            {
+              "offset": 2357,
+              "length": 11
+            }
+          ],
+          "elements": ["/paragraphs/27"]
+        },
+        {
+          "kind": "columnHeader",
+          "rowIndex": 0,
+          "columnIndex": 2,
+          "content": "Lorem ipsum",
+          "boundingRegions": [
+            {
+              "pageNumber": 2,
+              "polygon": [5.2194, 5.2505, 6.3069, 5.2505, 6.3069, 5.6596, 5.2194, 5.6596]
+            }
+          ],
+          "spans": [
+            {
+              "offset": 2378,
+              "length": 11
+            }
+          ],
+          "elements": ["/paragraphs/28"]
+        },
+        {
+          "kind": "columnHeader",
+          "rowIndex": 0,
+          "columnIndex": 3,
+          "content": "Lorem ipsum",
+          "boundingRegions": [
+            {
+              "pageNumber": 2,
+              "polygon": [6.3069, 5.2505, 7.4845, 5.2574, 7.4845, 5.6596, 6.3069, 5.6596]
+            }
+          ],
+          "spans": [
+            {
+              "offset": 2399,
+              "length": 11
+            }
+          ],
+          "elements": ["/paragraphs/29"]
+        },
+        {
+          "rowIndex": 1,
+          "columnIndex": 0,
+          "content": "1",
+          "boundingRegions": [
+            {
+              "pageNumber": 2,
+              "polygon": [0.7862, 5.6596, 1.2988, 5.6596, 1.2988, 6.0618, 0.7862, 6.0618]
+            }
+          ],
+          "spans": [
+            {
+              "offset": 2431,
+              "length": 1
+            }
+          ],
+          "elements": ["/paragraphs/30"]
+        },
+        {
+          "rowIndex": 1,
+          "columnIndex": 1,
+          "content": "In eleifend velit vitae libero sollicitudin euismod.",
+          "boundingRegions": [
+            {
+              "pageNumber": 2,
+              "polygon": [1.2988, 5.6596, 5.2194, 5.6596, 5.2263, 6.0618, 1.2988, 6.0618]
+            }
+          ],
+          "spans": [
+            {
+              "offset": 2442,
+              "length": 52
+            }
+          ],
+          "elements": ["/paragraphs/31"]
+        },
+        {
+          "rowIndex": 1,
+          "columnIndex": 2,
+          "content": "Lorem",
+          "boundingRegions": [
+            {
+              "pageNumber": 2,
+              "polygon": [5.2194, 5.6596, 6.3069, 5.6596, 6.3069, 6.0618, 5.2263, 6.0618]
+            }
+          ],
+          "spans": [
+            {
+              "offset": 2504,
+              "length": 5
+            }
+          ],
+          "elements": ["/paragraphs/32"]
+        },
+        {
+          "rowIndex": 1,
+          "columnIndex": 3,
+          "content": "",
+          "boundingRegions": [
+            {
+              "pageNumber": 2,
+              "polygon": [6.3069, 5.6596, 7.4845, 5.6596, 7.4845, 6.0618, 6.3069, 6.0618]
+            }
+          ],
+          "spans": [
+            {
+              "offset": 2519,
+              "length": 0
+            }
+          ]
+        },
+        {
+          "rowIndex": 2,
+          "columnIndex": 0,
+          "content": "2",
+          "boundingRegions": [
+            {
+              "pageNumber": 2,
+              "polygon": [0.7862, 6.0618, 1.2988, 6.0618, 1.2919, 6.665, 0.7862, 6.665]
+            }
+          ],
+          "spans": [
+            {
+              "offset": 2540,
+              "length": 1
+            }
+          ],
+          "elements": ["/paragraphs/33"]
+        },
+        {
+          "rowIndex": 2,
+          "columnIndex": 1,
+          "content": "Cras fringilla ipsum magna, in fringilla dui commodo a.",
+          "boundingRegions": [
+            {
+              "pageNumber": 2,
+              "polygon": [1.2988, 6.0618, 5.2263, 6.0618, 5.2263, 6.6719, 1.2919, 6.665]
+            }
+          ],
+          "spans": [
+            {
+              "offset": 2551,
+              "length": 55
+            }
+          ],
+          "elements": ["/paragraphs/34"]
+        },
+        {
+          "rowIndex": 2,
+          "columnIndex": 2,
+          "content": "Ipsum",
+          "boundingRegions": [
+            {
+              "pageNumber": 2,
+              "polygon": [5.2263, 6.0618, 6.3069, 6.0618, 6.3069, 6.6719, 5.2263, 6.6719]
+            }
+          ],
+          "spans": [
+            {
+              "offset": 2616,
+              "length": 5
+            }
+          ],
+          "elements": ["/paragraphs/35"]
+        },
+        {
+          "rowIndex": 2,
+          "columnIndex": 3,
+          "content": "",
+          "boundingRegions": [
+            {
+              "pageNumber": 2,
+              "polygon": [6.3069, 6.0618, 7.4845, 6.0618, 7.4845, 6.6719, 6.3069, 6.6719]
+            }
+          ],
+          "spans": [
+            {
+              "offset": 2631,
+              "length": 0
+            }
+          ]
+        },
+        {
+          "rowIndex": 3,
+          "columnIndex": 0,
+          "content": "3",
+          "boundingRegions": [
+            {
+              "pageNumber": 2,
+              "polygon": [0.7862, 6.665, 1.2919, 6.665, 1.2919, 7.081, 0.7862, 7.081]
+            }
+          ],
+          "spans": [
+            {
+              "offset": 2652,
+              "length": 1
+            }
+          ],
+          "elements": ["/paragraphs/36"]
+        },
+        {
+          "rowIndex": 3,
+          "columnIndex": 1,
+          "content": "Aliquam erat volutpat.",
+          "boundingRegions": [
+            {
+              "pageNumber": 2,
+              "polygon": [1.2919, 6.665, 5.2263, 6.6719, 5.2263, 7.081, 1.2919, 7.081]
+            }
+          ],
+          "spans": [
+            {
+              "offset": 2663,
+              "length": 22
+            }
+          ],
+          "elements": ["/paragraphs/37"]
+        },
+        {
+          "rowIndex": 3,
+          "columnIndex": 2,
+          "content": "Lorem",
+          "boundingRegions": [
+            {
+              "pageNumber": 2,
+              "polygon": [5.2263, 6.6719, 6.3069, 6.6719, 6.3069, 7.081, 5.2263, 7.081]
+            }
+          ],
+          "spans": [
+            {
+              "offset": 2695,
+              "length": 5
+            }
+          ],
+          "elements": ["/paragraphs/38"]
+        },
+        {
+          "rowIndex": 3,
+          "columnIndex": 3,
+          "content": "",
+          "boundingRegions": [
+            {
+              "pageNumber": 2,
+              "polygon": [6.3069, 6.6719, 7.4845, 6.6719, 7.4845, 7.081, 6.3069, 7.081]
+            }
+          ],
+          "spans": [
+            {
+              "offset": 2710,
+              "length": 0
+            }
+          ]
+        },
+        {
+          "rowIndex": 4,
+          "columnIndex": 0,
+          "content": "4",
+          "boundingRegions": [
+            {
+              "pageNumber": 2,
+              "polygon": [0.7862, 7.081, 1.2919, 7.081, 1.2919, 7.4763, 0.7793, 7.4763]
+            }
+          ],
+          "spans": [
+            {
+              "offset": 2731,
+              "length": 1
+            }
+          ],
+          "elements": ["/paragraphs/39"]
+        },
+        {
+          "rowIndex": 4,
+          "columnIndex": 1,
+          "content": "Fusce vitae vestibulum velit.",
+          "boundingRegions": [
+            {
+              "pageNumber": 2,
+              "polygon": [1.2919, 7.081, 5.2263, 7.081, 5.2263, 7.4763, 1.2919, 7.4763]
+            }
+          ],
+          "spans": [
+            {
+              "offset": 2742,
+              "length": 29
+            }
+          ],
+          "elements": ["/paragraphs/40"]
+        },
+        {
+          "rowIndex": 4,
+          "columnIndex": 2,
+          "content": "Lorem",
+          "boundingRegions": [
+            {
+              "pageNumber": 2,
+              "polygon": [5.2263, 7.081, 6.3069, 7.081, 6.3069, 7.4763, 5.2263, 7.4763]
+            }
+          ],
+          "spans": [
+            {
+              "offset": 2781,
+              "length": 5
+            }
+          ],
+          "elements": ["/paragraphs/41"]
+        },
+        {
+          "rowIndex": 4,
+          "columnIndex": 3,
+          "content": "",
+          "boundingRegions": [
+            {
+              "pageNumber": 2,
+              "polygon": [6.3069, 7.081, 7.4845, 7.081, 7.4845, 7.4763, 6.3069, 7.4763]
+            }
+          ],
+          "spans": [
+            {
+              "offset": 2796,
+              "length": 0
+            }
+          ]
+        },
+        {
+          "rowIndex": 5,
+          "columnIndex": 0,
+          "content": "5",
+          "boundingRegions": [
+            {
+              "pageNumber": 2,
+              "polygon": [0.7793, 7.4763, 1.2919, 7.4763, 1.2919, 7.8923, 0.7793, 7.8923]
+            }
+          ],
+          "spans": [
+            {
+              "offset": 2817,
+              "length": 1
+            }
+          ],
+          "elements": ["/paragraphs/42"]
+        },
+        {
+          "rowIndex": 5,
+          "columnIndex": 1,
+          "content": "Etiam vehicula luctus fermentum.",
+          "boundingRegions": [
+            {
+              "pageNumber": 2,
+              "polygon": [1.2919, 7.4763, 5.2263, 7.4763, 5.2263, 7.8854, 1.2919, 7.8923]
+            }
+          ],
+          "spans": [
+            {
+              "offset": 2828,
+              "length": 32
+            }
+          ],
+          "elements": ["/paragraphs/43"]
+        },
+        {
+          "rowIndex": 5,
+          "columnIndex": 2,
+          "content": "Ipsum",
+          "boundingRegions": [
+            {
+              "pageNumber": 2,
+              "polygon": [5.2263, 7.4763, 6.3069, 7.4763, 6.3069, 7.8923, 5.2263, 7.8854]
+            }
+          ],
+          "spans": [
+            {
+              "offset": 2870,
+              "length": 5
+            }
+          ],
+          "elements": ["/paragraphs/44"]
+        },
+        {
+          "rowIndex": 5,
+          "columnIndex": 3,
+          "content": "",
+          "boundingRegions": [
+            {
+              "pageNumber": 2,
+              "polygon": [6.3069, 7.4763, 7.4845, 7.4763, 7.4845, 7.8923, 6.3069, 7.8923]
+            }
+          ],
+          "spans": [
+            {
+              "offset": 2885,
+              "length": 0
+            }
+          ]
+        }
+      ],
+      "boundingRegions": [
+        {
+          "pageNumber": 2,
+          "polygon": [0.7732, 5.2431, 7.4993, 5.2434, 7.5006, 7.8896, 0.774, 7.8891]
+        }
+      ],
+      "spans": [
+        {
+          "offset": 2330,
+          "length": 575
+        }
+      ]
+    }
+  ],
+  "paragraphs": [
+    {
+      "spans": [
+        {
+          "offset": 0,
+          "length": 13
+        }
+      ],
+      "boundingRegions": [
+        {
+          "pageNumber": 1,
+          "polygon": [2.8607, 1.0029, 5.2981, 1.013, 5.2965, 1.404, 2.8591, 1.3939]
+        }
+      ],
+      "role": "title",
+      "content": "Lorem ipsum"
+    },
+    {
+      "spans": [
+        {
+          "offset": 16,
+          "length": 81
+        }
+      ],
+      "boundingRegions": [
+        {
+          "pageNumber": 1,
+          "polygon": [0.7768, 2.0327, 7.1736, 2.0366, 7.1732, 2.581, 0.7765, 2.5771]
+        }
+      ],
+      "role": "title",
+      "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc ac faucibus odio."
+    },
+    {
+      "spans": [
+        {
+          "offset": 99,
+          "length": 729
+        }
+      ],
+      "boundingRegions": [
+        {
+          "pageNumber": 1,
+          "polygon": [0.7702, 3.0259, 7.4815, 3.0181, 7.4836, 4.8391, 0.7723, 4.8468]
+        }
+      ],
+      "content": "Vestibulum neque massa, scelerisque sit amet ligula eu, congue molestie mi. Praesent ut varius sem. Nullam at porttitor arcu, nec lacinia nisi. Ut ac dolor vitae odio interdum condimentum. Vivamus dapibus sodales ex, vitae malesuada ipsum cursus convallis. Maecenas sed egestas nulla, ac condimentum orci. Mauris diam felis, vulputate ac suscipit et, iaculis non est. Curabitur semper arcu ac ligula semper, nec luctus nisl blandit. Integer lacinia ante ac libero lobortis imperdiet. Nullam mollis convallis ipsum, ac accumsan nunc vehicula vitae. Nulla eget justo in felis tristique fringilla. Morbi sit amet tortor quis risus auctor condimentum. Morbi in ullamcorper elit. Nulla iaculis tellus sit amet mauris tempus fringilla."
+    },
+    {
+      "spans": [
+        {
+          "offset": 830,
+          "length": 72
+        }
+      ],
+      "boundingRegions": [
+        {
+          "pageNumber": 1,
+          "polygon": [0.7765, 5.0199, 5.9779, 5.0192, 5.9779, 5.2025, 0.7765, 5.2033]
+        }
+      ],
+      "content": "Maecenas mauris lectus, lobortis et purus mattis, blandit dictum tellus."
+    },
+    {
+      "spans": [
+        {
+          "offset": 904,
+          "length": 49
+        }
+      ],
+      "boundingRegions": [
+        {
+          "pageNumber": 1,
+          "polygon": [1.0388, 5.4022, 5.2296, 5.3965, 5.2298, 5.5708, 1.039, 5.5766]
+        }
+      ],
+      "content": ". Maecenas non lorem quis tellus placerat varius."
+    },
+    {
+      "spans": [
+        {
+          "offset": 955,
+          "length": 17
+        }
+      ],
+      "boundingRegions": [
+        {
+          "pageNumber": 1,
+          "polygon": [1.0368, 5.787, 2.2103, 5.7802, 2.2112, 5.942, 1.0378, 5.9488]
+        }
+      ],
+      "content": "\u00b7 Nulla facilisi."
+    },
+    {
+      "spans": [
+        {
+          "offset": 974,
+          "length": 43
+        }
+      ],
+      "boundingRegions": [
+        {
+          "pageNumber": 1,
+          "polygon": [1.0368, 6.1615, 4.319, 6.1667, 4.3187, 6.3376, 1.0365, 6.3324]
+        }
+      ],
+      "content": ". Aenean congue fringilla justo ut aliquam."
+    },
+    {
+      "spans": [
+        {
+          "offset": 1019,
+          "length": 95
+        }
+      ],
+      "boundingRegions": [
+        {
+          "pageNumber": 1,
+          "polygon": [1.0415, 6.5663, 7.4827, 6.5669, 7.4827, 6.9647, 1.0414, 6.9641]
+        }
+      ],
+      "content": "\u00b7 Mauris id ex erat. Nunc vulputate neque vitae justo facilisis, non condimentum ante sagittis."
+    },
+    {
+      "spans": [
+        {
+          "offset": 1116,
+          "length": 42
+        }
+      ],
+      "boundingRegions": [
+        {
+          "pageNumber": 1,
+          "polygon": [1.0351, 7.1659, 4.3308, 7.1644, 4.3309, 7.3325, 1.0352, 7.334]
+        }
+      ],
+      "content": "\u00b7 Morbi viverra semper lorem nec molestie."
+    },
+    {
+      "spans": [
+        {
+          "offset": 1160,
+          "length": 81
+        }
+      ],
+      "boundingRegions": [
+        {
+          "pageNumber": 1,
+          "polygon": [1.0371, 7.5446, 6.9616, 7.5468, 6.9615, 7.7184, 1.037, 7.7161]
+        }
+      ],
+      "content": ". Maecenas tincidunt est efficitur ligula euismod, sit amet ornare est vulputate."
+    },
+    {
+      "spans": [
+        {
+          "offset": 1254,
+          "length": 2
+        }
+      ],
+      "boundingRegions": [
+        {
+          "pageNumber": 1,
+          "polygon": [2.1585, 8.0903, 2.3152, 8.0894, 2.316, 8.2188, 2.1592, 8.2197]
+        }
+      ],
+      "content": "12"
+    },
+    {
+      "spans": [
+        {
+          "offset": 1258,
+          "length": 2
+        }
+      ],
+      "boundingRegions": [
+        {
+          "pageNumber": 1,
+          "polygon": [2.1618, 8.3948, 2.3122, 8.3946, 2.3124, 8.5216, 2.1619, 8.5217]
+        }
+      ],
+      "content": "10"
+    },
+    {
+      "spans": [
+        {
+          "offset": 1262,
+          "length": 1
+        }
+      ],
+      "boundingRegions": [
+        {
+          "pageNumber": 1,
+          "polygon": [2.2284, 8.7028, 2.3145, 8.7031, 2.3141, 8.8279, 2.228, 8.8276]
+        }
+      ],
+      "content": "8"
+    },
+    {
+      "spans": [
+        {
+          "offset": 1265,
+          "length": 1
+        }
+      ],
+      "boundingRegions": [
+        {
+          "pageNumber": 1,
+          "polygon": [2.2323, 9.01, 2.3105, 9.01, 2.3104, 9.1276, 2.2322, 9.1276]
+        }
+      ],
+      "content": "6"
+    },
+    {
+      "spans": [
+        {
+          "offset": 1268,
+          "length": 8
+        }
+      ],
+      "boundingRegions": [
+        {
+          "pageNumber": 1,
+          "polygon": [5.719, 8.895, 6.4295, 8.8938, 6.4298, 9.0308, 5.7192, 9.032]
+        }
+      ],
+      "content": "Column 1"
+    },
+    {
+      "spans": [
+        {
+          "offset": 1278,
+          "length": 8
+        }
+      ],
+      "boundingRegions": [
+        {
+          "pageNumber": 1,
+          "polygon": [5.7202, 9.0871, 6.4352, 9.0862, 6.4354, 9.2256, 5.7204, 9.2265]
+        }
+      ],
+      "content": "Column 2"
+    },
+    {
+      "spans": [
+        {
+          "offset": 1288,
+          "length": 1
+        }
+      ],
+      "boundingRegions": [
+        {
+          "pageNumber": 1,
+          "polygon": [2.229, 9.3142, 2.311, 9.3143, 2.3109, 9.4301, 2.2289, 9.43]
+        }
+      ],
+      "content": "4"
+    },
+    {
+      "spans": [
+        {
+          "offset": 1291,
+          "length": 8
+        }
+      ],
+      "boundingRegions": [
+        {
+          "pageNumber": 1,
+          "polygon": [5.7378, 9.2884, 6.4353, 9.288, 6.4353, 9.4236, 5.7379, 9.424]
+        }
+      ],
+      "content": "Column 3"
+    },
+    {
+      "spans": [
+        {
+          "offset": 1301,
+          "length": 1
+        }
+      ],
+      "boundingRegions": [
+        {
+          "pageNumber": 1,
+          "polygon": [2.2288, 9.619, 2.3133, 9.6191, 2.3131, 9.7399, 2.2285, 9.7398]
+        }
+      ],
+      "content": "2"
+    },
+    {
+      "spans": [
+        {
+          "offset": 1304,
+          "length": 1
+        }
+      ],
+      "boundingRegions": [
+        {
+          "pageNumber": 1,
+          "polygon": [2.2277, 9.9217, 2.3103, 9.9218, 2.3103, 10.0399, 2.2277, 10.0398]
+        }
+      ],
+      "content": "0"
+    },
+    {
+      "spans": [
+        {
+          "offset": 1307,
+          "length": 5
+        }
+      ],
+      "boundingRegions": [
+        {
+          "pageNumber": 1,
+          "polygon": [2.612, 10.0969, 2.9961, 10.0979, 2.9958, 10.2273, 2.6116, 10.2263]
+        }
+      ],
+      "content": "Row 1"
+    },
+    {
+      "spans": [
+        {
+          "offset": 1314,
+          "length": 5
+        }
+      ],
+      "boundingRegions": [
+        {
+          "pageNumber": 1,
+          "polygon": [3.4038, 10.0951, 3.7991, 10.0957, 3.7989, 10.2275, 3.4036, 10.227]
+        }
+      ],
+      "content": "Row 2"
+    },
+    {
+      "spans": [
+        {
+          "offset": 1321,
+          "length": 5
+        }
+      ],
+      "boundingRegions": [
+        {
+          "pageNumber": 1,
+          "polygon": [4.203, 10.0945, 4.5956, 10.0944, 4.5957, 10.2274, 4.2031, 10.2275]
+        }
+      ],
+      "content": "Row 3"
+    },
+    {
+      "spans": [
+        {
+          "offset": 1328,
+          "length": 5
+        }
+      ],
+      "boundingRegions": [
+        {
+          "pageNumber": 1,
+          "polygon": [4.9999, 10.0973, 5.3937, 10.0975, 5.3937, 10.2272, 4.9999, 10.2271]
+        }
+      ],
+      "content": "Row 4"
+    },
+    {
+      "spans": [
+        {
+          "offset": 1367,
+          "length": 605
+        }
+      ],
+      "boundingRegions": [
+        {
+          "pageNumber": 2,
+          "polygon": [0.771, 1.1432, 7.4834, 1.147, 7.4826, 2.5506, 0.7702, 2.5467]
+        }
+      ],
+      "content": "In non mauris justo. Duis vehicula mi vel mi pretium, a viverra erat efficitur. Cras aliquam est ac eros varius, id iaculis dui auctor. Duis pretium neque ligula, et pulvinar mi placerat et. Nulla nec nunc sit amet nunc posuere vestibulum. Ut id neque eget tortor mattis tristique. Donec ante est, blandit sit amet tristique vel, lacinia pulvinar arcu. Pellentesque scelerisque fermentum erat, id posuere justo pulvinar ut. Cras id eros sed enim aliquam lobortis. Sed lobortis nisl ut eros efficitur tincidunt. Cras justo mi, porttitor quis mattis vel, ultricies ut purus. Ut facilisis et lacus eu cursus."
+    },
+    {
+      "spans": [
+        {
+          "offset": 1974,
+          "length": 292
+        }
+      ],
+      "boundingRegions": [
+        {
+          "pageNumber": 2,
+          "polygon": [0.7714, 2.7295, 7.4779, 2.7278, 7.4781, 3.5137, 0.7716, 3.5153]
+        }
+      ],
+      "content": "In eleifend velit vitae libero sollicitudin euismod. Fusce vitae vestibulum velit. Pellentesque vulputate lectus quis pellentesque commodo. Aliquam erat volutpat. Vestibulum in egestas velit. Pellentesque fermentum nisl vitae fringilla venenatis. Etiam id mauris vitae orci maximus ultricies."
+    },
+    {
+      "spans": [
+        {
+          "offset": 2269,
+          "length": 58
+        }
+      ],
+      "boundingRegions": [
+        {
+          "pageNumber": 2,
+          "polygon": [0.7546, 4.2559, 7.2733, 3.9974, 7.2946, 4.5334, 0.7758, 4.7919]
+        }
+      ],
+      "role": "sectionHeading",
+      "content": "Cras fringilla ipsum magna, in fringilla dui commodo a."
+    },
+    {
+      "spans": [
+        {
+          "offset": 2357,
+          "length": 11
+        }
+      ],
+      "boundingRegions": [
+        {
+          "pageNumber": 2,
+          "polygon": [1.2988, 5.2505, 5.2194, 5.2505, 5.2194, 5.6596, 1.2988, 5.6596]
+        }
+      ],
+      "content": "Lorem ipsum"
+    },
+    {
+      "spans": [
+        {
+          "offset": 2378,
+          "length": 11
+        }
+      ],
+      "boundingRegions": [
+        {
+          "pageNumber": 2,
+          "polygon": [5.2194, 5.2505, 6.3069, 5.2505, 6.3069, 5.6596, 5.2194, 5.6596]
+        }
+      ],
+      "content": "Lorem ipsum"
+    },
+    {
+      "spans": [
+        {
+          "offset": 2399,
+          "length": 11
+        }
+      ],
+      "boundingRegions": [
+        {
+          "pageNumber": 2,
+          "polygon": [6.3069, 5.2505, 7.4845, 5.2574, 7.4845, 5.6596, 6.3069, 5.6596]
+        }
+      ],
+      "content": "Lorem ipsum"
+    },
+    {
+      "spans": [
+        {
+          "offset": 2431,
+          "length": 1
+        }
+      ],
+      "boundingRegions": [
+        {
+          "pageNumber": 2,
+          "polygon": [0.7862, 5.6596, 1.2988, 5.6596, 1.2988, 6.0618, 0.7862, 6.0618]
+        }
+      ],
+      "content": "1"
+    },
+    {
+      "spans": [
+        {
+          "offset": 2442,
+          "length": 52
+        }
+      ],
+      "boundingRegions": [
+        {
+          "pageNumber": 2,
+          "polygon": [1.2988, 5.6596, 5.2194, 5.6596, 5.2263, 6.0618, 1.2988, 6.0618]
+        }
+      ],
+      "content": "In eleifend velit vitae libero sollicitudin euismod."
+    },
+    {
+      "spans": [
+        {
+          "offset": 2504,
+          "length": 5
+        }
+      ],
+      "boundingRegions": [
+        {
+          "pageNumber": 2,
+          "polygon": [5.2194, 5.6596, 6.3069, 5.6596, 6.3069, 6.0618, 5.2263, 6.0618]
+        }
+      ],
+      "content": "Lorem"
+    },
+    {
+      "spans": [
+        {
+          "offset": 2540,
+          "length": 1
+        }
+      ],
+      "boundingRegions": [
+        {
+          "pageNumber": 2,
+          "polygon": [0.7862, 6.0618, 1.2988, 6.0618, 1.2919, 6.665, 0.7862, 6.665]
+        }
+      ],
+      "content": "2"
+    },
+    {
+      "spans": [
+        {
+          "offset": 2551,
+          "length": 55
+        }
+      ],
+      "boundingRegions": [
+        {
+          "pageNumber": 2,
+          "polygon": [1.2988, 6.0618, 5.2263, 6.0618, 5.2263, 6.6719, 1.2919, 6.665]
+        }
+      ],
+      "content": "Cras fringilla ipsum magna, in fringilla dui commodo a."
+    },
+    {
+      "spans": [
+        {
+          "offset": 2616,
+          "length": 5
+        }
+      ],
+      "boundingRegions": [
+        {
+          "pageNumber": 2,
+          "polygon": [5.2263, 6.0618, 6.3069, 6.0618, 6.3069, 6.6719, 5.2263, 6.6719]
+        }
+      ],
+      "content": "Ipsum"
+    },
+    {
+      "spans": [
+        {
+          "offset": 2652,
+          "length": 1
+        }
+      ],
+      "boundingRegions": [
+        {
+          "pageNumber": 2,
+          "polygon": [0.7862, 6.665, 1.2919, 6.665, 1.2919, 7.081, 0.7862, 7.081]
+        }
+      ],
+      "content": "3"
+    },
+    {
+      "spans": [
+        {
+          "offset": 2663,
+          "length": 22
+        }
+      ],
+      "boundingRegions": [
+        {
+          "pageNumber": 2,
+          "polygon": [1.2919, 6.665, 5.2263, 6.6719, 5.2263, 7.081, 1.2919, 7.081]
+        }
+      ],
+      "content": "Aliquam erat volutpat."
+    },
+    {
+      "spans": [
+        {
+          "offset": 2695,
+          "length": 5
+        }
+      ],
+      "boundingRegions": [
+        {
+          "pageNumber": 2,
+          "polygon": [5.2263, 6.6719, 6.3069, 6.6719, 6.3069, 7.081, 5.2263, 7.081]
+        }
+      ],
+      "content": "Lorem"
+    },
+    {
+      "spans": [
+        {
+          "offset": 2731,
+          "length": 1
+        }
+      ],
+      "boundingRegions": [
+        {
+          "pageNumber": 2,
+          "polygon": [0.7862, 7.081, 1.2919, 7.081, 1.2919, 7.4763, 0.7793, 7.4763]
+        }
+      ],
+      "content": "4"
+    },
+    {
+      "spans": [
+        {
+          "offset": 2742,
+          "length": 29
+        }
+      ],
+      "boundingRegions": [
+        {
+          "pageNumber": 2,
+          "polygon": [1.2919, 7.081, 5.2263, 7.081, 5.2263, 7.4763, 1.2919, 7.4763]
+        }
+      ],
+      "content": "Fusce vitae vestibulum velit."
+    },
+    {
+      "spans": [
+        {
+          "offset": 2781,
+          "length": 5
+        }
+      ],
+      "boundingRegions": [
+        {
+          "pageNumber": 2,
+          "polygon": [5.2263, 7.081, 6.3069, 7.081, 6.3069, 7.4763, 5.2263, 7.4763]
+        }
+      ],
+      "content": "Lorem"
+    },
+    {
+      "spans": [
+        {
+          "offset": 2817,
+          "length": 1
+        }
+      ],
+      "boundingRegions": [
+        {
+          "pageNumber": 2,
+          "polygon": [0.7793, 7.4763, 1.2919, 7.4763, 1.2919, 7.8923, 0.7793, 7.8923]
+        }
+      ],
+      "content": "5"
+    },
+    {
+      "spans": [
+        {
+          "offset": 2828,
+          "length": 32
+        }
+      ],
+      "boundingRegions": [
+        {
+          "pageNumber": 2,
+          "polygon": [1.2919, 7.4763, 5.2263, 7.4763, 5.2263, 7.8854, 1.2919, 7.8923]
+        }
+      ],
+      "content": "Etiam vehicula luctus fermentum."
+    },
+    {
+      "spans": [
+        {
+          "offset": 2870,
+          "length": 5
+        }
+      ],
+      "boundingRegions": [
+        {
+          "pageNumber": 2,
+          "polygon": [5.2263, 7.4763, 6.3069, 7.4763, 6.3069, 7.8923, 5.2263, 7.8854]
+        }
+      ],
+      "content": "Ipsum"
+    },
+    {
+      "spans": [
+        {
+          "offset": 2908,
+          "length": 770
+        }
+      ],
+      "boundingRegions": [
+        {
+          "pageNumber": 2,
+          "polygon": [0.7651, 8.2315, 7.4844, 8.2277, 7.4855, 10.0487, 0.7662, 10.0526]
+        }
+      ],
+      "content": "Etiam vehicula luctus fermentum. In vel metus congue, pulvinar lectus vel, fermentum dui. Maecenas ante orci, egestas ut aliquet sit amet, sagittis a magna. Aliquam ante quam, pellentesque ut dignissim quis, laoreet eget est. Aliquam erat volutpat. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Ut ullamcorper justo sapien, in cursus libero viverra eget. Vivamus auctor imperdiet urna, at pulvinar leo posuere laoreet. Suspendisse neque nisl, fringilla at iaculis scelerisque, ornare vel dolor. Ut et pulvinar nunc. Pellentesque fringilla mollis efficitur. Nullam venenatis commodo imperdiet. Morbi velit neque, semper quis lorem quis, efficitur dignissim ipsum. Ut ac lorem sed turpis imperdiet eleifend sit amet id sapien."
+    }
+  ],
+  "contentFormat": "markdown",
+  "sections": [
+    {
+      "spans": [
+        {
+          "offset": 0,
+          "length": 3678
+        }
+      ],
+      "elements": ["/sections/1", "/sections/2"]
+    },
+    {
+      "spans": [
+        {
+          "offset": 0,
+          "length": 13
+        }
+      ],
+      "elements": ["/paragraphs/0"]
+    },
+    {
+      "spans": [
+        {
+          "offset": 16,
+          "length": 3662
+        }
+      ],
+      "elements": [
+        "/paragraphs/1",
+        "/paragraphs/2",
+        "/paragraphs/3",
+        "/paragraphs/4",
+        "/paragraphs/5",
+        "/paragraphs/6",
+        "/paragraphs/7",
+        "/paragraphs/8",
+        "/paragraphs/9",
+        "/figures/0",
+        "/paragraphs/24",
+        "/paragraphs/25",
+        "/sections/3"
+      ]
+    },
+    {
+      "spans": [
+        {
+          "offset": 2269,
+          "length": 1409
+        }
+      ],
+      "elements": ["/paragraphs/26", "/tables/0", "/paragraphs/45"]
+    }
+  ],
+  "figures": [
+    {
+      "id": "1.1",
+      "boundingRegions": [
+        {
+          "pageNumber": 1,
+          "polygon": [2.1297, 8.0677, 6.4546, 8.0678, 6.4547, 10.2287, 2.1296, 10.2285]
+        }
+      ],
+      "spans": [
+        {
+          "offset": 1244,
+          "length": 100
+        }
+      ],
+      "elements": [
+        "/paragraphs/10",
+        "/paragraphs/11",
+        "/paragraphs/12",
+        "/paragraphs/13",
+        "/paragraphs/14",
+        "/paragraphs/15",
+        "/paragraphs/16",
+        "/paragraphs/17",
+        "/paragraphs/18",
+        "/paragraphs/19",
+        "/paragraphs/20",
+        "/paragraphs/21",
+        "/paragraphs/22",
+        "/paragraphs/23"
+      ]
+    }
+  ]
+}
