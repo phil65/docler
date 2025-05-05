@@ -9,8 +9,12 @@ from typing import Any
 
 import anyenv
 
+from docler.log import get_logger
+from docler.markdown_utils import PAGE_BREAK_TYPE, create_metadata_comment
 from docler.models import Image
 
+
+logger = get_logger(__name__)
 
 API_BASE = "https://www.datalab.to/api/v1"
 MAX_POLLS = 300
@@ -111,6 +115,30 @@ async def get_response(
 def process_response(result: dict[str, Any]) -> tuple[str, list[Image]]:
     images: list[Image] = []
     md_content = result["markdown"]
+
+    # Convert DataLab page break format to standard format
+    # DataLab uses a format like "{2}--------------" when paginate=True
+    # Make pattern flexible to handle variations in spacing and dash count
+    page_break_pattern = r"\n\n\s*\{(\d+)\}\s*-+\s*\n\n"
+
+    def replace_page_break(match):
+        try:
+            page_num = int(match.group(1))
+            page_data = {"next_page": page_num}
+            return f"\n\n{create_metadata_comment(PAGE_BREAK_TYPE, page_data)}\n\n"
+        except (ValueError, IndexError) as e:
+            logger.warning("Failed to parse page number from page break marker: %s", e)
+            # Return the original match if we can't parse it
+            return match.group(0)
+
+    # Count matches before replacement for logging
+    original_count = len(re.findall(page_break_pattern, md_content))
+    md_content = re.sub(page_break_pattern, replace_page_break, md_content)
+    if original_count > 0:
+        logger.debug(
+            "Converted %d DataLab page breaks to standard format", original_count
+        )
+
     if result.get("images"):
         image_replacements = {}
         for i, (original_name, img_data) in enumerate(result["images"].items()):
