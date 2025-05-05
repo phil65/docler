@@ -53,11 +53,11 @@ class Image(Schema):
         """
         if isinstance(self.content, bytes):
             return base64.b64encode(self.content).decode()
-        return (
-            self.content
-            if not self.content.startswith("data:")
-            else self.content.split(",", 1)[1]
-        )
+        # Handle data URL format (e.g., "data:image/jpeg;base64,...")
+        if isinstance(self.content, str) and self.content.startswith("data:"):
+            return self.content.split(",", 1)[1]
+        # Already a base64 string
+        return self.content
 
     def to_base64_url(self) -> str:
         """Convert image content to base64 data URL.
