@@ -189,7 +189,75 @@ class Document(Schema):
     metadata: dict[str, Any] = Field(default_factory=dict)
     """Metadata of the document."""
 
-    async def export_to_directory(self, output_dir: StrPath):
+    def _build_markdown(
+        self,
+        *,
+        include_frontmatter: bool = False,
+        image_format: ImageReferenceFormat = "file_paths",
+    ) -> str:
+        """Create a markdown document with optional frontmatter and image handling.
+
+        Args:
+            include_frontmatter: Whether to include YAML frontmatter with doc metadata
+            image_format: How to handle images in the output
+
+        Returns:
+            Complete markdown document as string
+        """
+        import yaml
+
+        # Create frontmatter if requested
+        frontmatter_content = ""
+        if include_frontmatter:
+            # Collect frontmatter data
+            fm_data: dict[str, Any] = {}
+            if self.title:
+                fm_data["title"] = self.title
+            if self.author:
+                fm_data["author"] = self.author
+            if self.created:
+                fm_data["created"] = self.created.isoformat()
+            if self.modified:
+                fm_data["modified"] = self.modified.isoformat()
+            if self.source_path:
+                fm_data["source_path"] = self.source_path
+            if self.mime_type:
+                fm_data["mime_type"] = self.mime_type
+            if self.page_count:
+                fm_data["page_count"] = self.page_count
+
+            # Include document metadata
+            if self.metadata:
+                fm_data["metadata"] = self.metadata
+
+            # Generate YAML frontmatter
+            if fm_data:
+                yaml_text = yaml.dump(fm_data, default_flow_style=False, sort_keys=False)
+                frontmatter_content = f"---\n{yaml_text}---\n\n"
+
+        # Handle different image formats
+        processed_content = self.content
+
+        if image_format == "inline_base64":
+            # Replace image references with base64 data URLs
+            for image in self.images:
+                if image.filename:
+                    escaped_filename = re.escape(image.filename)
+                    pattern = rf"!\[({re.escape(image.id)})\]\(({escaped_filename})\)"
+                    data_url = image.to_base64_url()
+                    replacement = f"![{image.id}]({data_url})"
+                    processed_content = re.sub(pattern, replacement, processed_content)
+
+        # Combine frontmatter and processed content
+        return frontmatter_content + processed_content
+
+    async def export_to_directory(
+        self,
+        output_dir: StrPath,
+        *,
+        include_frontmatter: bool = True,
+        md_filename: str | None = None,
+    ):
         """Export the document content and images to a directory.
 
         Saves the markdown content to 'document.md' and images to separate files
@@ -197,13 +265,21 @@ class Document(Schema):
 
         Args:
             output_dir: The directory path to export to.
+            include_frontmatter: Whether to include YAML frontmatter
+            md_filename: Filename of the markdown file (defaults to document.md)
         """
         dir_path = upath.UPath(output_dir)
         dir_path.mkdir(parents=True, exist_ok=True)
 
+        # Build markdown with requested options
+        markdown_content = self._build_markdown(
+            include_frontmatter=include_frontmatter,
+            image_format="file_paths",
+        )
+
         # Save markdown content
-        md_path = dir_path / "document.md"
-        md_path.write_text(self.content, encoding="utf-8")
+        md_path = dir_path / (md_filename or "document.md")
+        md_path.write_text(markdown_content, encoding="utf-8")
 
         # Save images
         for image in self.images:
@@ -216,34 +292,63 @@ class Document(Schema):
                     img_bytes = image.content
                 img_path.write_bytes(img_bytes)
 
-    async def export_to_markdown_file(self, output_path: StrPath):
-        """Export the document as a single markdown file with inline images.
-
-        Saves the markdown content with images embedded as base64 data URLs.
+    async def export_to_markdown_file(
+        self,
+        output_path: StrPath,
+        *,
+        include_frontmatter: bool = True,
+        inline_images: bool = True,
+    ):
+        """Export the document as a markdown file with configurable options.
 
         Args:
             output_path: The file path to save the markdown file to.
+            include_frontmatter: Whether to include YAML frontmatter
+            inline_images: Whether to embed images as base64 data URLs (True)
+                          or keep as file paths (False)
         """
+        # Build markdown with requested options
+        markdown_content = self._build_markdown(
+            include_frontmatter=include_frontmatter,
+            image_format="inline_base64" if inline_images else "file_paths",
+        )
+
+        # Save to file
         md_path = upath.UPath(output_path)
         md_path.parent.mkdir(parents=True, exist_ok=True)
+        md_path.write_text(markdown_content, encoding="utf-8")
 
-        modified_content = self.content
-        for image in self.images:
-            if image.filename:
-                # Find the markdown reference: ![id](filename)
-                # Use regex for more robust matching, escaping special chars in filename
-                escaped_filename = re.escape(image.filename)
-                pattern = rf"!\[({re.escape(image.id)})\]\(({escaped_filename})\)"
+        # If not using inline images, save the image files
+        if not inline_images and self.images:
+            for image in self.images:
+                if image.filename:
+                    img_path = md_path.parent / image.filename
+                    if isinstance(image.content, str):
+                        # Decode if base64 string
+                        img_bytes = base64.b64decode(image.to_base64())
+                    else:
+                        img_bytes = image.content
+                    img_path.write_bytes(img_bytes)
 
-                # Generate the data URL
-                data_url = image.to_base64_url()
+    def to_markdown(
+        self,
+        *,
+        include_frontmatter: bool = False,
+        inline_images: bool = False,
+    ) -> str:
+        """Convert document to markdown with optional frontmatter and inline images.
 
-                # Replace the file reference with the data URL
-                # Keep the original alt text (image.id)
-                replacement = f"![{image.id}]({data_url})"
-                modified_content = re.sub(pattern, replacement, modified_content)
+        Args:
+            include_frontmatter: Whether to include YAML frontmatter
+            inline_images: Whether to embed images as base64 data URLs
 
-        md_path.write_text(modified_content, encoding="utf-8")
+        Returns:
+            Complete markdown document as string
+        """
+        return self._build_markdown(
+            include_frontmatter=include_frontmatter,
+            image_format="inline_base64" if inline_images else "file_paths",
+        )
 
 
 class ChunkedDocument(Document):
