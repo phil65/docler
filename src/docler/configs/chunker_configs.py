@@ -5,10 +5,10 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Annotated, Literal
 
 from pydantic import Field
+from schemez import ModelIdentifier  # noqa: TC002
 
 from docler.common_types import DEFAULT_CHUNKER_MODEL
 from docler.provider import ProviderConfig
-from docler.pydantic_types import ModelIdentifier  # noqa: TC001
 
 
 if TYPE_CHECKING:

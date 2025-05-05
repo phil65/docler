@@ -10,11 +10,9 @@ import re
 from typing import TYPE_CHECKING, Any, Literal
 
 from pydantic import Base64Str, Field
-from schemez import Schema
+from schemez import MimeType, Schema
 import upath
 import upathtools
-
-from docler.pydantic_types import MimeType  # noqa: TC001
 
 
 if TYPE_CHECKING:

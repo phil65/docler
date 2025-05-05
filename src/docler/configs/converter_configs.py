@@ -13,10 +13,10 @@ from typing import TYPE_CHECKING, Annotated, Literal
 # )
 from pydantic import Field, HttpUrl, SecretStr
 from pydantic_settings import SettingsConfigDict
+from schemez import ModelIdentifier  # noqa: TC002
 
 from docler.common_types import DEFAULT_CONVERTER_MODEL, SupportedLanguage
 from docler.provider import ProviderConfig
-from docler.pydantic_types import ModelIdentifier  # noqa: TC001
 
 
 if TYPE_CHECKING:

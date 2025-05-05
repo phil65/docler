@@ -2,45 +2,10 @@
 
 from __future__ import annotations
 
-from typing import Annotated, Any, Literal
+from typing import Any, Literal
 
 from pydantic import BaseModel, Field
 from schemez import Schema
-
-
-ModelIdentifier = Annotated[
-    str,
-    Field(
-        json_schema_extra={"field_type": "model_identifier"},
-        pattern=r"^[a-zA-Z0-9\-]+(/[a-zA-Z0-9\-]+)*(:[\w\-\.]+)?$",
-        examples=["openai:gpt-o1-mini", "anthropic/claude-3-opus"],
-        description="Identifier for an AI model, optionally including provider.",
-    ),
-]
-
-ModelTemperature = Annotated[
-    float,
-    Field(
-        json_schema_extra={"field_type": "temperature", "step": 0.1},
-        ge=0.0,
-        le=2.0,
-        description=(
-            "Controls randomness in model responses.\n"
-            "Lower values are more deterministic, higher values more creative"
-        ),
-        examples=[0.0, 0.7, 1.0],
-    ),
-]
-
-MimeType = Annotated[
-    str,
-    Field(
-        json_schema_extra={"field_type": "mime_type"},
-        pattern=r"^[a-z]+/[a-z0-9\-+.]+$",
-        examples=["text/plain", "application/pdf", "image/jpeg", "application/json"],
-        description="Standard MIME type identifying file formats and content types",
-    ),
-]
 
 
 class ImageClassification(Schema):
@@ -105,15 +70,3 @@ def render_field(model: type[BaseModel], field_name: str) -> str:
         return "Generic model identifier selector"
 
     return "Default text input"
-
-
-if __name__ == "__main__":
-
-    class AIConfig(BaseModel):
-        """AI Configuration with semantically typed fields."""
-
-        model: ModelIdentifier = "gpt-4"
-
-    config = AIConfig(model="gpt-4")
-
-    print(type(config.model))
