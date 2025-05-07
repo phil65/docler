@@ -1,6 +1,17 @@
 """Test configuration for Docler."""
 
+from pathlib import Path
+
 import pytest
+
+
+TESTS_DIR = Path(__file__).parent
+TEST_RESOURCES = TESTS_DIR / "resources"
+
+
+@pytest.fixture
+def resources_dir() -> Path:
+    return TEST_RESOURCES
 
 
 @pytest.fixture
