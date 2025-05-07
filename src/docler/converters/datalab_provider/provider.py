@@ -75,6 +75,7 @@ class DataLabConverter(DocumentConverter[DataLabConfig]):
         self.force_ocr = force_ocr
         self.use_llm = use_llm
         self.max_pages = max_pages
+        self.add_page_breaks = True
 
     @property
     def price_per_page(self) -> float:
@@ -95,7 +96,7 @@ class DataLabConverter(DocumentConverter[DataLabConfig]):
             ValueError: If conversion fails.
         """
         path = upath.UPath(file_path)
-        form = {"output_format": "markdown", "paginate": True}
+        form = {"output_format": "markdown", "paginate": self.add_page_breaks}
         data = await read_path(path, mode="rb")
         files = {"file": (path.name, data, mime_type)}
         if self.languages:
@@ -109,7 +110,7 @@ class DataLabConverter(DocumentConverter[DataLabConfig]):
         result = await get_response(form, files, self.api_key)
         md_content, images = process_response(result)
         return Document(
-            content=md_content,
+            content=md_content.strip(),
             images=images,
             title=path.stem,
             source_path=str(path),

@@ -119,12 +119,12 @@ def process_response(result: dict[str, Any]) -> tuple[str, list[Image]]:
     # Convert DataLab page break format to standard format
     # DataLab uses a format like "{2}--------------" when paginate=True
     # Make pattern flexible to handle variations in spacing and dash count
-    page_break_pattern = r"\n\n\s*\{(\d+)\}\s*-+\s*\n\n"
+    page_break_pattern = r"(?:^|\n\n)\s*\{(\d+)\}\s*-+\s*\n\n"
 
     def replace_page_break(match):
         try:
             page_num = int(match.group(1))
-            page_data = {"next_page": page_num}
+            page_data = {"next_page": page_num + 1}
             return f"\n\n{create_metadata_comment(PAGE_BREAK_TYPE, page_data)}\n\n"
         except (ValueError, IndexError) as e:
             logger.warning("Failed to parse page number from page break marker: %s", e)
