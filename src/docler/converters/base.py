@@ -113,7 +113,6 @@ class DocumentConverter[TConfig](BaseProvider[TConfig], ABC):
             msg = f"File not found: {file_path}"
             raise FileNotFoundError(msg)
 
-        # Check mime type
         mime_type, _ = mimetypes.guess_type(str(path))
         if not mime_type:
             msg = f"Could not determine mime type for: {file_path}"
@@ -121,7 +120,7 @@ class DocumentConverter[TConfig](BaseProvider[TConfig], ABC):
         if mime_type not in self.SUPPORTED_MIME_TYPES:
             msg = (
                 f"Unsupported file type {mime_type}."
-                "Must be one of: {self.SUPPORTED_MIME_TYPES}"
+                f"Must be one of: {self.SUPPORTED_MIME_TYPES}"
             )
             raise ValueError(msg)
 
