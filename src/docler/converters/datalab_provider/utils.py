@@ -12,6 +12,7 @@ import anyenv
 from docler.log import get_logger
 from docler.markdown_utils import PAGE_BREAK_TYPE, create_metadata_comment
 from docler.models import Image
+from docler.utils import pil_to_bytes
 
 
 logger = get_logger(__name__)
@@ -57,31 +58,6 @@ def _normalize_markdown_images(
         result = result.replace(f"![]({filename})", f"![{img_id}]({filename})")
 
     return result
-
-
-# def convert(markdown: str, image_dict: dict[str, str]):
-#     import base64
-
-#     from docler.models import Image
-
-#     images: list[Image] = []
-#     md_content = markdown
-#     if images:
-#         image_replacements = {}
-#         for i, (original_name, img_data) in enumerate(image_dict.items()):
-#             img_id = f"img-{i}"
-#             ext = original_name.split(".")[-1].lower()
-#             fname = f"{img_id}.{ext}"
-#             image_replacements[original_name] = (img_id, fname)
-#             if img_data.startswith("data:"):
-#                 img_data = img_data.split(",", 1)[1]
-#             content = base64.b64decode(img_data)
-#             mime = f"image/{ext}"
-#             image = Image(id=img_id, content=content, mime_type=mime, filename=fname)
-#             images.append(image)
-
-#         md_content = _normalize_markdown_images(md_content, image_replacements)
-#     return md_content, images
 
 
 async def get_response(
@@ -138,6 +114,7 @@ def process_response(result: dict[str, Any]) -> tuple[str, list[Image]]:
         logger.debug(
             "Converted %d DataLab page breaks to standard format", original_count
         )
+    from PIL.Image import Image as PILImage
 
     if result.get("images"):
         image_replacements = {}
@@ -146,9 +123,12 @@ def process_response(result: dict[str, Any]) -> tuple[str, list[Image]]:
             ext = original_name.split(".")[-1].lower()
             fname = f"{img_id}.{ext}"
             image_replacements[original_name] = (img_id, fname)
-            if img_data.startswith("data:"):
-                img_data = img_data.split(",", 1)[1]
-            content = base64.b64decode(img_data)
+            if isinstance(img_data, PILImage):
+                content = pil_to_bytes(img_data)
+            else:
+                if img_data.startswith("data:"):
+                    img_data = img_data.split(",", 1)[1]
+                content = base64.b64decode(img_data)
             mime = f"image/{ext}"
             image = Image(id=img_id, content=content, mime_type=mime, filename=fname)
             images.append(image)

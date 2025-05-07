@@ -2,17 +2,15 @@
 
 from __future__ import annotations
 
-import re
 from typing import TYPE_CHECKING, ClassVar, Literal
 
 import upath
 
 from docler.configs.converter_configs import MarkerConfig
 from docler.converters.base import DocumentConverter
+from docler.converters.datalab_provider.utils import process_response
 from docler.log import get_logger
-from docler.markdown_utils import PAGE_BREAK_TYPE, create_metadata_comment
-from docler.models import Document, Image
-from docler.utils import get_mime_from_pil, pil_to_bytes
+from docler.models import Document
 
 
 logger = get_logger(__name__)
@@ -107,52 +105,7 @@ class MarkerConverter(DocumentConverter[MarkerConfig]):
         """Implementation of abstract method."""
         local_file = upath.UPath(file_path)
         rendered: MarkdownOutput = self.converter(str(local_file))
-        content = rendered.markdown
-
-        # Convert Marker page break format to standard format
-        # Marker uses a format like "{X}--------------" when paginate_output=True
-
-        # Make pattern flexible to handle variations in spacing and dash count
-        page_break_pattern = r"\n\n\s*\{(\d+)\}\s*-+\s*\n\n"
-
-        def replace_page_break(match):
-            try:
-                page_num = int(match.group(1))
-                page_data = {"next_page": page_num}
-                return f"\n\n{create_metadata_comment(PAGE_BREAK_TYPE, page_data)}\n\n"
-            except (ValueError, IndexError) as e:
-                logger.warning(
-                    "Failed to parse page number from page break marker: %s", e
-                )
-                # Return the original match if we can't parse it
-                return match.group(0)
-
-        # Count matches before replacement for logging
-        original_count = len(re.findall(page_break_pattern, content))
-        content = re.sub(page_break_pattern, replace_page_break, content)
-        if original_count > 0:
-            logger.debug(
-                "Converted %d Marker page breaks to standard format", original_count
-            )
-
-        images: list[Image] = []
-        image_replacements = {}
-        for img_name, pil_img in rendered.images.items():
-            # Create standardized image ID and filename
-            image_count = len(images)
-            id_ = f"img-{image_count}"
-            filename = f"{id_}.png"
-            image_replacements[img_name] = (id_, filename)
-            image_data = pil_to_bytes(pil_img)
-            mime = get_mime_from_pil(pil_img)
-            image = Image(id=id_, content=image_data, mime_type=mime, filename=filename)
-            images.append(image)
-        # Replace image references in content
-        # Match Marker's format: ![](_page_X_Picture_Y.jpeg)
-        for old_name, (image_id, filename) in image_replacements.items():
-            old_ref = f"![]({old_name})"
-            new_ref = f"![{image_id}]({filename})"
-            content = content.replace(old_ref, new_ref)
+        content, images = process_response(rendered.model_dump())
         return Document(
             content=content,
             images=images,
