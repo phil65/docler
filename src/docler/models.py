@@ -3,9 +3,11 @@
 from __future__ import annotations
 
 import base64
+import contextlib
 from dataclasses import dataclass, field
-from datetime import datetime  # noqa: TC003
+from datetime import datetime
 from io import BytesIO
+import mimetypes
 import re
 from typing import TYPE_CHECKING, Any, Literal
 
@@ -93,10 +95,6 @@ class Image(Schema):
             FileNotFoundError: If the file doesn't exist
             ValueError: If the file type is not supported
         """
-        import mimetypes
-
-        import upath
-
         path = upath.UPath(file_path)
         if not path.exists():
             msg = f"Image file not found: {file_path}"
@@ -156,6 +154,167 @@ class Image(Schema):
 
 class Document(Schema):
     """Represents a processed document with its content and metadata."""
+
+    @classmethod
+    async def from_file(cls, file_path: StrPath, *, load_images: bool = True) -> Document:
+        """Load a Document from a markdown file, parsing embedded images and metadata.
+
+        Args:
+            file_path: Path to the markdown file.
+            load_images: Whether to parse and load images (inline base64 or file paths).
+
+        Returns:
+            Document instance reconstructed from the markdown file.
+        """
+        import yaml
+
+        path = upath.UPath(file_path)
+        text = path.read_text(encoding="utf-8")
+
+        # Parse frontmatter if present
+        frontmatter = {}
+        content = text
+        if text.startswith("---"):
+            fm_end = text.find("---", 3)
+            if fm_end != -1:
+                fm_block = text[3:fm_end]
+                try:
+                    frontmatter = yaml.safe_load(fm_block)
+                except Exception:  # noqa: BLE001
+                    frontmatter = {}
+                content = text[fm_end + 3 :].lstrip("\n")
+
+        # Find all image references: ![id](url)
+        image_pattern = re.compile(r"!\[([^\]]+)\]\(([^)]+)\)")
+        images: list[Image] = []
+        image_ids_seen: set[str] = set()
+
+        def _parse_image_ref(match):
+            img_id = match.group(1)
+            img_url = match.group(2)
+            if img_id in image_ids_seen:
+                return
+            image_ids_seen.add(img_id)
+            if img_url.startswith("data:"):
+                # Inline base64 image
+                mime_type = img_url.split(";")[0][5:]
+                b64_data = img_url.split(",", 1)[1]
+                images.append(
+                    Image(
+                        id=img_id,
+                        content=b64_data,
+                        mime_type=mime_type,
+                        filename=None,
+                        description=None,
+                        metadata={},
+                    )
+                )
+            elif load_images:
+                # File path reference, try to load file if possible
+                img_path = path.parent / img_url
+                if img_path.exists():
+                    mime_type = None
+                    with contextlib.suppress(Exception):
+                        mime_type, _ = mimetypes.guess_type(str(img_path))
+                    content_bytes = img_path.read_bytes()
+                    images.append(
+                        Image(
+                            id=img_id,
+                            content=content_bytes,
+                            mime_type=mime_type or "application/octet-stream",
+                            filename=img_url,
+                            description=None,
+                            metadata={"source_path": str(img_path)},
+                        )
+                    )
+                else:
+                    # Image file missing, skip or add as placeholder
+                    images.append(
+                        Image(
+                            id=img_id,
+                            content=b"",
+                            mime_type="application/octet-stream",
+                            filename=img_url,
+                            description="Image file not found",
+                            metadata={},
+                        )
+                    )
+
+        for match in image_pattern.finditer(content):
+            _parse_image_ref(match)
+
+        # Remove frontmatter from content if present
+        doc = cls(
+            content=content,
+            images=images,
+            title=frontmatter.get("title"),
+            author=frontmatter.get("author"),
+            created=None,
+            modified=None,
+            source_path=str(path),
+            mime_type=frontmatter.get("mime_type"),
+            page_count=frontmatter.get("page_count"),
+            metadata=frontmatter.get("metadata", {}),
+        )
+        if frontmatter.get("created"):
+            with contextlib.suppress(Exception):
+                doc.created = datetime.fromisoformat(frontmatter["created"])
+        if frontmatter.get("modified"):
+            with contextlib.suppress(Exception):
+                doc.modified = datetime.fromisoformat(frontmatter["modified"])
+        return doc
+
+    @classmethod
+    async def from_directory(
+        cls,
+        dir_path: StrPath,
+        *,
+        md_filename: str | None = None,
+        load_images: bool = True,
+    ) -> Document:
+        """Load a Document from a directory containing markdown and image files.
+
+        Args:
+            dir_path: Directory containing the markdown and image files.
+            md_filename: Name of the markdown file
+                         (defaults to document.md or first .md file).
+            load_images: Whether to load images referenced in the markdown.
+
+        Returns:
+            Document instance reconstructed from the directory.
+        """
+        import upath
+
+        dirp = upath.UPath(dir_path)
+        if not dirp.exists() or not dirp.is_dir():
+            msg = f"Directory not found: {dir_path}"
+            raise FileNotFoundError(msg)
+
+        # Find markdown file
+        md_path = None
+        if md_filename:
+            candidate = dirp / md_filename
+            if candidate.exists():
+                md_path = candidate
+        if md_path is None:
+            # Fallback: look for document.md or any .md file
+            for name in ("document.md", "index.md"):
+                candidate = dirp / name
+                if candidate.exists():
+                    md_path = candidate
+                    break
+            if md_path is None:
+                md_files = list(dirp.glob("*.md"))
+                if md_files:
+                    md_path = md_files[0]
+        if md_path is None:
+            msg = f"No markdown file found in {dir_path}"
+            raise FileNotFoundError(msg)
+
+        # Use from_file to parse markdown and images
+        doc = await cls.from_file(md_path, load_images=load_images)
+        doc.source_path = str(dirp)
+        return doc
 
     content: str
     """Markdown formatted content with internal image references."""
