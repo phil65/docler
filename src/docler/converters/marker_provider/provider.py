@@ -80,9 +80,6 @@ class MarkerConverter(DocumentConverter[MarkerConfig]):
             languages: Languages to use for OCR.
             llm_provider: Language model provider to use for OCR.
         """
-        from marker.converters.pdf import PdfConverter
-        from marker.models import create_model_dict
-
         super().__init__(languages=languages)
         self.config = {
             "output_format": "markdown",
@@ -93,18 +90,20 @@ class MarkerConverter(DocumentConverter[MarkerConfig]):
             self.config["languages"] = ",".join(languages)
         if llm_provider:
             self.config["use_llm"] = True
-        model_dict = create_model_dict()
-        llm_cls_path = PROVIDERS.get(llm_provider) if llm_provider else None
-        self.converter = PdfConverter(
-            artifact_dict=model_dict,
-            llm_service=llm_cls_path,
-            config=self.config,
-        )
+        self.llm_provider = llm_provider
 
     def _convert_path_sync(self, file_path: StrPath, mime_type: str) -> Document:
         """Implementation of abstract method."""
+        from marker.converters.pdf import PdfConverter
+        from marker.models import create_model_dict
+
         local_file = upath.UPath(file_path)
-        rendered: MarkdownOutput = self.converter(str(local_file))
+        converter = PdfConverter(
+            artifact_dict=create_model_dict(),
+            llm_service=PROVIDERS.get(self.llm_provider) if self.llm_provider else None,  # pyright: ignore
+            config=self.config,
+        )
+        rendered: MarkdownOutput = converter(str(local_file))
         content, images = process_response(rendered.model_dump())
         return Document(
             content=content,
