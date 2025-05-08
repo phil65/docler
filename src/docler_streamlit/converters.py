@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-# from docler.converters.kreuzberg_provider import KreuzbergConverter
 # from docler.converters.llm_provider import LLMConverter
 # from docler.converters.markitdown_provider import MarkItDownConverter
 from docler.converters.azure_provider import AzureConverter
@@ -26,7 +25,6 @@ ls: list[type[DocumentConverter]] = [
     MistralConverter,
     LlamaParseConverter,
     AzureConverter,
-    # KreuzbergConverter,
     # MarkItDownConverter
     UpstageConverter,
 ]

@@ -56,7 +56,6 @@ bge = ["FlagEmbedding"]
 docling = ["docling[ocrmac,vlm,rapidocr]"] # tesserocr
 # olmocr = ["olmocr", "accelerate"]
 markitdown = ["markitdown[all]"]
-kreuzberg = ["kreuzberg[gmft]"]
 litellm = ["litellm", "tokonomics"]
 streamlit = ["streamlit", "streambricks", "tokonomics", "st-diff-viewer"]
 llama-index = ["llama-index"]
@@ -85,7 +84,6 @@ all = [
     "mistralai",
     "docling",
     "markitdown[all]",
-    "kreuzberg[gmft]",
     # "litellm",
     "llmling-agent[pydantic-ai]",
     # "llama-parse",

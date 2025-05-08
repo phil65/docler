@@ -12,7 +12,6 @@ from docler.converters.aggregated_converter import AggregatedConverter
 from docler.converters.azure_provider import AzureConverter
 from docler.converters.datalab_provider import DataLabConverter
 from docler.converters.docling_provider import DoclingConverter
-from docler.converters.kreuzberg_provider import KreuzbergConverter
 from docler.converters.llamaparse_provider import LlamaParseConverter
 from docler.converters.llm_provider import LLMConverter
 from docler.converters.marker_provider import MarkerConverter
@@ -34,7 +33,6 @@ __all__ = [
     "DocumentConverter",
     "Image",
     "ImageReferenceFormat",
-    "KreuzbergConverter",
     "LLMConverter",
     "LlamaParseConverter",
     "MarkItDownConverter",

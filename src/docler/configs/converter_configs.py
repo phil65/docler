@@ -150,29 +150,6 @@ class MarkItDownConfig(BaseConverterConfig):
         return MarkItDownConverter(**self.get_config_fields())
 
 
-class KreuzbergConfig(BaseConverterConfig):
-    """Configuration for Kreuzberg document converter.
-
-    Reference:
-    https://docs.kreuzberg.ai/configuration
-    """
-
-    type: Literal["kreuzberg"] = Field("kreuzberg", init=False)
-    """Type identifier for this converter."""
-
-    languages: set[SupportedLanguage] = Field(default_factory=default_languages)
-    """List of supported languages for the converter."""
-
-    force_ocr: bool = False
-    """Whether to force OCR for all documents."""
-
-    def get_provider(self) -> DocumentConverter:
-        """Get the converter instance."""
-        from docler.converters.kreuzberg_provider import KreuzbergConverter
-
-        return KreuzbergConverter(**self.get_config_fields())
-
-
 class DataLabConfig(BaseConverterConfig):
     """Configuration for DataLab-based converter."""
 
@@ -469,7 +446,6 @@ ConverterConfig = Annotated[
     DataLabConfig
     | DoclingConverterConfig
     | DoclingRemoteConfig
-    | KreuzbergConfig
     | LLMConverterConfig
     | MarkItDownConfig
     | MistralConfig
