@@ -1,0 +1,16 @@
+version: "3"
+
+services:
+  docling:
+    image: quay.io/docling-project/docling-serve:latest
+    ports:
+      - "5001:5001"
+    environment:
+      - DOCLING_LOG_LEVEL=INFO
+      - DOCLING_SERVE_ENABLE_REMOTE_SERVICES=true
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5001/docs"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
