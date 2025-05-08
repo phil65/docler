@@ -24,7 +24,14 @@ if TYPE_CHECKING:
 
 
 ConverterShorthand = Literal[
-    "docling", "marker", "mistral", "llamaparse", "datalab", "azure", "llm"
+    "docling",
+    "docling_remote",
+    "marker",
+    "mistral",
+    "llamaparse",
+    "datalab",
+    "azure",
+    "llm",
 ]
 
 DoclingEngine = Literal[
@@ -354,6 +361,60 @@ class UpstageConfig(BaseConverterConfig):
         return UpstageConverter(**self.get_config_fields())
 
 
+class DoclingRemoteConfig(BaseConverterConfig):
+    """Configuration for remote Docling service."""
+
+    type: Literal["docling_remote"] = Field("docling_remote", init=False)
+    """Type discriminator for remote docling converter."""
+
+    languages: set[SupportedLanguage] = Field(default_factory=default_languages)
+    """List of supported languages for the converter."""
+
+    api_key: SecretStr | None = None
+    """Optional API key for auth."""
+
+    endpoint: HttpUrl = HttpUrl("http://localhost:5001")
+    """Base URL of the Docling service."""
+
+    ocr_engine: DoclingEngine = "easy_ocr"
+    """OCR engine to use."""
+
+    pdf_backend: str = "dlparse_v4"
+    """PDF backend to use."""
+
+    table_mode: Literal["fast", "accurate"] = "fast"
+    """Table mode to use."""
+
+    force_ocr: bool = False
+    """Whether to force OCR even on digital documents."""
+
+    image_scale: float = Field(default=2.0, gt=0)
+    """Scale factor for image resolution."""
+
+    do_table_structure: bool = True
+    """Extract table structure."""
+
+    do_code_enrichment: bool = False
+    """Enable code extraction."""
+
+    do_formula_enrichment: bool = False
+    """Enable formula extraction."""
+
+    do_picture_classification: bool = False
+    """Enable picture classification."""
+
+    do_picture_description: bool = False
+    """Enable picture description."""
+
+    model_config = SettingsConfigDict(env_prefix="DOCLING_REMOTE_")
+
+    def get_provider(self) -> DocumentConverter:
+        """Get the converter instance."""
+        from docler.converters.docling_remote_provider import DoclingRemoteConverter
+
+        return DoclingRemoteConverter(**self.get_config_fields())
+
+
 class AggregatedConverterConfig(BaseConverterConfig):
     """Configuration for the aggregated converter."""
 
@@ -407,6 +468,7 @@ class UnstructuredConverterConfig(BaseConverterConfig):
 ConverterConfig = Annotated[
     DataLabConfig
     | DoclingConverterConfig
+    | DoclingRemoteConfig
     | KreuzbergConfig
     | LLMConverterConfig
     | MarkItDownConfig
