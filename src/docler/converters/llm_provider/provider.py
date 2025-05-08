@@ -39,6 +39,7 @@ class LLMConverter(DocumentConverter[LLMConverterConfig]):
         self,
         languages: list[SupportedLanguage] | None = None,
         *,
+        page_range: str | None = None,
         model: str = DEFAULT_CONVERTER_MODEL,
         system_prompt: str | None = None,
         user_prompt: str | None = None,
@@ -47,6 +48,7 @@ class LLMConverter(DocumentConverter[LLMConverterConfig]):
 
         Args:
             languages: List of supported languages (used in prompting)
+            page_range: Page range(s) to extract, like "1-5,7-10" (1-based)
             model: LLM model to use for conversion
             system_prompt: Optional system prompt to guide conversion
             user_prompt: Custom prompt for the conversion task
@@ -58,6 +60,7 @@ class LLMConverter(DocumentConverter[LLMConverterConfig]):
         self.model = model  # .replace(":", "/")
         self.system_prompt = system_prompt or LLM_SYSTEM_PROMPT
         self.user_prompt = user_prompt or LLM_USER_PROMPT
+        self.page_range = page_range
 
     def _convert_path_sync(self, file_path: StrPath, mime_type: str) -> Document:
         """Convert a PDF file using the configured LLM.
@@ -78,7 +81,12 @@ class LLMConverter(DocumentConverter[LLMConverterConfig]):
         else:
             content = ImageBase64Content.from_bytes(file_content)
         agent = Agent[None](model=self.model, system_prompt=self.system_prompt)
-        response = agent.run_sync(self.user_prompt, content)
+        extra = (
+            f" Extract only the following pages: {self.page_range}"
+            if self.page_range
+            else ""
+        )
+        response = agent.run_sync(self.user_prompt + extra, content)
         return Document(
             content=response.content,
             title=path.stem,
