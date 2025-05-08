@@ -21,6 +21,9 @@ if TYPE_CHECKING:
     from docler.common_types import StrPath, SupportedLanguage
 
 
+# https://docs.mistral.ai/api/#tag/ocr
+
+
 class MistralConverter(DocumentConverter[MistralConfig]):
     """Document converter using Mistral's OCR API."""
 
