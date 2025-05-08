@@ -144,9 +144,6 @@ log_cli = true
 log_format = "%(asctime)s %(levelname)s %(message)s"
 log_date_format = "%Y-%m-%d %H:%M:%S"
 asyncio_mode = "auto"
-markers = [
-    "integration: marks tests as integration (deselect with '-m \"not integration\"')",
-]
 
 [tool.coverage.report]
 exclude_lines = [

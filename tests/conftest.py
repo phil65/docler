@@ -9,6 +9,31 @@ TESTS_DIR = Path(__file__).parent
 TEST_RESOURCES = TESTS_DIR / "resources"
 
 
+def pytest_addoption(parser):
+    parser.addoption(
+        "--integration",
+        action="store_true",
+        default=False,
+        help="run integration tests",
+    )
+
+
+def pytest_configure(config):
+    config.addinivalue_line(
+        "markers",
+        "integration: marks tests as integration tests",
+    )
+
+
+def pytest_collection_modifyitems(config, items):
+    if not config.getoption("--integration"):
+        skip_msg = "need --integration option to run"
+        skip_integration = pytest.mark.skip(reason=skip_msg)
+        for item in items:
+            if "integration" in item.keywords:
+                item.add_marker(skip_integration)
+
+
 @pytest.fixture
 def resources_dir() -> Path:
     return TEST_RESOURCES
