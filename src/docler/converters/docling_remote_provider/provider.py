@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import base64
+import re
 from typing import TYPE_CHECKING, ClassVar, Literal
 
 import anyenv
@@ -11,7 +12,6 @@ import upath
 
 from docler.configs.converter_configs import DoclingRemoteConfig
 from docler.converters.base import DocumentConverter
-from docler.converters.exceptions import MissingConfigurationError
 from docler.log import get_logger
 from docler.models import Document, Image
 
@@ -29,6 +29,9 @@ CONVERT_FILE = "/v1alpha/convert/file"
 OCREngine = Literal["easyocr", "tesseract_cli", "tesseract", "rapidocr", "ocrmac"]
 PDFBackend = Literal["pypdfium2", "dlparse_v1", "dlparse_v2", "dlparse_v4"]
 TableMode = Literal["fast", "accurate"]
+
+
+# https://github.com/docling-project/docling-serve
 
 
 class DoclingRemoteConverter(DocumentConverter[DoclingRemoteConfig]):
@@ -135,14 +138,6 @@ class DoclingRemoteConverter(DocumentConverter[DoclingRemoteConfig]):
         if languages:
             self.config["ocr_lang"] = languages
 
-        try:
-            # Verify we can reach the endpoint
-            url = f"{self.endpoint}/status"
-            anyenv.get_sync(url, timeout=5.0)
-        except Exception as e:
-            msg = f"Failed to connect to Docling service at {endpoint}: {e}"
-            raise MissingConfigurationError(msg) from e
-
     async def _convert_path_async(self, file_path: StrPath, mime_type: str) -> Document:
         """Convert a document using remote Docling service.
 
@@ -162,17 +157,10 @@ class DoclingRemoteConverter(DocumentConverter[DoclingRemoteConfig]):
 
         path = upath.UPath(file_path)
         file_content = await anyenv.run_in_thread(path.read_bytes)
-
-        # Always use the files endpoint since we have local file
         url = f"{self.endpoint}{CONVERT_FILE}"
         async with httpx.AsyncClient(timeout=60.0) as client:
-            # Prepare form data
-            files = {
-                "files": (path.name, file_content, mime_type),
-            }
-            # Add optional configuration
+            files = {"files": (path.name, file_content, mime_type)}
             data = {"parameters": anyenv.dump_json(self.config)}
-
             try:
                 response = await client.post(url, headers=headers, files=files, data=data)
                 response.raise_for_status()
@@ -185,9 +173,7 @@ class DoclingRemoteConverter(DocumentConverter[DoclingRemoteConfig]):
                 self.logger.exception(msg)
                 raise ValueError(msg) from e
 
-        # Extract content from response
         document = result["document"]
-
         if not document.get("md_content"):
             if result.get("errors"):
                 msg = f"Conversion failed: {result['errors']}"
@@ -195,13 +181,8 @@ class DoclingRemoteConverter(DocumentConverter[DoclingRemoteConfig]):
                 msg = "No markdown content found in response"
             raise ValueError(msg)
 
-        # Create document with content and any images
         content = document["md_content"]
         images: list[Image] = []
-
-        # Extract any base64 encoded images from the content
-        # This assumes the service returns images embedded in markdown
-        import re
 
         if "![" in content:
             img_pattern = r"!\[([^]]*)\]\(data:image/([^;]+);base64,([^)]+)\)"
@@ -218,19 +199,15 @@ class DoclingRemoteConverter(DocumentConverter[DoclingRemoteConfig]):
                 image_counter += 1
 
                 # Add image to list
-                images.append(
-                    Image(
-                        id=image_id,
-                        content=base64.b64decode(img_data),
-                        mime_type=f"image/{img_type}",
-                        filename=filename,
-                    )
+                image = Image(
+                    id=image_id,
+                    content=base64.b64decode(img_data),
+                    mime_type=f"image/{img_type}",
+                    filename=filename,
                 )
-
-                # Return markdown with file reference
+                images.append(image)
                 return f"![{alt_text or image_id}]({filename})"
 
-            # Replace embedded images with file references
             content = re.sub(img_pattern, replace_image, content)
 
         return Document(
