@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, ClassVar, Literal
 
-import anyenv
 import upath
 from upathtools import read_path
 
@@ -120,6 +119,8 @@ class DataLabConverter(DocumentConverter[DataLabConfig]):
 
 
 if __name__ == "__main__":
+    import anyenv
+
     pdf_path = "src/docler/resources/pdf_sample.pdf"
     converter = DataLabConverter()
     result = anyenv.run_sync(converter.convert_file(pdf_path))
