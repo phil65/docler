@@ -90,12 +90,11 @@ class LlamaParseConverter(DocumentConverter[LlamaParseConfig]):
             adaptive_long_table: Whether to use adaptive long table
             parse_mode: Parse mode, defaults to "parse_page_with_llm"
         """
-        super().__init__(languages=languages)
+        super().__init__(languages=languages, page_range=page_range)
         self.api_key = api_key or get_api_key("LLAMAPARSE_API_KEY")
         self.language = self.languages[0] if self.languages else None
         self.adaptive_long_table = adaptive_long_table
         self.parse_mode = parse_mode
-        self.page_range = page_range
 
     @property
     def price_per_page(self) -> float:

@@ -79,11 +79,11 @@ class AzureConverter(DocumentConverter[AzureConfig]):
         from azure.ai.documentintelligence import DocumentIntelligenceClient
         from azure.core.credentials import AzureKeyCredential
 
-        super().__init__(languages=languages)
+        super().__init__(languages=languages, page_range=page_range)
 
         self.endpoint = endpoint or get_api_key(ENV_ENDPOINT)
         self.api_key = api_key or get_api_key(ENV_API_KEY)
-        self.page_range = page_range
+
         self.model = model
         self.features = list(additional_features) if additional_features else []
 

@@ -42,9 +42,14 @@ class DocumentConverter[TConfig](BaseProvider[TConfig], ABC):
     """
     registry: ClassVar[dict[str, type[DocumentConverter]]] = {}
 
-    def __init__(self, languages: list[SupportedLanguage] | None = None):
+    def __init__(
+        self,
+        languages: list[SupportedLanguage] | None = None,
+        page_range: str | None = None,
+    ):
         super().__init__()
         self.languages = languages
+        self.page_range = page_range
 
     def __init_subclass__(cls, **kwargs):
         """Register subclasses automatically when they're defined."""

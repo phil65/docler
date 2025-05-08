@@ -75,7 +75,7 @@ class UpstageConverter(DocumentConverter[UpstageConfig]):
             align_orientation: Whether to automatically detect and correct the orientation
             base64_categories: Element categories to encode in base64
         """
-        super().__init__(languages=languages)
+        super().__init__(languages=languages, page_range=page_range)
         self.api_key = api_key or get_api_key("UPSTAGE_API_KEY")
         self.base_url = base_url
         self.model = model
@@ -83,7 +83,6 @@ class UpstageConverter(DocumentConverter[UpstageConfig]):
         self.base64_categories = base64_categories or {"figure", "chart"}
         self.chart_recognition = chart_recognition
         self.align_orientation = align_orientation
-        self.page_range = page_range
 
     @property
     def price_per_page(self) -> float:

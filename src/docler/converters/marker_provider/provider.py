@@ -84,7 +84,7 @@ class MarkerConverter(DocumentConverter[MarkerConfig]):
             use_llm: Whether to use LLM for enhanced accuracy.
             llm_provider: Language model provider to use for OCR.
         """
-        super().__init__(languages=languages)
+        super().__init__(languages=languages, page_range=page_range)
         self.config = {
             "output_format": "markdown",
             "highres_image_dpi": dpi,

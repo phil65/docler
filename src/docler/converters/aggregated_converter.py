@@ -31,16 +31,18 @@ class AggregatedConverter(DocumentConverter[AggregatedConverterConfig]):
         self,
         languages: list[SupportedLanguage] | None = None,
         *,
+        page_range: str | None = None,
         registry: ConverterRegistry | None = None,
     ):
         """Initialize the aggregated converter.
 
         Args:
             languages: Languages to use for conversion
+            page_range: Page range to extract.
             registry: Existing registry to use, or create a new one if None
         """
-        super().__init__(languages=languages)
-        self._registry = registry or ConverterRegistry.create_default(languages)
+        super().__init__(languages=languages, page_range=page_range)
+        self._registry = registry or ConverterRegistry.create_default(languages=languages)
 
     @classmethod
     def from_config(cls, config: AggregatedConverterConfig) -> AggregatedConverter:

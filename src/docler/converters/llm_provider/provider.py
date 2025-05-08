@@ -56,11 +56,10 @@ class LLMConverter(DocumentConverter[LLMConverterConfig]):
         Raises:
             ValueError: If model doesn't support PDF input
         """
-        super().__init__(languages=languages)
+        super().__init__(languages=languages, page_range=page_range)
         self.model = model  # .replace(":", "/")
         self.system_prompt = system_prompt or LLM_SYSTEM_PROMPT
         self.user_prompt = user_prompt or LLM_USER_PROMPT
-        self.page_range = page_range
 
     def _convert_path_sync(self, file_path: StrPath, mime_type: str) -> Document:
         """Convert a PDF file using the configured LLM.

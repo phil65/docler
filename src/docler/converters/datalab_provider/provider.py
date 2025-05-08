@@ -69,11 +69,11 @@ class DataLabConverter(DocumentConverter[DataLabConfig]):
             force_ocr: Whether to force OCR on every page.
             use_llm: Whether to use LLM for enhanced accuracy.
         """
-        super().__init__(languages=languages)
+        super().__init__(languages=languages, page_range=page_range)
         self.api_key = api_key or get_api_key("DATALAB_API_KEY")
         self.force_ocr = force_ocr
         self.use_llm = use_llm
-        self.page_range = page_range
+
         self.add_page_breaks = True
 
     @property

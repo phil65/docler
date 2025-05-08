@@ -70,6 +70,7 @@ class DoclingRemoteConverter(DocumentConverter[DoclingRemoteConfig]):
         self,
         languages: list[SupportedLanguage] | None = None,
         *,
+        page_range: str | None = None,
         api_key: str | None = None,
         endpoint: str = DEFAULT_API_ENDPOINT,
         ocr_engine: OCREngine = "easyocr",
@@ -87,6 +88,7 @@ class DoclingRemoteConverter(DocumentConverter[DoclingRemoteConfig]):
 
         Args:
             languages: List of supported languages.
+            page_range: Page range to exctract (0-based)
             api_key: Optional API key for auth.
             endpoint: Base URL of the Docling service.
             ocr_engine: OCR engine to use.
@@ -103,7 +105,7 @@ class DoclingRemoteConverter(DocumentConverter[DoclingRemoteConfig]):
         Raises:
             MissingConfigurationError: If endpoint cannot be used.
         """
-        super().__init__(languages=languages)
+        super().__init__(languages=languages, page_range=page_range)
         self.endpoint = endpoint.rstrip("/")
         self.api_key = api_key
         self.config = {

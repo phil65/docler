@@ -76,13 +76,13 @@ class DoclingConverter(DocumentConverter[DoclingConverterConfig]):
             PdfFormatOption,
         )
 
-        super().__init__(languages=languages)
+        super().__init__(languages=languages, page_range=page_range)
         self.delim = delim
         self.strict_text = strict_text
         self.escaping_underscores = escaping_underscores
         self.indent = indent
         self.text_width = text_width
-        self.page_range = page_range
+
         opts: Mapping[DoclingEngine, type[OcrOptions]] = {
             "easy_ocr": EasyOcrOptions,
             "tesseract_cli_ocr": TesseractCliOcrOptions,

@@ -61,11 +61,10 @@ class MistralConverter(DocumentConverter[MistralConfig]):
         Raises:
             ValueError: If MISTRAL_API_KEY environment variable is not set.
         """
-        super().__init__(languages=languages)
+        super().__init__(languages=languages, page_range=page_range)
         self.api_key = api_key or get_api_key("MISTRAL_API_KEY")
         self.model = ocr_model
         self.image_min_size = image_min_size
-        self.page_range = page_range
 
     def _convert_path_sync(self, file_path: StrPath, mime_type: str) -> Document:
         """Implementation of abstract method."""

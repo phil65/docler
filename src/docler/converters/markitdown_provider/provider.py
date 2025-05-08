@@ -77,9 +77,8 @@ class MarkItDownConverter(DocumentConverter[MarkItDownConfig]):
         """
         from markitdown import MarkItDown
 
-        super().__init__(languages=languages)
+        super().__init__(languages=languages, page_range=page_range)
         self.converter = MarkItDown()
-        self.page_range = page_range
 
     def _convert_path_sync(self, file_path: StrPath, mime_type: str) -> Document:
         """Convert a file using MarkItDown.
