@@ -17,6 +17,7 @@ from docler.configs.converter_configs import (
 from docler.converters.base import DocumentConverter
 from docler.markdown_utils import PAGE_BREAK_TYPE, create_metadata_comment
 from docler.models import Document, Image
+from docler.pdf_utils import extract_pdf_pages
 from docler.utils import get_api_key
 
 
@@ -52,6 +53,7 @@ class UpstageConverter(DocumentConverter[UpstageConfig]):
         self,
         languages: list[SupportedLanguage] | None = None,
         *,
+        page_range: str | None = None,
         api_key: str | None = None,
         base_url: str = DOCUMENT_PARSE_BASE_URL,
         model: str = DOCUMENT_PARSE_DEFAULT_MODEL,
@@ -64,6 +66,7 @@ class UpstageConverter(DocumentConverter[UpstageConfig]):
 
         Args:
             languages: List of supported languages (currently unused by Upstage API)
+            page_range: Page range(s) to extract, like "1-5,7-10" (0-based)
             api_key: Upstage API key (falls back to UPSTAGE_API_KEY env var)
             base_url: API endpoint URL
             model: Model name for document parsing
@@ -71,9 +74,6 @@ class UpstageConverter(DocumentConverter[UpstageConfig]):
             chart_recognition: Whether to convert charts to tables.
             align_orientation: Whether to automatically detect and correct the orientation
             base64_categories: Element categories to encode in base64
-
-        Raises:
-            ValueError: If API key is not provided or found in environment
         """
         super().__init__(languages=languages)
         self.api_key = api_key or get_api_key("UPSTAGE_API_KEY")
@@ -83,6 +83,7 @@ class UpstageConverter(DocumentConverter[UpstageConfig]):
         self.base64_categories = base64_categories or {"figure", "chart"}
         self.chart_recognition = chart_recognition
         self.align_orientation = align_orientation
+        self.page_range = page_range
 
     @property
     def price_per_page(self) -> float:
@@ -104,6 +105,8 @@ class UpstageConverter(DocumentConverter[UpstageConfig]):
         """
         path = upath.UPath(file_path)
         file_content = path.read_bytes()
+        if self.page_range is not None:
+            file_content = extract_pdf_pages(file_content, self.page_range)
         headers = {"Authorization": f"Bearer {self.api_key}"}
         files = {"document": (path.name, file_content, mime_type)}
         data = {

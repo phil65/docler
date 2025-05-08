@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from io import BytesIO
 import re
 from re import Match
 from typing import TYPE_CHECKING, ClassVar
@@ -10,10 +11,10 @@ import upath
 
 from docler.configs.converter_configs import MarkItDownConfig
 from docler.converters.base import DocumentConverter
-from docler.converters.markitdown_provider.helpers import extract_pdf_pages
 from docler.log import get_logger
 from docler.markdown_utils import PAGE_BREAK_TYPE, create_metadata_comment
 from docler.models import Document
+from docler.pdf_utils import extract_pdf_pages
 
 
 if TYPE_CHECKING:
@@ -100,8 +101,9 @@ class MarkItDownConverter(DocumentConverter[MarkItDownConfig]):
                 # 1. Extract specific pages with pdfminer
                 # 2. Convert extracted text with markitdown
                 pdf_data = path.read_bytes()
-                extracted_text = extract_pdf_pages(pdf_data, self.page_range)
-                result = self.converter.convert(extracted_text)
+                extracted_bytes = extract_pdf_pages(pdf_data, self.page_range)
+                buffer = BytesIO(extracted_bytes)
+                result = self.converter.convert(buffer)
             else:
                 # For other files or full PDFs, use regular conversion
                 result = self.converter.convert(str(path), keep_data_uris=True)

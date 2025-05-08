@@ -1,12 +1,10 @@
-"""Document converter using MarkItDown."""
+"""Document converter using PyPDF2."""
 
 from __future__ import annotations
 
 import io
 
-from pdfminer.high_level import extract_text_to_fp
-from pdfminer.layout import LAParams
-from pdfminer.pdfpage import PDFPage
+from PyPDF2 import PdfReader, PdfWriter
 
 from docler.log import get_logger
 
@@ -45,36 +43,30 @@ def _parse_page_range(page_range: str | None) -> set[int]:
         return pages
 
 
-def extract_pdf_pages(data: bytes, page_range: str | None) -> str:
-    """Extract text from specific pages of a PDF file.
+def extract_pdf_pages(data: bytes, page_range: str | None) -> bytes:
+    """Extract specific pages from a PDF file and return as new PDF.
 
     Args:
-        data: PDF file content as bytes
+        data: Source PDF file content as bytes
         page_range: String like "1-5,7,9-11" or None for all pages. 1-based.
 
     Returns:
-        Extracted text from specified pages
+        New PDF containing only specified pages as bytes
 
     Raises:
         ValueError: If page range is invalid or PDF data cannot be processed
     """
     pages = _parse_page_range(page_range)
-    pdf_io = io.BytesIO(data)
-    output = io.StringIO()
-    try:
-        _pdf_pages = PDFPage.get_pages(
-            pdf_io,
-            pagenos=pages if pages else None,
-            maxpages=0,
-            caching=True,
-        )
-        extract_text_to_fp(
-            pdf_io,
-            output,
-            page_numbers=pages if pages else None,
-            laparams=LAParams(),
-        )
-        return output.getvalue()
-    except Exception as e:
-        msg = f"Failed to extract pages from PDF: {e}"
-        raise ValueError(msg) from e
+    with io.BytesIO(data) as pdf_io, io.BytesIO() as output:
+        try:
+            reader = PdfReader(pdf_io)
+            writer = PdfWriter()
+            page_indices = pages if pages else range(len(reader.pages))
+            for i in page_indices:
+                if 0 <= i < len(reader.pages):
+                    writer.add_page(reader.pages[i])
+            writer.write(output)
+            return output.getvalue()
+        except Exception as e:
+            msg = f"Failed to extract pages from PDF: {e}"
+            raise ValueError(msg) from e
