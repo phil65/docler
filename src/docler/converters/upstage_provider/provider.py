@@ -56,6 +56,8 @@ class UpstageConverter(DocumentConverter[UpstageConfig]):
         base_url: str = DOCUMENT_PARSE_BASE_URL,
         model: str = DOCUMENT_PARSE_DEFAULT_MODEL,
         ocr: UpstageOCRType = "auto",
+        chart_recognition: bool = True,
+        align_orientation: bool = False,
         base64_categories: set[UpstageCategory] | None = None,
     ):
         """Initialize the Upstage converter.
@@ -66,6 +68,8 @@ class UpstageConverter(DocumentConverter[UpstageConfig]):
             base_url: API endpoint URL
             model: Model name for document parsing
             ocr: OCR mode ('auto' or 'force')
+            chart_recognition: Whether to convert charts to tables.
+            align_orientation: Whether to automatically detect and correct the orientation
             base64_categories: Element categories to encode in base64
 
         Raises:
@@ -77,6 +81,8 @@ class UpstageConverter(DocumentConverter[UpstageConfig]):
         self.model = model
         self.ocr = ocr
         self.base64_categories = base64_categories or {"figure", "chart"}
+        self.chart_recognition = chart_recognition
+        self.align_orientation = align_orientation
 
     @property
     def price_per_page(self) -> float:
@@ -105,6 +111,8 @@ class UpstageConverter(DocumentConverter[UpstageConfig]):
             "model": self.model,
             "output_formats": "['markdown']",
             "base64_encoding": str(list(self.base64_categories)),
+            "chart_recognition": self.chart_recognition,
+            "align_orientation": self.align_orientation,
         }
 
         try:
@@ -227,7 +235,7 @@ class UpstageConverter(DocumentConverter[UpstageConfig]):
 
                 image = Image(
                     id=image_id,
-                    content=img_bytes,  # Store as bytes
+                    content=img_bytes,
                     mime_type=img_mime_type,
                     filename=filename,
                 )
