@@ -9,7 +9,7 @@ import upath
 
 from docler.configs.converter_configs import DoclingConverterConfig, DoclingEngine
 from docler.converters.base import DocumentConverter
-from docler.converters.docling_provider.utils import convert_languages
+from docler.converters.docling_provider.utils import _parse_page_range, convert_languages
 from docler.log import get_logger
 from docler.models import Document, Image
 from docler.utils import pil_to_bytes
@@ -37,6 +37,7 @@ class DoclingConverter(DocumentConverter[DoclingConverterConfig]):
         self,
         languages: list[SupportedLanguage] | None = None,
         *,
+        page_range: str | None = None,
         image_scale: float = 2.0,
         generate_images: bool = True,
         delim: str = "\n\n",
@@ -50,6 +51,7 @@ class DoclingConverter(DocumentConverter[DoclingConverterConfig]):
 
         Args:
             languages: List of supported languages.
+            page_range: Page range(s) to extract, like "1-5,7-10" (1-based)
             image_scale: Scale factor for image resolution (1.0 = 72 DPI).
             generate_images: Whether to generate and keep page images.
             delim: Delimiter for markdown sections.
@@ -80,6 +82,7 @@ class DoclingConverter(DocumentConverter[DoclingConverterConfig]):
         self.escaping_underscores = escaping_underscores
         self.indent = indent
         self.text_width = text_width
+        self.page_range = page_range
         opts: Mapping[DoclingEngine, type[OcrOptions]] = {
             "easy_ocr": EasyOcrOptions,
             "tesseract_cli_ocr": TesseractCliOcrOptions,
@@ -113,13 +116,17 @@ class DoclingConverter(DocumentConverter[DoclingConverterConfig]):
             FileNotFoundError: If the file doesn't exist.
             ValueError: If the file is not a PDF.
         """
+        from docling.datamodel.settings import DEFAULT_PAGE_RANGE
         from docling_core.types.doc.base import ImageRefMode
         from docling_core.types.io import DocumentStream
 
         pdf_path = upath.UPath(file_path)
         stream = BytesIO(pdf_path.read_bytes())
         source = DocumentStream(name=pdf_path.name, stream=stream)
-        doc_result = self.converter.convert(source)
+        page_range = _parse_page_range(self.page_range)
+        doc_result = self.converter.convert(
+            source, page_range=page_range or DEFAULT_PAGE_RANGE
+        )
         mk_content = doc_result.document.export_to_markdown(
             image_mode=ImageRefMode.REFERENCED,
             delim=self.delim,

@@ -56,3 +56,28 @@ def convert_languages(
         return [RAPID_CODES[lang] for lang in languages]
     # EasyOCR uses standard 2-letter codes
     return list(languages)
+
+
+def _parse_page_range(page_range: str | None) -> tuple[int, int] | None:
+    """Convert a page range string to a tuple of (start, end) page numbers.
+
+    Args:
+        page_range: String like "1-5" or None. 1-based page numbers.
+
+    Returns:
+        Tuple of (start, end) page numbers (0-based) or None if no range specified.
+
+    Raises:
+        ValueError: If the page range format is invalid.
+    """
+    if not page_range:
+        return None
+    try:
+        # Handle only first range for now (ignore possible additional ranges after comma)
+        first_range = page_range.split(",")[0]
+        start, end = map(int, first_range.split("-"))
+        # Convert to 0-based indexing
+        return (start - 1, end - 1)
+    except ValueError as e:
+        msg = f"Invalid page range format: {page_range}. Expected format: '1-5'"
+        raise ValueError(msg) from e

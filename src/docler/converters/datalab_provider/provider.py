@@ -56,25 +56,25 @@ class DataLabConverter(DocumentConverter[DataLabConfig]):
         self,
         languages: list[SupportedLanguage] | None = None,
         *,
+        page_range: str | None = None,
         api_key: str | None = None,
         force_ocr: bool = False,
         use_llm: bool = False,
-        max_pages: int | None = None,
     ):
         """Initialize the DataLab converter.
 
         Args:
+            page_range: Page range(s) to extract, like "1-5,7-10" (0-based)
             api_key: DataLab API key.
             languages: Languages to use for OCR.
             force_ocr: Whether to force OCR on every page.
             use_llm: Whether to use LLM for enhanced accuracy.
-            max_pages: Maximum number of pages to process.
         """
         super().__init__(languages=languages)
         self.api_key = api_key or get_api_key("DATALAB_API_KEY")
         self.force_ocr = force_ocr
         self.use_llm = use_llm
-        self.max_pages = max_pages
+        self.page_range = page_range
         self.add_page_breaks = True
 
     @property
@@ -105,8 +105,8 @@ class DataLabConverter(DocumentConverter[DataLabConfig]):
             form["force_ocr"] = "true"
         if self.use_llm:
             form["use_llm"] = "true"
-        if self.max_pages:
-            form["max_pages"] = str(self.max_pages)
+        if self.page_range:
+            form["page_range"] = self.page_range
         result = await get_response(form, files, self.api_key)
         md_content, images = process_response(result)
         return Document(

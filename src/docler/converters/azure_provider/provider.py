@@ -56,6 +56,7 @@ class AzureConverter(DocumentConverter[AzureConfig]):
         self,
         languages: list[SupportedLanguage] | None = None,
         *,
+        page_range: str | None = None,
         endpoint: str | None = None,
         api_key: str | None = None,
         model: AzureModel = "prebuilt-layout",
@@ -65,6 +66,7 @@ class AzureConverter(DocumentConverter[AzureConfig]):
 
         Args:
             languages: ISO language codes for OCR, defaults to ['en']
+            page_range: Page range(s) to extract, like "1-5,7-10" (1-based)
             endpoint: Azure service endpoint URL. Falls back to env var.
             api_key: Azure API key. Falls back to env var.
             model: Pre-trained model to use
@@ -81,7 +83,7 @@ class AzureConverter(DocumentConverter[AzureConfig]):
 
         self.endpoint = endpoint or get_api_key(ENV_ENDPOINT)
         self.api_key = api_key or get_api_key(ENV_API_KEY)
-
+        self.page_range = page_range
         self.model = model
         self.features = list(additional_features) if additional_features else []
 
@@ -141,6 +143,7 @@ class AzureConverter(DocumentConverter[AzureConfig]):
                 poller = self._client.begin_analyze_document(
                     model_id=self.model,
                     body=f,
+                    pages=self.page_range,
                     features=features,
                     output=[AnalyzeOutputOption.FIGURES],
                     locale=self.languages[0] if self.languages else "en",

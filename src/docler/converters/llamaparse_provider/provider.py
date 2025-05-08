@@ -76,6 +76,7 @@ class LlamaParseConverter(DocumentConverter[LlamaParseConfig]):
         self,
         languages: list[SupportedLanguage] | None = None,
         *,
+        page_range: str | None = None,
         api_key: str | None = None,
         adaptive_long_table: bool = True,
         parse_mode: LlamaParseMode = "parse_page_with_llm",
@@ -84,6 +85,7 @@ class LlamaParseConverter(DocumentConverter[LlamaParseConfig]):
 
         Args:
             languages: List of supported languages
+            page_range: Page range(s) to extract, like "1-5,7-10" (1-based)
             api_key: LlamaParse API key, defaults to LLAMAPARSE_API_KEY env var
             adaptive_long_table: Whether to use adaptive long table
             parse_mode: Parse mode, defaults to "parse_page_with_llm"
@@ -93,6 +95,7 @@ class LlamaParseConverter(DocumentConverter[LlamaParseConfig]):
         self.language = self.languages[0] if self.languages else None
         self.adaptive_long_table = adaptive_long_table
         self.parse_mode = parse_mode
+        self.page_range = page_range
 
     @property
     def price_per_page(self) -> float:
@@ -110,6 +113,7 @@ class LlamaParseConverter(DocumentConverter[LlamaParseConfig]):
             language=self.language,
             adaptive_long_table=self.adaptive_long_table,
             parse_mode=self.parse_mode,
+            target_pages=self.page_range,
         )
         result = parser.get_json_result(str(path))
         pages = result[0]["pages"]  # First document's pages

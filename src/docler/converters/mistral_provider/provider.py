@@ -9,7 +9,7 @@ import upath
 
 from docler.configs.converter_configs import MistralConfig
 from docler.converters.base import DocumentConverter
-from docler.converters.mistral_provider.utils import convert_image
+from docler.converters.mistral_provider.utils import _parse_page_range, convert_image
 
 # Import the markdown utility
 from docler.markdown_utils import PAGE_BREAK_TYPE, create_metadata_comment
@@ -41,6 +41,7 @@ class MistralConverter(DocumentConverter[MistralConfig]):
         self,
         languages: list[SupportedLanguage] | None = None,
         *,
+        page_range: str | None = None,
         api_key: str | None = None,
         ocr_model: str = "mistral-ocr-latest",
         image_min_size: int | None = None,
@@ -49,6 +50,7 @@ class MistralConverter(DocumentConverter[MistralConfig]):
 
         Args:
             languages: List of supported languages.
+            page_range: Page range(s) to extract, like "1-5,7-10" (0-based)
             api_key: Mistral API key. If None, will try to get from environment.
             ocr_model: Mistral OCR model to use. Defaults to "mistral-ocr-latest".
             image_min_size: Minimum size of image in pixels.
@@ -60,6 +62,7 @@ class MistralConverter(DocumentConverter[MistralConfig]):
         self.api_key = api_key or get_api_key("MISTRAL_API_KEY")
         self.model = ocr_model
         self.image_min_size = image_min_size
+        self.page_range = page_range
 
     def _convert_path_sync(self, file_path: StrPath, mime_type: str) -> Document:
         """Implementation of abstract method."""
@@ -99,6 +102,7 @@ class MistralConverter(DocumentConverter[MistralConfig]):
             document={"type": "document_url", "document_url": signed_url.url},
             include_image_base64=True,
             image_min_size=self.image_min_size,
+            pages=_parse_page_range(self.page_range),  # Add this line
         )
         images = [
             convert_image(img)

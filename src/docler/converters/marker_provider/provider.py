@@ -70,14 +70,18 @@ class MarkerConverter(DocumentConverter[MarkerConfig]):
         self,
         languages: list[SupportedLanguage] | None = None,
         *,
+        page_range: str | None = None,
         dpi: int = 192,
+        use_llm: bool = False,
         llm_provider: ProviderType | None = None,
     ):
         """Initialize the Marker converter.
 
         Args:
+            page_range: Page range(s) to extract, like "1-5,7-10" (0-based)
             dpi: DPI setting for image extraction.
             languages: Languages to use for OCR.
+            use_llm: Whether to use LLM for enhanced accuracy.
             llm_provider: Language model provider to use for OCR.
         """
         super().__init__(languages=languages)
@@ -89,7 +93,9 @@ class MarkerConverter(DocumentConverter[MarkerConfig]):
         if languages:
             self.config["languages"] = ",".join(languages)
         if llm_provider:
-            self.config["use_llm"] = True
+            self.config["use_llm"] = use_llm
+        if page_range is not None:
+            self.config["page_range"] = page_range
         self.llm_provider = llm_provider
 
     def _convert_path_sync(self, file_path: StrPath, mime_type: str) -> Document:
