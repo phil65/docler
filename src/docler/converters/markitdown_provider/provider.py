@@ -101,7 +101,7 @@ class MarkItDownConverter(DocumentConverter[MarkItDownConfig]):
                 # 2. Convert extracted text with markitdown
                 pdf_data = path.read_bytes()
                 extracted_text = extract_pdf_pages(pdf_data, self.page_range)
-                result = self.converter.convert_text(extracted_text)
+                result = self.converter.convert(extracted_text)
             else:
                 # For other files or full PDFs, use regular conversion
                 result = self.converter.convert(str(path), keep_data_uris=True)
