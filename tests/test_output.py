@@ -6,9 +6,13 @@ from typing import TYPE_CHECKING
 import pytest
 import upath
 
+from docler.converters.azure_provider.provider import AzureConverter
 from docler.converters.datalab_provider import DataLabConverter
 from docler.converters.docling_provider.provider import DoclingConverter
+from docler.converters.llamaparse_provider.provider import LlamaParseConverter
 from docler.converters.marker_provider.provider import MarkerConverter
+from docler.converters.mistral_provider.provider import MistralConverter
+from docler.converters.upstage_provider.provider import UpstageConverter
 
 
 if TYPE_CHECKING:
@@ -52,3 +56,31 @@ async def test_marker_export(snapshot):
 async def test_docling_export(snapshot):
     """Test Docling provider export functionality."""
     await _test_provider_export(DoclingConverter, snapshot)
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_upstage_export(snapshot):
+    """Test Upstage provider export functionality."""
+    await _test_provider_export(UpstageConverter, snapshot)
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_azure_export(snapshot):
+    """Test Azure provider export functionality."""
+    await _test_provider_export(AzureConverter, snapshot)
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_llamaparse_export(snapshot):
+    """Test LlamaParse provider export functionality."""
+    await _test_provider_export(LlamaParseConverter, snapshot)
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_mistral_export(snapshot):
+    """Test Mistral provider export functionality."""
+    await _test_provider_export(MistralConverter, snapshot)
