@@ -13,6 +13,7 @@ import upath
 from docler.configs.converter_configs import DoclingRemoteConfig
 from docler.converters.base import DocumentConverter
 from docler.log import get_logger
+from docler.markdown_utils import create_image_reference
 from docler.models import Document, Image
 
 
@@ -214,7 +215,7 @@ class DoclingRemoteConverter(DocumentConverter[DoclingRemoteConfig]):
                     filename=filename,
                 )
                 images.append(image)
-                return f"![{alt_text or image_id}]({filename})"
+                return create_image_reference(alt_text or image_id, filename)
 
             content = re.sub(img_pattern, replace_image, content)
 

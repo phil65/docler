@@ -15,7 +15,11 @@ from docler.configs.converter_configs import (
     UpstageOCRType,
 )
 from docler.converters.base import DocumentConverter
-from docler.markdown_utils import PAGE_BREAK_TYPE, create_metadata_comment
+from docler.markdown_utils import (
+    PAGE_BREAK_TYPE,
+    create_image_reference,
+    create_metadata_comment,
+)
 from docler.models import Document, Image
 from docler.pdf_utils import extract_pdf_pages
 from docler.utils import get_api_key
@@ -248,7 +252,7 @@ class UpstageConverter(DocumentConverter[UpstageConfig]):
                 # Replace the *first* available placeholder in the markdown
                 placeholder = "![image](/image/placeholder)"
                 if placeholder in content_for_image_replacement:
-                    img_ref = f"![{image_id}]({filename})"
+                    img_ref = create_image_reference(image_id, filename)
                     content_for_image_replacement = content_for_image_replacement.replace(
                         placeholder, img_ref, 1
                     )

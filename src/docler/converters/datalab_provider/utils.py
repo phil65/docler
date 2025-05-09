@@ -10,7 +10,11 @@ from typing import Any
 import anyenv
 
 from docler.log import get_logger
-from docler.markdown_utils import PAGE_BREAK_TYPE, create_metadata_comment
+from docler.markdown_utils import (
+    PAGE_BREAK_TYPE,
+    create_image_reference,
+    create_metadata_comment,
+)
 from docler.models import Image
 from docler.utils import pil_to_bytes
 
@@ -46,9 +50,9 @@ def _normalize_markdown_images(
         # Get the correct image ID for this filename
         for orig_name, (img_id, new_filename) in image_replacements.items():
             if filename in (new_filename, orig_name):
-                return f"![{img_id}]({filename})"
+                return create_image_reference(img_id, filename)
         # If no match found, keep the alt text
-        return f"![{match.group(1)}]({filename})"
+        return create_image_reference(match.group(1), filename)
 
     # Replace in all image patterns
     result = re.sub(r"!\[(.*?)\]\((.*?)\)", replace_image_alt, result)

@@ -16,6 +16,8 @@ from schemez import MimeType, Schema
 import upath
 import upathtools
 
+from docler.markdown_utils import create_image_reference
+
 
 if TYPE_CHECKING:
     import numpy as np
@@ -402,7 +404,7 @@ class Document(Schema):
                     escaped_filename = re.escape(image.filename)
                     pattern = rf"!\[({re.escape(image.id)})\]\(({escaped_filename})\)"
                     data_url = image.to_base64_url()
-                    replacement = f"![{image.id}]({data_url})"
+                    replacement = create_image_reference(image.id, data_url)
                     processed_content = re.sub(pattern, replacement, processed_content)
 
         # Combine frontmatter and processed content

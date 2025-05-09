@@ -3,6 +3,7 @@ from __future__ import annotations
 import re
 from typing import TYPE_CHECKING, Any
 
+from docler.markdown_utils import create_image_reference
 from docler.models import Image
 
 
@@ -25,7 +26,7 @@ def update_content(content: str, images: list[Image]) -> str:
     for i, block in enumerate(figure_blocks):
         if i < len(images):
             image = images[i]
-            img_ref = f"\n\n![{image.id}]({image.filename})\n\n"
+            img_ref = create_image_reference(image.id, image.filename or "")
             content = content.replace(f"<figure>{block}</figure>", img_ref, 1)
     return content
 

@@ -20,6 +20,10 @@ PAGE_META_TYPE = "page_meta"
 CHUNK_BOUNDARY_TYPE = "chunk_boundary"
 
 
+def create_image_reference(label: str, path: str) -> str:
+    return f"\n\n![{label}]({path})\n\n"
+
+
 def create_metadata_comment(
     data_type: str,
     data: dict[str, Any],

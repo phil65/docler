@@ -12,7 +12,11 @@ from docler.converters.base import DocumentConverter
 from docler.converters.mistral_provider.utils import _parse_page_range, convert_image
 
 # Import the markdown utility
-from docler.markdown_utils import PAGE_BREAK_TYPE, create_metadata_comment
+from docler.markdown_utils import (
+    PAGE_BREAK_TYPE,
+    create_image_reference,
+    create_metadata_comment,
+)
 from docler.models import Document, Image
 from docler.utils import get_api_key
 
@@ -182,7 +186,7 @@ class MistralConverter(DocumentConverter[MistralConfig]):
             mime_type=mime_type,
             filename=file_path.name,
         )
-        image_ref = f"\n\n![{image_id}]({file_path.name})\n\n"
+        image_ref = create_image_reference(image_id, file_path.name)
         content = image_ref + content
         additional_images = []
         for page in r.pages:
