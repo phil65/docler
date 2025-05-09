@@ -16,6 +16,8 @@ from docler.provider import BaseProvider
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
+    from schemez import MimeType
+
     from docler.common_types import StrPath, SupportedLanguage
     from docler.configs.converter_configs import ConverterConfig
     from docler.models import Document
@@ -69,7 +71,7 @@ class DocumentConverter[TConfig](BaseProvider[TConfig], ABC):
         """
         return self.SUPPORTED_MIME_TYPES
 
-    def supports_mime_type(self, mime_type: str) -> bool:
+    def supports_mime_type(self, mime_type: MimeType) -> bool:
         """Check if this converter supports a specific MIME type.
 
         Args:
@@ -143,7 +145,7 @@ class DocumentConverter[TConfig](BaseProvider[TConfig], ABC):
     async def _convert_path_threaded(
         self,
         file_path: StrPath,
-        mime_type: str,
+        mime_type: MimeType,
     ) -> Document:
         """Internal method to handle conversion routing.
 
@@ -157,11 +159,15 @@ class DocumentConverter[TConfig](BaseProvider[TConfig], ABC):
                 self._convert_path_sync, file_path, mime_type
             )
 
-    def _convert_path_sync(self, file_path: StrPath, mime_type: str) -> Document:
+    def _convert_path_sync(self, file_path: StrPath, mime_type: MimeType) -> Document:
         """Synchronous implementation for CPU-bound operations."""
         raise NotImplementedError
 
-    async def _convert_path_async(self, file_path: StrPath, mime_type: str) -> Document:
+    async def _convert_path_async(
+        self,
+        file_path: StrPath,
+        mime_type: MimeType,
+    ) -> Document:
         """Asynchronous implementation for IO-bound operations."""
         raise NotImplementedError
 

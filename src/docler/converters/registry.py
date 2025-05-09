@@ -10,6 +10,8 @@ from docler.converters.base import DocumentConverter
 
 
 if TYPE_CHECKING:
+    from schemez import MimeType
+
     from docler.common_types import SupportedLanguage
 
 
@@ -56,7 +58,7 @@ class ConverterRegistry:
     def get_converter(
         self,
         file_path: str,
-        mime_type: str | None = None,
+        mime_type: MimeType | None = None,
     ) -> DocumentConverter | None:
         """Get the appropriate converter for a file.
 

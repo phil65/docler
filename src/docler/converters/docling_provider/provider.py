@@ -18,6 +18,8 @@ from docler.utils import pil_to_bytes
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
+    from schemez import MimeType
+
     from docler.common_types import StrPath, SupportedLanguage
 
 
@@ -102,7 +104,7 @@ class DoclingConverter(DocumentConverter[DoclingConverterConfig]):
         fmt_opts = {InputFormat.PDF: PdfFormatOption(pipeline_options=pipeline_options)}
         self.converter = DoclingDocumentConverter(format_options=fmt_opts)  # type: ignore
 
-    def _convert_path_sync(self, file_path: StrPath, mime_type: str) -> Document:
+    def _convert_path_sync(self, file_path: StrPath, mime_type: MimeType) -> Document:
         """Convert a PDF file using Docling.
 
         Args:

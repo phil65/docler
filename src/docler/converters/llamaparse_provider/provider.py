@@ -16,6 +16,8 @@ from docler.utils import get_api_key
 
 
 if TYPE_CHECKING:
+    from schemez import MimeType
+
     from docler.common_types import StrPath, SupportedLanguage
 
 
@@ -101,7 +103,7 @@ class LlamaParseConverter(DocumentConverter[LlamaParseConfig]):
         """Price per page in USD."""
         return 0.0045
 
-    def _convert_path_sync(self, file_path: StrPath, mime_type: str) -> Document:
+    def _convert_path_sync(self, file_path: StrPath, mime_type: MimeType) -> Document:
         """Convert a document using LlamaParse."""
         from llama_parse import LlamaParse, ResultType
 

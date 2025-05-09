@@ -337,7 +337,7 @@ class Document(Schema):
     source_path: str | None = None
     """Original source path of the document if available."""
 
-    mime_type: str | None = None
+    mime_type: MimeType | None = None
     """MIME type of the source document if available."""
 
     page_count: int | None = None

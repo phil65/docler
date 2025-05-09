@@ -19,6 +19,7 @@ from docler.utils import get_api_key
 
 if TYPE_CHECKING:
     from azure.ai.documentintelligence.models import AnalyzeResult
+    from schemez import MimeType
 
     from docler.common_types import StrPath, SupportedLanguage
 
@@ -128,7 +129,7 @@ class AzureConverter(DocumentConverter[AzureConfig]):
 
         return images
 
-    def _convert_path_sync(self, file_path: StrPath, mime_type: str) -> Document:
+    def _convert_path_sync(self, file_path: StrPath, mime_type: MimeType) -> Document:
         """Convert a document file synchronously using Azure Document Intelligence."""
         from azure.ai.documentintelligence.models import (
             AnalyzeOutputOption,

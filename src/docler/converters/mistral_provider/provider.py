@@ -18,6 +18,8 @@ from docler.utils import get_api_key
 
 
 if TYPE_CHECKING:
+    from schemez import MimeType
+
     from docler.common_types import StrPath, SupportedLanguage
 
 
@@ -66,7 +68,7 @@ class MistralConverter(DocumentConverter[MistralConfig]):
         self.model = ocr_model
         self.image_min_size = image_min_size
 
-    def _convert_path_sync(self, file_path: StrPath, mime_type: str) -> Document:
+    def _convert_path_sync(self, file_path: StrPath, mime_type: MimeType) -> Document:
         """Implementation of abstract method."""
         local_file = upath.UPath(file_path)
         data = local_file.read_bytes()
@@ -76,7 +78,7 @@ class MistralConverter(DocumentConverter[MistralConfig]):
         return self._process_pdf(data, local_file, mime_type)
 
     def _process_pdf(
-        self, file_data: bytes, file_path: upath.UPath, mime_type: str
+        self, file_data: bytes, file_path: upath.UPath, mime_type: MimeType
     ) -> Document:
         """Process a PDF file using Mistral OCR.
 
@@ -142,7 +144,7 @@ class MistralConverter(DocumentConverter[MistralConfig]):
         )
 
     def _process_image(
-        self, file_data: bytes, file_path: upath.UPath, mime_type: str
+        self, file_data: bytes, file_path: upath.UPath, mime_type: MimeType
     ) -> Document:
         """Process an image file using Mistral OCR.
 

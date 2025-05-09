@@ -12,6 +12,8 @@ from docler.converters.registry import ConverterRegistry
 
 
 if TYPE_CHECKING:
+    from schemez import MimeType
+
     from docler.common_types import StrPath, SupportedLanguage
     from docler.models import Document
 
@@ -77,7 +79,11 @@ class AggregatedConverter(DocumentConverter[AggregatedConverterConfig]):
         """
         self._registry.set_preference(mime_or_extension, converter_name)
 
-    async def _convert_path_async(self, file_path: StrPath, mime_type: str) -> Document:
+    async def _convert_path_async(
+        self,
+        file_path: StrPath,
+        mime_type: MimeType,
+    ) -> Document:
         """Delegate conversion to the appropriate converter."""
         converter = self._registry.get_converter(str(file_path), mime_type)
         if not converter:

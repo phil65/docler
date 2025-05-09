@@ -17,6 +17,8 @@ from docler.models import Document, Image
 
 
 if TYPE_CHECKING:
+    from schemez import MimeType
+
     from docler.common_types import StrPath, SupportedLanguage
 
 logger = get_logger(__name__)
@@ -140,7 +142,11 @@ class DoclingRemoteConverter(DocumentConverter[DoclingRemoteConfig]):
         if languages:
             self.config["ocr_lang"] = languages
 
-    async def _convert_path_async(self, file_path: StrPath, mime_type: str) -> Document:
+    async def _convert_path_async(
+        self,
+        file_path: StrPath,
+        mime_type: MimeType,
+    ) -> Document:
         """Convert a document using remote Docling service.
 
         Args:

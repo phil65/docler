@@ -19,6 +19,7 @@ from docler.models import Document
 
 if TYPE_CHECKING:
     from llmling_agent.models.content import BaseContent
+    from schemez import MimeType
 
     from docler.common_types import StrPath, SupportedLanguage
 
@@ -61,7 +62,7 @@ class LLMConverter(DocumentConverter[LLMConverterConfig]):
         self.system_prompt = system_prompt or LLM_SYSTEM_PROMPT
         self.user_prompt = user_prompt or LLM_USER_PROMPT
 
-    def _convert_path_sync(self, file_path: StrPath, mime_type: str) -> Document:
+    def _convert_path_sync(self, file_path: StrPath, mime_type: MimeType) -> Document:
         """Convert a PDF file using the configured LLM.
 
         Args:

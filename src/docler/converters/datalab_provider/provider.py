@@ -16,6 +16,8 @@ from docler.utils import get_api_key
 
 
 if TYPE_CHECKING:
+    from schemez import MimeType
+
     from docler.common_types import StrPath, SupportedLanguage
 
 
@@ -81,7 +83,11 @@ class DataLabConverter(DocumentConverter[DataLabConfig]):
         """Price per page in USD."""
         return 0.003 if self.use_llm else 0.0015
 
-    async def _convert_path_async(self, file_path: StrPath, mime_type: str) -> Document:
+    async def _convert_path_async(
+        self,
+        file_path: StrPath,
+        mime_type: MimeType,
+    ) -> Document:
         """Convert a file using DataLab's API.
 
         Args:
