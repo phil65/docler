@@ -113,7 +113,7 @@ The library provides standardized metadata types for common use cases:
 1. **Page Breaks**: Use `PAGE_BREAK_TYPE` constant and `create_metadata_comment()` function to create page transitions:
    ```python
    from docler.markdown_utils import create_metadata_comment, PAGE_BREAK_TYPE
-   
+
    # Create a page break marker for page 2
    page_break = create_metadata_comment(PAGE_BREAK_TYPE, {"next_page": 2})
    # <!-- docler:page_break {"next_page":2} -->
@@ -122,12 +122,12 @@ The library provides standardized metadata types for common use cases:
 2. **Chunk Boundaries**: Use `CHUNK_BOUNDARY_TYPE` constant and `create_chunk_boundary()` function to mark semantic chunks in a document:
    ```python
    from docler.markdown_utils import create_chunk_boundary
-   
+
    # Create a chunk boundary marker with metadata
    chunk_marker = create_chunk_boundary(
        chunk_id=1,
        start_line=10,
-       end_line=25, 
+       end_line=25,
        keywords=["introduction", "overview"],
        token_count=350,
    )

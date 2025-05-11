@@ -11,6 +11,7 @@ from docler.configs.converter_configs import DoclingConverterConfig, DoclingEngi
 from docler.converters.base import DocumentConverter
 from docler.converters.docling_provider.utils import _parse_page_range, convert_languages
 from docler.log import get_logger
+from docler.markdown_utils import create_image_reference
 from docler.models import Document, Image
 from docler.utils import pil_to_bytes
 
@@ -143,7 +144,7 @@ class DoclingConverter(DocumentConverter[DoclingConverterConfig]):
                 continue
             image_id = f"img-{i}"
             filename = f"{image_id}.png"
-            mk_link = f"![{image_id}]({filename})"
+            mk_link = create_image_reference(image_id, filename)
             mk_content = mk_content.replace("<!-- image -->", mk_link, 1)
             content = pil_to_bytes(picture.image.pil_image)
             mime = "image/png"
