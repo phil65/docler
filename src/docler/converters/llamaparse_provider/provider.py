@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import base64
 from typing import TYPE_CHECKING, ClassVar
 
 import anyenv
@@ -10,9 +9,9 @@ import upath
 
 from docler.configs.converter_configs import LlamaParseConfig, LlamaParseMode
 from docler.converters.base import DocumentConverter
+from docler.converters.llamaparse_provider.utils import process_response
 from docler.log import get_logger
-from docler.markdown_utils import PAGE_BREAK_TYPE, create_metadata_comment
-from docler.models import Document, Image
+from docler.models import Document
 from docler.utils import get_api_key
 
 
@@ -118,43 +117,14 @@ class LlamaParseConverter(DocumentConverter[LlamaParseConfig]):
             target_pages=self.page_range,
         )
         result = parser.get_json_result(str(path))
-        pages = result[0]["pages"]  # First document's pages
-        job_id = result[0]["job_id"]
-        content_parts: list[str] = []
-        images: list[Image] = []
-
-        for page_num, page in enumerate(pages, start=1):
-            if page.get("md"):
-                content_parts.append(page["md"])
-                data = {"next_page": page_num}
-                comment = create_metadata_comment(PAGE_BREAK_TYPE, data)
-                content_parts.append(comment)
-            for img in page.get("images", []):
-                image_count = len(images)
-                id_ = f"img-{image_count}"
-                asset_name = img["name"]
-                asset_url = f"{parser.base_url}/api/parsing/job/{job_id}/result/image/{asset_name}"  # noqa: E501
-                headers = {"Authorization": f"Bearer {self.api_key}"}
-                response = anyenv.get_bytes_sync(asset_url, headers=headers)
-                img_data = base64.b64encode(response).decode("utf-8")
-                img_type = "png"
-                if "." in asset_name:
-                    extension = asset_name.split(".")[-1].lower()
-                    if extension in ["jpg", "jpeg", "png", "gif", "webp", "svg"]:
-                        img_type = extension
-
-                filename = f"{id_}.{img_type}"
-                mime = f"image/{img_type}"
-                image = Image(id=id_, content=img_data, mime_type=mime, filename=filename)
-                images.append(image)
-
+        content_parts, images = process_response(result, self.api_key)
         return Document(
             content="\n\n".join(content_parts),
             images=images,
             title=path.stem,
             source_path=str(path),
             mime_type=mime_type,
-            page_count=len(pages),
+            page_count=len(result[0]["pages"]),
         )
 
 
