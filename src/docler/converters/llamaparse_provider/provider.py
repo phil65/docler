@@ -11,6 +11,7 @@ import upath
 from docler.configs.converter_configs import LlamaParseConfig, LlamaParseMode
 from docler.converters.base import DocumentConverter
 from docler.log import get_logger
+from docler.markdown_utils import PAGE_BREAK_TYPE, create_metadata_comment
 from docler.models import Document, Image
 from docler.utils import get_api_key
 
@@ -122,9 +123,12 @@ class LlamaParseConverter(DocumentConverter[LlamaParseConfig]):
         content_parts: list[str] = []
         images: list[Image] = []
 
-        for page in pages:
+        for page_num, page in enumerate(pages, start=1):
             if page.get("md"):
                 content_parts.append(page["md"])
+                data = {"next_page": page_num}
+                comment = create_metadata_comment(PAGE_BREAK_TYPE, data)
+                content_parts.append(comment)
             for img in page.get("images", []):
                 image_count = len(images)
                 id_ = f"img-{image_count}"
@@ -158,4 +162,4 @@ if __name__ == "__main__":
     pdf_path = "src/docler/resources/pdf_sample.pdf"
     converter = LlamaParseConverter()
     result = anyenv.run_sync(converter.convert_file(pdf_path))
-    print(result)
+    print(result.content)
