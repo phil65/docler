@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import base64
-import re
 from typing import TYPE_CHECKING, ClassVar, Literal
 
 import anyenv
@@ -12,9 +10,9 @@ import upath
 
 from docler.configs.converter_configs import DoclingRemoteConfig
 from docler.converters.base import DocumentConverter
+from docler.converters.docling_remote_provider.utils import process_response
 from docler.log import get_logger
-from docler.markdown_utils import create_image_reference
-from docler.models import Document, Image
+from docler.models import Document
 
 
 if TYPE_CHECKING:
@@ -189,36 +187,7 @@ class DoclingRemoteConverter(DocumentConverter[DoclingRemoteConfig]):
             else:
                 msg = "No markdown content found in response"
             raise ValueError(msg)
-
-        content = document["md_content"]
-        images: list[Image] = []
-
-        if "![" in content:
-            img_pattern = r"!\[([^]]*)\]\(data:image/([^;]+);base64,([^)]+)\)"
-            image_counter = 0
-
-            def replace_image(match) -> str:
-                nonlocal image_counter
-                alt_text = match.group(1)
-                img_type = match.group(2)
-                img_data = match.group(3)
-
-                image_id = f"img-{image_counter}"
-                filename = f"{image_id}.{img_type}"
-                image_counter += 1
-
-                # Add image to list
-                image = Image(
-                    id=image_id,
-                    content=base64.b64decode(img_data),
-                    mime_type=f"image/{img_type}",
-                    filename=filename,
-                )
-                images.append(image)
-                return create_image_reference(alt_text or image_id, filename)
-
-            content = re.sub(img_pattern, replace_image, content)
-
+        content, images = process_response(document)
         return Document(
             content=content,
             images=images,
