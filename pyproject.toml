@@ -43,7 +43,6 @@ dependencies = [
     # Only add below (Copier)
     "pytest-docker>=3.2.1",
     "schemez>=0.0.1",
-    "syrupy>=4.9.1",
     "upathtools>=0.4.3",
     "pypdf2",
     "mkdown>=0.12.1",
@@ -118,6 +117,7 @@ dev = [
     "devtools",
     "pytest-asyncio",
     # Only add below (Copier)
+    "syrupy>=4.9.1",
 ]
 benchmark = ["pyinstrument"]
 lint = [
