@@ -83,7 +83,7 @@ class LlamaParseConverter(DocumentConverter[LlamaParseConfig]):
         adaptive_long_table: bool = True,
         parse_mode: LlamaParseMode = "parse_page_with_llm",
         skip_diagonal_text: bool = False,
-        disable_ocr: bool = False,
+        disable_ocr: bool = True,
         continuous_mode: bool = True,
         html_tables: bool = False,
     ):
