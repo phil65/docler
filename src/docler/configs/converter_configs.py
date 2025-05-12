@@ -248,6 +248,18 @@ class LlamaParseConfig(BaseConverterConfig):
     parse_mode: LlamaParseMode = "parse_page_with_llm"
     """Parse mode, defaults to "parse_page_with_llm"."""
 
+    skip_diagonal_text: bool = False
+    """Whether to skip diagonal text."""
+
+    disable_ocr: bool = True
+    """Whether to disable OCR for images."""
+
+    continuous_mode: bool = True
+    """Whether to use continuous mode."""
+
+    html_tables: bool = False
+    """Whether to output HTML tables instead of markdown."""
+
     model_config = SettingsConfigDict(env_prefix="LLAMAPARSE_")
 
     def get_provider(self) -> DocumentConverter:
