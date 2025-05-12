@@ -42,7 +42,6 @@ class DoclingConverter(DocumentConverter[DoclingConverterConfig]):
         *,
         page_range: str | None = None,
         image_scale: float = 2.0,
-        generate_images: bool = True,
         delim: str = "\n\n",
         strict_text: bool = False,
         escaping_underscores: bool = True,
@@ -56,7 +55,6 @@ class DoclingConverter(DocumentConverter[DoclingConverterConfig]):
             languages: List of supported languages.
             page_range: Page range(s) to extract, like "1-5,7-10" (1-based)
             image_scale: Scale factor for image resolution (1.0 = 72 DPI).
-            generate_images: Whether to generate and keep page images.
             delim: Delimiter for markdown sections.
             strict_text: Whether to use strict text processing.
             escaping_underscores: Whether to escape underscores.
@@ -98,10 +96,11 @@ class DoclingConverter(DocumentConverter[DoclingConverterConfig]):
         assert engine
         ocr_opts = engine(lang=convert_languages(languages or ["en"], engine))  # type: ignore
         pipeline_options = PdfPipelineOptions(
-            ocr_options=ocr_opts, generate_picture_images=True
+            ocr_options=ocr_opts,
+            generate_picture_images=True,
+            images_scale=image_scale,
+            generate_page_images=True,
         )
-        pipeline_options.images_scale = image_scale
-        pipeline_options.generate_page_images = generate_images
         fmt_opts = {InputFormat.PDF: PdfFormatOption(pipeline_options=pipeline_options)}
         self.converter = DoclingDocumentConverter(format_options=fmt_opts)  # type: ignore
 
