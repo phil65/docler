@@ -196,10 +196,8 @@ class UpstageConverter(DocumentConverter[UpstageConfig]):
                     )
                     insertion_offset = found_index + len(marker)
                 else:
-                    self.logger.warning(
-                        "Could not find insertion point for page break before page %d",
-                        page_num,
-                    )
+                    msg = "Could not find insertion point for page break before page %d"
+                    self.logger.warning(msg, page_num)
 
         images: list[Image] = []
         image_counter = 0
