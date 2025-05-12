@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from collections.abc import Iterator
 
-    from docler.models import Image
+    from mkdown import Image
 
 
 def assign_images(content: str, all_images: list[Image]) -> tuple[str, list[Image]]:

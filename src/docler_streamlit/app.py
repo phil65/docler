@@ -14,7 +14,7 @@ from docler_streamlit.step4_vectorstore import show_step_4
 
 
 if TYPE_CHECKING:
-    from docler.models import Document
+    from mkdown import Document
 
 
 def main():

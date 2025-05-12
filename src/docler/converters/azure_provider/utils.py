@@ -3,8 +3,9 @@ from __future__ import annotations
 import re
 from typing import TYPE_CHECKING, Any
 
+from mkdown import Image
+
 from docler.markdown_utils import create_image_reference
-from docler.models import Image
 
 
 if TYPE_CHECKING:

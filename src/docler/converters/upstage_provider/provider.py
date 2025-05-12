@@ -6,6 +6,7 @@ import base64
 from collections import defaultdict
 from typing import TYPE_CHECKING, Any, ClassVar
 
+from mkdown import Document, Image
 import requests
 import upath
 
@@ -20,7 +21,6 @@ from docler.markdown_utils import (
     create_image_reference,
     create_metadata_comment,
 )
-from docler.models import Document, Image
 from docler.pdf_utils import extract_pdf_pages
 from docler.utils import get_api_key
 

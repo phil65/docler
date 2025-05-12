@@ -7,13 +7,13 @@ import re
 from re import Match
 from typing import TYPE_CHECKING, ClassVar
 
+from mkdown import Document
 import upath
 
 from docler.configs.converter_configs import MarkItDownConfig
 from docler.converters.base import DocumentConverter
 from docler.log import get_logger
 from docler.markdown_utils import PAGE_BREAK_TYPE, create_metadata_comment
-from docler.models import Document
 from docler.pdf_utils import extract_pdf_pages
 
 

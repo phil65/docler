@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Any, Literal
 
 
 if TYPE_CHECKING:
-    from docler.models import TextChunk
+    from mkdown import TextChunk
 
 
 Metric = Literal["cosine", "euclidean", "dot"]

@@ -5,12 +5,12 @@ from __future__ import annotations
 from typing import Any
 
 import anyenv
+from mkdown import TextChunk
 import numpy as np
 import streamlit as st
 
 from docler.embeddings.openai_provider import OpenAIEmbeddings
 from docler.log import get_logger
-from docler.models import TextChunk
 from docler.vector_db.dbs.pinecone_db import PineconeVectorManager
 from docler_streamlit.state import SessionState
 

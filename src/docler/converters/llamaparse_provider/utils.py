@@ -2,9 +2,9 @@ import base64
 from typing import Any
 
 import anyenv
+from mkdown import Image
 
 from docler.markdown_utils import PAGE_BREAK_TYPE, create_metadata_comment
-from docler.models import Image
 
 
 def process_response(result: list[Any], api_key: str) -> tuple[list[str], list[Image]]:

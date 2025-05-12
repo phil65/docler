@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, ClassVar, Literal
 
+from mkdown import Document
 import upath
 from upathtools import read_path
 
@@ -11,7 +12,6 @@ from docler.configs.converter_configs import DataLabConfig
 from docler.converters.base import DocumentConverter
 from docler.converters.datalab_provider.utils import get_response, process_response
 from docler.log import get_logger
-from docler.models import Document
 from docler.utils import get_api_key
 
 

@@ -2,13 +2,14 @@
 
 from __future__ import annotations
 
+from mkdown import Document  # noqa: TC002
 from pydantic import Field
 from streambricks import State
 
 from docler.configs.converter_configs import BaseConverterConfig  # noqa: TC001
 from docler.configs.processor_configs import LLMProofReaderConfig  # noqa: TC001
 from docler.configs.vector_db_configs import BaseVectorStoreConfig  # noqa: TC001
-from docler.models import ChunkedDocument, Document  # noqa: TC001
+from docler.models import ChunkedDocument  # noqa: TC001
 
 
 class SessionState(State):

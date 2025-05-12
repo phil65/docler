@@ -12,10 +12,10 @@ from docler.converters.registry import ConverterRegistry
 
 
 if TYPE_CHECKING:
+    from mkdown import Document
     from schemez import MimeType
 
     from docler.common_types import StrPath, SupportedLanguage
-    from docler.models import Document
 
 
 class AggregatedConverter(DocumentConverter[AggregatedConverterConfig]):

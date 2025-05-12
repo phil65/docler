@@ -16,11 +16,11 @@ from docler.provider import BaseProvider
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
+    from mkdown import Document
     from schemez import MimeType
 
     from docler.common_types import StrPath, SupportedLanguage
     from docler.configs.converter_configs import ConverterConfig
-    from docler.models import Document
 
 
 class DocumentConverter[TConfig](BaseProvider[TConfig], ABC):

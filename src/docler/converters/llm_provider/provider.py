@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, ClassVar
 
+from mkdown import Document
 import upath
 
 from docler.common_types import DEFAULT_CONVERTER_MODEL
@@ -14,7 +15,6 @@ from docler.configs.converter_configs import (
 )
 from docler.converters.base import DocumentConverter
 from docler.log import get_logger
-from docler.models import Document
 
 
 if TYPE_CHECKING:

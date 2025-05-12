@@ -6,6 +6,7 @@ from io import BytesIO
 import re
 from typing import TYPE_CHECKING, ClassVar
 
+from mkdown import Document, Image
 import upath
 
 from docler.configs.converter_configs import DoclingConverterConfig, DoclingEngine
@@ -17,7 +18,6 @@ from docler.markdown_utils import (
     create_image_reference,
     create_metadata_comment,
 )
-from docler.models import Document, Image
 from docler.utils import pil_to_bytes
 
 

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from docler.models import Image
+from mkdown import Image
 
 
 def convert_image(img) -> Image:

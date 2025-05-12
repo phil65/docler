@@ -8,8 +8,9 @@ import streamlit as st
 
 
 if TYPE_CHECKING:
+    from mkdown import Document, TextChunk
+
     from docler.common_types import SupportedLanguage
-    from docler.models import Document, TextChunk
 
 
 LANGUAGES: list[SupportedLanguage] = ["en", "de", "fr", "es", "zh"]

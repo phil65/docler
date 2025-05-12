@@ -5,13 +5,13 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, ClassVar
 
 import anyenv
+from mkdown import Document
 import upath
 
 from docler.configs.converter_configs import LlamaParseConfig, LlamaParseMode
 from docler.converters.base import DocumentConverter
 from docler.converters.llamaparse_provider.utils import process_response
 from docler.log import get_logger
-from docler.models import Document
 from docler.utils import get_api_key
 
 

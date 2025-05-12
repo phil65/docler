@@ -5,6 +5,7 @@ from __future__ import annotations
 import base64
 from typing import TYPE_CHECKING, ClassVar
 
+from mkdown import Document, Image
 import upath
 
 from docler.configs.converter_configs import MistralConfig
@@ -17,7 +18,6 @@ from docler.markdown_utils import (
     create_image_reference,
     create_metadata_comment,
 )
-from docler.models import Document, Image
 from docler.utils import get_api_key
 
 

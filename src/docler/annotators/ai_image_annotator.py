@@ -19,7 +19,9 @@ from docler.configs.annotator_configs import (
 
 
 if TYPE_CHECKING:
-    from docler.models import ChunkedDocument, Image
+    from mkdown import Image
+
+    from docler.models import ChunkedDocument
 
 
 class DefaultImageMetadata(Schema):
@@ -150,7 +152,9 @@ class AIImageAnnotator[TMetadata](Annotator[AIImageAnnotatorConfig]):
 if __name__ == "__main__":
     import asyncio
 
-    from docler.models import ChunkedDocument, Image, TextChunk
+    from mkdown import Image, TextChunk
+
+    from docler.models import ChunkedDocument
 
     async def main():
         annotator = AIImageAnnotator[DefaultImageMetadata]()

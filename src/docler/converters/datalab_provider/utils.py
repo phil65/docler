@@ -8,6 +8,7 @@ import time
 from typing import Any
 
 import anyenv
+from mkdown import Image
 
 from docler.log import get_logger
 from docler.markdown_utils import (
@@ -15,7 +16,6 @@ from docler.markdown_utils import (
     create_image_reference,
     create_metadata_comment,
 )
-from docler.models import Image
 from docler.utils import pil_to_bytes
 
 

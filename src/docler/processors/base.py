@@ -9,8 +9,9 @@ from docler.provider import BaseProvider
 
 
 if TYPE_CHECKING:
+    from mkdown import Document
+
     from docler.configs.processor_configs import BaseProcessorConfig
-    from docler.models import Document
 
 
 class DocumentProcessor[TConfig](BaseProvider[TConfig], ABC):

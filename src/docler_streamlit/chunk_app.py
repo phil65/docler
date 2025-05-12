@@ -3,10 +3,10 @@
 from __future__ import annotations
 
 import anyenv
+from mkdown import Document
 import streamlit as st
 
 from docler.chunkers.markdown_chunker import MarkdownChunker
-from docler.models import Document
 from docler_streamlit.utils import display_chunk_preview
 
 

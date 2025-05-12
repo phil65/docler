@@ -4,12 +4,13 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-from docler.models import TextChunk
+from mkdown import TextChunk
 
 
 if TYPE_CHECKING:
+    from mkdown import Document
+
     from docler.chunkers.ai_chunker.models import Chunk
-    from docler.models import Document
 
 
 def add_line_numbers(text: str) -> str:
