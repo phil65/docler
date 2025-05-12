@@ -109,9 +109,8 @@ def process_response(result: dict[str, Any]) -> tuple[str, list[Image]]:
     original_count = len(re.findall(page_break_pattern, md_content))
     md_content = re.sub(page_break_pattern, replace_page_break, md_content)
     if original_count > 0:
-        logger.debug(
-            "Converted %d DataLab page breaks to standard format", original_count
-        )
+        msg = "Converted %d DataLab page breaks to standard format"
+        logger.debug(msg, original_count)
     from PIL.Image import Image as PILImage
 
     if result.get("images"):

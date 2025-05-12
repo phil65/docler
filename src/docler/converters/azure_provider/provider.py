@@ -2,14 +2,18 @@
 
 from __future__ import annotations
 
-import re
 from typing import TYPE_CHECKING, ClassVar
 
-from mkdown import Document, Image, create_page_break
+from mkdown import Document, Image
 import upath
 
 from docler.configs.converter_configs import AzureConfig, AzureFeatureFlag, AzureModel
-from docler.converters.azure_provider.utils import get_metadata, to_image, update_content
+from docler.converters.azure_provider.utils import (
+    get_metadata,
+    replace_page_breaks,
+    to_image,
+    update_content,
+)
 from docler.converters.base import DocumentConverter
 from docler.converters.exceptions import MissingConfigurationError
 from docler.log import get_logger
@@ -146,11 +150,10 @@ class AzureConverter(DocumentConverter[AzureConfig]):
                     pages=self.page_range,
                     features=features,
                     output=[AnalyzeOutputOption.FIGURES],
-                    locale=self.languages[0] if self.languages else "en",
+                    locale=self.languages[0] if self.languages else None,
                     output_content_format="markdown",
                 )
             result: AnalyzeResult = poller.result()
-
             content = result.content
         except HttpResponseError as e:
             msg = f"Azure Document Intelligence failed: {e.message}"
@@ -160,16 +163,7 @@ class AzureConverter(DocumentConverter[AzureConfig]):
         else:
             metadata = get_metadata(result)
             images = self._convert_azure_images(result, poller.details["operation_id"])
-            # --- Replace Azure page breaks ---
-            azure_marker = r"<!--\s*PageBreak\s*-->"
-            page_num = 1
-
-            def replace_marker(match: re.Match[str]) -> str:
-                nonlocal page_num
-                page_num += 1
-                return create_page_break(next_page=page_num, newline_separators=1)
-
-            content = re.sub(azure_marker, replace_marker, content)
+            content = replace_page_breaks(content)
 
             if images:
                 content = update_content(content, images)

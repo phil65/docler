@@ -3,7 +3,7 @@ from __future__ import annotations
 import re
 from typing import TYPE_CHECKING, Any
 
-from mkdown import Image, create_image_reference
+from mkdown import Image, create_image_reference, create_page_break
 
 
 if TYPE_CHECKING:
@@ -40,3 +40,15 @@ def get_metadata(result: AnalyzeResult) -> dict[str, Any]:
                 for name, field in doc.fields.items()
             }
     return metadata
+
+
+def replace_page_breaks(content: str) -> str:
+    azure_marker = r"<!--\s*PageBreak\s*-->"
+    page_num = 1
+
+    def replace_marker(match: re.Match[str]) -> str:
+        nonlocal page_num
+        page_num += 1
+        return create_page_break(next_page=page_num, newline_separators=1)
+
+    return re.sub(azure_marker, replace_marker, content)

@@ -75,7 +75,6 @@ class DataLabConverter(DocumentConverter[DataLabConfig]):
         self.api_key = api_key or get_api_key("DATALAB_API_KEY")
         self.force_ocr = force_ocr
         self.use_llm = use_llm
-
         self.add_page_breaks = True
 
     @property
