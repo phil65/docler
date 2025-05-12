@@ -82,6 +82,10 @@ class LlamaParseConverter(DocumentConverter[LlamaParseConfig]):
         api_key: str | None = None,
         adaptive_long_table: bool = True,
         parse_mode: LlamaParseMode = "parse_page_with_llm",
+        skip_diagonal_text: bool = False,
+        disable_ocr: bool = False,
+        continuous_mode: bool = True,
+        html_tables: bool = False,
     ):
         """Initialize the LlamaParse converter.
 
@@ -91,12 +95,21 @@ class LlamaParseConverter(DocumentConverter[LlamaParseConfig]):
             api_key: LlamaParse API key, defaults to LLAMAPARSE_API_KEY env var
             adaptive_long_table: Whether to use adaptive long table
             parse_mode: Parse mode, defaults to "parse_page_with_llm"
+            skip_diagonal_text: Whether to skip diagonal text
+            disable_ocr: Whether to disable OCR for images
+            continuous_mode: Whether to use continuous mode
+            html_tables: Whether to output HTML tables instead of markdown
         """
         super().__init__(languages=languages, page_range=page_range)
         self.api_key = api_key or get_api_key("LLAMAPARSE_API_KEY")
         self.language = self.languages[0] if self.languages else None
         self.adaptive_long_table = adaptive_long_table
         self.parse_mode = parse_mode
+        self.skip_diagonal_text = skip_diagonal_text
+        self.disable_ocr = disable_ocr
+        # self.bounding_box = None
+        self.continuous_mode = continuous_mode
+        self.html_tables = html_tables
 
     @property
     def price_per_page(self) -> float:
@@ -115,6 +128,13 @@ class LlamaParseConverter(DocumentConverter[LlamaParseConfig]):
             adaptive_long_table=self.adaptive_long_table,
             parse_mode=self.parse_mode,
             target_pages=self.page_range,
+            skip_diagonal_text=self.skip_diagonal_text,
+            disable_ocr=self.disable_ocr,
+            continuous_mode=self.continuous_mode,
+            output_tables_as_HTML=self.html_tables,
+            # take_screenshot=True,
+            # we are doing page separators manually right now
+            # page_separator=r'<!-- docler:page_break {"next_page":{pageNumber}} -->',
         )
         result = parser.get_json_result(str(path))
         content_parts, images = process_response(result, self.api_key)
