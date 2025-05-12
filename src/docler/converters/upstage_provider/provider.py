@@ -6,7 +6,13 @@ import base64
 from collections import defaultdict
 from typing import TYPE_CHECKING, Any, ClassVar
 
-from mkdown import Document, Image
+from mkdown import (
+    PAGE_BREAK_TYPE,
+    Document,
+    Image,
+    create_image_reference,
+    create_metadata_comment,
+)
 import requests
 import upath
 
@@ -16,11 +22,6 @@ from docler.configs.converter_configs import (
     UpstageOCRType,
 )
 from docler.converters.base import DocumentConverter
-from docler.markdown_utils import (
-    PAGE_BREAK_TYPE,
-    create_image_reference,
-    create_metadata_comment,
-)
 from docler.pdf_utils import extract_pdf_pages
 from docler.utils import get_api_key
 

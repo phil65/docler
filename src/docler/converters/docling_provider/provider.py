@@ -6,18 +6,19 @@ from io import BytesIO
 import re
 from typing import TYPE_CHECKING, ClassVar
 
-from mkdown import Document, Image
+from mkdown import (
+    PAGE_BREAK_TYPE,
+    Document,
+    Image,
+    create_image_reference,
+    create_metadata_comment,
+)
 import upath
 
 from docler.configs.converter_configs import DoclingConverterConfig, DoclingEngine
 from docler.converters.base import DocumentConverter
 from docler.converters.docling_provider.utils import _parse_page_range, convert_languages
 from docler.log import get_logger
-from docler.markdown_utils import (
-    PAGE_BREAK_TYPE,
-    create_image_reference,
-    create_metadata_comment,
-)
 from docler.utils import pil_to_bytes
 
 

@@ -5,9 +5,8 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any, overload
 
-from mkdown import Document
+from mkdown import Document, create_chunk_boundary
 
-from docler.markdown_utils import create_chunk_boundary
 from docler.models import ChunkedDocument
 from docler.provider import BaseProvider
 

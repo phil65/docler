@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import re
 
-from docler.markdown_utils import (
+from mkdown import (
     PAGE_BREAK_TYPE,
     create_metadata_comment,
     parse_metadata_comments,

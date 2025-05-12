@@ -8,14 +8,14 @@ import time
 from typing import Any
 
 import anyenv
-from mkdown import Image
-
-from docler.log import get_logger
-from docler.markdown_utils import (
+from mkdown import (
     PAGE_BREAK_TYPE,
+    Image,
     create_image_reference,
     create_metadata_comment,
 )
+
+from docler.log import get_logger
 from docler.utils import pil_to_bytes
 
 

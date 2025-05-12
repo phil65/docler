@@ -5,19 +5,19 @@ from __future__ import annotations
 import base64
 from typing import TYPE_CHECKING, ClassVar
 
-from mkdown import Document, Image
+# Import the markdown utility
+from mkdown import (
+    PAGE_BREAK_TYPE,
+    Document,
+    Image,
+    create_image_reference,
+    create_metadata_comment,
+)
 import upath
 
 from docler.configs.converter_configs import MistralConfig
 from docler.converters.base import DocumentConverter
 from docler.converters.mistral_provider.utils import _parse_page_range, convert_image
-
-# Import the markdown utility
-from docler.markdown_utils import (
-    PAGE_BREAK_TYPE,
-    create_image_reference,
-    create_metadata_comment,
-)
 from docler.utils import get_api_key
 
 

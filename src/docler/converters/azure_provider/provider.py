@@ -5,7 +5,7 @@ from __future__ import annotations
 import re
 from typing import TYPE_CHECKING, ClassVar
 
-from mkdown import Document, Image
+from mkdown import PAGE_BREAK_TYPE, Document, Image, create_metadata_comment
 import upath
 
 from docler.configs.converter_configs import AzureConfig, AzureFeatureFlag, AzureModel
@@ -13,7 +13,6 @@ from docler.converters.azure_provider.utils import get_metadata, to_image, updat
 from docler.converters.base import DocumentConverter
 from docler.converters.exceptions import MissingConfigurationError
 from docler.log import get_logger
-from docler.markdown_utils import PAGE_BREAK_TYPE, create_metadata_comment
 from docler.utils import get_api_key
 
 
