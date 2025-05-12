@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from io import BytesIO
+import re
 from typing import TYPE_CHECKING, ClassVar
 
 import upath
@@ -11,7 +12,11 @@ from docler.configs.converter_configs import DoclingConverterConfig, DoclingEngi
 from docler.converters.base import DocumentConverter
 from docler.converters.docling_provider.utils import _parse_page_range, convert_languages
 from docler.log import get_logger
-from docler.markdown_utils import create_image_reference
+from docler.markdown_utils import (
+    PAGE_BREAK_TYPE,
+    create_image_reference,
+    create_metadata_comment,
+)
 from docler.models import Document, Image
 from docler.utils import pil_to_bytes
 
@@ -23,7 +28,7 @@ if TYPE_CHECKING:
 
     from docler.common_types import StrPath, SupportedLanguage
 
-
+PAGE_BREAK_MARKER = "<!-- PageBreak -->"
 logger = get_logger(__name__)
 
 
@@ -136,7 +141,17 @@ class DoclingConverter(DocumentConverter[DoclingConverterConfig]):
             text_width=self.text_width,
             escape_underscores=self.escaping_underscores,
             strict_text=self.strict_text,
+            page_break_placeholder=PAGE_BREAK_MARKER,
         )
+        page_num = 1
+
+        def replace_marker(match: re.Match[str]) -> str:
+            nonlocal page_num
+            page_num += 1
+            page_data = {"next_page": page_num}
+            return f"\n{create_metadata_comment(PAGE_BREAK_TYPE, page_data)}\n"
+
+        mk_content = re.sub(PAGE_BREAK_MARKER, replace_marker, mk_content)
         images: list[Image] = []
         for i, picture in enumerate(doc_result.document.pictures):
             if not picture.image or not picture.image.pil_image:
