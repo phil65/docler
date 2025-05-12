@@ -5,7 +5,7 @@ from __future__ import annotations
 import re
 from typing import TYPE_CHECKING, ClassVar
 
-from mkdown import PAGE_BREAK_TYPE, Document, Image, create_metadata_comment
+from mkdown import Document, Image, create_page_break
 import upath
 
 from docler.configs.converter_configs import AzureConfig, AzureFeatureFlag, AzureModel
@@ -167,8 +167,7 @@ class AzureConverter(DocumentConverter[AzureConfig]):
             def replace_marker(match: re.Match[str]) -> str:
                 nonlocal page_num
                 page_num += 1
-                page_data = {"next_page": page_num}
-                return f"\n{create_metadata_comment(PAGE_BREAK_TYPE, page_data)}\n"
+                return f"\n{create_page_break(next_page=page_num)}\n"
 
             content = re.sub(azure_marker, replace_marker, content)
 

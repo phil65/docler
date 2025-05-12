@@ -110,16 +110,16 @@ Helper functions for creating and parsing these metadata comments and structures
 
 The library provides standardized metadata types for common use cases:
 
-1. **Page Breaks**: Use `PAGE_BREAK_TYPE` constant and `create_metadata_comment()` function to create page transitions:
+1. **Page Breaks**: Use `create_page_break()` function to create page transitions:
    ```python
-   from mkdown import create_metadata_comment, PAGE_BREAK_TYPE
+   from mkdown import create_page_break
 
    # Create a page break marker for page 2
-   page_break = create_metadata_comment(PAGE_BREAK_TYPE, {"next_page": 2})
+   page_break = create_page_break(next_page=2)
    # <!-- docler:page_break {"next_page":2} -->
    ```
 
-2. **Chunk Boundaries**: Use `CHUNK_BOUNDARY_TYPE` constant and `create_chunk_boundary()` function to mark semantic chunks in a document:
+2. **Chunk Boundaries**: Use `create_chunk_boundary()` function to mark semantic chunks in a document:
    ```python
    from mkdown import create_chunk_boundary
 

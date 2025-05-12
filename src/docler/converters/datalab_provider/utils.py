@@ -8,12 +8,7 @@ import time
 from typing import Any
 
 import anyenv
-from mkdown import (
-    PAGE_BREAK_TYPE,
-    Image,
-    create_image_reference,
-    create_metadata_comment,
-)
+from mkdown import Image, create_image_reference, create_page_break
 
 from docler.log import get_logger
 from docler.utils import pil_to_bytes
@@ -104,8 +99,7 @@ def process_response(result: dict[str, Any]) -> tuple[str, list[Image]]:
     def replace_page_break(match):
         try:
             page_num = int(match.group(1))
-            page_data = {"next_page": page_num + 1}
-            return f"\n\n{create_metadata_comment(PAGE_BREAK_TYPE, page_data)}\n\n"
+            return f"\n\n{create_page_break(next_page=page_num + 1)}\n\n"
         except (ValueError, IndexError) as e:
             logger.warning("Failed to parse page number from page break marker: %s", e)
             # Return the original match if we can't parse it

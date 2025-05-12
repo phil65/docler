@@ -2,7 +2,7 @@ import base64
 from typing import Any
 
 import anyenv
-from mkdown import PAGE_BREAK_TYPE, Image, create_metadata_comment
+from mkdown import Image, create_page_break
 
 
 def process_response(result: list[Any], api_key: str) -> tuple[list[str], list[Image]]:
@@ -15,8 +15,7 @@ def process_response(result: list[Any], api_key: str) -> tuple[list[str], list[I
     for page_num, page in enumerate(pages, start=1):
         if page.get("md"):
             content_parts.append(page["md"])
-            data = {"next_page": page_num}
-            comment = create_metadata_comment(PAGE_BREAK_TYPE, data)
+            comment = create_page_break(next_page=page_num)
             content_parts.append(comment)
         for img in page.get("images", []):
             image_count = len(images)

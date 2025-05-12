@@ -7,7 +7,7 @@ import re
 from re import Match
 from typing import TYPE_CHECKING, ClassVar
 
-from mkdown import PAGE_BREAK_TYPE, Document, create_metadata_comment
+from mkdown import Document, create_page_break
 import upath
 
 from docler.configs.converter_configs import MarkItDownConfig
@@ -115,8 +115,7 @@ class MarkItDownConverter(DocumentConverter[MarkItDownConfig]):
                     page_num = int(slide_num)
                 except ValueError:
                     page_num = 1
-                page_data = {"next_page": page_num}
-                return create_metadata_comment(PAGE_BREAK_TYPE, page_data)
+                return create_page_break(next_page=page_num)
 
             slide_pattern = r"<!-- Slide number:\s*(\d+)\s*-->"
             markdown = re.sub(slide_pattern, replace_slide_marker, result.text_content)

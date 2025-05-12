@@ -7,11 +7,10 @@ from typing import TYPE_CHECKING, ClassVar
 
 # Import the markdown utility
 from mkdown import (
-    PAGE_BREAK_TYPE,
     Document,
     Image,
     create_image_reference,
-    create_metadata_comment,
+    create_page_break,
 )
 import upath
 
@@ -127,10 +126,7 @@ class MistralConverter(DocumentConverter[MistralConfig]):
             # Add subsequent pages with preceding page break comment
             for i, page in enumerate(r.pages[1:], start=1):
                 page_num = i + 1  # Actual page number (starts from 1)
-                page_break_comment = create_metadata_comment(
-                    data_type=PAGE_BREAK_TYPE,
-                    data={"next_page": page_num},
-                )
+                page_break_comment = create_page_break(next_page=page_num)
                 # Add comment, newline, then page markdown
                 # Using '\n\n' as separator like the original join for consistency
                 content_parts.append(f"\n\n{page_break_comment}\n\n")

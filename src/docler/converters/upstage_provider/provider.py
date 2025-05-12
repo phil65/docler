@@ -6,13 +6,7 @@ import base64
 from collections import defaultdict
 from typing import TYPE_CHECKING, Any, ClassVar
 
-from mkdown import (
-    PAGE_BREAK_TYPE,
-    Document,
-    Image,
-    create_image_reference,
-    create_metadata_comment,
-)
+from mkdown import Document, Image, create_image_reference, create_page_break
 import requests
 import upath
 
@@ -197,10 +191,7 @@ class UpstageConverter(DocumentConverter[UpstageConfig]):
                     )
 
                 if found_index != -1:
-                    page_data = {"next_page": page_number}
-                    marker = (
-                        f"\n\n{create_metadata_comment(PAGE_BREAK_TYPE, page_data)}\n\n"
-                    )
+                    marker = f"\n\n{create_page_break(next_page=page_number)}\n\n"
                     modified_markdown = (
                         modified_markdown[:found_index]
                         + marker
