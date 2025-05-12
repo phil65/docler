@@ -1,5 +1,7 @@
 """Tests for document output functionality."""
 
+from __future__ import annotations
+
 import tempfile
 from typing import TYPE_CHECKING
 
@@ -16,13 +18,14 @@ from docler.converters.upstage_provider.provider import UpstageConverter
 
 
 if TYPE_CHECKING:
-    from docler.models import Document
+    from mkdown import Document
+    from syrupy.data import Snapshot
 
 
 SAMPLE_PATH = "src/docler/resources/pdf_sample.pdf"
 
 
-async def _test_provider_export(provider_cls, snapshot):
+async def _test_provider_export(provider_cls, snapshot: type[Snapshot]):
     provider = provider_cls()
     doc: Document = await provider.convert_file(SAMPLE_PATH)
     with tempfile.TemporaryDirectory() as tmpdir:
@@ -34,7 +37,8 @@ async def _test_provider_export(provider_cls, snapshot):
         file_list = sorted(
             str(f.relative_to(base)) for f in base.rglob("*") if f.is_file()
         )
-        assert (md_content, file_list) == snapshot
+        assert md_content == snapshot(name="markdown_content")
+        assert file_list == snapshot(name="files_list")
 
 
 @pytest.mark.integration
