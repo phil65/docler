@@ -143,7 +143,7 @@ class DoclingConverter(DocumentConverter[DoclingConverterConfig]):
         def replace_marker(match: re.Match[str]) -> str:
             nonlocal page_num
             page_num += 1
-            return f"\n{create_page_break(next_page=page_num)}\n"
+            return create_page_break(next_page=page_num, newline_separators=1)
 
         mk_content = re.sub(PAGE_BREAK_MARKER, replace_marker, mk_content)
         images: list[Image] = []

@@ -6,12 +6,7 @@ import base64
 from typing import TYPE_CHECKING, ClassVar
 
 # Import the markdown utility
-from mkdown import (
-    Document,
-    Image,
-    create_image_reference,
-    create_page_break,
-)
+from mkdown import Document, Image, create_image_reference, create_page_break
 import upath
 
 from docler.configs.converter_configs import MistralConfig
@@ -118,7 +113,6 @@ class MistralConverter(DocumentConverter[MistralConfig]):
             if img.id and img.image_base64
         ]
 
-        # --- Assemble content with page breaks ---
         content_parts: list[str] = []
         if r.pages:
             # Add first page content directly
@@ -126,13 +120,10 @@ class MistralConverter(DocumentConverter[MistralConfig]):
             # Add subsequent pages with preceding page break comment
             for i, page in enumerate(r.pages[1:], start=1):
                 page_num = i + 1  # Actual page number (starts from 1)
-                page_break_comment = create_page_break(next_page=page_num)
-                # Add comment, newline, then page markdown
-                # Using '\n\n' as separator like the original join for consistency
-                content_parts.append(f"\n\n{page_break_comment}\n\n")
+                comment = create_page_break(next_page=page_num, newline_separators=2)
+                content_parts.append(comment)
                 content_parts.append(page.markdown)
         content = "".join(content_parts)
-        # --- End content assembly ---
 
         return Document(
             content=content,

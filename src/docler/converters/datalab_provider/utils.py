@@ -99,7 +99,7 @@ def process_response(result: dict[str, Any]) -> tuple[str, list[Image]]:
     def replace_page_break(match):
         try:
             page_num = int(match.group(1))
-            return f"\n\n{create_page_break(next_page=page_num + 1)}\n\n"
+            return create_page_break(next_page=page_num + 1, newline_separators=2)
         except (ValueError, IndexError) as e:
             logger.warning("Failed to parse page number from page break marker: %s", e)
             # Return the original match if we can't parse it

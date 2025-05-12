@@ -158,23 +158,20 @@ class UpstageConverter(DocumentConverter[UpstageConfig]):
                 elements_by_page[page_num].sort(key=lambda x: x.get("id", 0))
 
             insertion_offset = 0
-            for page_number in range(2, max_page + 1):
-                if (
-                    page_number not in elements_by_page
-                    or not elements_by_page[page_number]
-                ):
+            for page_num in range(2, max_page + 1):
+                if page_num not in elements_by_page or not elements_by_page[page_num]:
                     continue
 
-                first_element = elements_by_page[page_number][0]
+                first_element = elements_by_page[page_num][0]
                 first_element_md = first_element.get("content", {}).get("markdown", "")
                 if not first_element_md:
-                    for elem in elements_by_page[page_number][1:]:
+                    for elem in elements_by_page[page_num][1:]:
                         first_element_md = elem.get("content", {}).get("markdown", "")
                         if first_element_md:
                             break
                     if not first_element_md:
                         msg = "Could not find non-empty element md anchor for page %d"
-                        self.logger.warning(msg, page_number)
+                        self.logger.warning(msg, page_num)
                         continue
 
                 # Find the position using the offset
@@ -191,7 +188,7 @@ class UpstageConverter(DocumentConverter[UpstageConfig]):
                     )
 
                 if found_index != -1:
-                    marker = f"\n\n{create_page_break(next_page=page_number)}\n\n"
+                    marker = create_page_break(next_page=page_num, newline_separators=2)
                     modified_markdown = (
                         modified_markdown[:found_index]
                         + marker
@@ -201,7 +198,7 @@ class UpstageConverter(DocumentConverter[UpstageConfig]):
                 else:
                     self.logger.warning(
                         "Could not find insertion point for page break before page %d",
-                        page_number,
+                        page_num,
                     )
 
         images: list[Image] = []

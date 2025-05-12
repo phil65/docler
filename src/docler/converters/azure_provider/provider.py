@@ -167,7 +167,7 @@ class AzureConverter(DocumentConverter[AzureConfig]):
             def replace_marker(match: re.Match[str]) -> str:
                 nonlocal page_num
                 page_num += 1
-                return f"\n{create_page_break(next_page=page_num)}\n"
+                return create_page_break(next_page=page_num, newline_separators=1)
 
             content = re.sub(azure_marker, replace_marker, content)
 
