@@ -46,6 +46,7 @@ dependencies = [
     "syrupy>=4.9.1",
     "upathtools>=0.4.3",
     "pypdf2",
+    "mkdown>=0.11.5",
 ]
 
 
