@@ -27,14 +27,9 @@ def process_response(document: dict[str, Any]) -> tuple[str, list[Image]]:
             image_id = f"img-{image_counter}"
             filename = f"{image_id}.{img_type}"
             image_counter += 1
-
-            # Add image to list
-            image = Image(
-                id=image_id,
-                content=base64.b64decode(img_data),
-                mime_type=f"image/{img_type}",
-                filename=filename,
-            )
+            content = base64.b64decode(img_data)
+            mime = f"image/{img_type}"
+            image = Image(id=image_id, content=content, mime_type=mime, filename=filename)
             images.append(image)
             return create_image_reference(alt_text or image_id, filename)
 
