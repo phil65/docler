@@ -206,7 +206,6 @@ class TextChunker[TConfig](BaseProvider[TConfig], ABC):
                 title=doc.title,
                 source_path=doc.source_path,
                 mime_type=doc.mime_type,
-                page_count=doc.page_count,
                 metadata=doc.metadata,
             )
 
@@ -232,6 +231,5 @@ class TextChunker[TConfig](BaseProvider[TConfig], ABC):
             title=doc.title,
             source_path=doc.source_path,
             mime_type=doc.mime_type,
-            page_count=doc.page_count,
             metadata=doc.metadata,
         )

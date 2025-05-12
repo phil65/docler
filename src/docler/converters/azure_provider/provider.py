@@ -181,7 +181,6 @@ class AzureConverter(DocumentConverter[AzureConfig]):
                 title=path.stem,
                 source_path=str(path),
                 mime_type=mime_type,
-                page_count=len(result.pages) if result.pages else None,
                 metadata=metadata,
             )
 

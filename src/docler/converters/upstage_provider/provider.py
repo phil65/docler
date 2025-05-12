@@ -266,7 +266,6 @@ class UpstageConverter(DocumentConverter[UpstageConfig]):
             title=path.stem,
             source_path=str(path),
             mime_type=mime_type,
-            page_count=max_page,
             metadata=result.get("metadata", {}),
         )
 

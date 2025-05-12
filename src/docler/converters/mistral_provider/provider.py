@@ -144,7 +144,6 @@ class MistralConverter(DocumentConverter[MistralConfig]):
             title=file_path.stem,
             source_path=str(file_path),
             mime_type=mime_type,
-            page_count=len(r.pages),
         )
 
     def _process_image(
@@ -211,7 +210,6 @@ class MistralConverter(DocumentConverter[MistralConfig]):
             title=file_path.stem,
             source_path=str(file_path),
             mime_type=mime_type,
-            page_count=1,  # Images are single-page
         )
 
 

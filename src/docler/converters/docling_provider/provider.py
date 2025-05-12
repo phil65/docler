@@ -171,7 +171,6 @@ class DoclingConverter(DocumentConverter[DoclingConverterConfig]):
             title=pdf_path.stem,
             source_path=str(pdf_path),
             mime_type=mime_type,
-            page_count=len(doc_result.pages),
         )
 
 

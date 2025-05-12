@@ -124,7 +124,6 @@ class LlamaParseConverter(DocumentConverter[LlamaParseConfig]):
             title=path.stem,
             source_path=str(path),
             mime_type=mime_type,
-            page_count=len(result[0]["pages"]),
         )
 
 

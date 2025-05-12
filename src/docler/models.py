@@ -255,7 +255,6 @@ class Document(Schema):
             modified=None,
             source_path=str(path),
             mime_type=frontmatter.get("mime_type"),
-            page_count=frontmatter.get("page_count"),
             metadata=frontmatter.get("metadata", {}),
         )
         if frontmatter.get("created"):
@@ -342,11 +341,12 @@ class Document(Schema):
     mime_type: MimeType | None = None
     """MIME type of the source document if available."""
 
-    page_count: int | None = None
-    """Number of pages in the source document if available."""
-
     metadata: dict[str, Any] = Field(default_factory=dict)
     """Metadata of the document."""
+
+    @property
+    def page_count(self) -> int:
+        return self.content.count("<!-- docler:page_break ") + 1
 
     def _build_markdown(
         self,

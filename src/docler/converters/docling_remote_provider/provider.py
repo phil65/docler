@@ -194,7 +194,6 @@ class DoclingRemoteConverter(DocumentConverter[DoclingRemoteConfig]):
             title=path.stem,
             source_path=str(path),
             mime_type=mime_type,
-            page_count=result.get("page_count"),
             metadata=result.get("timings", {}),  # Store timings as metadata
         )
 
