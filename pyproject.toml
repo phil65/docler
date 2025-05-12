@@ -46,7 +46,7 @@ dependencies = [
     "syrupy>=4.9.1",
     "upathtools>=0.4.3",
     "pypdf2",
-    "mkdown>=0.11.5",
+    "mkdown>=0.12.1",
 ]
 
 
@@ -87,7 +87,7 @@ all = [
     "docling",
     "markitdown[all]",
     # "litellm",
-    "llmling-agent[pydantic-ai]",
+    "llmling-agent[default]",
     # "llama-parse",
     "streamlit",
     "st-diff-viewer",
