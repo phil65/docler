@@ -132,7 +132,6 @@ class TextChunker[TConfig](BaseProvider[TConfig], ABC):
                 boundary = create_chunk_boundary(
                     chunk_id=chunk.chunk_index,
                     keywords=metadata.get("keywords"),
-                    token_count=metadata.get("token_count"),
                     extra_data=metadata,
                 )
                 content_with_boundaries.append(boundary)
@@ -149,10 +148,7 @@ class TextChunker[TConfig](BaseProvider[TConfig], ABC):
                     # Handle first chunk
                     boundary = create_chunk_boundary(
                         chunk_id=chunk.chunk_index,
-                        start_line=start_line,
-                        end_line=end_line,
                         keywords=metadata.get("keywords"),
-                        token_count=metadata.get("token_count"),
                         extra_data={
                             k: v
                             for k, v in metadata.items()
@@ -173,10 +169,7 @@ class TextChunker[TConfig](BaseProvider[TConfig], ABC):
                     # Handle middle chunks
                     boundary = create_chunk_boundary(
                         chunk_id=chunk.chunk_index,
-                        start_line=start_line,
-                        end_line=end_line,
                         keywords=metadata.get("keywords"),
-                        token_count=metadata.get("token_count"),
                         extra_data={
                             k: v
                             for k, v in metadata.items()
@@ -216,7 +209,6 @@ class TextChunker[TConfig](BaseProvider[TConfig], ABC):
             boundary = create_chunk_boundary(
                 chunk_id=chunk.chunk_index,
                 keywords=chunk.metadata.get("keywords"),
-                token_count=chunk.metadata.get("token_count"),
                 extra_data=chunk.metadata,
             )
             boundaries.append(boundary)
