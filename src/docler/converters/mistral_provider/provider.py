@@ -20,6 +20,8 @@ from docler.utils import get_api_key, shift_page_range
 
 
 if TYPE_CHECKING:
+    import pathlib
+
     from schemez import MimeType
 
     from docler.common_types import PageRangeString, StrPath, SupportedLanguage
@@ -84,7 +86,10 @@ class MistralConverter(DocumentConverter[MistralConfig]):
         return self._process_pdf(data, local_file, mime_type)
 
     def _process_pdf(
-        self, file_data: bytes, file_path: upath.UPath, mime_type: MimeType
+        self,
+        file_data: bytes,
+        file_path: pathlib.Path,
+        mime_type: MimeType,
     ) -> Document:
         """Process a PDF file using Mistral OCR.
 
@@ -146,7 +151,10 @@ class MistralConverter(DocumentConverter[MistralConfig]):
         )
 
     def _process_image(
-        self, file_data: bytes, file_path: upath.UPath, mime_type: MimeType
+        self,
+        file_data: bytes,
+        file_path: pathlib.Path,
+        mime_type: MimeType,
     ) -> Document:
         """Process an image file using Mistral OCR.
 
@@ -162,8 +170,6 @@ class MistralConverter(DocumentConverter[MistralConfig]):
 
         client = Mistral(api_key=self.api_key)
         self.logger.debug("Processing image %s with Mistral OCR...", file_path.name)
-
-        # Convert raw image to base64
         img_b64 = base64.b64encode(file_data).decode("utf-8")
         img_url = f"data:{mime_type};base64,{img_b64}"
 
@@ -180,7 +186,7 @@ class MistralConverter(DocumentConverter[MistralConfig]):
         image_id = "img-0"
         image = Image(
             id=image_id,
-            content=file_data,  # Store the original image
+            content=file_data,
             mime_type=mime_type,
             filename=file_path.name,
         )

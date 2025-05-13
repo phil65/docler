@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from typing import Any, Literal
+from typing import Literal
 
-from pydantic import BaseModel, Field
+from pydantic import Field
 from schemez import Schema
 
 
@@ -46,27 +46,3 @@ class DiagramAnalysis(Schema):
 
     key_insights: list[str] = Field(default_factory=list)
     """Key insights or important aspects of the diagram."""
-
-
-# Helper function to extract field type metadata
-def get_field_type(model: type[BaseModel], field_name: str) -> dict[str, Any]:
-    """Extract field_type metadata from a model field."""
-    field_info = model.model_fields[field_name]
-    metadata = {}
-    if field_info.json_schema_extra and isinstance(field_info.json_schema_extra, dict):
-        metadata.update(field_info.json_schema_extra)
-
-    return metadata
-
-
-def render_field(model: type[BaseModel], field_name: str) -> str:
-    """Example function demonstrating how to use field type metadata for UI rendering."""
-    metadata = get_field_type(model, field_name)
-    field_type = metadata.get("field_type", "text")
-    if field_type == "model_identifier":
-        provider = metadata.get("provider")
-        if provider:
-            return f"Model selector dropdown for {provider} provider"
-        return "Generic model identifier selector"
-
-    return "Default text input"
