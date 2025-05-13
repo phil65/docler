@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 
     from schemez import MimeType
 
-    from docler.common_types import StrPath, SupportedLanguage
+    from docler.common_types import PageRangeString, StrPath, SupportedLanguage
 
 PAGE_BREAK_MARKER = "<!-- PageBreak -->"
 logger = get_logger(__name__)
@@ -40,7 +40,7 @@ class DoclingConverter(DocumentConverter[DoclingConverterConfig]):
         self,
         languages: list[SupportedLanguage] | None = None,
         *,
-        page_range: str | None = None,
+        page_range: PageRangeString | None = None,
         image_scale: float = 2.0,
         delim: str = "\n\n",
         strict_text: bool = False,

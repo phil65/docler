@@ -19,7 +19,7 @@ from docler.pdf_utils import extract_pdf_pages
 if TYPE_CHECKING:
     from schemez import MimeType
 
-    from docler.common_types import StrPath, SupportedLanguage
+    from docler.common_types import PageRangeString, StrPath, SupportedLanguage
 
 
 logger = get_logger(__name__)
@@ -68,7 +68,7 @@ class MarkItDownConverter(DocumentConverter[MarkItDownConfig]):
     def __init__(
         self,
         languages: list[SupportedLanguage] | None = None,
-        page_range: str | None = None,
+        page_range: PageRangeString | None = None,
     ):
         """Initialize the MarkItDown converter.
 

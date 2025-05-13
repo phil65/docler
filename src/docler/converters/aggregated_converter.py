@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from mkdown import Document
     from schemez import MimeType
 
-    from docler.common_types import StrPath, SupportedLanguage
+    from docler.common_types import PageRangeString, StrPath, SupportedLanguage
 
 
 class AggregatedConverter(DocumentConverter[AggregatedConverterConfig]):
@@ -33,7 +33,7 @@ class AggregatedConverter(DocumentConverter[AggregatedConverterConfig]):
         self,
         languages: list[SupportedLanguage] | None = None,
         *,
-        page_range: str | None = None,
+        page_range: PageRangeString | None = None,
         registry: ConverterRegistry | None = None,
     ):
         """Initialize the aggregated converter.

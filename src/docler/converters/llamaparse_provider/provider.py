@@ -18,7 +18,7 @@ from docler.utils import get_api_key
 if TYPE_CHECKING:
     from schemez import MimeType
 
-    from docler.common_types import StrPath, SupportedLanguage
+    from docler.common_types import PageRangeString, StrPath, SupportedLanguage
 
 
 logger = get_logger(__name__)
@@ -78,7 +78,7 @@ class LlamaParseConverter(DocumentConverter[LlamaParseConfig]):
         self,
         languages: list[SupportedLanguage] | None = None,
         *,
-        page_range: str | None = None,
+        page_range: PageRangeString | None = None,
         api_key: str | None = None,
         adaptive_long_table: bool = True,
         parse_mode: LlamaParseMode = "parse_page_with_llm",

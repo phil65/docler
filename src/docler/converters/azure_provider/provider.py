@@ -24,7 +24,7 @@ if TYPE_CHECKING:
     from azure.ai.documentintelligence.models import AnalyzeResult
     from schemez import MimeType
 
-    from docler.common_types import StrPath, SupportedLanguage
+    from docler.common_types import PageRangeString, StrPath, SupportedLanguage
 
 logger = get_logger(__name__)
 
@@ -60,7 +60,7 @@ class AzureConverter(DocumentConverter[AzureConfig]):
         self,
         languages: list[SupportedLanguage] | None = None,
         *,
-        page_range: str | None = None,
+        page_range: PageRangeString | None = None,
         endpoint: str | None = None,
         api_key: str | None = None,
         model: AzureModel = "prebuilt-layout",

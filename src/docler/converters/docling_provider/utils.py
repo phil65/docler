@@ -8,6 +8,7 @@ from docler.common_types import (
     MAC_CODES,
     RAPID_CODES,
     TESSERACT_CODES,
+    PageRangeString,
     SupportedLanguage,
 )
 
@@ -58,7 +59,7 @@ def convert_languages(
     return list(languages)
 
 
-def _parse_page_range(page_range: str | None) -> tuple[int, int] | None:
+def _parse_page_range(page_range: PageRangeString | None) -> tuple[int, int] | None:
     """Convert a page range string to a tuple of (start, end) page numbers.
 
     Args:

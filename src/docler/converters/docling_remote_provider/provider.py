@@ -18,7 +18,7 @@ from docler.log import get_logger
 if TYPE_CHECKING:
     from schemez import MimeType
 
-    from docler.common_types import StrPath, SupportedLanguage
+    from docler.common_types import PageRangeString, StrPath, SupportedLanguage
 
 logger = get_logger(__name__)
 
@@ -71,7 +71,7 @@ class DoclingRemoteConverter(DocumentConverter[DoclingRemoteConfig]):
         self,
         languages: list[SupportedLanguage] | None = None,
         *,
-        page_range: str | None = None,
+        page_range: PageRangeString | None = None,
         api_key: str | None = None,
         endpoint: str = DEFAULT_API_ENDPOINT,
         ocr_engine: OCREngine = "easyocr",

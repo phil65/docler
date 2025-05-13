@@ -21,7 +21,7 @@ if TYPE_CHECKING:
     from marker.output import MarkdownOutput
     from schemez import MimeType
 
-    from docler.common_types import StrPath, SupportedLanguage
+    from docler.common_types import PageRangeString, StrPath, SupportedLanguage
 
 
 ProviderType = Literal["gemini", "ollama", "vertex", "claude"]
@@ -72,7 +72,7 @@ class MarkerConverter(DocumentConverter[MarkerConfig]):
         self,
         languages: list[SupportedLanguage] | None = None,
         *,
-        page_range: str | None = None,
+        page_range: PageRangeString | None = None,
         dpi: int = 192,
         use_llm: bool = False,
         llm_provider: ProviderType | None = None,

@@ -3,16 +3,21 @@
 from __future__ import annotations
 
 import io
+from typing import TYPE_CHECKING
 
 from PyPDF2 import PdfReader, PdfWriter
 
 from docler.log import get_logger
 
 
+if TYPE_CHECKING:
+    from docler.common_types import PageRangeString
+
+
 logger = get_logger(__name__)
 
 
-def _parse_page_range(page_range: str | None) -> set[int]:
+def _parse_page_range(page_range: PageRangeString | None) -> set[int]:
     """Convert a page range string to a set of page numbers.
 
     Args:
@@ -43,7 +48,7 @@ def _parse_page_range(page_range: str | None) -> set[int]:
         return pages
 
 
-def extract_pdf_pages(data: bytes, page_range: str | None) -> bytes:
+def extract_pdf_pages(data: bytes, page_range: PageRangeString | None) -> bytes:
     """Extract specific pages from a PDF file and return as new PDF.
 
     Args:

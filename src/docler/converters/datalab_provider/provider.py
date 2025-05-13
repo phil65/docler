@@ -18,7 +18,7 @@ from docler.utils import get_api_key, shift_page_range
 if TYPE_CHECKING:
     from schemez import MimeType
 
-    from docler.common_types import StrPath, SupportedLanguage
+    from docler.common_types import PageRangeString, StrPath, SupportedLanguage
 
 
 logger = get_logger(__name__)
@@ -57,7 +57,7 @@ class DataLabConverter(DocumentConverter[DataLabConfig]):
         self,
         languages: list[SupportedLanguage] | None = None,
         *,
-        page_range: str | None = None,
+        page_range: PageRangeString | None = None,
         api_key: str | None = None,
         force_ocr: bool = False,
         use_llm: bool = False,

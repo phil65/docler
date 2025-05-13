@@ -20,7 +20,7 @@ from docler.converters.upstage_provider.provider import UpstageConverter
 
 if TYPE_CHECKING:
     from mkdown import Document
-    from syrupy.data import Snapshot
+    from syrupy.assertion import SnapshotAssertion
 
 
 SAMPLE_PATH = "src/docler/resources/pdf_sample.pdf"
@@ -35,7 +35,7 @@ def is_responsive(url):
         return False
 
 
-async def _test_provider_export(provider_cls, snapshot: type[Snapshot]):
+async def _test_provider_export(provider_cls, snapshot: SnapshotAssertion):
     provider = provider_cls()
     doc: Document = await provider.convert_file(SAMPLE_PATH)
     with tempfile.TemporaryDirectory() as tmpdir:

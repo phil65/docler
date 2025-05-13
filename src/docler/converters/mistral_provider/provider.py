@@ -18,7 +18,7 @@ from docler.utils import get_api_key, shift_page_range
 if TYPE_CHECKING:
     from schemez import MimeType
 
-    from docler.common_types import StrPath, SupportedLanguage
+    from docler.common_types import PageRangeString, StrPath, SupportedLanguage
 
 
 # https://docs.mistral.ai/api/#tag/ocr
@@ -44,7 +44,7 @@ class MistralConverter(DocumentConverter[MistralConfig]):
         self,
         languages: list[SupportedLanguage] | None = None,
         *,
-        page_range: str | None = None,
+        page_range: PageRangeString | None = None,
         api_key: str | None = None,
         ocr_model: str = "mistral-ocr-latest",
         image_min_size: int | None = None,

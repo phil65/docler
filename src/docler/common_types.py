@@ -9,6 +9,7 @@ from typing import Literal
 StrPath = str | os.PathLike[str]
 VectorId = str | int
 SupportedLanguage = Literal["en", "de", "fr", "es", "zh"]
+PageRangeString = str
 
 DEFAULT_CHUNKER_MODEL = "openrouter:openai/o3-mini"  # google/gemini-2.0-flash-lite-001
 DEFAULT_CONVERTER_MODEL = "google-gla:gemini-2.0-flash"

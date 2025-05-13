@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     from mkdown import Document
     from schemez import MimeType
 
-    from docler.common_types import StrPath, SupportedLanguage
+    from docler.common_types import PageRangeString, StrPath, SupportedLanguage
     from docler.configs.converter_configs import ConverterConfig
 
 
@@ -47,7 +47,7 @@ class DocumentConverter[TConfig](BaseProvider[TConfig], ABC):
     def __init__(
         self,
         languages: list[SupportedLanguage] | None = None,
-        page_range: str | None = None,
+        page_range: PageRangeString | None = None,
     ):
         super().__init__()
         self.languages = languages

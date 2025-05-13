@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, ClassVar
 from mkdown import Document
 import upath
 
-from docler.common_types import DEFAULT_CONVERTER_MODEL
+from docler.common_types import DEFAULT_CONVERTER_MODEL, PageRangeString
 from docler.configs.converter_configs import (
     LLM_SYSTEM_PROMPT,
     LLM_USER_PROMPT,
@@ -40,7 +40,7 @@ class LLMConverter(DocumentConverter[LLMConverterConfig]):
         self,
         languages: list[SupportedLanguage] | None = None,
         *,
-        page_range: str | None = None,
+        page_range: PageRangeString | None = None,
         model: str = DEFAULT_CONVERTER_MODEL,
         system_prompt: str | None = None,
         user_prompt: str | None = None,
