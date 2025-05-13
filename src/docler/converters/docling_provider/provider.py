@@ -146,6 +146,10 @@ class DoclingConverter(DocumentConverter[DoclingConverterConfig]):
             return create_page_break(next_page=page_num, newline_separators=1)
 
         mk_content = re.sub(PAGE_BREAK_MARKER, replace_marker, mk_content)
+
+        first_page_marker = create_page_break(next_page=1, newline_separators=1).lstrip()
+        mk_content = first_page_marker + mk_content.lstrip()
+
         images: list[Image] = []
         for i, picture in enumerate(doc_result.document.pictures):
             if not picture.image or not picture.image.pil_image:
@@ -174,4 +178,4 @@ if __name__ == "__main__":
     pdf_path = "src/docler/resources/pdf_sample.pdf"
     converter = DoclingConverter()
     result = anyenv.run_sync(converter.convert_file(pdf_path))
-    print(result)
+    print(result.content)
