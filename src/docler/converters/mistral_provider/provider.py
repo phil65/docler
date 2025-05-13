@@ -11,7 +11,11 @@ import upath
 
 from docler.configs.converter_configs import MistralConfig
 from docler.converters.base import DocumentConverter
-from docler.converters.mistral_provider.utils import _parse_page_range, convert_image
+from docler.converters.mistral_provider.utils import (
+    _parse_page_range,
+    convert_image,
+    get_images,
+)
 from docler.utils import get_api_key, shift_page_range
 
 
@@ -73,10 +77,8 @@ class MistralConverter(DocumentConverter[MistralConfig]):
 
         if mime_type.startswith("image/"):
             doc = self._process_image(data, local_file, mime_type)
-            first_page_marker = create_page_break(
-                next_page=1, newline_separators=1
-            ).lstrip()
-            doc.content = first_page_marker + doc.content.lstrip()
+            first_page_marker = create_page_break(next_page=1, newline_separators=1)
+            doc.content = first_page_marker.lstrip() + doc.content.lstrip()
             return doc
         # PDF processing handles page breaks internally
         return self._process_pdf(data, local_file, mime_type)
@@ -123,18 +125,14 @@ class MistralConverter(DocumentConverter[MistralConfig]):
         content_parts: list[str] = []
         if r.pages:
             # Always add marker for the first page
-            first_page_marker = create_page_break(
-                next_page=1, newline_separators=1
-            ).lstrip()
-            content_parts.append(first_page_marker)
+            first_page_marker = create_page_break(next_page=1, newline_separators=1)
+            content_parts.append(first_page_marker.lstrip())
             content_parts.append(r.pages[0].markdown.lstrip())  # Add first page content
-            output_page_num = 1
+            page_num = 1
             for page in r.pages[1:]:
-                output_page_num += 1  # Increment for the next page in the output
+                page_num += 1  # Increment for the next page in the output
                 # Use newline_separators=1 to potentially reduce vertical space
-                comment = create_page_break(
-                    next_page=output_page_num, newline_separators=1
-                )
+                comment = create_page_break(next_page=page_num, newline_separators=1)
                 content_parts.append(comment)
                 content_parts.append(page.markdown.lstrip())
         content = "\n\n".join(content_parts)  # Use double newline between parts
@@ -188,36 +186,7 @@ class MistralConverter(DocumentConverter[MistralConfig]):
         )
         image_ref = create_image_reference(image_id, file_path.name)
         content = image_ref + "\n\n" + content
-        additional_images = []
-        image_count = 1  # Start after the main image
-        for page in r.pages:
-            for img in page.images:
-                if not img.id or not img.image_base64:
-                    continue
-
-                extracted_img_data_b64 = img.image_base64
-                if extracted_img_data_b64.startswith("data:image/"):
-                    # Extract mime type and base64 data
-                    header, extracted_img_data_b64 = extracted_img_data_b64.split(",", 1)
-                    mime = header.split(":")[1].split(";")[0]
-                    extracted_ext = mime.split("/")[-1]
-                else:
-                    # Assume PNG if not specified, requires decoding base64 first
-                    mime = "image/png"
-                    extracted_ext = "png"
-
-                img_data = base64.b64decode(extracted_img_data_b64)
-                img_id = f"extracted-img-{image_count}"
-                filename = f"{img_id}.{extracted_ext}"
-                image_count += 1
-                obj = Image(
-                    id=img_id,
-                    content=img_data,
-                    mime_type=mime,
-                    filename=filename,
-                )
-                additional_images.append(obj)
-
+        additional_images = get_images(r)
         return Document(
             content=content,
             images=[image, *additional_images],
