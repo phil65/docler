@@ -83,7 +83,7 @@ light = [
 all = [
     "marker-pdf",
     "mistralai",
-    "docling",
+    "docling[ocrmac,vlm,rapidocr]",
     "markitdown[all]>0.1.0",
     # "litellm",
     "llmling-agent[default]",
