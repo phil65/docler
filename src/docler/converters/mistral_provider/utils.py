@@ -21,18 +21,16 @@ def convert_image(img) -> Image:
 
 def get_images(response: OCRResponse) -> list[Image]:
     imgs = [i for page in response.pages for i in page.images if i.id and i.image_base64]
-    image_count = 1  # Start after the main image
     images = []
-    for img in imgs:
+    for idx, img in enumerate(imgs, start=1):
         extracted_img_data_b64 = img.image_base64
         assert extracted_img_data_b64
         header, extracted_img_data_b64 = extracted_img_data_b64.split(",", 1)
         mime = header.split(":")[1].split(";")[0]
         extracted_ext = mime.split("/")[-1]
         img_data = base64.b64decode(extracted_img_data_b64)
-        img_id = f"extracted-img-{image_count}"
+        img_id = f"extracted-img-{idx}"
         filename = f"{img_id}.{extracted_ext}"
-        image_count += 1
         obj = Image(id=img_id, content=img_data, mime_type=mime, filename=filename)
         images.append(obj)
     return images
