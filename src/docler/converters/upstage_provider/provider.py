@@ -248,7 +248,7 @@ class UpstageConverter(DocumentConverter[UpstageConfig]):
                     self.logger.warning(msg, image_id)
         modified_markdown = content_for_image_replacement
         return Document(
-            content=modified_markdown,
+            content=modified_markdown.strip(),
             images=images,
             title=path.stem,
             source_path=str(path),
