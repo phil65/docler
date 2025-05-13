@@ -9,8 +9,6 @@ from mkdown import Image
 if TYPE_CHECKING:
     from mistralai import OCRResponse
 
-    from docler.common_types import PageRangeString
-
 
 def convert_image(img) -> Image:
     img_data = img.image_base64
@@ -19,33 +17,6 @@ def convert_image(img) -> Image:
     ext = img.id.split(".")[-1].lower() if "." in img.id else "jpeg"
     mime = f"image/{ext}"
     return Image(id=img.id, content=img_data, mime_type=mime, filename=img.id)
-
-
-def _parse_page_range(page_range: PageRangeString) -> list[int]:
-    """Convert a page range string to a list of page numbers.
-
-    Args:
-        page_range: String like "1-5,7,9-11" or None. 1-based page numbers.
-
-    Returns:
-        List of page numbers (1-based) or None if no range specified.
-        Mistral API expects 1-based page numbers.
-
-    Raises:
-        ValueError: If the page range format is invalid.
-    """
-    pages: set[int] = set()
-    try:
-        for part in page_range.split(","):
-            if "-" in part:
-                start, end = map(int, part.split("-"))
-                pages.update(range(start, end + 1))
-            else:
-                pages.add(int(part))
-    except ValueError as e:
-        msg = f"Invalid page range format: {page_range}. Expected format: '1-5,7,9-11'"
-        raise ValueError(msg) from e
-    return sorted(pages)
 
 
 def get_images(response: OCRResponse) -> list[Image]:

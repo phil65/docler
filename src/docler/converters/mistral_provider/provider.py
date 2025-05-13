@@ -11,12 +11,8 @@ import upath
 
 from docler.configs.converter_configs import MistralConfig
 from docler.converters.base import DocumentConverter
-from docler.converters.mistral_provider.utils import (
-    _parse_page_range,
-    convert_image,
-    get_images,
-)
-from docler.pdf_utils import shift_page_range
+from docler.converters.mistral_provider.utils import convert_image, get_images
+from docler.pdf_utils import parse_page_range, shift_page_range
 from docler.utils import get_api_key
 
 
@@ -119,7 +115,7 @@ class MistralConverter(DocumentConverter[MistralConfig]):
             document={"type": "document_url", "document_url": signed_url.url},
             include_image_base64=True,
             image_min_size=self.image_min_size,
-            pages=_parse_page_range(rng) if rng else None,
+            pages=list(parse_page_range(rng)) if rng else None,
         )
         images = [
             convert_image(img)

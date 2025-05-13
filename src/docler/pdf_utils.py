@@ -17,28 +17,30 @@ if TYPE_CHECKING:
 logger = get_logger(__name__)
 
 
-def _parse_page_range(page_range: PageRangeString) -> set[int]:
+def parse_page_range(page_range: PageRangeString, shift: int = 0) -> set[int]:
     """Convert a page range string to a set of page numbers.
 
     Args:
-        page_range: String like "1-5,7,9-11" or None. 1-based page numbers.
+        page_range: String like "1-5,7,9-11" or None.
+        shift: Amount to shift page numbers by (e.g., -1 to convert 1-based to 0-based)
 
     Returns:
-        Set of page numbers (0-based)
+        Set of page numbers (shifted by specified amount)
 
     Raises:
         ValueError: If the page range format is invalid.
     """
+    if shift:
+        page_range = shift_page_range(page_range, shift)
+
     pages: set[int] = set()
     try:
         for part in page_range.split(","):
             if "-" in part:
                 start, end = map(int, part.split("-"))
-                # Convert to 0-based indexing
-                pages.update(range(start - 1, end))
+                pages.update(range(start, end + 1))
             else:
-                # Convert to 0-based indexing
-                pages.add(int(part) - 1)
+                pages.add(int(part))
     except ValueError as e:
         msg = f"Invalid page range format: {page_range}. Expected format: '1-5,7,9-11'"
         raise ValueError(msg) from e
@@ -100,7 +102,9 @@ def extract_pdf_pages(data: bytes, page_range: PageRangeString | None) -> bytes:
         try:
             reader = PdfReader(pdf_io)
             pages = (
-                _parse_page_range(page_range) if page_range else range(len(reader.pages))
+                parse_page_range(page_range, shift=-1)
+                if page_range
+                else range(len(reader.pages))
             )
             writer = PdfWriter()
             for i in pages:

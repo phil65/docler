@@ -11,7 +11,7 @@ import upath
 
 from docler.configs.converter_configs import DoclingConverterConfig, DoclingEngine
 from docler.converters.base import DocumentConverter
-from docler.converters.docling_provider.utils import _parse_page_range, convert_languages
+from docler.converters.docling_provider.utils import convert_languages, parse_page_range
 from docler.log import get_logger
 from docler.utils import pil_to_bytes
 
@@ -125,7 +125,7 @@ class DoclingConverter(DocumentConverter[DoclingConverterConfig]):
         pdf_path = upath.UPath(file_path)
         stream = BytesIO(pdf_path.read_bytes())
         source = DocumentStream(name=pdf_path.name, stream=stream)
-        page_range = _parse_page_range(self.page_range) if self.page_range else None
+        page_range = parse_page_range(self.page_range) if self.page_range else None
         doc_result = self.converter.convert(
             source, page_range=page_range or DEFAULT_PAGE_RANGE
         )
