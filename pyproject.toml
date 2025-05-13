@@ -56,7 +56,7 @@ diffs = ["diff-match-patch"]
 bge = ["FlagEmbedding"]
 docling = ["docling[ocrmac,vlm,rapidocr]"] # tesserocr
 # olmocr = ["olmocr", "accelerate"]
-markitdown = ["markitdown[all]"]
+markitdown = ["markitdown[all]>0.1.0"]
 litellm = ["litellm", "tokonomics"]
 streamlit = ["streamlit", "streambricks", "tokonomics", "st-diff-viewer"]
 llama-index = ["llama-index"]
@@ -84,7 +84,7 @@ all = [
     "marker-pdf",
     "mistralai",
     "docling",
-    "markitdown[all]",
+    "markitdown[all]>0.1.0",
     # "litellm",
     "llmling-agent[default]",
     # "llama-parse",
