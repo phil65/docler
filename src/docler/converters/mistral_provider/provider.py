@@ -72,7 +72,13 @@ class MistralConverter(DocumentConverter[MistralConfig]):
         data = local_file.read_bytes()
 
         if mime_type.startswith("image/"):
-            return self._process_image(data, local_file, mime_type)
+            doc = self._process_image(data, local_file, mime_type)
+            first_page_marker = create_page_break(
+                next_page=1, newline_separators=1
+            ).lstrip()
+            doc.content = first_page_marker + doc.content.lstrip()
+            return doc
+        # PDF processing handles page breaks internally
         return self._process_pdf(data, local_file, mime_type)
 
     def _process_pdf(
@@ -104,7 +110,7 @@ class MistralConverter(DocumentConverter[MistralConfig]):
             document={"type": "document_url", "document_url": signed_url.url},
             include_image_base64=True,
             image_min_size=self.image_min_size,
-            pages=_parse_page_range(self.page_range),  # Add this line
+            pages=_parse_page_range(self.page_range),
         )
         images = [
             convert_image(img)
@@ -115,15 +121,22 @@ class MistralConverter(DocumentConverter[MistralConfig]):
 
         content_parts: list[str] = []
         if r.pages:
-            # Add first page content directly
-            content_parts.append(r.pages[0].markdown)
-            # Add subsequent pages with preceding page break comment
-            for i, page in enumerate(r.pages[1:], start=1):
-                page_num = i + 1  # Actual page number (starts from 1)
-                comment = create_page_break(next_page=page_num, newline_separators=2)
+            # Always add marker for the first page
+            first_page_marker = create_page_break(
+                next_page=1, newline_separators=1
+            ).lstrip()
+            content_parts.append(first_page_marker)
+            content_parts.append(r.pages[0].markdown.lstrip())  # Add first page content
+            output_page_num = 1
+            for page in r.pages[1:]:
+                output_page_num += 1  # Increment for the next page in the output
+                # Use newline_separators=1 to potentially reduce vertical space
+                comment = create_page_break(
+                    next_page=output_page_num, newline_separators=1
+                )
                 content_parts.append(comment)
-                content_parts.append(page.markdown)
-        content = "".join(content_parts)
+                content_parts.append(page.markdown.lstrip())
+        content = "\n\n".join(content_parts)  # Use double newline between parts
 
         return Document(
             content=content,
@@ -144,7 +157,7 @@ class MistralConverter(DocumentConverter[MistralConfig]):
             mime_type: MIME type of the file
 
         Returns:
-            Converted document
+            Converted document (without the initial page 1 marker, added later)
         """
         from mistralai import Mistral
 
@@ -173,21 +186,34 @@ class MistralConverter(DocumentConverter[MistralConfig]):
             filename=file_path.name,
         )
         image_ref = create_image_reference(image_id, file_path.name)
-        content = image_ref + content
+        content = image_ref + "\n\n" + content
         additional_images = []
+        image_count = 1  # Start after the main image
         for page in r.pages:
-            for idx, img in enumerate(page.images):
+            for img in page.images:
                 if not img.id or not img.image_base64:
                     continue
-                img_data = img.image_base64
-                if img_data.startswith("data:image/"):
-                    img_data = img_data.split(",", 1)[1]
-                ext = img.id.split(".")[-1].lower() if "." in img.id else "jpeg"
-                mime = f"image/{ext}"
-                img_id = f"extracted-img-{idx}"
-                filename = f"{img_id}.{ext}"
+
+                extracted_img_data_b64 = img.image_base64
+                if extracted_img_data_b64.startswith("data:image/"):
+                    # Extract mime type and base64 data
+                    header, extracted_img_data_b64 = extracted_img_data_b64.split(",", 1)
+                    mime = header.split(":")[1].split(";")[0]
+                    extracted_ext = mime.split("/")[-1]
+                else:
+                    # Assume PNG if not specified, requires decoding base64 first
+                    mime = "image/png"
+                    extracted_ext = "png"
+
+                img_data = base64.b64decode(extracted_img_data_b64)
+                img_id = f"extracted-img-{image_count}"
+                filename = f"{img_id}.{extracted_ext}"
+                image_count += 1
                 obj = Image(
-                    id=img_id, content=img_data, mime_type=mime, filename=filename
+                    id=img_id,
+                    content=img_data,
+                    mime_type=mime,
+                    filename=filename,
                 )
                 additional_images.append(obj)
 
@@ -205,12 +231,11 @@ if __name__ == "__main__":
     import devtools
 
     # # Example usage with PDF
-    # pdf_path = "src/docler/resources/pdf_sample.pdf"
+    pdf_path = "src/docler/resources/pdf_sample.pdf"
     converter = MistralConverter()
-    # result = anyenv.run_sync(converter.convert_file(pdf_path))
-    # print(f"PDF result: {len(result.content)} chars, {len(result.images)} images")
+    result = anyenv.run_sync(converter.convert_file(pdf_path))
 
     # Example usage with image
-    img_path = "E:/sap.png"
-    result = anyenv.run_sync(converter.convert_file(img_path))
-    devtools.debug(result)
+    # img_path = "E:/sap.png"
+    # result = anyenv.run_sync(converter.convert_file(img_path))
+    devtools.debug(result.content)
