@@ -14,6 +14,7 @@
   page_count: 2
   ---
   
+  <!-- docler:page_break {"next_page":1} -->
   # Lorem ipsum
   
   
@@ -134,7 +135,7 @@
   title: pdf_sample
   source_path: src/docler/resources/pdf_sample.pdf
   mime_type: application/pdf
-  page_count: 5
+  page_count: 4
   ---
   
   <!-- docler:page_break {"next_page":1} -->
@@ -213,6 +214,7 @@
   page_count: 4
   ---
   
+  <!-- docler:page_break {"next_page":1} -->
   ## Lorem ipsum
   
   ## Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc ac faucibus odio.
@@ -290,7 +292,7 @@
   title: pdf_sample
   source_path: src/docler/resources/pdf_sample.pdf
   mime_type: application/pdf
-  page_count: 5
+  page_count: 4
   ---
   
   <!-- docler:page_break {"next_page":1} -->
@@ -372,7 +374,7 @@
   title: pdf_sample
   source_path: src/docler/resources/pdf_sample.pdf
   mime_type: application/pdf
-  page_count: 5
+  page_count: 4
   ---
   
   
@@ -453,6 +455,9 @@
   page_count: 4
   ---
   
+  <!-- docler:page_break {"next_page":1} -->
+  
+  
   # Lorem ipsum 
   
   ## Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc ac faucibus odio.
@@ -469,7 +474,9 @@
   - Maecenas tincidunt est efficitur ligula euismod, sit amet ornare est vulputate.
   ![img-0.jpeg](img-0.jpeg)
   
+  
   <!-- docler:page_break {"next_page":2} -->
+  
   
   In non mauris justo. Duis vehicula mi vel mi pretium, a viverra erat efficitur. Cras aliquam est ac eros varius, id iaculis dui auctor. Duis pretium neque ligula, et pulvinar mi placerat et. Nulla nec nunc sit amet nunc posuere vestibulum. Ut id neque eget tortor mattis tristique. Donec ante est, blandit sit amet tristique vel, lacinia pulvinar arcu. Pellentesque scelerisque fermentum erat, id posuere justo pulvinar ut. Cras id eros sed enim aliquam lobortis. Sed lobortis nisl ut eros efficitur tincidunt. Cras justo mi, porttitor quis mattis vel, ultricies ut purus. Ut facilisis et lacus eu cursus.
   
@@ -489,7 +496,9 @@
   
   Etiam vehicula luctus fermentum. In vel metus congue, pulvinar lectus vel, fermentum dui. Maecenas ante orci, egestas ut aliquet sit amet, sagittis a magna. Aliquam ante quam, pellentesque ut dignissim quis, laoreet eget est. Aliquam erat volutpat. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Ut ullamcorper justo sapien, in cursus libero viverra eget. Vivamus auctor imperdiet urna, at pulvinar leo posuere laoreet. Suspendisse neque nisl, fringilla at iaculis scelerisque, ornare vel dolor. Ut et pulvinar nunc. Pellentesque fringilla mollis efficitur. Nullam venenatis commodo imperdiet. Morbi velit neque, semper quis lorem quis, efficitur dignissim ipsum. Ut ac lorem sed turpis imperdiet eleifend sit amet id sapien.
   
+  
   <!-- docler:page_break {"next_page":3} -->
+  
   
   # Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
   
@@ -507,7 +516,9 @@
   
   Etiam vehicula luctus fermentum. In vel metus congue, pulvinar lectus vel, fermentum dui. Maecenas ante orci, egestas ut aliquet sit amet, sagittis a magna. Aliquam ante quam, pellentesque ut dignissim quis, laoreet eget est. Aliquam erat volutpat. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Ut ullamcorper justo sapien, in cursus libero viverra eget. Vivamus auctor imperdiet urna, at pulvinar leo posuere laoreet. Suspendisse neque nisl, fringilla at iaculis scelerisque, ornare vel dolor. Ut et pulvinar nunc. Pellentesque fringilla mollis efficitur. Nullam venenatis commodo imperdiet. Morbi velit neque, semper quis lorem quis, efficitur dignissim ipsum. Ut ac lorem sed turpis imperdiet eleifend sit amet id sapien.
   
+  
   <!-- docler:page_break {"next_page":4} -->
+  
   
   ![img-1.jpeg](img-1.jpeg)
   '''
@@ -528,6 +539,7 @@
   page_count: 3
   ---
   
+  <!-- docler:page_break {"next_page":1} -->
   # Lorem ipsum
   
   # Lorem ipsum dolor sit amet, consectetur adipiscing
@@ -572,9 +584,7 @@
   
   
   
-  
   <!-- docler:page_break {"next_page":2} -->
-  
   In non mauris justo. Duis vehicula mi vel mi pretium, a viverra erat efficitur. Cras aliquam
   est ac eros varius, id iaculis dui auctor. Duis pretium neque ligula, et pulvinar mi placerat
   et. Nulla nec nunc sit amet nunc posuere vestibulum. Ut id neque eget tortor mattis
@@ -611,9 +621,7 @@
   sed turpis imperdiet eleifend sit amet id sapien.
   
   
-  
   <!-- docler:page_break {"next_page":3} -->
-  
   # Lorem ipsum dolor sit amet, consectetur adipiscing
   elit.
   
