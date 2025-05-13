@@ -7,11 +7,12 @@ from mkdown import Image
 
 
 if TYPE_CHECKING:
-    from mistralai import OCRResponse
+    from mistralai import OCRImageObject, OCRResponse
 
 
-def convert_image(img) -> Image:
+def convert_image(img: OCRImageObject) -> Image:
     img_data = img.image_base64
+    assert img_data
     if img_data.startswith("data:image/"):
         img_data = img_data.split(",", 1)[1]
     ext = img.id.split(".")[-1].lower() if "." in img.id else "jpeg"
