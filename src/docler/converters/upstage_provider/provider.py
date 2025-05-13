@@ -146,7 +146,10 @@ class UpstageConverter(DocumentConverter[UpstageConfig]):
         elements = result.get("elements", [])
         max_page = result.get("usage", {}).get("pages", 0)
 
-        modified_markdown = initial_markdown  # Start with the original markdown
+        # Start with the page 1 marker
+        first_page_marker = create_page_break(next_page=1, newline_separators=1).lstrip()
+        modified_markdown = first_page_marker + initial_markdown.lstrip()
+
         if max_page > 1 and elements:
             elements_by_page: dict[int, list[dict[str, Any]]] = defaultdict(list)
             for element in elements:
@@ -157,44 +160,33 @@ class UpstageConverter(DocumentConverter[UpstageConfig]):
             for page_num in elements_by_page:  # noqa: PLC0206
                 elements_by_page[page_num].sort(key=lambda x: x.get("id", 0))
 
-            insertion_offset = 0
+            insertion_offset = len(first_page_marker)  # Search after the page 1 marker
             for page_num in range(2, max_page + 1):
                 if page_num not in elements_by_page or not elements_by_page[page_num]:
                     continue
 
-                first_element = elements_by_page[page_num][0]
-                first_element_md = first_element.get("content", {}).get("markdown", "")
+                # Find the first non-empty markdown content for the anchor
+                first_element_md = ""
+                for elem in elements_by_page[page_num]:
+                    first_element_md = elem.get("content", {}).get("markdown", "")
+                    if first_element_md:
+                        break
                 if not first_element_md:
-                    for elem in elements_by_page[page_num][1:]:
-                        first_element_md = elem.get("content", {}).get("markdown", "")
-                        if first_element_md:
-                            break
-                    if not first_element_md:
-                        msg = "Could not find non-empty element md anchor for page %d"
-                        self.logger.warning(msg, page_num)
-                        continue
+                    msg = "Could not find non-empty element md anchor for page %d"
+                    self.logger.warning(msg, page_num)
+                    continue
 
                 # Find the position using the offset
-                search_start_index = 0
-                found_index = -1
-                temp_index = modified_markdown.find(first_element_md, search_start_index)
-                while temp_index != -1:
-                    if temp_index >= insertion_offset:
-                        found_index = temp_index
-                        break
-                    search_start_index = temp_index + 1
-                    temp_index = modified_markdown.find(
-                        first_element_md, search_start_index
-                    )
+                found_index = modified_markdown.find(first_element_md, insertion_offset)
 
                 if found_index != -1:
-                    marker = create_page_break(next_page=page_num, newline_separators=2)
+                    marker = create_page_break(next_page=page_num, newline_separators=1)
                     modified_markdown = (
                         modified_markdown[:found_index]
                         + marker
                         + modified_markdown[found_index:]
                     )
-                    insertion_offset = found_index + len(marker)
+                    insertion_offset = found_index + len(marker) + len(first_element_md)
                 else:
                     msg = "Could not find insertion point for page break before page %d"
                     self.logger.warning(msg, page_num)
