@@ -251,7 +251,7 @@ class LlamaParseConfig(BaseConverterConfig):
     skip_diagonal_text: bool = False
     """Whether to skip diagonal text."""
 
-    disable_ocr: bool = True
+    disable_ocr: bool = False
     """Whether to disable OCR for images."""
 
     continuous_mode: bool = True

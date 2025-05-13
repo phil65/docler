@@ -14,9 +14,9 @@ def process_response(result: list[Any], api_key: str) -> tuple[list[str], list[I
     job_id = result[0]["job_id"]
     for page_num, page in enumerate(pages, start=1):
         if page.get("md"):
-            content_parts.append(page["md"])
             comment = create_page_break(next_page=page_num)
             content_parts.append(comment)
+            content_parts.append(page["md"])
         for img in page.get("images", []):
             image_count = len(images)
             id_ = f"img-{image_count}"
