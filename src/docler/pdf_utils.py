@@ -48,7 +48,7 @@ def _parse_page_range(page_range: PageRangeString | None) -> set[int]:
         return pages
 
 
-def shift_page_range(page_range: str, shift: int = 0) -> str:
+def shift_page_range(page_range: PageRangeString, shift: int = 0) -> PageRangeString:
     """Shift page numbers in a page range string by the specified amount.
 
     Args:
