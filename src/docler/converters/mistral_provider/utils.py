@@ -21,7 +21,7 @@ def convert_image(img) -> Image:
     return Image(id=img.id, content=img_data, mime_type=mime, filename=img.id)
 
 
-def _parse_page_range(page_range: PageRangeString | None) -> list[int] | None:
+def _parse_page_range(page_range: PageRangeString) -> list[int]:
     """Convert a page range string to a list of page numbers.
 
     Args:
@@ -34,8 +34,6 @@ def _parse_page_range(page_range: PageRangeString | None) -> list[int] | None:
     Raises:
         ValueError: If the page range format is invalid.
     """
-    if not page_range:
-        return None
     pages: set[int] = set()
     try:
         for part in page_range.split(","):

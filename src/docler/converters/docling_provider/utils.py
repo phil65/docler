@@ -59,7 +59,7 @@ def convert_languages(
     return list(languages)
 
 
-def _parse_page_range(page_range: PageRangeString | None) -> tuple[int, int] | None:
+def _parse_page_range(page_range: PageRangeString) -> tuple[int, int]:
     """Convert a page range string to a tuple of (start, end) page numbers.
 
     Args:
@@ -71,8 +71,6 @@ def _parse_page_range(page_range: PageRangeString | None) -> tuple[int, int] | N
     Raises:
         ValueError: If the page range format is invalid.
     """
-    if not page_range:
-        return None
     try:
         # Handle only first range for now (ignore possible additional ranges after comma)
         first_range = page_range.split(",")[0]

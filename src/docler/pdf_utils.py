@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 logger = get_logger(__name__)
 
 
-def _parse_page_range(page_range: PageRangeString | None) -> set[int]:
+def _parse_page_range(page_range: PageRangeString) -> set[int]:
     """Convert a page range string to a set of page numbers.
 
     Args:
@@ -29,8 +29,6 @@ def _parse_page_range(page_range: PageRangeString | None) -> set[int]:
     Raises:
         ValueError: If the page range format is invalid.
     """
-    if not page_range:
-        return set()
     pages: set[int] = set()
     try:
         for part in page_range.split(","):
@@ -98,13 +96,14 @@ def extract_pdf_pages(data: bytes, page_range: PageRangeString | None) -> bytes:
     Raises:
         ValueError: If page range is invalid or PDF data cannot be processed
     """
-    pages = _parse_page_range(page_range)
     with io.BytesIO(data) as pdf_io, io.BytesIO() as output:
         try:
             reader = PdfReader(pdf_io)
+            pages = (
+                _parse_page_range(page_range) if page_range else range(len(reader.pages))
+            )
             writer = PdfWriter()
-            page_indices = pages if pages else range(len(reader.pages))
-            for i in page_indices:
+            for i in pages:
                 if 0 <= i < len(reader.pages):
                     writer.add_page(reader.pages[i])
             writer.write(output)

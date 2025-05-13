@@ -119,7 +119,7 @@ class MistralConverter(DocumentConverter[MistralConfig]):
             document={"type": "document_url", "document_url": signed_url.url},
             include_image_base64=True,
             image_min_size=self.image_min_size,
-            pages=_parse_page_range(rng),
+            pages=_parse_page_range(rng) if rng else None,
         )
         images = [
             convert_image(img)
