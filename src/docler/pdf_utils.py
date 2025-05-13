@@ -48,6 +48,43 @@ def _parse_page_range(page_range: PageRangeString | None) -> set[int]:
         return pages
 
 
+def shift_page_range(page_range: str, shift: int = 0) -> str:
+    """Shift page numbers in a page range string by the specified amount.
+
+    Args:
+        page_range: Page range string like "1-5,7,9-11"
+        shift: Amount to shift page numbers by (e.g., -1 to convert 1-based to 0-based)
+
+    Returns:
+        Shifted page range string
+
+    Raises:
+        ValueError: If the page range format is invalid
+    """
+    parts = []
+    try:
+        for part in page_range.split(","):
+            if "-" in part:
+                start, end = map(int, part.split("-"))
+                if start + shift < 0 or end + shift < 0:
+                    msg = f"Invalid shift {shift} for page range {page_range}"
+                    raise ValueError(msg)  # noqa: TRY301
+                parts.append(f"{start + shift}-{end + shift}")
+            else:
+                page = int(part)
+                if page + shift < 0:
+                    msg = f"Invalid shift {shift} for page {page}"
+                    raise ValueError(msg)  # noqa: TRY301
+                parts.append(str(page + shift))
+    except ValueError as e:
+        if "Invalid shift" in str(e):
+            raise
+        msg = f"Invalid page range format: {page_range}. Expected format: '1-5,7,9-11'"
+        raise ValueError(msg) from e
+
+    return ",".join(parts)
+
+
 def extract_pdf_pages(data: bytes, page_range: PageRangeString | None) -> bytes:
     """Extract specific pages from a PDF file and return as new PDF.
 

@@ -16,7 +16,8 @@ from docler.converters.mistral_provider.utils import (
     convert_image,
     get_images,
 )
-from docler.utils import get_api_key, shift_page_range
+from docler.pdf_utils import shift_page_range
+from docler.utils import get_api_key
 
 
 if TYPE_CHECKING:

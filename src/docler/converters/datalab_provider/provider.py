@@ -12,7 +12,8 @@ from docler.configs.converter_configs import DataLabConfig
 from docler.converters.base import DocumentConverter
 from docler.converters.datalab_provider.utils import get_response, process_response
 from docler.log import get_logger
-from docler.utils import get_api_key, shift_page_range
+from docler.pdf_utils import shift_page_range
+from docler.utils import get_api_key
 
 
 if TYPE_CHECKING:

@@ -11,7 +11,7 @@ from docler.configs.converter_configs import MarkerConfig
 from docler.converters.base import DocumentConverter
 from docler.converters.datalab_provider.utils import process_response
 from docler.log import get_logger
-from docler.utils import shift_page_range
+from docler.pdf_utils import shift_page_range
 
 
 logger = get_logger(__name__)
