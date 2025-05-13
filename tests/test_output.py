@@ -5,6 +5,7 @@ from __future__ import annotations
 import tempfile
 from typing import TYPE_CHECKING
 
+import httpx
 import pytest
 import upath
 
@@ -23,6 +24,15 @@ if TYPE_CHECKING:
 
 
 SAMPLE_PATH = "src/docler/resources/pdf_sample.pdf"
+
+
+def is_responsive(url):
+    try:
+        response = httpx.get(url)
+        if response.status_code == 200:  # noqa: PLR2004
+            return True
+    except ConnectionError:
+        return False
 
 
 async def _test_provider_export(provider_cls, snapshot: type[Snapshot]):
@@ -88,3 +98,13 @@ async def test_llamaparse_export(snapshot):
 async def test_mistral_export(snapshot):
     """Test Mistral provider export functionality."""
     await _test_provider_export(MistralConverter, snapshot)
+
+
+# @pytest.mark.integration
+# @pytest.mark.asyncio
+# async def test_docling_remote_export(docker_services: Services, snapshot):
+#     """Test DoclingRemote provider export functionality."""
+#     docker_services.wait_until_responsive(
+#         timeout=30.0, pause=0.1, check=lambda: is_responsive("http://localhost:5001")
+#     )
+#     await _test_provider_export(DoclingRemoteConverter, snapshot)
