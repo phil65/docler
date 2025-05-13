@@ -11,6 +11,7 @@ from docler.configs.converter_configs import MarkerConfig
 from docler.converters.base import DocumentConverter
 from docler.converters.datalab_provider.utils import process_response
 from docler.log import get_logger
+from docler.utils import shift_page_range
 
 
 logger = get_logger(__name__)
@@ -79,7 +80,7 @@ class MarkerConverter(DocumentConverter[MarkerConfig]):
         """Initialize the Marker converter.
 
         Args:
-            page_range: Page range(s) to extract, like "1-5,7-10" (0-based)
+            page_range: Page range(s) to extract, like "1-5,7-10" (1-based)
             dpi: DPI setting for image extraction.
             languages: Languages to use for OCR.
             use_llm: Whether to use LLM for enhanced accuracy.
@@ -96,7 +97,9 @@ class MarkerConverter(DocumentConverter[MarkerConfig]):
         if llm_provider:
             self.config["use_llm"] = use_llm
         if page_range is not None:
-            self.config["page_range"] = page_range
+            # Marker API expects 0-based page ranges
+            rng = shift_page_range(page_range, -1) if page_range else None
+            self.config["page_range"] = rng
         self.llm_provider = llm_provider
 
     def _convert_path_sync(self, file_path: StrPath, mime_type: MimeType) -> Document:

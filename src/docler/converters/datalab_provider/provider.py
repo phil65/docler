@@ -12,7 +12,7 @@ from docler.configs.converter_configs import DataLabConfig
 from docler.converters.base import DocumentConverter
 from docler.converters.datalab_provider.utils import get_response, process_response
 from docler.log import get_logger
-from docler.utils import get_api_key
+from docler.utils import get_api_key, shift_page_range
 
 
 if TYPE_CHECKING:
@@ -65,7 +65,7 @@ class DataLabConverter(DocumentConverter[DataLabConfig]):
         """Initialize the DataLab converter.
 
         Args:
-            page_range: Page range(s) to extract, like "1-5,7-10" (0-based)
+            page_range: Page range(s) to extract, like "1-5,7-10" (1-based)
             api_key: DataLab API key.
             languages: Languages to use for OCR.
             force_ocr: Whether to force OCR on every page.
@@ -110,7 +110,9 @@ class DataLabConverter(DocumentConverter[DataLabConfig]):
         if self.use_llm:
             form["use_llm"] = "true"
         if self.page_range:
-            form["page_range"] = self.page_range
+            # DataLab expects 0-based indexes in page_range
+            rng = shift_page_range(self.page_range, shift=-1) if self.page_range else None
+            form["page_range"] = rng
         result = await get_response(form, files, self.api_key)
         md_content, images = process_response(result)
         return Document(

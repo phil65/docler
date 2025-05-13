@@ -12,7 +12,7 @@ import upath
 from docler.configs.converter_configs import MistralConfig
 from docler.converters.base import DocumentConverter
 from docler.converters.mistral_provider.utils import _parse_page_range, convert_image
-from docler.utils import get_api_key
+from docler.utils import get_api_key, shift_page_range
 
 
 if TYPE_CHECKING:
@@ -53,7 +53,7 @@ class MistralConverter(DocumentConverter[MistralConfig]):
 
         Args:
             languages: List of supported languages.
-            page_range: Page range(s) to extract, like "1-5,7-10" (0-based)
+            page_range: Page range(s) to extract, like "1-5,7-10" (1-based)
             api_key: Mistral API key. If None, will try to get from environment.
             ocr_model: Mistral OCR model to use. Defaults to "mistral-ocr-latest".
             image_min_size: Minimum size of image in pixels.
@@ -105,12 +105,13 @@ class MistralConverter(DocumentConverter[MistralConfig]):
         signed_url = client.files.get_signed_url(file_id=uploaded.id, expiry=60)
 
         self.logger.debug("Processing with OCR model...")
+        rng = shift_page_range(self.page_range, -1) if self.page_range else None
         r = client.ocr.process(
             model=self.model,
             document={"type": "document_url", "document_url": signed_url.url},
             include_image_base64=True,
             image_min_size=self.image_min_size,
-            pages=_parse_page_range(self.page_range),
+            pages=_parse_page_range(rng),
         )
         images = [
             convert_image(img)

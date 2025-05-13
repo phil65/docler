@@ -74,7 +74,7 @@ class MarkItDownConverter(DocumentConverter[MarkItDownConfig]):
 
         Args:
             languages: List of supported languages.
-            page_range: Page range(s) to extract, like "1-5,7-10" (0-based)
+            page_range: Page range(s) to extract, like "1-5,7-10" (1-based)
         """
         from markitdown import MarkItDown
 

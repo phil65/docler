@@ -67,7 +67,7 @@ class UpstageConverter(DocumentConverter[UpstageConfig]):
 
         Args:
             languages: List of supported languages (currently unused by Upstage API)
-            page_range: Page range(s) to extract, like "1-5,7-10" (0-based)
+            page_range: Page range(s) to extract, like "1-5,7-10" (1-based)
             api_key: Upstage API key (falls back to UPSTAGE_API_KEY env var)
             base_url: API endpoint URL
             model: Model name for document parsing
