@@ -96,7 +96,7 @@ class MistralConverter(DocumentConverter[MistralConfig]):
 
         file_ = File(file_name=file_path.stem, content=file_data)
         uploaded = client.files.upload(file=file_, purpose="ocr")  # type: ignore
-        signed_url = client.files.get_signed_url(file_id=uploaded.id, expiry=1)
+        signed_url = client.files.get_signed_url(file_id=uploaded.id, expiry=60)
 
         self.logger.debug("Processing with OCR model...")
         r = client.ocr.process(
