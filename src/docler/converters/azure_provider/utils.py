@@ -51,4 +51,6 @@ def replace_page_breaks(content: str) -> str:
         page_num += 1
         return create_page_break(next_page=page_num, newline_separators=1)
 
-    return re.sub(azure_marker, replace_marker, content)
+    processed_content = re.sub(azure_marker, replace_marker, content)
+    first_page_marker = create_page_break(next_page=1, newline_separators=1).lstrip()
+    return first_page_marker + processed_content
