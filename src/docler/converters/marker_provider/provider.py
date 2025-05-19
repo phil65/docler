@@ -125,10 +125,20 @@ class MarkerConverter(DocumentConverter[MarkerConfig]):
 
 
 if __name__ == "__main__":
-    import anyenv
+    import devtools
 
-    pdf_path = "src/docler/resources/pdf_sample.pdf"
-    output_dir = "E:/markdown-test/"
-    converter = MarkerConverter()
-    result = anyenv.run_sync(converter.convert_file(pdf_path))
-    print(result.content)
+    async def main():
+        # # Example usage with PDF
+        pdf_path = "/home/phil65/dev/aistack-lab/sap_dokus_pdf/CCM_CONV.pdf"
+        converter = MarkerConverter()
+        result = await converter.convert_file(pdf_path)
+
+        # Example usage with image
+        # img_path = "E:/sap.png"
+        # result = anyenv.run_sync(converter.convert_file(img_path))
+        devtools.debug(result.content)
+        await result.export_to_directory(".")
+
+    import asyncio
+
+    asyncio.run(main())

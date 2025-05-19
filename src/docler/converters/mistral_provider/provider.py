@@ -200,15 +200,20 @@ class MistralConverter(DocumentConverter[MistralConfig]):
 
 
 if __name__ == "__main__":
-    import anyenv
     import devtools
 
-    # # Example usage with PDF
-    pdf_path = "src/docler/resources/pdf_sample.pdf"
-    converter = MistralConverter()
-    result = anyenv.run_sync(converter.convert_file(pdf_path))
+    async def main():
+        # # Example usage with PDF
+        pdf_path = "/home/phil65/dev/aistack-lab/sap_dokus_pdf/CCM_CONV.pdf"
+        converter = MistralConverter()
+        result = await converter.convert_file(pdf_path)
 
-    # Example usage with image
-    # img_path = "E:/sap.png"
-    # result = anyenv.run_sync(converter.convert_file(img_path))
-    devtools.debug(result.content)
+        # Example usage with image
+        # img_path = "E:/sap.png"
+        # result = anyenv.run_sync(converter.convert_file(img_path))
+        devtools.debug(result.content)
+        await result.export_to_directory(".")
+
+    import asyncio
+
+    asyncio.run(main())
