@@ -14,10 +14,15 @@ def convert_image(img: OCRImageObject) -> Image:
     img_data = img.image_base64
     assert img_data
     if img_data.startswith("data:image/"):
-        img_data = img_data.split(",", 1)[1]
-    ext = img.id.split(".")[-1].lower() if "." in img.id else "jpeg"
-    mime = f"image/{ext}"
-    return Image(id=img.id, content=img_data, mime_type=mime, filename=img.id)
+        header, img_data = img_data.split(",", 1)
+        mime = header.split(":")[1].split(";")[0]
+        ext = mime.split("/")[-1]
+    else:
+        mime = "image/jpeg"
+        ext = "jpeg"
+    img_bytes = base64.b64decode(img_data)
+    filename = img.id if img.id.endswith(f".{ext}") else f"{img.id}.{ext}"
+    return Image(id=img.id, content=img_bytes, mime_type=mime, filename=filename)
 
 
 def get_images(response: OCRResponse) -> list[Image]:
