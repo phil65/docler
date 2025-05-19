@@ -1,27 +1,24 @@
 # Build stage for installing dependencies
 FROM python:3.13-slim-bookworm AS builder
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
 # Add build argument with default value
 ARG EXTRAS="server,light"
 
 WORKDIR /build
 
-# Install system dependencies and curl for UV
+# Install system dependencies
 RUN apt-get update && apt-get install --no-install-recommends -y \
     build-essential \
-    curl \
     poppler-utils \
     # Only install heavy OCR dependencies if needed
     $(if echo "${EXTRAS}" | grep -q "all\|marker\|docling\|markitdown"; then \
-        echo "tesseract-ocr libtesseract-dev libpoppler-cpp-dev"; \
+    echo "tesseract-ocr libtesseract-dev libpoppler-cpp-dev"; \
     else \
-        echo ""; \
+    echo ""; \
     fi) \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install UV for faster dependency resolution
-RUN curl -fsSL https://astral.sh/uv/install.sh | sh
-ENV PATH="/root/.local/bin:${PATH}"
 
 # Copy the entire project first (needed for version detection)
 COPY . .
@@ -42,9 +39,9 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     poppler-utils \
     # Only install heavy OCR dependencies if needed
     $(if echo "${EXTRAS}" | grep -q "all\|marker\|docling\|markitdown"; then \
-        echo "tesseract-ocr libtesseract-dev"; \
+    echo "tesseract-ocr libtesseract-dev"; \
     else \
-        echo ""; \
+    echo ""; \
     fi) \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
