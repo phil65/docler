@@ -60,4 +60,4 @@ ENV PORT="8000"
 EXPOSE 8000
 
 # Command to run the application
-CMD ["sh", "-c", "python -m docler_api api --host 0.0.0.0 --port ${PORT}"]
+CMD ["sh", "-c", "python -m docler api --host 0.0.0.0 --port ${PORT}"]
