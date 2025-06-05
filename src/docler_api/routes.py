@@ -6,7 +6,7 @@ import mimetypes
 import tempfile
 from typing import TYPE_CHECKING, Annotated, Any
 
-from fastapi import Body, File, HTTPException, Query, UploadFile
+from fastapi import Body, File, Form, HTTPException, Query, UploadFile
 import upath
 
 
@@ -17,14 +17,10 @@ if TYPE_CHECKING:
 
 async def convert_document(
     file: Annotated[UploadFile, File(description="The document file to convert")],
-    config: Annotated[
-        ConverterConfig,
-        Body(default={"type": "marker"}, description="Converter configuration"),
-    ],
-    include_images_as_base64: bool = Query(
-        default=True,
-        description="Whether to include image data as base64 in the response",
-    ),
+    config: Annotated[ConverterConfig, Form(description="Converter configuration")],
+    include_images_as_base64: Annotated[
+        bool, Form(description="Whether to include image data as base64 in the response")
+    ] = True,
 ):
     """Convert a document file to markdown using specified converter configuration.
 

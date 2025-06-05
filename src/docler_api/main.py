@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from fastapi import FastAPI, UploadFile
+from fastapi import FastAPI, File, Form, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from mkdown import Document  # noqa: TC002
 
@@ -36,9 +36,11 @@ async def root():
 
 @app.post("/api/convert")
 async def api_convert_document(
-    file: UploadFile,
-    config: ConverterConfig,
-    include_images_as_base64: bool = True,
+    file: UploadFile = File(..., description="The document file to convert"),  # noqa: B008
+    config: ConverterConfig = Form(..., description="Converter configuration"),  # noqa: B008
+    include_images_as_base64: bool = Form(
+        True, description="Whether to include image data as base64 in the response"
+    ),
 ) -> Document:
     """Convert a document file to markdown."""
     return await routes.convert_document(file, config, include_images_as_base64)
