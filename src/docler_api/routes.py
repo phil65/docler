@@ -154,6 +154,7 @@ async def list_converters():
             "name": converter.NAME,
             "supported_mime_types": list(converter.SUPPORTED_MIME_TYPES),
             "config_type": converter.__class__.Config.__name__,
+            "config_schema": converter.__class__.Config.model_json_schema(),
         }
         for converter in registry._converters
     ]
@@ -167,7 +168,11 @@ async def list_chunkers():
 
     chunker_classes = TextChunker[Any].get_available_providers()
     chunkers = [
-        {"name": chunker_class.NAME, "config_type": chunker_class.Config.__name__}
+        {
+            "name": chunker_class.NAME,
+            "config_type": chunker_class.Config.__name__,
+            "config_schema": chunker_class.Config.model_json_schema(),
+        }
         for chunker_class in chunker_classes
         if chunker_class.has_required_packages()
     ]
