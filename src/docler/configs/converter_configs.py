@@ -423,35 +423,35 @@ class AggregatedConverterConfig(BaseConverterConfig):
         return AggregatedConverter.from_config(self)
 
 
-class UnstructuredConverterConfig(BaseConverterConfig):
-    """Configuration for Unstructured-based converter."""
+# class UnstructuredConverterConfig(BaseConverterConfig):
+#     """Configuration for Unstructured-based converter."""
 
-    type: Literal["unstructured"] = "unstructured"
-    """Type discriminator for Unstructured converter."""
+#     typ e: Literal["unstructured"] = "unstructured"
+#     """Type discriminator for Unstructured converter."""
 
-    languages: set[SupportedLanguage] = Field(default_factory=lambda: {"en"})  # type: ignore
-    """List of supported languages for the converter."""
+#     languages: set[SupportedLanguage] = Field(default_factory=lambda: {"en"})
+#     """List of supported languages for the converter."""
 
-    api_key: str | None = None
-    """API key for Unstructured (optional for local processing)."""
+#     api_key: str | None = None
+#     """API key for Unstructured (optional for local processing)."""
 
-    strategy: str = "hi_res"
-    """Strategy for document processing (hi_res, fast, etc.)."""
+#     strategy: str = "hi_res"
+#     """Strategy for document processing (hi_res, fast, etc.)."""
 
-    extract_images: bool = True
-    """Whether to extract and include images."""
+#     extract_images: bool = True
+#     """Whether to extract and include images."""
 
-    extract_tables: bool = True
-    """Whether to extract tables as images."""
+#     extract_tables: bool = True
+#     """Whether to extract tables as images."""
 
-    local_mode: bool = True
-    """Whether to use local processing or API."""
+#     local_mode: bool = True
+#     """Whether to use local processing or API."""
 
-    def get_provider(self) -> DocumentConverter:
-        """Get the converter instance."""
-        from docler.converters.unstructured_provider import UnstructuredConverter
+#     def get_provider(self) -> DocumentConverter:
+#         """Get the converter instance."""
+#         from docler.converters.unstructured_provider import UnstructuredConverter
 
-        return UnstructuredConverter(**self.get_config_fields())
+#         return UnstructuredConverter(**self.get_config_fields())
 
 
 ConverterConfig = Annotated[
@@ -464,7 +464,7 @@ ConverterConfig = Annotated[
     | LlamaParseConfig
     | AzureConfig
     | UpstageConfig
-    | UnstructuredConverterConfig
+    # | UnstructuredConverterConfig
     | AggregatedConverterConfig
     | MarkerConfig,
     Field(discriminator="type"),
