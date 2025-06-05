@@ -37,7 +37,7 @@ async def root():
 @app.post("/api/convert")
 async def api_convert_document(
     file: UploadFile = File(..., description="The document file to convert"),  # noqa: B008
-    config: ConverterConfig = Form(..., description="Converter configuration"),  # noqa: B008
+    config: str = Form(..., description="Converter configuration"),
     include_images_as_base64: bool = Form(
         True, description="Whether to include image data as base64 in the response"
     ),

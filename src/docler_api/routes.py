@@ -7,33 +7,37 @@ import tempfile
 from typing import TYPE_CHECKING, Annotated, Any
 
 from fastapi import Body, File, Form, HTTPException, Query, UploadFile
+from pydantic import TypeAdapter
 import upath
+
+from docler.configs.converter_configs import ConverterConfig
 
 
 if TYPE_CHECKING:
     from docler.configs.chunker_configs import ChunkerConfig
-    from docler.configs.converter_configs import ConverterConfig
+
+
+config_adapter = TypeAdapter[ConverterConfig](ConverterConfig)
 
 
 async def convert_document(
     file: Annotated[UploadFile, File(description="The document file to convert")],
-    config: Annotated[ConverterConfig, Form(description="Converter configuration")],
+    config: Annotated[str, Form(description="Converter configuration JSON")],
     include_images_as_base64: Annotated[
         bool, Form(description="Whether to include image data as base64 in the response")
     ] = True,
 ):
-    """Convert a document file to markdown using specified converter configuration.
+    """Convert a document file to markdown using specified converter configuration."""
+    # Parse the JSON config string manually
+    import anyenv
 
-    Args:
-        file: The document file to convert (PDF, DOCX, images, etc.)
-        config: Configuration for the converter (uses docler's configuration models)
-        include_images_as_base64: Whether to include image data as base64 in the response
+    try:
+        config_dict = anyenv.load_json(config)
+        parsed = config_adapter.validate_python(config_dict)
+    except (anyenv.JsonLoadError, ValueError) as e:
+        raise HTTPException(status_code=400, detail=f"Invalid config JSON: {e}")  # noqa: B904
 
-    Returns:
-        JSON response with the converted document
-    """
     content = await file.read()
-
     with tempfile.NamedTemporaryFile(
         suffix=f"_{file.filename}", delete=False
     ) as temp_file:
@@ -46,7 +50,7 @@ async def convert_document(
             mime_type = file.content_type
 
         # Create converter from config
-        converter = config.get_provider()
+        converter = parsed.get_provider()
         document = await converter.convert_file(temp_path)
 
         # Process images if requested
