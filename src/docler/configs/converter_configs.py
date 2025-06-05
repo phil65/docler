@@ -15,7 +15,11 @@ from pydantic import Field, HttpUrl, SecretStr
 from pydantic_settings import SettingsConfigDict
 from schemez import ModelIdentifier  # noqa: TC002
 
-from docler.common_types import DEFAULT_CONVERTER_MODEL, SupportedLanguage
+from docler.common_types import (
+    DEFAULT_CONVERTER_MODEL,
+    PageRangeString,
+    SupportedLanguage,
+)
 from docler.provider import ProviderConfig
 
 
@@ -94,6 +98,9 @@ def default_languages() -> set[SupportedLanguage]:
 
 class BaseConverterConfig(ProviderConfig):
     """Base configuration for document converters."""
+
+    page_range: PageRangeString | None = None
+    """Page range(s) to extract, like "1-5,7-10" (1-based)."""
 
     def get_provider(self) -> DocumentConverter:
         """Get the converter instance."""
