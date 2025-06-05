@@ -53,8 +53,14 @@ async def convert_document(
         converter = parsed.get_provider()
         document = await converter.convert_file(temp_path)
 
-        # Process images if requested
-        if not include_images_as_base64:
+        # Process images based on the flag
+        if include_images_as_base64:
+            # Ensure images are in base64 format
+            for image in document.images:
+                if isinstance(image.content, bytes):
+                    # Convert bytes to base64 string
+                    image.content = image.to_base64()
+        else:
             # Remove binary content from images
             for image in document.images:
                 image.content = ""
@@ -120,8 +126,19 @@ async def chunk_document(
         # Chunk the document
         chunked_document = await chunker.chunk(document)
 
-        # Process images if requested
-        if not include_images_as_base64:
+        # Process images based on the flag
+        if include_images_as_base64:
+            # Ensure images are in base64 format
+            for image in chunked_document.images:
+                if isinstance(image.content, bytes):
+                    # Convert bytes to base64 string
+                    image.content = image.to_base64()
+            for chunk in chunked_document.chunks:
+                for image in chunk.images:
+                    if isinstance(image.content, bytes):
+                        # Convert bytes to base64 string
+                        image.content = image.to_base64()
+        else:
             # Remove binary content from images
             for image in chunked_document.images:
                 image.content = ""
