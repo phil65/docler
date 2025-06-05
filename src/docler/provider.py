@@ -25,7 +25,6 @@ class ProviderConfig(BaseSettings):
         frozen=True,
         use_attribute_docstrings=True,
         extra="forbid",
-        env_file=".env",
         env_file_encoding="utf-8",
     )
 
