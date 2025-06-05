@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from fastapi import FastAPI, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
+from mkdown import Document  # noqa: TC002
 
 from docler import __version__ as docler_version
 from docler.configs.chunker_configs import ChunkerConfig  # noqa: TC001
@@ -38,7 +39,7 @@ async def api_convert_document(
     file: UploadFile,
     config: ConverterConfig,
     include_images_as_base64: bool = True,
-):
+) -> Document:
     """Convert a document file to markdown."""
     return await routes.convert_document(file, config, include_images_as_base64)
 
