@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, Literal
 
 from mkdown import Document, TextChunk
-from pydantic import Field
+from pydantic import BaseModel, Field
 
 
 if TYPE_CHECKING:
@@ -65,3 +65,21 @@ class Vector:
     id: str
     data: np.ndarray
     metadata: dict[str, Any] = field(default_factory=dict)
+
+
+class PageDimensions(BaseModel):
+    """Page dimensions in points."""
+
+    width: float
+    height: float
+
+
+class PageMetadata(BaseModel):
+    """PDF metadata including page count and document information."""
+
+    page_count: int
+    file_size: int
+    is_encrypted: bool
+    page_dimensions: list[PageDimensions]
+    title: str = ""
+    author: str = ""

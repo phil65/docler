@@ -71,6 +71,14 @@ async def api_chunk_document(
     )
 
 
+@app.post("/api/pdf/metadata")
+async def api_get_pdf_metadata(
+    file: UploadFile = File(..., description="The PDF file to analyze"),  # noqa: B008
+):
+    """Get PDF metadata including page count and document information."""
+    return await routes.get_pdf_metadata(file)
+
+
 # Additional endpoints for monitoring
 @app.get("/health")
 async def health_check():

@@ -11,6 +11,8 @@ from pydantic import TypeAdapter
 import upath
 
 from docler.configs.converter_configs import ConverterConfig
+from docler.models import PageMetadata  # noqa: TC001
+from docler.pdf_utils import get_pdf_info
 
 
 if TYPE_CHECKING:
@@ -195,3 +197,42 @@ async def list_chunkers():
     ]
 
     return {"chunkers": chunkers}
+
+
+async def get_pdf_metadata(
+    file: Annotated[UploadFile, File(description="The PDF file to analyze")],
+) -> PageMetadata:
+    """Get PDF metadata including page count and document information.
+
+    Args:
+        file: The PDF file to analyze
+
+    Returns:
+        PageMetadata containing document information
+
+    Raises:
+        HTTPException: If file is invalid or processing fails
+    """
+    # Validate file type
+    if file.content_type != "application/pdf":
+        raise HTTPException(status_code=400, detail="Only PDF files are supported")
+
+    # Validate file size (100MB limit for metadata extraction)
+    if file.size and file.size > 100 * 1024 * 1024:
+        raise HTTPException(
+            status_code=400, detail="File size too large. Maximum size is 100MB."
+        )
+
+    try:
+        content = await file.read()
+        metadata = get_pdf_info(content)
+    except ValueError as e:
+        raise HTTPException(
+            status_code=400, detail=f"Failed to process PDF: {e!s}"
+        ) from e
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, detail=f"Internal error processing PDF: {e!s}"
+        ) from e
+    else:
+        return metadata

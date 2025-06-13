@@ -44,8 +44,8 @@ dependencies = [
     "pytest-docker>=3.2.1",
     "schemez>=0.0.1",
     "upathtools>=0.4.3",
-    "pypdf2",
     "mkdown>=0.12.1",
+    "pymupdf>=1.26.1",
 ]
 
 
