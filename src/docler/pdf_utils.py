@@ -149,9 +149,9 @@ def get_pdf_info(data: bytes) -> PageMetadata:
                 page_dimensions.append(PageDimensions(width=width, height=height))
 
             # Document metadata
-            metadata = reader.metadata or {}
-            title = metadata.get("/Title", "")
-            author = metadata.get("/Author", "")
+            metadata = reader.metadata
+            title = metadata.title or "" if metadata else ""
+            author = metadata.author or "" if metadata else ""
 
             return PageMetadata(
                 page_count=page_count,
