@@ -1,10 +1,12 @@
-"""Document converter using PyMuPDF."""
+"""Document converter using PyPDF2."""
 
 from __future__ import annotations
 
+import io
 from typing import TYPE_CHECKING
 
-import fitz  # PyMuPDF
+# import fitz  # PyMuPDF
+from PyPDF2 import PdfReader, PdfWriter
 
 from docler.log import get_logger
 from docler.models import PageDimensions, PageMetadata
@@ -98,34 +100,23 @@ def extract_pdf_pages(data: bytes, page_range: PageRangeString | None) -> bytes:
     Raises:
         ValueError: If page range is invalid or PDF data cannot be processed
     """
-    try:
-        # Open the source PDF from bytes
-        source_doc = fitz.open(stream=data, filetype="pdf")
-
-        # Determine which pages to extract
-        pages = (
-            parse_page_range(page_range, shift=-1)
-            if page_range
-            else range(len(source_doc))
-        )
-
-        # Create new PDF with selected pages
-        output_doc = fitz.open()  # Create empty PDF
-        for i in pages:
-            if 0 <= i < len(source_doc):
-                output_doc.insert_pdf(source_doc, from_page=i, to_page=i)
-
-        # Get PDF as bytes
-        pdf_bytes = output_doc.tobytes()
-
-        # Clean up
-        source_doc.close()
-        output_doc.close()
-    except Exception as e:
-        msg = f"Failed to extract pages from PDF: {e}"
-        raise ValueError(msg) from e
-    else:
-        return pdf_bytes
+    with io.BytesIO(data) as pdf_io, io.BytesIO() as output:
+        try:
+            reader = PdfReader(pdf_io)
+            pages = (
+                parse_page_range(page_range, shift=-1)
+                if page_range
+                else range(len(reader.pages))
+            )
+            writer = PdfWriter()
+            for i in pages:
+                if 0 <= i < len(reader.pages):
+                    writer.add_page(reader.pages[i])
+            writer.write(output)
+            return output.getvalue()
+        except Exception as e:
+            msg = f"Failed to extract pages from PDF: {e}"
+            raise ValueError(msg) from e
 
 
 def get_pdf_info(data: bytes) -> PageMetadata:
@@ -140,36 +131,36 @@ def get_pdf_info(data: bytes) -> PageMetadata:
     Raises:
         ValueError: If PDF data cannot be processed
     """
-    try:
-        doc = fitz.open(stream=data, filetype="pdf")
+    with io.BytesIO(data) as pdf_io:
+        try:
+            reader = PdfReader(pdf_io)
 
-        # Basic info
-        page_count = len(doc)
-        file_size = len(data)
-        is_encrypted = doc.needs_pass
+            # Basic info
+            page_count = len(reader.pages)
+            file_size = len(data)
+            is_encrypted = reader.is_encrypted
 
-        # Page dimensions (in points)
-        page_dimensions = []
-        for page_num in range(page_count):
-            page = doc[page_num]
-            rect = page.rect
-            page_dimensions.append(PageDimensions(width=rect.width, height=rect.height))
+            # Page dimensions (in points)
+            page_dimensions = []
+            for page in reader.pages:
+                media_box = page.mediabox
+                width = float(media_box.width)
+                height = float(media_box.height)
+                page_dimensions.append(PageDimensions(width=width, height=height))
 
-        # Document metadata
-        metadata = doc.metadata
-        title = metadata.get("title", "") if metadata else ""
-        author = metadata.get("author", "") if metadata else ""
+            # Document metadata
+            metadata = reader.metadata or {}
+            title = metadata.get("/Title", "")
+            author = metadata.get("/Author", "")
 
-        doc.close()
-
-        return PageMetadata(
-            page_count=page_count,
-            file_size=file_size,
-            is_encrypted=is_encrypted,
-            page_dimensions=page_dimensions,
-            title=title,
-            author=author,
-        )
-    except Exception as e:
-        msg = f"Failed to get PDF info: {e}"
-        raise ValueError(msg) from e
+            return PageMetadata(
+                page_count=page_count,
+                file_size=file_size,
+                is_encrypted=is_encrypted,
+                page_dimensions=page_dimensions,
+                title=title,
+                author=author,
+            )
+        except Exception as e:
+            msg = f"Failed to get PDF info: {e}"
+            raise ValueError(msg) from e

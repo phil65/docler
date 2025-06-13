@@ -45,7 +45,8 @@ dependencies = [
     "schemez>=0.0.1",
     "upathtools>=0.4.3",
     "mkdown>=0.12.1",
-    "pymupdf>=1.26.1",
+    # "pymupdf>=1.26.1",  # Temporarily disabled in favor of PyPDF2
+    "PyPDF2",
 ]
 
 
