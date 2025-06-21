@@ -6,13 +6,14 @@ import mimetypes
 import tempfile
 from typing import TYPE_CHECKING, Annotated, Any
 
+import anyenv
 from fastapi import Body, File, Form, HTTPException, Query, UploadFile
 from pydantic import TypeAdapter
 import upath
 
 from docler.configs.converter_configs import ConverterConfig
 from docler.models import PageMetadata  # noqa: TC001
-from docler.pdf_utils import get_pdf_info
+from docler.pdf_utils import decrypt_pdf, get_pdf_info
 
 
 if TYPE_CHECKING:
@@ -28,10 +29,12 @@ async def convert_document(
     include_images_as_base64: Annotated[
         bool, Form(description="Whether to include image data as base64 in the response")
     ] = True,
+    pdf_password: Annotated[
+        str | None, Form(description="Password for encrypted PDF files")
+    ] = None,
 ):
     """Convert a document file to markdown using specified converter configuration."""
     # Parse the JSON config string manually
-    import anyenv
 
     try:
         config_dict = anyenv.load_json(config)
@@ -40,6 +43,39 @@ async def convert_document(
         raise HTTPException(status_code=400, detail=f"Invalid config JSON: {e}")  # noqa: B904
 
     content = await file.read()
+
+    # Handle PDF decryption if needed
+    if file.content_type == "application/pdf" or (
+        file.filename and file.filename.lower().endswith(".pdf")
+    ):
+        # Check if PDF is encrypted
+        try:
+            pdf_info = get_pdf_info(content)
+            if pdf_info.is_encrypted:
+                if pdf_password is None:
+                    raise HTTPException(
+                        status_code=400,
+                        detail=(
+                            "PDF is encrypted but no password provided. "
+                            "Please provide pdf_password parameter."
+                        ),
+                    )
+                # Decrypt the PDF
+                try:
+                    content = decrypt_pdf(content, pdf_password)
+                except ValueError as e:
+                    if "Incorrect password" in str(e):
+                        raise HTTPException(  # noqa: B904
+                            status_code=401, detail="Incorrect PDF password"
+                        )
+                    raise HTTPException(  # noqa: B904
+                        status_code=400, detail=f"Failed to decrypt PDF: {e}"
+                    )
+        except ValueError as e:
+            if "encrypted" not in str(e).lower():
+                # If it's not an encryption issue, let it pass through to the converter
+                pass
+
     with tempfile.NamedTemporaryFile(
         suffix=f"_{file.filename}", delete=False
     ) as temp_file:
@@ -94,6 +130,10 @@ async def chunk_document(
         default=True,
         description="Whether to include image data as base64 in the response",
     ),
+    pdf_password: str | None = Query(
+        default=None,
+        description="Password for encrypted PDF files",
+    ),
 ):
     """Convert and chunk a document file using specified configurations.
 
@@ -102,11 +142,42 @@ async def chunk_document(
         converter_config: Configuration for the document converter
         chunker_config: Configuration for the text chunker
         include_images_as_base64: Whether to include image data as base64 in the response
+        pdf_password: Password for encrypted PDF files
 
     Returns:
         JSON response with the chunked document
     """
     content = await file.read()
+
+    # Handle PDF decryption if needed
+    if file.content_type == "application/pdf" or (
+        file.filename and file.filename.lower().endswith(".pdf")
+    ):
+        # Check if PDF is encrypted
+        try:
+            pdf_info = get_pdf_info(content)
+            if pdf_info.is_encrypted:
+                if pdf_password is None:
+                    raise HTTPException(
+                        status_code=400,
+                        detail="PDF is encrypted but no password provided.",
+                    )
+                # Decrypt the PDF
+                try:
+                    content = decrypt_pdf(content, pdf_password)
+                except ValueError as e:
+                    if "Incorrect password" in str(e):
+                        raise HTTPException(  # noqa: B904
+                            status_code=401, detail="Incorrect PDF password"
+                        )
+                    raise HTTPException(  # noqa: B904
+                        status_code=400, detail=f"Failed to decrypt PDF: {e}"
+                    )
+        except ValueError as e:
+            if "encrypted" not in str(e).lower():
+                # If it's not an encryption issue, let it pass through to the converter
+                pass
+
     with tempfile.NamedTemporaryFile(
         suffix=f"_{file.filename}", delete=False
     ) as temp_file:
@@ -201,11 +272,15 @@ async def list_chunkers():
 
 async def get_pdf_metadata(
     file: Annotated[UploadFile, File(description="The PDF file to analyze")],
+    pdf_password: Annotated[
+        str | None, Form(description="Password for encrypted PDF files")
+    ] = None,
 ) -> PageMetadata:
     """Get PDF metadata including page count and document information.
 
     Args:
         file: The PDF file to analyze
+        pdf_password: Password for encrypted PDF files
 
     Returns:
         PageMetadata containing document information
@@ -225,8 +300,10 @@ async def get_pdf_metadata(
 
     try:
         content = await file.read()
-        metadata = get_pdf_info(content)
+        metadata = get_pdf_info(content, pdf_password)
     except ValueError as e:
+        if "Incorrect password" in str(e):
+            raise HTTPException(status_code=401, detail="Incorrect PDF password") from e
         raise HTTPException(
             status_code=400, detail=f"Failed to process PDF: {e!s}"
         ) from e

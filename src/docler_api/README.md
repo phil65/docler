@@ -37,6 +37,16 @@ curl -X POST "http://localhost:8000/api/convert" \
   -F "config={\"type\":\"marker\",\"dpi\":300}"
 ```
 
+### Convert an encrypted PDF
+
+```bash
+curl -X POST "http://localhost:8000/api/convert" \
+  -H "Content-Type: multipart/form-data" \
+  -F "file=@encrypted-document.pdf" \
+  -F "config={\"type\":\"marker\",\"dpi\":300}" \
+  -F "pdf_password=your-pdf-password"
+```
+
 ### Convert and chunk a document
 
 ```bash
@@ -45,6 +55,21 @@ curl -X POST "http://localhost:8000/api/chunk" \
   -F "file=@document.pdf" \
   -F "converter_config={\"type\":\"marker\",\"dpi\":300}" \
   -F "chunker_config={\"type\":\"markdown\",\"max_chunk_size\":1000}"
+```
+
+### Get PDF metadata (including encrypted PDFs)
+
+```bash
+# Check if PDF is encrypted
+curl -X POST "http://localhost:8000/api/pdf/metadata" \
+  -H "Content-Type: multipart/form-data" \
+  -F "file=@document.pdf"
+
+# Get metadata from encrypted PDF
+curl -X POST "http://localhost:8000/api/pdf/metadata" \
+  -H "Content-Type: multipart/form-data" \
+  -F "file=@encrypted-document.pdf" \
+  -F "pdf_password=your-pdf-password"
 ```
 
 ## Development

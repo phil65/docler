@@ -76,7 +76,8 @@ async def test_api_convert_document_with_mistral(resources_dir: Path):
     assert result.source_path.endswith("pdf_sample.pdf")
 
     # Images should be a list (may be empty)
-    assert isinstance(result.images, list)
+    assert result.images
+    isinstance(result.images, list)
 
 
 @pytest.mark.integration
