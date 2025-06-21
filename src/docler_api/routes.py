@@ -53,24 +53,33 @@ async def convert_document(
             pdf_info = get_pdf_info(content)
             if pdf_info.is_encrypted:
                 if pdf_password is None:
-                    raise HTTPException(
-                        status_code=400,
-                        detail=(
-                            "PDF is encrypted but no password provided. "
-                            "Please provide pdf_password parameter."
-                        ),
-                    )
-                # Decrypt the PDF
-                try:
-                    content = decrypt_pdf(content, pdf_password)
-                except ValueError as e:
-                    if "Incorrect password" in str(e):
-                        raise HTTPException(  # noqa: B904
-                            status_code=401, detail="Incorrect PDF password"
-                        )
-                    raise HTTPException(  # noqa: B904
-                        status_code=400, detail=f"Failed to decrypt PDF: {e}"
-                    )
+                    # Try empty password first
+                    try:
+                        content = decrypt_pdf(content, None)
+                    except ValueError as e:
+                        if "requires a password" in str(e):
+                            raise HTTPException(
+                                status_code=400,
+                                detail=(
+                                    "PDF is encrypted but no password provided. "
+                                    "Please provide pdf_password parameter."
+                                ),
+                            ) from e
+                        raise HTTPException(
+                            status_code=400, detail=f"Failed to decrypt PDF: {e}"
+                        ) from e
+                else:
+                    # Decrypt the PDF with provided password
+                    try:
+                        content = decrypt_pdf(content, pdf_password)
+                    except ValueError as e:
+                        if "Incorrect password" in str(e):
+                            raise HTTPException(  # noqa: B904
+                                status_code=401, detail="Incorrect PDF password"
+                            )
+                        raise HTTPException(
+                            status_code=400, detail=f"Failed to decrypt PDF: {e}"
+                        ) from e
         except ValueError as e:
             if "encrypted" not in str(e).lower():
                 # If it's not an encryption issue, let it pass through to the converter
@@ -158,21 +167,30 @@ async def chunk_document(
             pdf_info = get_pdf_info(content)
             if pdf_info.is_encrypted:
                 if pdf_password is None:
-                    raise HTTPException(
-                        status_code=400,
-                        detail="PDF is encrypted but no password provided.",
-                    )
-                # Decrypt the PDF
-                try:
-                    content = decrypt_pdf(content, pdf_password)
-                except ValueError as e:
-                    if "Incorrect password" in str(e):
-                        raise HTTPException(  # noqa: B904
-                            status_code=401, detail="Incorrect PDF password"
-                        )
-                    raise HTTPException(  # noqa: B904
-                        status_code=400, detail=f"Failed to decrypt PDF: {e}"
-                    )
+                    # Try empty password first
+                    try:
+                        content = decrypt_pdf(content, None)
+                    except ValueError as e:
+                        if "requires a password" in str(e):
+                            raise HTTPException(
+                                status_code=400,
+                                detail="PDF is encrypted but no password provided.",
+                            ) from e
+                        raise HTTPException(
+                            status_code=400, detail=f"Failed to decrypt PDF: {e}"
+                        ) from e
+                else:
+                    # Decrypt the PDF with provided password
+                    try:
+                        content = decrypt_pdf(content, pdf_password)
+                    except ValueError as e:
+                        if "Incorrect password" in str(e):
+                            raise HTTPException(  # noqa: B904
+                                status_code=401, detail="Incorrect PDF password"
+                            )
+                        raise HTTPException(
+                            status_code=400, detail=f"Failed to decrypt PDF: {e}"
+                        ) from e
         except ValueError as e:
             if "encrypted" not in str(e).lower():
                 # If it's not an encryption issue, let it pass through to the converter

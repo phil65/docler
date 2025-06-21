@@ -87,12 +87,12 @@ def shift_page_range(page_range: PageRangeString, shift: int = 0) -> PageRangeSt
     return ",".join(parts)
 
 
-def decrypt_pdf(data: bytes, password: str) -> bytes:
+def decrypt_pdf(data: bytes, password: str | None) -> bytes:
     """Decrypt password-protected PDF and return decrypted bytes.
 
     Args:
         data: Encrypted PDF file content as bytes
-        password: Password to decrypt the PDF
+        password: Password to decrypt the PDF, or None to try empty password
 
     Returns:
         Decrypted PDF content as bytes
@@ -106,6 +106,19 @@ def decrypt_pdf(data: bytes, password: str) -> bytes:
             if not reader.is_encrypted:
                 return data  # Already decrypted
 
+            # Try empty password first if no password provided
+            if password is None:
+                if reader.decrypt(""):
+                    # Successfully decrypted with empty password
+                    writer = PdfWriter()
+                    for page in reader.pages:
+                        writer.add_page(page)
+                    writer.write(output)
+                    return output.getvalue()
+                msg = "PDF is encrypted and requires a password"
+                raise ValueError(msg)  # noqa: TRY301
+
+            # Try provided password
             if not reader.decrypt(password):
                 msg = "Incorrect password for encrypted PDF"
                 raise ValueError(msg)  # noqa: TRY301
@@ -116,7 +129,7 @@ def decrypt_pdf(data: bytes, password: str) -> bytes:
             writer.write(output)
             return output.getvalue()
         except Exception as e:
-            if "Incorrect password" in str(e):
+            if "Incorrect password" in str(e) or "requires a password" in str(e):
                 raise
             msg = f"Failed to decrypt PDF: {e}"
             raise ValueError(msg) from e
@@ -139,18 +152,21 @@ def extract_pdf_pages(
         ValueError: If page range is invalid, PDF data cannot be processed,
                     or decryption fails
     """
-    # Decrypt PDF if password is provided
-    if password is not None:
-        data = decrypt_pdf(data, password)
-
     with io.BytesIO(data) as pdf_io, io.BytesIO() as output:
         try:
             reader = PdfReader(pdf_io)
 
-            # Check if PDF is still encrypted (no password provided for encrypted PDF)
+            # Handle encrypted PDFs
             if reader.is_encrypted:
-                msg = "PDF is encrypted but no password provided"
-                raise ValueError(msg)  # noqa: TRY301
+                if password is not None:
+                    # Try provided password
+                    if not reader.decrypt(password):
+                        msg = "Incorrect password for encrypted PDF"
+                        raise ValueError(msg)  # noqa: TRY301
+                # Try empty password first
+                elif not reader.decrypt(""):
+                    msg = "PDF is encrypted but no password provided"
+                    raise ValueError(msg)  # noqa: TRY301
 
             pages = (
                 parse_page_range(page_range, shift=-1)
@@ -183,30 +199,36 @@ def get_pdf_info(data: bytes, password: str | None = None) -> PageMetadata:
     Raises:
         ValueError: If PDF data cannot be processed or decryption fails
     """
-    # Decrypt PDF if password is provided
-    if password is not None:
-        data = decrypt_pdf(data, password)
-
     with io.BytesIO(data) as pdf_io:
         try:
             reader = PdfReader(pdf_io)
 
-            # Check if PDF is encrypted and no password provided
-            if reader.is_encrypted and password is None:
-                # Return basic info for encrypted PDF without decryption
-                return PageMetadata(
-                    page_count=0,
-                    file_size=len(data),
-                    is_encrypted=True,
-                    page_dimensions=[],
-                    title="",
-                    author="",
-                )
+            # Handle encrypted PDFs
+            is_encrypted = False
+            if reader.is_encrypted:
+                if password is not None:
+                    # Try provided password
+                    if not reader.decrypt(password):
+                        msg = "Incorrect password for encrypted PDF"
+                        raise ValueError(msg)  # noqa: TRY301
+                # Try empty password first (many PDFs are encrypted with empty password)
+                elif reader.decrypt(""):
+                    # Successfully decrypted with empty password, treat as not encrypted
+                    is_encrypted = False
+                else:
+                    # Return basic info for truly encrypted PDF without decryption
+                    return PageMetadata(
+                        page_count=0,
+                        file_size=len(data),
+                        is_encrypted=True,
+                        page_dimensions=[],
+                        title="",
+                        author="",
+                    )
 
             # Basic info
             page_count = len(reader.pages)
             file_size = len(data)
-            is_encrypted = False  # PDF is decrypted at this point
 
             # Page dimensions (in points)
             page_dimensions = []
