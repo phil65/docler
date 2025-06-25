@@ -45,8 +45,8 @@ dependencies = [
     "schemez>=0.0.1",
     "upathtools>=0.4.3",
     "mkdown>=0.12.1",
-    # "pymupdf>=1.26.1",  # Temporarily disabled in favor of PyPDF2
-    "PyPDF2",
+    # "pymupdf>=1.26.1",  # Temporarily disabled in favor of pypdf
+    "pypdf",
 ]
 
 
@@ -73,7 +73,7 @@ light = [
     "mistralai",
     "diff-match-patch",
     "llmling-agent[default]",
-    "llama-index",
+    # "llama-index",
     "llama-parse",
     "openai",
     "azure-ai-documentintelligence",
@@ -88,8 +88,8 @@ all = [
     # "llama-parse",
     "streamlit",
     "st-diff-viewer",
-    "llmsherpa",
-    "llama-index-readers-smart-pdf-loader",
+    # "llmsherpa",
+    # "llama-index-readers-smart-pdf-loader",
     "chromadb",
     "upstash-vector",
     "openai",

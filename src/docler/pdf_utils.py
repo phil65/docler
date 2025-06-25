@@ -1,4 +1,4 @@
-"""Document converter using PyPDF2."""
+"""Document converter using pypdf."""
 
 from __future__ import annotations
 
@@ -6,7 +6,7 @@ import io
 from typing import TYPE_CHECKING
 
 # import fitz  # PyMuPDF
-from PyPDF2 import PdfReader, PdfWriter
+from pypdf import PdfReader, PdfWriter
 
 from docler.log import get_logger
 from docler.models import PageDimensions, PageMetadata
