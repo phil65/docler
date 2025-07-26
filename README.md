@@ -133,3 +133,6 @@ The library provides standardized metadata types for common use cases:
    )
    # <!-- docler:chunk_boundary {"chunk_id":1,"end_line":25,"keywords":["introduction","overview"],"start_line":10,"token_count":350} -->
    ```
+
+## SOON:
+FastAPI demo (bring your own keys) on https://contexter.net
