@@ -38,15 +38,10 @@ async def root():
 async def api_convert_document(
     file: UploadFile = File(..., description="The document file to convert"),  # noqa: B008
     config: str = Form(..., description="Converter configuration"),
-    include_images_as_base64: bool = Form(
-        True, description="Whether to include image data as base64 in the response"
-    ),
     pdf_password: str | None = Form(None, description="Password for encrypted PDF files"),
 ) -> Document:
     """Convert a document file to markdown."""
-    return await routes.convert_document(
-        file, config, include_images_as_base64, pdf_password
-    )
+    return await routes.convert_document(file, config, pdf_password)
 
 
 @app.get("/api/converters")
@@ -66,12 +61,11 @@ async def api_chunk_document(
     file,
     converter_config: ConverterConfig,
     chunker_config: ChunkerConfig,
-    include_images_as_base64: bool = True,
     pdf_password: str | None = None,
 ):
     """Convert and chunk a document."""
     return await routes.chunk_document(
-        file, converter_config, chunker_config, include_images_as_base64, pdf_password
+        file, converter_config, chunker_config, pdf_password
     )
 
 

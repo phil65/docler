@@ -19,10 +19,11 @@ docler-api api --host 0.0.0.0 --port 8000
 ### API Endpoints
 
 - **GET /** - Root endpoint, returns welcome message and version
-- **POST /api/convert** - Convert a document to markdown
-- **POST /api/chunk** - Convert and chunk a document
+- **POST /api/convert** - Convert a document to markdown (images included as base64)
+- **POST /api/chunk** - Convert and chunk a document (images included as base64)
 - **GET /api/converters** - List all available converters
 - **GET /api/chunkers** - List all available chunkers
+- **POST /api/pdf/metadata** - Get PDF metadata including page count
 - **GET /health** - Health check endpoint
 - **GET /ready** - Readiness check endpoint
 
@@ -36,6 +37,8 @@ curl -X POST "http://localhost:8000/api/convert" \
   -F "file=@document.pdf" \
   -F "config={\"type\":\"marker\",\"dpi\":300}"
 ```
+
+The response will include all extracted images as base64-encoded data in the JSON response.
 
 ### Convert an encrypted PDF
 
@@ -51,11 +54,15 @@ curl -X POST "http://localhost:8000/api/convert" \
 
 ```bash
 curl -X POST "http://localhost:8000/api/chunk" \
-  -H "Content-Type: multipart/form-data" \
+  -H "Content-Type: application/json" \
   -F "file=@document.pdf" \
-  -F "converter_config={\"type\":\"marker\",\"dpi\":300}" \
-  -F "chunker_config={\"type\":\"markdown\",\"max_chunk_size\":1000}"
+  -d '{
+    "converter_config": {"type": "marker", "dpi": 300},
+    "chunker_config": {"type": "markdown", "max_chunk_size": 1000}
+  }'
 ```
+
+Images are automatically included as base64-encoded data in both the document and individual chunks.
 
 ### Get PDF metadata (including encrypted PDFs)
 

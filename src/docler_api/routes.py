@@ -26,9 +26,6 @@ config_adapter = TypeAdapter[ConverterConfig](ConverterConfig)
 async def convert_document(
     file: Annotated[UploadFile, File(description="The document file to convert")],
     config: Annotated[str, Form(description="Converter configuration JSON")],
-    include_images_as_base64: Annotated[
-        bool, Form(description="Whether to include image data as base64 in the response")
-    ] = True,
     pdf_password: Annotated[
         str | None, Form(description="Password for encrypted PDF files")
     ] = None,
@@ -100,17 +97,11 @@ async def convert_document(
         converter = parsed.get_provider()
         document = await converter.convert_file(temp_path)
 
-        # Process images based on the flag
-        if include_images_as_base64:
-            # Ensure images are in base64 format
-            for image in document.images:
-                if isinstance(image.content, bytes):
-                    # Convert bytes to base64 string
-                    image.content = image.to_base64()
-        else:
-            # Remove binary content from images
-            for image in document.images:
-                image.content = ""
+        # Always include images as base64
+        for image in document.images:
+            if isinstance(image.content, bytes):
+                # Convert bytes to base64 string
+                image.content = image.to_base64()
     except Exception as e:
         if not isinstance(e, HTTPException):
             raise HTTPException(
@@ -135,10 +126,6 @@ async def chunk_document(
         ChunkerConfig,
         Body(default={"type": "markdown"}, description="Chunker configuration"),
     ],
-    include_images_as_base64: bool = Query(
-        default=True,
-        description="Whether to include image data as base64 in the response",
-    ),
     pdf_password: str | None = Query(
         default=None,
         description="Password for encrypted PDF files",
@@ -150,7 +137,6 @@ async def chunk_document(
         file: The document file to convert and chunk
         converter_config: Configuration for the document converter
         chunker_config: Configuration for the text chunker
-        include_images_as_base64: Whether to include image data as base64 in the response
         pdf_password: Password for encrypted PDF files
 
     Returns:
@@ -217,25 +203,16 @@ async def chunk_document(
         # Chunk the document
         chunked_document = await chunker.chunk(document)
 
-        # Process images based on the flag
-        if include_images_as_base64:
-            # Ensure images are in base64 format
-            for image in chunked_document.images:
+        # Always include images as base64
+        for image in chunked_document.images:
+            if isinstance(image.content, bytes):
+                # Convert bytes to base64 string
+                image.content = image.to_base64()
+        for chunk in chunked_document.chunks:
+            for image in chunk.images:
                 if isinstance(image.content, bytes):
                     # Convert bytes to base64 string
                     image.content = image.to_base64()
-            for chunk in chunked_document.chunks:
-                for image in chunk.images:
-                    if isinstance(image.content, bytes):
-                        # Convert bytes to base64 string
-                        image.content = image.to_base64()
-        else:
-            # Remove binary content from images
-            for image in chunked_document.images:
-                image.content = ""
-            for chunk in chunked_document.chunks:
-                for image in chunk.images:
-                    image.content = ""
     except Exception as e:
         if not isinstance(e, HTTPException):
             raise HTTPException(
