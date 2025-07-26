@@ -1,11 +1,16 @@
 import base64
+from collections.abc import Callable
 from typing import Any
 
 import anyenv
 from mkdown import Image, create_page_break
 
 
-def process_response(result: list[Any], api_key: str) -> tuple[list[str], list[Image]]:
+def process_response(
+    result: list[Any],
+    api_key: str,
+    format_name_func: Callable[[int, str], tuple[str, str]],
+) -> tuple[list[str], list[Image]]:
     from llama_index.core.constants import DEFAULT_BASE_URL
 
     content_parts: list[str] = []
@@ -19,7 +24,6 @@ def process_response(result: list[Any], api_key: str) -> tuple[list[str], list[I
             content_parts.append(page["md"])
         for img in page.get("images", []):
             image_count = len(images)
-            id_ = f"img-{image_count}"
             asset_name = img["name"]
             asset_url = (
                 f"{DEFAULT_BASE_URL}/api/parsing/job/{job_id}/result/image/{asset_name}"
@@ -33,7 +37,7 @@ def process_response(result: list[Any], api_key: str) -> tuple[list[str], list[I
                 if extension in ["jpg", "jpeg", "png", "gif", "webp", "svg"]:
                     img_type = extension
 
-            filename = f"{id_}.{img_type}"
+            id_, filename = format_name_func(image_count, img_type)
             mime = f"image/{img_type}"
             image = Image(id=id_, content=img_data, mime_type=mime, filename=filename)
             images.append(image)

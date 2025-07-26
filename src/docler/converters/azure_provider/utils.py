@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 import re
 from typing import TYPE_CHECKING, Any
 
@@ -12,10 +13,13 @@ if TYPE_CHECKING:
     from azure.ai.documentintelligence.models import AnalyzeResult
 
 
-def to_image(response: Iterator[bytes], i: int) -> Image:
+def to_image(
+    response: Iterator[bytes],
+    i: int,
+    format_name_func: Callable[[int, str], tuple[str, str]],
+) -> Image:
     content = b"".join(response)
-    image_id = f"img-{i}"
-    filename = f"{image_id}.png"
+    image_id, filename = format_name_func(i, "png")
     return Image(id=image_id, content=content, mime_type="image/png", filename=filename)
 
 

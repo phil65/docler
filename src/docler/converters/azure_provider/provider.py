@@ -61,6 +61,7 @@ class AzureConverter(DocumentConverter[AzureConfig]):
         languages: list[SupportedLanguage] | None = None,
         *,
         page_range: PageRangeString | None = None,
+        image_path_template: str = "img-{count}.{ext}",
         endpoint: str | None = None,
         api_key: str | None = None,
         model: AzureModel = "prebuilt-layout",
@@ -71,6 +72,7 @@ class AzureConverter(DocumentConverter[AzureConfig]):
         Args:
             languages: ISO language codes for OCR, defaults to ['en']
             page_range: Page range(s) to extract, like "1-5,7-10" (1-based)
+            image_path_template: Template for image filenames
             endpoint: Azure service endpoint URL. Falls back to env var.
             api_key: Azure API key. Falls back to env var.
             model: Pre-trained model to use
@@ -83,7 +85,11 @@ class AzureConverter(DocumentConverter[AzureConfig]):
         from azure.ai.documentintelligence import DocumentIntelligenceClient
         from azure.core.credentials import AzureKeyCredential
 
-        super().__init__(languages=languages, page_range=page_range)
+        super().__init__(
+            languages=languages,
+            page_range=page_range,
+            image_path_template=image_path_template,
+        )
 
         self.endpoint = endpoint or get_api_key(ENV_ENDPOINT)
         self.api_key = api_key or get_api_key(ENV_API_KEY)
@@ -127,7 +133,7 @@ class AzureConverter(DocumentConverter[AzureConfig]):
                     result_id=operation_id,
                     figure_id=figure.id,
                 )
-                image = to_image(response_iter, i)
+                image = to_image(response_iter, i, self._format_image_name)
                 images.append(image)
 
         return images

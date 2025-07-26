@@ -5,7 +5,6 @@ from __future__ import annotations
 import base64
 from typing import TYPE_CHECKING, ClassVar
 
-# Import the markdown utility
 from mkdown import Document, Image, create_image_reference, create_page_break
 import upath
 
@@ -48,6 +47,7 @@ class MistralConverter(DocumentConverter[MistralConfig]):
         languages: list[SupportedLanguage] | None = None,
         *,
         page_range: PageRangeString | None = None,
+        image_path_template: str = "img-{count}.{ext}",
         api_key: str | None = None,
         ocr_model: str = "mistral-ocr-latest",
         image_min_size: int | None = None,
@@ -57,6 +57,7 @@ class MistralConverter(DocumentConverter[MistralConfig]):
         Args:
             languages: List of supported languages.
             page_range: Page range(s) to extract, like "1-5,7-10" (1-based)
+            image_path_template: Template for image filenames
             api_key: Mistral API key. If None, will try to get from environment.
             ocr_model: Mistral OCR model to use. Defaults to "mistral-ocr-latest".
             image_min_size: Minimum size of image in pixels.
@@ -64,7 +65,11 @@ class MistralConverter(DocumentConverter[MistralConfig]):
         Raises:
             ValueError: If MISTRAL_API_KEY environment variable is not set.
         """
-        super().__init__(languages=languages, page_range=page_range)
+        super().__init__(
+            languages=languages,
+            page_range=page_range,
+            image_path_template=image_path_template,
+        )
         self.api_key = api_key or get_api_key("MISTRAL_API_KEY")
         self.model = ocr_model
         self.image_min_size = image_min_size
@@ -118,10 +123,13 @@ class MistralConverter(DocumentConverter[MistralConfig]):
             pages=list(parse_page_range(rng)) if rng else None,
         )
         images = [
-            convert_image(img)
-            for page in r.pages
-            for img in page.images
-            if img.id and img.image_base64
+            convert_image(img, i, self._format_image_name)
+            for i, img in enumerate(
+                img
+                for page in r.pages
+                for img in page.images
+                if img.id and img.image_base64
+            )
         ]
 
         content_parts: list[str] = []
@@ -180,16 +188,18 @@ class MistralConverter(DocumentConverter[MistralConfig]):
 
         # Extract the content (for images, we'll usually have just one page)
         content = "\n\n".join(page.markdown for page in r.pages)
-        image_id = "img-0"
+        image_id, filename = self._format_image_name(
+            0, file_path.suffix.lstrip(".") or "jpg"
+        )
         image = Image(
             id=image_id,
             content=file_data,
             mime_type=mime_type,
-            filename=file_path.name,
+            filename=filename,
         )
-        image_ref = create_image_reference(image_id, file_path.name)
+        image_ref = create_image_reference(image_id, filename)
         content = image_ref + "\n\n" + content
-        additional_images = get_images(r)
+        additional_images = get_images(r, self._format_image_name)
         return Document(
             content=content,
             images=[image, *additional_images],

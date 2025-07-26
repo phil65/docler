@@ -41,6 +41,7 @@ class LLMConverter(DocumentConverter[LLMConverterConfig]):
         languages: list[SupportedLanguage] | None = None,
         *,
         page_range: PageRangeString | None = None,
+        image_path_template: str = "img-{count}.{ext}",
         model: str = DEFAULT_CONVERTER_MODEL,
         system_prompt: str | None = None,
         user_prompt: str | None = None,
@@ -50,6 +51,7 @@ class LLMConverter(DocumentConverter[LLMConverterConfig]):
         Args:
             languages: List of supported languages (used in prompting)
             page_range: Page range(s) to extract, like "1-5,7-10" (1-based)
+            image_path_template: Template for image filenames
             model: LLM model to use for conversion
             system_prompt: Optional system prompt to guide conversion
             user_prompt: Custom prompt for the conversion task
@@ -57,7 +59,11 @@ class LLMConverter(DocumentConverter[LLMConverterConfig]):
         Raises:
             ValueError: If model doesn't support PDF input
         """
-        super().__init__(languages=languages, page_range=page_range)
+        super().__init__(
+            languages=languages,
+            page_range=page_range,
+            image_path_template=image_path_template,
+        )
         self.model = model  # .replace(":", "/")
         self.system_prompt = system_prompt or LLM_SYSTEM_PROMPT
         self.user_prompt = user_prompt or LLM_USER_PROMPT

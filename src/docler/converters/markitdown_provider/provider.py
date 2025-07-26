@@ -69,16 +69,22 @@ class MarkItDownConverter(DocumentConverter[MarkItDownConfig]):
         self,
         languages: list[SupportedLanguage] | None = None,
         page_range: PageRangeString | None = None,
+        image_path_template: str = "img-{count}.{ext}",
     ):
         """Initialize the MarkItDown converter.
 
         Args:
             languages: List of supported languages.
             page_range: Page range(s) to extract, like "1-5,7-10" (1-based)
+            image_path_template: Template for image filenames.
         """
         from markitdown import MarkItDown
 
-        super().__init__(languages=languages, page_range=page_range)
+        super().__init__(
+            languages=languages,
+            page_range=page_range,
+            image_path_template=image_path_template,
+        )
         self.converter = MarkItDown()
 
     def _convert_path_sync(self, file_path: StrPath, mime_type: MimeType) -> Document:

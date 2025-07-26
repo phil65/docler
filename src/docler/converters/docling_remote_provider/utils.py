@@ -3,13 +3,16 @@
 from __future__ import annotations
 
 import base64
+from collections.abc import Callable
 import re
 from typing import Any
 
 from mkdown import Image, create_image_reference
 
 
-def process_response(document: dict[str, Any]) -> tuple[str, list[Image]]:
+def process_response(
+    document: dict[str, Any], format_name_func: Callable[[int, str], tuple[str, str]]
+) -> tuple[str, list[Image]]:
     content = document["md_content"]
     images: list[Image] = []
 
@@ -23,8 +26,7 @@ def process_response(document: dict[str, Any]) -> tuple[str, list[Image]]:
             img_type = match.group(2)
             img_data = match.group(3)
 
-            image_id = f"img-{image_counter}"
-            filename = f"{image_id}.{img_type}"
+            image_id, filename = format_name_func(image_counter, img_type)
             image_counter += 1
             content = base64.b64decode(img_data)
             mime = f"image/{img_type}"

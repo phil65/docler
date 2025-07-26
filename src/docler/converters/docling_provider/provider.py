@@ -41,6 +41,7 @@ class DoclingConverter(DocumentConverter[DoclingConverterConfig]):
         languages: list[SupportedLanguage] | None = None,
         *,
         page_range: PageRangeString | None = None,
+        image_path_template: str = "img-{count}.{ext}",
         image_scale: float = 2.0,
         delim: str = "\n\n",
         strict_text: bool = False,
@@ -54,6 +55,7 @@ class DoclingConverter(DocumentConverter[DoclingConverterConfig]):
         Args:
             languages: List of supported languages.
             page_range: Page range(s) to extract, like "1-5,7-10" (1-based)
+            image_path_template: Template for image filenames.
             image_scale: Scale factor for image resolution (1.0 = 72 DPI).
             delim: Delimiter for markdown sections.
             strict_text: Whether to use strict text processing.
@@ -77,7 +79,11 @@ class DoclingConverter(DocumentConverter[DoclingConverterConfig]):
             PdfFormatOption,
         )
 
-        super().__init__(languages=languages, page_range=page_range)
+        super().__init__(
+            languages=languages,
+            page_range=page_range,
+            image_path_template=image_path_template,
+        )
         self.delim = delim
         self.strict_text = strict_text
         self.escaping_underscores = escaping_underscores
@@ -154,8 +160,7 @@ class DoclingConverter(DocumentConverter[DoclingConverterConfig]):
         for i, picture in enumerate(doc_result.document.pictures):
             if not picture.image or not picture.image.pil_image:
                 continue
-            image_id = f"img-{i}"
-            filename = f"{image_id}.png"
+            image_id, filename = self._format_image_name(i, "png")
             mk_link = create_image_reference(image_id, filename)
             mk_content = mk_content.replace("<!-- image -->", mk_link, 1)
             content = pil_to_bytes(picture.image.pil_image)

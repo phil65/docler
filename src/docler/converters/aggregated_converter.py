@@ -34,6 +34,7 @@ class AggregatedConverter(DocumentConverter[AggregatedConverterConfig]):
         languages: list[SupportedLanguage] | None = None,
         *,
         page_range: PageRangeString | None = None,
+        image_path_template: str = "img-{count}.{ext}",
         registry: ConverterRegistry | None = None,
     ):
         """Initialize the aggregated converter.
@@ -41,10 +42,17 @@ class AggregatedConverter(DocumentConverter[AggregatedConverterConfig]):
         Args:
             languages: Languages to use for conversion
             page_range: Page range to extract.
+            image_path_template: Template for image filenames.
             registry: Existing registry to use, or create a new one if None
         """
-        super().__init__(languages=languages, page_range=page_range)
-        self._registry = registry or ConverterRegistry.create_default(languages=languages)
+        super().__init__(
+            languages=languages,
+            page_range=page_range,
+            image_path_template=image_path_template,
+        )
+        self._registry = registry or ConverterRegistry.create_default(
+            languages=languages, image_path_template=image_path_template
+        )
 
     @classmethod
     def from_config(cls, config: AggregatedConverterConfig) -> AggregatedConverter:

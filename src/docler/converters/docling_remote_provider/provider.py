@@ -72,6 +72,7 @@ class DoclingRemoteConverter(DocumentConverter[DoclingRemoteConfig]):
         languages: list[SupportedLanguage] | None = None,
         *,
         page_range: PageRangeString | None = None,
+        image_path_template: str = "img-{count}.{ext}",
         api_key: str | None = None,
         endpoint: str = DEFAULT_API_ENDPOINT,
         ocr_engine: OCREngine = "easyocr",
@@ -90,6 +91,7 @@ class DoclingRemoteConverter(DocumentConverter[DoclingRemoteConfig]):
         Args:
             languages: List of supported languages.
             page_range: Page range to exctract (0-based)
+            image_path_template: Template for image filenames.
             api_key: Optional API key for auth.
             endpoint: Base URL of the Docling service.
             ocr_engine: OCR engine to use.
@@ -106,7 +108,11 @@ class DoclingRemoteConverter(DocumentConverter[DoclingRemoteConfig]):
         Raises:
             MissingConfigurationError: If endpoint cannot be used.
         """
-        super().__init__(languages=languages, page_range=page_range)
+        super().__init__(
+            languages=languages,
+            page_range=page_range,
+            image_path_template=image_path_template,
+        )
         self.endpoint = endpoint.rstrip("/")
         self.api_key = api_key
         self.config = {
@@ -187,7 +193,7 @@ class DoclingRemoteConverter(DocumentConverter[DoclingRemoteConfig]):
             else:
                 msg = "No markdown content found in response"
             raise ValueError(msg)
-        content, images = process_response(document)
+        content, images = process_response(document, self._format_image_name)
         return Document(
             content=content,
             images=images,

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import base64
+from collections.abc import Callable
 import re
 import time
 from typing import Any
@@ -87,7 +88,9 @@ async def get_response(
     return result
 
 
-def process_response(result: dict[str, Any]) -> tuple[str, list[Image]]:
+def process_response(
+    result: dict[str, Any], format_name_func: Callable[[int, str], tuple[str, str]]
+) -> tuple[str, list[Image]]:
     images: list[Image] = []
     md_content = result["markdown"]
 
@@ -116,9 +119,8 @@ def process_response(result: dict[str, Any]) -> tuple[str, list[Image]]:
     if result.get("images"):
         image_replacements = {}
         for i, (original_name, img_data) in enumerate(result["images"].items()):
-            img_id = f"img-{i}"
             ext = original_name.split(".")[-1].lower()
-            fname = f"{img_id}.{ext}"
+            img_id, fname = format_name_func(i, ext)
             image_replacements[original_name] = (img_id, fname)
             if isinstance(img_data, PILImage):
                 content = pil_to_bytes(img_data)

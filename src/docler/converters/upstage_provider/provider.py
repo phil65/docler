@@ -55,6 +55,7 @@ class UpstageConverter(DocumentConverter[UpstageConfig]):
         languages: list[SupportedLanguage] | None = None,
         *,
         page_range: PageRangeString | None = None,
+        image_path_template: str = "img-{count}.{ext}",
         api_key: str | None = None,
         base_url: str = DOCUMENT_PARSE_BASE_URL,
         model: str = DOCUMENT_PARSE_DEFAULT_MODEL,
@@ -68,6 +69,7 @@ class UpstageConverter(DocumentConverter[UpstageConfig]):
         Args:
             languages: List of supported languages (currently unused by Upstage API)
             page_range: Page range(s) to extract, like "1-5,7-10" (1-based)
+            image_path_template: Template for image filenames
             api_key: Upstage API key (falls back to UPSTAGE_API_KEY env var)
             base_url: API endpoint URL
             model: Model name for document parsing
@@ -76,7 +78,11 @@ class UpstageConverter(DocumentConverter[UpstageConfig]):
             align_orientation: Whether to automatically detect and correct the orientation
             base64_categories: Element categories to encode in base64
         """
-        super().__init__(languages=languages, page_range=page_range)
+        super().__init__(
+            languages=languages,
+            page_range=page_range,
+            image_path_template=image_path_template,
+        )
         self.api_key = api_key or get_api_key("UPSTAGE_API_KEY")
         self.base_url = base_url
         self.model = model
@@ -203,9 +209,6 @@ class UpstageConverter(DocumentConverter[UpstageConfig]):
             base64_data = element.get("base64_encoding")
 
             if category in self.base64_categories and base64_data:
-                image_id = f"img-{image_counter}"
-                image_counter += 1
-
                 if base64_data.startswith("data:image/"):
                     mime_parts = base64_data.split(";")[0].split(":")
                     img_mime_type = mime_parts[1] if len(mime_parts) > 1 else "image/png"
@@ -218,7 +221,9 @@ class UpstageConverter(DocumentConverter[UpstageConfig]):
                 ext = img_mime_type.split("/")[-1]
                 # Handle potential complex mime types like 'svg+xml'
                 ext = ext.split("+")[0]
-                filename = f"{image_id}.{ext}"
+
+                image_id, filename = self._format_image_name(image_counter, ext)
+                image_counter += 1
 
                 image = Image(
                     id=image_id,

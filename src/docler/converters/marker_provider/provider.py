@@ -73,6 +73,7 @@ class MarkerConverter(DocumentConverter[MarkerConfig]):
         languages: list[SupportedLanguage] | None = None,
         *,
         page_range: PageRangeString | None = None,
+        image_path_template: str = "img-{count}.{ext}",
         dpi: int = 192,
         use_llm: bool = False,
         llm_provider: ProviderType | None = None,
@@ -81,12 +82,17 @@ class MarkerConverter(DocumentConverter[MarkerConfig]):
 
         Args:
             page_range: Page range(s) to extract, like "1-5,7-10" (1-based)
+            image_path_template: Template for image filenames
             dpi: DPI setting for image extraction.
             languages: Languages to use for OCR.
             use_llm: Whether to use LLM for enhanced accuracy.
             llm_provider: Language model provider to use for OCR.
         """
-        super().__init__(languages=languages, page_range=page_range)
+        super().__init__(
+            languages=languages,
+            page_range=page_range,
+            image_path_template=image_path_template,
+        )
         self.config = {
             "output_format": "markdown",
             "highres_image_dpi": dpi,
@@ -114,7 +120,7 @@ class MarkerConverter(DocumentConverter[MarkerConfig]):
             config=self.config,
         )
         rendered: MarkdownOutput = converter(str(local_file))
-        content, images = process_response(rendered.model_dump())
+        content, images = process_response(rendered.model_dump(), self._format_image_name)
         return Document(
             content=content,
             images=images,

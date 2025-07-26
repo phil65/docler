@@ -59,6 +59,7 @@ class DataLabConverter(DocumentConverter[DataLabConfig]):
         languages: list[SupportedLanguage] | None = None,
         *,
         page_range: PageRangeString | None = None,
+        image_path_template: str = "img-{count}.{ext}",
         api_key: str | None = None,
         force_ocr: bool = False,
         use_llm: bool = False,
@@ -67,12 +68,17 @@ class DataLabConverter(DocumentConverter[DataLabConfig]):
 
         Args:
             page_range: Page range(s) to extract, like "1-5,7-10" (1-based)
+            image_path_template: Template for image filenames
             api_key: DataLab API key.
             languages: Languages to use for OCR.
             force_ocr: Whether to force OCR on every page.
             use_llm: Whether to use LLM for enhanced accuracy.
         """
-        super().__init__(languages=languages, page_range=page_range)
+        super().__init__(
+            languages=languages,
+            page_range=page_range,
+            image_path_template=image_path_template,
+        )
         self.api_key = api_key or get_api_key("DATALAB_API_KEY")
         self.force_ocr = force_ocr
         self.use_llm = use_llm
@@ -115,7 +121,7 @@ class DataLabConverter(DocumentConverter[DataLabConfig]):
             rng = shift_page_range(self.page_range, shift=-1) if self.page_range else None
             form["page_range"] = rng
         result = await get_response(form, files, self.api_key)
-        md_content, images = process_response(result)
+        md_content, images = process_response(result, self._format_image_name)
         return Document(
             content=md_content.strip(),
             images=images,

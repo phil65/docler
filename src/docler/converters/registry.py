@@ -29,18 +29,22 @@ class ConverterRegistry:
     def create_default(
         cls,
         languages: list[SupportedLanguage] | None = None,
+        image_path_template: str = "img-{count}.{ext}",
     ) -> ConverterRegistry:
         """Create a registry with all available converters.
 
         Args:
             languages: Languages to use for converters
+            image_path_template: Template for image filenames
         """
         registry = cls()
         for converter_cls in DocumentConverter[Any].get_available_providers():
             if converter_cls.NAME == "aggregated":
                 continue
             try:
-                converter = converter_cls(languages=languages)
+                converter = converter_cls(
+                    languages=languages, image_path_template=image_path_template
+                )
                 registry.register(converter)
             except Exception:
                 logging.exception("Failed to initialize %s", converter_cls.__name__)

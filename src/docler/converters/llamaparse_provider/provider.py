@@ -79,6 +79,7 @@ class LlamaParseConverter(DocumentConverter[LlamaParseConfig]):
         languages: list[SupportedLanguage] | None = None,
         *,
         page_range: PageRangeString | None = None,
+        image_path_template: str = "img-{count}.{ext}",
         api_key: str | None = None,
         adaptive_long_table: bool = True,
         parse_mode: LlamaParseMode = "parse_page_with_llm",
@@ -92,6 +93,7 @@ class LlamaParseConverter(DocumentConverter[LlamaParseConfig]):
         Args:
             languages: List of supported languages
             page_range: Page range(s) to extract, like "1-5,7-10" (1-based)
+            image_path_template: Template for image filenames
             api_key: LlamaParse API key, defaults to LLAMAPARSE_API_KEY env var
             adaptive_long_table: Whether to use adaptive long table
             parse_mode: Parse mode, defaults to "parse_page_with_llm"
@@ -100,7 +102,11 @@ class LlamaParseConverter(DocumentConverter[LlamaParseConfig]):
             continuous_mode: Whether to use continuous mode
             html_tables: Whether to output HTML tables instead of markdown
         """
-        super().__init__(languages=languages, page_range=page_range)
+        super().__init__(
+            languages=languages,
+            page_range=page_range,
+            image_path_template=image_path_template,
+        )
         self.api_key = api_key or get_api_key("LLAMAPARSE_API_KEY")
         self.language = self.languages[0] if self.languages else None
         self.adaptive_long_table = adaptive_long_table
@@ -137,7 +143,9 @@ class LlamaParseConverter(DocumentConverter[LlamaParseConfig]):
             # page_separator=r'<!-- docler:page_break {"next_page":{pageNumber}} -->',
         )
         result = parser.get_json_result(str(path))
-        content_parts, images = process_response(result, self.api_key)
+        content_parts, images = process_response(
+            result, self.api_key, self._format_image_name
+        )
         return Document(
             content="\n\n".join(content_parts),
             images=images,

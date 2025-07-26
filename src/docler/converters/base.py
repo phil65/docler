@@ -48,10 +48,12 @@ class DocumentConverter[TConfig](BaseProvider[TConfig], ABC):
         self,
         languages: list[SupportedLanguage] | None = None,
         page_range: PageRangeString | None = None,
+        image_path_template: str = "img-{count}.{ext}",
     ):
         super().__init__()
         self.languages = languages
         self.page_range = page_range
+        self.image_path_template = image_path_template
 
     def __init_subclass__(cls, **kwargs):
         """Register subclasses automatically when they're defined."""
@@ -81,6 +83,40 @@ class DocumentConverter[TConfig](BaseProvider[TConfig], ABC):
             True if this converter supports the MIME type
         """
         return mime_type in self.get_supported_mime_types()
+
+    def _format_image_name(
+        self,
+        count: int,
+        ext: str,
+        page: int | None = None,
+        **kwargs,
+    ) -> tuple[str, str]:
+        """Format image ID and filename using the template.
+
+        Args:
+            count: Image counter/index
+            ext: File extension (without dot)
+            page: Optional page number
+            **kwargs: Additional template variables
+
+        Returns:
+            Tuple of (image_id, filename)
+        """
+        # Prepare template variables
+        template_vars = {
+            "count": count,
+            "ext": ext,
+            "page": page,
+            **kwargs,
+        }
+
+        # Generate filename using template
+        filename = self.image_path_template.format(**template_vars)
+
+        # Generate image_id by removing extension from filename
+        image_id = filename.rsplit(".", 1)[0] if "." in filename else filename
+
+        return image_id, filename
 
     async def convert_files(self, file_paths: Sequence[StrPath]) -> list[Document]:
         """Convert multiple document files in parallel.
