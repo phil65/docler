@@ -30,109 +30,285 @@
 
 [Read the documentation!](https://phil65.github.io/docler/)
 
+A unified Python library for document conversion and OCR that provides a consistent interface to multiple document processing providers. Extract text, images, and metadata from PDFs, images, and office documents using state-of-the-art OCR and document AI services.
 
-## Markdown Conventions for OCR Output
+## Features
 
-This project utilizes Markdown as the primary, self-contained format for storing OCR results and associated metadata. The goal is to have a single, versionable, human-readable file representing a processed document, simplifying pipeline management and data provenance.
+- **Unified Interface**: Single API for multiple document processing providers
+- **Multiple Providers**: Support for 10+ OCR and document AI services
+- **Rich Output**: Extract text, images, tables, and metadata
+- **Async Support**: Built-in async/await support
+- **Flexible Configuration**: Provider-specific settings and preferences
+- **Page Range Support**: Process specific pages from documents
+- **Multi-language OCR**: Support for 100+ languages across providers
+- **Structured Output**: Standardized markdown with embedded metadata
 
-We employ a hybrid approach, using different mechanisms for different types of metadata:
+## Quick Start
 
-### 1. Metadata Comments (for Non-Visual Markers)
+```python
+import asyncio
+from docler import MistralConverter
 
-For metadata that should *not* affect the visual rendering of the Markdown (like page boundaries or page-level information), we use specially formatted HTML/XML comments.
+async def main():
+    # Use the aggregated converter for automatic provider selection
+    converter = MistralConverter()
 
-**Format:**
+    # Convert a document
+    result = await converter.convert_file("document.pdf")
 
-```
-<!-- prefix:data_type {compact_json_payload} -->
-```
+    print(f"Title: {result.title}")
+    print(f"Content: {result.content[:500]}...")
+    print(f"Images: {len(result.images)} extracted")
+    print(f"Pages: {result.page_count}")
 
-*   **`prefix`**: A namespace identifier to prevent clashes. Defaults to `docler`.
-*   **`data_type`**: A string indicating the kind of metadata (e.g., `page_break`, `page_meta`).
-*   **`{compact_json_payload}`**: A standard JSON object containing the metadata key-value pairs, serialized compactly (no unnecessary whitespace, keys sorted).
-
-**Defined Types:**
-
-*   **`page_break`**: Marks the transition *to* the specified page number. Placed immediately *before* the content of the new page.
-    *   Example Payload: `{"next_page": 2}`
-    *   Example Comment: `<!-- docler:page_break {"next_page":2} -->`
-*   **`page_meta`**: Contains metadata specific to a page (e.g., dimensions, confidence). Often placed near the beginning of the page's content or alongside the `page_break` comment.
-    *   Example Payload: `{"page_num": 1, "width": 612, "height": 792, "confidence": 0.98}`
-    *   Example Comment: `<!-- docler:page_meta {"confidence":0.98,"height":792,"page_num":1,"width":612} -->`
-
-### 2. HTML Figures (for Images and Diagrams)
-
-For visual elements like images or diagrams, especially when they require richer metadata (like source code or bounding boxes), we use standard HTML structures within the Markdown. This allows direct association of metadata and handles complex data like code snippets gracefully.
-
-**Structure:**
-
-We typically use an HTML `<figure>` element:
-
-```html
-<figure data-docler-type="diagram" data-diagram-id="sysarch-01">
-  <img src="images/system_architecture.png"
-       alt="System Architecture Diagram"
-       data-page-num="5"
-       style="max-width: 100%; height: auto;"
-       >
-  <figcaption>Figure 2: High-level system data flow.</figcaption>
-  <script type="text/docler-mermaid">
-    graph LR
-        A[Data Ingest] --> B(Processing Queue);
-        B --> C{Main Processor};
-        D --> F(API Endpoint);
-  </script>
-</figure>
+asyncio.run(main())
 ```
 
-*   **`<figure>`**: The container element.
-    *   `data-docler-type`: Indicates the type of figure (e.g., `image`, `diagram`).
-    *   Other `data-*` attributes can be added for figure-level metadata.
-*   **`<img>`**: The visual representation.
-    *   `src`, `alt`: Standard attributes.
-    *   `data-*`: Used for image-specific metadata like `data-page-num`
-    *   `style`: Optional for basic presentation.
-*   **`<figcaption>`**: Optional standard HTML caption.
-*   **`<script type="text/docler-...">`**: Used to embed source code or other complex textual data.
-    *   The `type` attribute is custom (e.g., `text/docler-mermaid`, `text/docler-latex`) so browsers ignore it.
-    *   The raw code/text is placed inside, preserving formatting.
+## Available OCR Converters
 
-### Rationale
+### Cloud API Providers
 
-*   **Comments** are used for page breaks and metadata because they are guaranteed *not* to interfere with Markdown rendering, ensuring purely structural information remains invisible.
-*   **HTML Figures** are used for images/diagrams because HTML provides standard ways (`data-*`, nested elements like `<script>`) to directly associate rich, potentially complex or multi-line metadata (like source code) with the visual element itself.
+#### Azure Document Intelligence
 
-### Utilities
+```python
+from docler import AzureConverter
 
-Helper functions for creating and parsing these metadata comments and structures are available in `mkdown`.
+converter = AzureConverter(
+    endpoint="your-endpoint",
+    api_key="your-key",
+    model="prebuilt-layout"
+)
+```
 
-### Standardized Metadata Types
+#### Mistral OCR
 
-The library provides standardized metadata types for common use cases:
+```python
+from docler import MistralConverter
 
-1. **Page Breaks**: Use `create_page_break()` function to create page transitions:
-   ```python
-   from mkdown import create_page_break
+converter = MistralConverter(
+    api_key="your-key",
+    languages=["en", "fr", "de"]
+)
+```
 
-   # Create a page break marker for page 2
-   page_break = create_page_break(next_page=2)
-   # <!-- docler:page_break {"next_page":2} -->
-   ```
+#### LlamaParse
 
-2. **Chunk Boundaries**: Use `create_chunk_boundary()` function to mark semantic chunks in a document:
-   ```python
-   from mkdown import create_chunk_boundary
+```python
+from docler import LlamaParseConverter
 
-   # Create a chunk boundary marker with metadata
-   chunk_marker = create_chunk_boundary(
-       chunk_id=1,
-       start_line=10,
-       end_line=25,
-       keywords=["introduction", "overview"],
-       token_count=350,
-   )
-   # <!-- docler:chunk_boundary {"chunk_id":1,"end_line":25,"keywords":["introduction","overview"],"start_line":10,"token_count":350} -->
-   ```
+converter = LlamaParseConverter(
+    api_key="your-key",
+    adaptive_long_table=True
+)
+```
 
-## SOON:
-FastAPI demo (bring your own keys) on https://contexter.net
+#### Upstage Document AI
+
+```python
+from docler import UpstageConverter
+
+converter = UpstageConverter(
+    api_key="your-key",
+    chart_recognition=True
+)
+```
+
+#### DataLab
+
+```python
+from docler import DataLabConverter
+
+converter = DataLabConverter(
+    api_key="your-key",
+    use_llm=False  # Enable for higher accuracy
+)
+```
+
+### Local/Self-Hosted Providers
+
+#### Marker
+
+```python
+from docler import MarkerConverter
+
+converter = MarkerConverter(
+    dpi=192,
+    use_llm=True,  # Requires local LLM setup
+    llm_provider="ollama"
+)
+```
+
+#### Docling
+
+```python
+from docler import DoclingConverter
+
+converter = DoclingConverter(
+    ocr_engine="easy_ocr",
+    image_scale=2.0
+)
+```
+
+#### Docling Remote
+
+```python
+from docler import DoclingRemoteConverter
+
+converter = DoclingRemoteConverter(
+    endpoint="http://localhost:5001",
+    pdf_backend="dlparse_v4"
+)
+```
+
+#### MarkItDown (Microsoft)
+
+```python
+from docler import MarkItDownConverter
+
+converter = MarkItDownConverter()
+```
+
+### LLM-Based Providers
+
+#### LLM Converter
+
+```python
+from docler import LLMConverter
+
+converter = LLMConverter(
+    model="gpt-4o",  # or claude-3-5-sonnet, etc.
+    system_prompt="Extract text preserving formatting..."
+)
+```
+
+## Provider Comparison
+
+| Provider | Cost/Page | Local | API Required | Best For |
+|----------|-----------|-------|--------------|----------|
+| **Azure** | $0.0096 | ❌ | ✅ | Enterprise forms, invoices |
+| **Mistral** | Variable | ❌ | ✅ | High-quality text extraction |
+| **LlamaParse** | $0.0045 | ❌ | ✅ | Complex layouts, academic papers |
+| **Upstage** | $0.01 | ❌ | ✅ | Charts, presentations |
+| **DataLab** | $0.0015 | ❌ | ✅ | Cost-effective processing |
+| **Marker** | Free | ✅ | ❌ | Privacy-sensitive documents |
+| **Docling** | Free | ✅ | ❌ | Open-source processing |
+| **MarkItDown** | Free | ✅ | ❌ | Office documents |
+| **LLM** | Variable | ❌ | ✅ | Latest AI capabilities |
+
+## Advanced Usage
+
+### Directory Processing
+
+Process entire directories with progress tracking:
+
+```python
+from docler import DirectoryConverter, MarkerConverter
+
+base_converter = MarkerConverter()
+dir_converter = DirectoryConverter(base_converter, chunk_size=10)
+
+# Convert all supported files
+results = await dir_converter.convert("./documents/")
+
+# Or with progress tracking
+async for state in dir_converter.convert_with_progress("./documents/"):
+    print(f"Progress: {state.processed_files}/{state.total_files}")
+    print(f"Current: {state.current_file}")
+    if state.errors:
+        print(f"Errors: {len(state.errors)}")
+```
+
+### Page Range Processing
+
+Extract specific pages from documents:
+
+```python
+# Extract pages 1-5 and 10-15
+converter = MistralConverter(page_range="1-5,10-15")
+result = await converter.convert_file("large_document.pdf")
+```
+
+### Batch Processing
+
+Process multiple files efficiently:
+
+```python
+files = ["doc1.pdf", "doc2.png", "doc3.docx"]
+results = await converter.convert_files(files)
+
+for file, result in zip(files, results):
+    print(f"{file}: {len(result.content)} characters extracted")
+```
+
+## Output Format
+
+All converters return a standardized `Document` object with:
+
+```python
+class Document:
+    content: str           # Extracted text in markdown format
+    images: list[Image]    # Extracted images with metadata
+    title: str            # Document title
+    source_path: str      # Original file path
+    mime_type: str        # File MIME type
+    metadata: dict        # Provider-specific metadata
+    page_count: int       # Number of pages processed
+```
+
+The markdown content includes standardized metadata for page breaks and structure:
+
+```markdown
+<!-- docler:page_break {"next_page":1} -->
+# Document Title
+
+Content from page 1...
+
+<!-- docler:page_break {"next_page":2} -->
+More content from page 2...
+```
+
+## Installation
+
+```bash
+# Basic installation
+pip install docler
+
+# With specific provider dependencies
+pip install docler[azure]      # Azure Document Intelligence
+pip install docler[mistral]    # Mistral OCR
+pip install docler[marker]     # Marker PDF processing
+pip install docler[all]        # All providers
+```
+
+## Environment Variables
+
+Configure API keys via environment variables:
+
+```bash
+export AZURE_DOC_INTELLIGENCE_ENDPOINT="your-endpoint"
+export AZURE_DOC_INTELLIGENCE_KEY="your-key"
+export MISTRAL_API_KEY="your-key"
+export LLAMAPARSE_API_KEY="your-key"
+export UPSTAGE_API_KEY="your-key"
+export DATALAB_API_KEY="your-key"
+```
+
+## Contributing
+
+We welcome contributions! See our [contributing guidelines](CONTRIBUTING.md) for details.
+
+## License
+
+MIT License - see [LICENSE](LICENSE) for details.
+
+## Links
+
+- **Documentation**: https://phil65.github.io/docler/
+- **PyPI**: https://pypi.org/project/docler/
+- **GitHub**: https://github.com/phil65/docler/
+- **Issues**: https://github.com/phil65/docler/issues
+- **Discussions**: https://github.com/phil65/docler/discussions
+
+---
+
+**Coming Soon**: FastAPI demo with bring-your-own-keys on https://contexter.net
