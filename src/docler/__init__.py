@@ -18,7 +18,7 @@ from docler.converters.markitdown_provider import MarkItDownConverter
 from docler.converters.mistral_provider import MistralConverter
 from docler.converters.upstage_provider import UpstageConverter
 
-__version__ = "0.4.17"
+__version__ = "0.4.18"
 
 __all__ = [
     "AggregatedConverter",
