@@ -133,14 +133,27 @@ class DocumentConverter[TConfig](BaseProvider[TConfig], ABC):
 
         # For local files, convert directly
         if path.protocol in self.SUPPORTED_PROTOCOLS:
-            return await self._convert_path_threaded(path, mime_type)
+            document = await self._convert_path_threaded(path, mime_type)
+        else:
+            # For remote files, download to temporary file first
+            content = await read_path(path, mode="rb")
+            with tempfile.NamedTemporaryFile(suffix=path.suffix) as temp_file:
+                temp_path = upath.UPath(temp_file.name)
+                temp_path.write_bytes(content)
+                document = await self._convert_path_threaded(temp_path, mime_type)
 
-        # For remote files, download to temporary file first
-        content = await read_path(path, mode="rb")
-        with tempfile.NamedTemporaryFile(suffix=path.suffix) as temp_file:
-            temp_path = upath.UPath(temp_file.name)
-            temp_path.write_bytes(content)
-            return await self._convert_path_threaded(temp_path, mime_type)
+        # Inject conversion cost into metadata
+        if self.price_per_page is not None and document.page_count > 0:
+            total_cost = self.price_per_page * document.page_count
+            if document.metadata is None:
+                document.metadata = {}
+            document.metadata.update({
+                "conversion_cost_usd": total_cost,
+                "price_per_page_usd": self.price_per_page,
+                "pages_processed": document.page_count,
+            })
+
+        return document
 
     async def _convert_path_threaded(
         self,
