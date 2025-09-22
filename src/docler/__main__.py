@@ -69,11 +69,6 @@ def api(
     reload: bool = typer.Option(False, help="Enable auto-reload on file changes"),
 ):
     """Start the Docler API server."""
-    # Add the parent directory to sys.path to ensure imports work correctly
-    parent_dir = str(pathlib.Path(__file__).resolve().parent.parent.parent)
-    if parent_dir not in sys.path:
-        sys.path.insert(0, parent_dir)
-
     try:
         # Lazy import to avoid unnecessary dependencies if not using the API
         import uvicorn
@@ -89,6 +84,37 @@ def api(
         )
     except ImportError as e:
         msg = f"Failed to import API components: {e}. Is the 'server' extra installed?"
+        logger.exception(msg)
+        raise typer.Exit(1) from e
+    except KeyboardInterrupt:
+        logger.info("Shutting down...")
+
+
+@cli.command()
+def mcp(
+    transport: str = typer.Option("stdio", help="Transport protocol to use"),
+    host: str = typer.Option("0.0.0.0", help="Host to bind the server to"),
+    port: int = typer.Option(8000, help="Port to bind the server to"),
+):
+    """Start the MCP server."""
+    # Validate transport choice
+    valid_transports = ["stdio", "sse", "streamable-http"]
+    if transport not in valid_transports:
+        typer.echo(
+            f"Error: Invalid transport '{transport}'. Choose from: {', '.join(valid_transports)}"
+        )
+        raise typer.Exit(1)
+
+    try:
+        # Lazy import to avoid unnecessary dependencies if not using MCP
+        from docler_mcp.server import mcp as mcp_server
+
+        if transport == "stdio":
+            mcp_server.run(transport=transport)
+        else:
+            mcp_server.run(transport=transport, host=host, port=port)
+    except ImportError as e:
+        msg = f"Failed to import MCP components: {e}. Is the 'mcp' extra installed?"
         logger.exception(msg)
         raise typer.Exit(1) from e
     except KeyboardInterrupt:
