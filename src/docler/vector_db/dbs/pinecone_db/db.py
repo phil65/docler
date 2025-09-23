@@ -19,7 +19,7 @@ from docler.vector_db.dbs.pinecone_db.utils import (
 
 if TYPE_CHECKING:
     import numpy as np
-    from pinecone.control.pinecone_asyncio import _IndexAsyncio as IndexAsyncio
+    from pinecone.db_data import _IndexAsyncio as IndexAsyncio
 
 
 logger = get_logger(__name__)
