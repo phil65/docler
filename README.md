@@ -2,8 +2,6 @@
 
 [![PyPI License](https://img.shields.io/pypi/l/docler.svg)](https://pypi.org/project/docler/)
 [![Package status](https://img.shields.io/pypi/status/docler.svg)](https://pypi.org/project/docler/)
-[![Daily downloads](https://img.shields.io/pypi/dd/docler.svg)](https://pypi.org/project/docler/)
-[![Weekly downloads](https://img.shields.io/pypi/dw/docler.svg)](https://pypi.org/project/docler/)
 [![Monthly downloads](https://img.shields.io/pypi/dm/docler.svg)](https://pypi.org/project/docler/)
 [![Distribution format](https://img.shields.io/pypi/format/docler.svg)](https://pypi.org/project/docler/)
 [![Wheel availability](https://img.shields.io/pypi/wheel/docler.svg)](https://pypi.org/project/docler/)
@@ -21,11 +19,8 @@
 [![Github last commit](https://img.shields.io/github/last-commit/phil65/docler)](https://github.com/phil65/docler/commits)
 [![Github release date](https://img.shields.io/github/release-date/phil65/docler)](https://github.com/phil65/docler/releases)
 [![Github language count](https://img.shields.io/github/languages/count/phil65/docler)](https://github.com/phil65/docler)
-[![Github commits this week](https://img.shields.io/github/commit-activity/w/phil65/docler)](https://github.com/phil65/docler)
 [![Github commits this month](https://img.shields.io/github/commit-activity/m/phil65/docler)](https://github.com/phil65/docler)
-[![Github commits this year](https://img.shields.io/github/commit-activity/y/phil65/docler)](https://github.com/phil65/docler)
 [![Package status](https://codecov.io/gh/phil65/docler/branch/main/graph/badge.svg)](https://codecov.io/gh/phil65/docler/)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![PyUp](https://pyup.io/repos/github/phil65/docler/shield.svg)](https://pyup.io/repos/github/phil65/docler/)
 
 [Read the documentation!](https://phil65.github.io/docler/)
