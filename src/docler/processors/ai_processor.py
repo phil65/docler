@@ -8,7 +8,6 @@ from schemez import Schema
 from docler.common_types import DEFAULT_PROOF_READER_MODEL
 from docler.configs.chunker_configs import (
     AiChunkerConfig,
-    ChunkerConfig,
     LlamaIndexChunkerConfig,
     MarkdownChunkerConfig,
     TokenAwareChunkerConfig,
@@ -24,6 +23,7 @@ from docler.utils import add_line_numbers
 
 
 if TYPE_CHECKING:
+    from docler.configs.chunker_configs import ChunkerConfig
     from docler.configs.file_db_configs import ChunkerShorthand
 
 

@@ -10,11 +10,7 @@ from mkdown import Document, Image, create_image_reference, create_page_break
 import requests
 import upath
 
-from docler.configs.converter_configs import (
-    UpstageCategory,
-    UpstageConfig,
-    UpstageOCRType,
-)
+from docler.configs.converter_configs import UpstageConfig
 from docler.converters.base import DocumentConverter
 from docler.pdf_utils import extract_pdf_pages
 from docler.utils import get_api_key
@@ -24,6 +20,7 @@ if TYPE_CHECKING:
     from schemez import MimeType
 
     from docler.common_types import PageRangeString, StrPath, SupportedLanguage
+    from docler.configs.converter_configs import UpstageCategory, UpstageOCRType
 
 
 # API endpoints

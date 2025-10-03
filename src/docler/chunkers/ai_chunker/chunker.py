@@ -4,8 +4,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, ClassVar
 
-from mkdown import TextChunk
-
 from docler.chunkers.ai_chunker.models import Chunk, Chunks
 from docler.chunkers.ai_chunker.utils import add_line_numbers, create_text_chunk
 from docler.chunkers.base import TextChunker
@@ -18,7 +16,7 @@ from docler.configs.chunker_configs import (
 
 
 if TYPE_CHECKING:
-    from mkdown import Document
+    from mkdown import Document, TextChunk
 
 
 class AIChunker(TextChunker[AiChunkerConfig]):

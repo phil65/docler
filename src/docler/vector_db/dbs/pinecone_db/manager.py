@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, ClassVar, Literal, cast
 
 from pydantic import SecretStr
 
-from docler.configs.vector_db_configs import PineconeCloud, PineconeConfig, PineconeRegion
+from docler.configs.vector_db_configs import PineconeConfig
 from docler.utils import get_api_key
 from docler.vector_db.base import BaseVectorDB
 from docler.vector_db.base_manager import VectorManagerBase
@@ -15,6 +15,7 @@ from docler.vector_db.dbs.pinecone_db.utils import to_vector_store_info
 
 
 if TYPE_CHECKING:
+    from docler.configs.vector_db_configs import PineconeCloud, PineconeRegion
     from docler.models import VectorStoreInfo
 
 

@@ -4,10 +4,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, ClassVar
 
-from mkdown import Document, Image
+from mkdown import Document
 import upath
 
-from docler.configs.converter_configs import AzureConfig, AzureFeatureFlag, AzureModel
+from docler.configs.converter_configs import AzureConfig
 from docler.converters.azure_provider.utils import (
     get_metadata,
     replace_page_breaks,
@@ -22,9 +22,11 @@ from docler.utils import get_api_key
 
 if TYPE_CHECKING:
     from azure.ai.documentintelligence.models import AnalyzeResult
+    from mkdown import Image
     from schemez import MimeType
 
     from docler.common_types import PageRangeString, StrPath, SupportedLanguage
+    from docler.configs.converter_configs import AzureFeatureFlag, AzureModel
 
 logger = get_logger(__name__)
 

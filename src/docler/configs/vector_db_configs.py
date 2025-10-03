@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Annotated, Literal
 
-from pydantic import Field, HttpUrl, SecretStr
+from pydantic import Field, HttpUrl, SecretStr  # noqa: TC002
 from pydantic.functional_validators import model_validator
 
 from docler.provider import ProviderConfig

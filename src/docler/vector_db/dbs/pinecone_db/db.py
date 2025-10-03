@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any, ClassVar
 import uuid
 
 from docler.log import get_logger
-from docler.models import SearchResult, Vector
+from docler.models import Vector
 from docler.utils import get_api_key
 from docler.vector_db.base_backend import VectorStoreBackend
 from docler.vector_db.dbs.pinecone_db.utils import (
@@ -20,6 +20,8 @@ from docler.vector_db.dbs.pinecone_db.utils import (
 if TYPE_CHECKING:
     import numpy as np
     from pinecone.db_data import _IndexAsyncio as IndexAsyncio
+
+    from docler.models import SearchResult
 
 
 logger = get_logger(__name__)

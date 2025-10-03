@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING, ClassVar
 from mkdown import Document, Image, create_image_reference, create_page_break
 import upath
 
-from docler.configs.converter_configs import DoclingConverterConfig, DoclingEngine
+from docler.configs.converter_configs import DoclingConverterConfig
 from docler.converters.base import DocumentConverter
 from docler.converters.docling_provider.utils import convert_languages, parse_page_range
 from docler.log import get_logger
@@ -19,9 +19,11 @@ from docler.utils import pil_to_bytes
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
+    from docling.datamodel.pipeline_options import OcrOptions
     from schemez import MimeType
 
     from docler.common_types import PageRangeString, StrPath, SupportedLanguage
+    from docler.configs.converter_configs import DoclingEngine
 
 PAGE_BREAK_MARKER = "<!-- PageBreak -->"
 logger = get_logger(__name__)
@@ -66,7 +68,6 @@ class DoclingConverter(DocumentConverter[DoclingConverterConfig]):
         from docling.datamodel.pipeline_options import (
             EasyOcrOptions,
             OcrMacOptions,
-            OcrOptions,
             PdfPipelineOptions,
             RapidOcrOptions,
             TesseractCliOcrOptions,

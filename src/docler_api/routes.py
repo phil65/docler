@@ -7,7 +7,7 @@ import tempfile
 from typing import TYPE_CHECKING, Annotated, Any
 
 import anyenv
-from fastapi import Body, File, Form, HTTPException, Query, UploadFile
+from fastapi import Body, File, Form, HTTPException, Query
 from pydantic import TypeAdapter
 import upath
 
@@ -17,6 +17,8 @@ from docler.pdf_utils import decrypt_pdf, get_pdf_info
 
 
 if TYPE_CHECKING:
+    from fastapi import UploadFile
+
     from docler.configs.chunker_configs import ChunkerConfig
 
 

@@ -19,6 +19,7 @@ from docler.configs.annotator_configs import (
 
 
 if TYPE_CHECKING:
+    from llmling_agent import StructuredAgent
     from mkdown import Image
 
     from docler.models import ChunkedDocument
@@ -92,7 +93,7 @@ class AIImageAnnotator[TMetadata](Annotator[AIImageAnnotatorConfig]):
         Returns:
             Image with added description and metadata
         """
-        from llmling_agent import Agent, ImageBase64Content, StructuredAgent
+        from llmling_agent import Agent, ImageBase64Content
 
         if image.description and image.metadata:
             return image

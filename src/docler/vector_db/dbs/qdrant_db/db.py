@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any, ClassVar, Literal
 import uuid
 
 from docler.log import get_logger
-from docler.models import SearchResult, Vector
+from docler.models import Vector
 from docler.vector_db.base_backend import VectorStoreBackend
 from docler.vector_db.dbs.qdrant_db.utils import (
     get_query,
@@ -17,6 +17,8 @@ from docler.vector_db.dbs.qdrant_db.utils import (
 
 if TYPE_CHECKING:
     import numpy as np
+
+    from docler.models import SearchResult
 
 
 logger = get_logger(__name__)

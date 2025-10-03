@@ -8,8 +8,6 @@ from docler.common_types import (
     MAC_CODES,
     RAPID_CODES,
     TESSERACT_CODES,
-    PageRangeString,
-    SupportedLanguage,
 )
 
 
@@ -21,6 +19,8 @@ if TYPE_CHECKING:
         TesseractCliOcrOptions,
         TesseractOcrOptions,
     )
+
+    from docler.common_types import PageRangeString, SupportedLanguage
 
 
 def convert_languages(

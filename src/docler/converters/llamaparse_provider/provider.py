@@ -8,7 +8,7 @@ import anyenv
 from mkdown import Document
 import upath
 
-from docler.configs.converter_configs import LlamaParseConfig, LlamaParseMode
+from docler.configs.converter_configs import LlamaParseConfig
 from docler.converters.base import DocumentConverter
 from docler.converters.llamaparse_provider.utils import process_response
 from docler.log import get_logger
@@ -19,6 +19,7 @@ if TYPE_CHECKING:
     from schemez import MimeType
 
     from docler.common_types import PageRangeString, StrPath, SupportedLanguage
+    from docler.configs.converter_configs import LlamaParseMode
 
 
 logger = get_logger(__name__)

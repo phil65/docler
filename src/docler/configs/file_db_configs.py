@@ -4,27 +4,27 @@ from __future__ import annotations
 
 from typing import Annotated, Literal
 
-from pydantic import Field, SecretStr
+from pydantic import Field, SecretStr  # noqa: TC002
 
 from docler.configs.chunker_configs import (
     BaseChunkerConfig,
-    ChunkerConfig,
-    ChunkerShorthand,
+    ChunkerConfig,  # noqa: TC001
+    ChunkerShorthand,  # noqa: TC001
 )
 from docler.configs.converter_configs import (
     BaseConverterConfig,
-    ConverterConfig,
-    ConverterShorthand,
+    ConverterConfig,  # noqa: TC001
+    ConverterShorthand,  # noqa: TC001
 )
 from docler.configs.embedding_configs import (
     BaseEmbeddingConfig,
-    EmbeddingConfig,
-    EmbeddingShorthand,
+    EmbeddingConfig,  # noqa: TC001
+    EmbeddingShorthand,  # noqa: TC001
 )
 from docler.configs.vector_db_configs import (
     BaseVectorStoreConfig,
-    VectorDBShorthand,
-    VectorStoreConfig,
+    VectorDBShorthand,  # noqa: TC001
+    VectorStoreConfig,  # noqa: TC001
 )
 from docler.provider import ProviderConfig
 

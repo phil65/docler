@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, ClassVar
 from mkdown import Document
 import upath
 
-from docler.common_types import DEFAULT_CONVERTER_MODEL, PageRangeString
+from docler.common_types import DEFAULT_CONVERTER_MODEL
 from docler.configs.converter_configs import (
     LLM_SYSTEM_PROMPT,
     LLM_USER_PROMPT,
@@ -21,7 +21,7 @@ if TYPE_CHECKING:
     from llmling_agent.models.content import BaseContent
     from schemez import MimeType
 
-    from docler.common_types import StrPath, SupportedLanguage
+    from docler.common_types import PageRangeString, StrPath, SupportedLanguage
 
 
 logger = get_logger(__name__)

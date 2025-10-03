@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from io import BytesIO
 import re
-from re import Match
 from typing import TYPE_CHECKING, ClassVar
 
 from mkdown import Document, create_page_break
@@ -17,6 +16,8 @@ from docler.pdf_utils import extract_pdf_pages
 
 
 if TYPE_CHECKING:
+    from re import Match
+
     from schemez import MimeType
 
     from docler.common_types import PageRangeString, StrPath, SupportedLanguage

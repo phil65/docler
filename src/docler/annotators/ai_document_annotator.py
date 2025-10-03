@@ -18,6 +18,8 @@ from docler.configs.annotator_configs import (
 
 
 if TYPE_CHECKING:
+    from llmling_agent import StructuredAgent
+
     from docler.models import ChunkedDocument
 
 
@@ -85,7 +87,7 @@ class AIDocumentAnnotator[TMetadata](Annotator[AIDocumentAnnotatorConfig]):
         Returns:
             Document with enhanced metadata
         """
-        from llmling_agent import Agent, StructuredAgent
+        from llmling_agent import Agent
 
         agent: StructuredAgent[None, TMetadata] = Agent[None](  # type: ignore
             model=self.model,

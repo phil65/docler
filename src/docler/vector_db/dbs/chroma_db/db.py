@@ -6,13 +6,15 @@ from typing import TYPE_CHECKING, Any, ClassVar, Literal, cast
 import uuid
 
 from docler.log import get_logger
-from docler.models import SearchResult, Vector
+from docler.models import Vector
 from docler.vector_db.base_backend import VectorStoreBackend
 from docler.vector_db.dbs.chroma_db.utils import to_search_results
 
 
 if TYPE_CHECKING:
     import numpy as np
+
+    from docler.models import SearchResult
 
 
 logger = get_logger(__name__)

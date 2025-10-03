@@ -5,11 +5,12 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, Literal
 
-from mkdown import Document, TextChunk
+from mkdown import Document
 from pydantic import BaseModel, Field
 
 
 if TYPE_CHECKING:
+    from mkdown import TextChunk
     import numpy as np
 
 

@@ -11,14 +11,14 @@ from typing import TYPE_CHECKING, Annotated, Literal
 #     TesseractCliOcrOptions,
 #     TesseractOcrOptions,
 # )
-from pydantic import Field, HttpUrl, SecretStr
+from pydantic import Field, HttpUrl, SecretStr  # noqa: TC002
 from pydantic_settings import SettingsConfigDict
 from schemez import ModelIdentifier  # noqa: TC002
 
 from docler.common_types import (
     DEFAULT_CONVERTER_MODEL,
-    PageRangeString,
-    SupportedLanguage,
+    PageRangeString,  # noqa: TC001
+    SupportedLanguage,  # noqa: TC001
 )
 from docler.provider import ProviderConfig
 
