@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, ClassVar, Literal, cast
 
 from pydantic import HttpUrl, SecretStr
+from upathtools import to_upath
 
 from docler.configs.vector_db_configs import QdrantConfig
 from docler.process_runner import ProcessRunner
@@ -106,13 +107,13 @@ class QdrantVectorManager(VectorManagerBase[QdrantConfig]):
         Returns:
             A ProcessRunner instance
         """
-        import os
         import platform
 
+        path_obj = to_upath(path)
         # Handle Windows path conversion
         if platform.system() == "Windows":
             # Convert Windows path to Docker-compatible path
-            if os.path.isabs(path):  # noqa: PTH117
+            if path_obj.is_absolute():
                 volume_path = str(path).replace("\\", "/")
                 # If it's a drive letter, convert C:\ to /c/
                 if ":" in volume_path:

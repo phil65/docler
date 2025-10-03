@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, ClassVar
 
 import anyenv
 from mkdown import Document
-import upath
+from upathtools import to_upath
 
 from docler.configs.converter_configs import LlamaParseConfig
 from docler.converters.base import DocumentConverter
@@ -121,7 +121,7 @@ class LlamaParseConverter(DocumentConverter[LlamaParseConfig]):
         """Convert a document using LlamaParse."""
         from llama_parse import LlamaParse, ResultType
 
-        path = upath.UPath(file_path)
+        path = to_upath(file_path)
         parser = LlamaParse(
             api_key=self.api_key,
             result_type=ResultType.MD,

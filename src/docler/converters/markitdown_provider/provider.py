@@ -7,7 +7,7 @@ import re
 from typing import TYPE_CHECKING, ClassVar
 
 from mkdown import Document, create_page_break
-import upath
+from upathtools import to_upath
 
 from docler.configs.converter_configs import MarkItDownConfig
 from docler.converters.base import DocumentConverter
@@ -95,7 +95,7 @@ class MarkItDownConverter(DocumentConverter[MarkItDownConfig]):
         Raises:
             ValueError: If conversion fails.
         """
-        path = upath.UPath(file_path)
+        path = to_upath(file_path)
         try:
             if mime_type == "application/pdf" and self.page_range:
                 # For PDFs with page range:

@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, ClassVar
 
 from mkdown import Document
-import upath
+from upathtools import to_upath
 
 from docler.configs.converter_configs import AzureConfig
 from docler.converters.azure_provider.utils import (
@@ -142,7 +142,7 @@ class AzureConverter(DocumentConverter[AzureConfig]):
         )
         from azure.core.exceptions import HttpResponseError
 
-        path = upath.UPath(file_path)
+        path = to_upath(file_path)
         features = [getattr(DocumentAnalysisFeature, f) for f in self.features]
         try:
             with path.open("rb") as f:

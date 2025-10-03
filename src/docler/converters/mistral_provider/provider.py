@@ -5,9 +5,8 @@ from __future__ import annotations
 import base64
 from typing import TYPE_CHECKING, ClassVar
 
-# Import the markdown utility
 from mkdown import Document, Image, create_image_reference, create_page_break
-import upath
+from upathtools import to_upath
 
 from docler.configs.converter_configs import MistralConfig
 from docler.converters.base import DocumentConverter
@@ -17,9 +16,8 @@ from docler.utils import get_api_key
 
 
 if TYPE_CHECKING:
-    import pathlib
-
     from schemez import MimeType
+    import upath
 
     from docler.common_types import PageRangeString, StrPath, SupportedLanguage
 
@@ -71,7 +69,7 @@ class MistralConverter(DocumentConverter[MistralConfig]):
 
     def _convert_path_sync(self, file_path: StrPath, mime_type: MimeType) -> Document:
         """Implementation of abstract method."""
-        local_file = upath.UPath(file_path)
+        local_file = to_upath(file_path)
         data = local_file.read_bytes()
 
         if mime_type.startswith("image/"):
@@ -85,7 +83,7 @@ class MistralConverter(DocumentConverter[MistralConfig]):
     def _process_pdf(
         self,
         file_data: bytes,
-        file_path: pathlib.Path,
+        file_path: upath.UPath,
         mime_type: MimeType,
     ) -> Document:
         """Process a PDF file using Mistral OCR.
@@ -150,7 +148,7 @@ class MistralConverter(DocumentConverter[MistralConfig]):
     def _process_image(
         self,
         file_data: bytes,
-        file_path: pathlib.Path,
+        file_path: upath.UPath,
         mime_type: MimeType,
     ) -> Document:
         """Process an image file using Mistral OCR.

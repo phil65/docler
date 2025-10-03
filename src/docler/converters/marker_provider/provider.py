@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, ClassVar, Literal
 
 from mkdown import Document
-import upath
+from upathtools import to_upath
 
 from docler.configs.converter_configs import MarkerConfig
 from docler.converters.base import DocumentConverter
@@ -107,7 +107,7 @@ class MarkerConverter(DocumentConverter[MarkerConfig]):
         from marker.converters.pdf import PdfConverter
         from marker.models import create_model_dict
 
-        local_file = upath.UPath(file_path)
+        local_file = to_upath(file_path)
         converter = PdfConverter(
             artifact_dict=create_model_dict(),
             llm_service=PROVIDERS.get(self.llm_provider) if self.llm_provider else None,  # pyright: ignore

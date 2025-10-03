@@ -6,13 +6,14 @@ from dataclasses import dataclass, field
 import mimetypes
 from typing import TYPE_CHECKING
 
-from upathtools import list_files
+from upathtools import list_files, to_upath
 
 
 if TYPE_CHECKING:
     from collections.abc import AsyncIterator
 
     from mkdown import Document
+    import upath
 
     from docler.common_types import StrPath
     from docler.converters.base import DocumentConverter
@@ -115,10 +116,8 @@ class DirectoryConverter:
         Raises:
             FileNotFoundError: If directory doesn't exist.
         """
-        import upath
-
         # Get and filter files
-        base_dir = upath.UPath(directory)
+        base_dir = to_upath(directory)
         if not base_dir.exists():
             msg = f"Directory not found: {directory}"
             raise FileNotFoundError(msg)

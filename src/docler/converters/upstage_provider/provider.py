@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Any, ClassVar
 
 from mkdown import Document, Image, create_image_reference, create_page_break
 import requests
-import upath
+from upathtools import to_upath
 
 from docler.configs.converter_configs import UpstageConfig
 from docler.converters.base import DocumentConverter
@@ -100,7 +100,7 @@ class UpstageConverter(DocumentConverter[UpstageConfig]):
         Raises:
             ValueError: If conversion fails or response is malformed.
         """
-        path = upath.UPath(file_path)
+        path = to_upath(file_path)
         file_content = path.read_bytes()
         if self.page_range is not None:
             file_content = extract_pdf_pages(file_content, self.page_range)

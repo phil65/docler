@@ -7,7 +7,7 @@ import re
 from typing import TYPE_CHECKING, ClassVar
 
 from mkdown import Document, Image, create_image_reference, create_page_break
-import upath
+from upathtools import to_upath
 
 from docler.configs.converter_configs import DoclingConverterConfig
 from docler.converters.base import DocumentConverter
@@ -123,7 +123,7 @@ class DoclingConverter(DocumentConverter[DoclingConverterConfig]):
         from docling_core.types.doc.base import ImageRefMode
         from docling_core.types.io import DocumentStream
 
-        pdf_path = upath.UPath(file_path)
+        pdf_path = to_upath(file_path)
         stream = BytesIO(pdf_path.read_bytes())
         source = DocumentStream(name=pdf_path.name, stream=stream)
         page_range = parse_page_range(self.page_range) if self.page_range else None

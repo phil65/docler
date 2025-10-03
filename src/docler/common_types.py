@@ -5,8 +5,10 @@ from __future__ import annotations
 import os
 from typing import Literal
 
+import upath
 
-StrPath = str | os.PathLike[str]
+
+StrPath = str | os.PathLike[str] | upath.UPath
 VectorId = str | int
 SupportedLanguage = Literal["en", "de", "fr", "es", "zh"]
 PageRangeString = str

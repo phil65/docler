@@ -4,11 +4,12 @@ from __future__ import annotations
 
 from abc import ABC
 import mimetypes
+import pathlib
 import tempfile
 from typing import TYPE_CHECKING, ClassVar
 
 import anyenv
-from upathtools import read_path
+from upathtools import read_path, to_upath
 
 from docler.provider import BaseProvider
 
@@ -18,6 +19,7 @@ if TYPE_CHECKING:
 
     from mkdown import Document
     from schemez import MimeType
+    import upath
 
     from docler.common_types import PageRangeString, StrPath, SupportedLanguage
     from docler.configs.converter_configs import ConverterConfig
@@ -113,9 +115,7 @@ class DocumentConverter[TConfig](BaseProvider[TConfig], ABC):
             FileNotFoundError: If the file doesn't exist.
             ValueError: If the file type is not supported.
         """
-        import upath
-
-        path = upath.UPath(file_path)
+        path = to_upath(file_path)
         if not path.exists():
             msg = f"File not found: {file_path}"
             raise FileNotFoundError(msg)
@@ -138,7 +138,7 @@ class DocumentConverter[TConfig](BaseProvider[TConfig], ABC):
             # For remote files, download to temporary file first
             content = await read_path(path, mode="rb")
             with tempfile.NamedTemporaryFile(suffix=path.suffix) as temp_file:
-                temp_path = upath.UPath(temp_file.name)
+                temp_path = pathlib.Path(temp_file.name)
                 temp_path.write_bytes(content)
                 document = await self._convert_path_threaded(temp_path, mime_type)
 
@@ -212,11 +212,10 @@ class DocumentConverter[TConfig](BaseProvider[TConfig], ABC):
         """
         import mimetypes
 
-        import upath
         from upathtools import list_files
 
         # Get directory listing
-        base_dir = upath.UPath(directory)
+        base_dir = to_upath(directory)
         if not base_dir.exists():
             msg = f"Directory not found: {directory}"
             raise FileNotFoundError(msg)

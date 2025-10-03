@@ -5,8 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, ClassVar, Literal
 
 from mkdown import Document
-import upath
-from upathtools import read_path
+from upathtools import read_path, to_upath
 
 from docler.configs.converter_configs import DataLabConfig
 from docler.converters.base import DocumentConverter
@@ -100,7 +99,7 @@ class DataLabConverter(DocumentConverter[DataLabConfig]):
         Raises:
             ValueError: If conversion fails.
         """
-        path = upath.UPath(file_path)
+        path = to_upath(file_path)
         form = {"output_format": "markdown", "paginate": self.add_page_breaks}
         data = await read_path(path, mode="rb")
         files = {"file": (path.name, data, mime_type)}

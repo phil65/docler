@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, ClassVar, Literal
 import anyenv
 import httpx
 from mkdown import Document
-import upath
+from upathtools import to_upath
 
 from docler.configs.converter_configs import DoclingRemoteConfig
 from docler.converters.base import DocumentConverter
@@ -162,7 +162,7 @@ class DoclingRemoteConverter(DocumentConverter[DoclingRemoteConfig]):
         if self.api_key:
             headers["Authorization"] = f"Bearer {self.api_key}"
 
-        path = upath.UPath(file_path)
+        path = to_upath(file_path)
         file_content = await anyenv.run_in_thread(path.read_bytes)
         url = f"{self.endpoint}{CONVERT_FILE}"
         async with httpx.AsyncClient(timeout=60.0) as client:
