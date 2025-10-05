@@ -19,7 +19,6 @@ if TYPE_CHECKING:
 
 
 @pytest.mark.integration
-@pytest.mark.asyncio
 async def test_api_convert_document_with_mistral(resources_dir: Path):
     """Test API convert document with Mistral converter using a PDF file.
 
@@ -81,7 +80,6 @@ async def test_api_convert_document_with_mistral(resources_dir: Path):
 
 
 @pytest.mark.integration
-@pytest.mark.asyncio
 async def test_api_convert_document_with_page_range(resources_dir: Path):
     """Test API convert document with page range."""
     # Check if API key is available
@@ -120,7 +118,6 @@ async def test_api_convert_document_with_page_range(resources_dir: Path):
 
 
 @pytest.mark.integration
-@pytest.mark.asyncio
 async def test_api_always_includes_images_as_base64(resources_dir: Path):
     """Test that the API always includes images as properly encoded base64 strings.
 
@@ -219,7 +216,6 @@ async def test_api_always_includes_images_as_base64(resources_dir: Path):
 
 
 @pytest.mark.integration
-@pytest.mark.asyncio
 async def test_converter_direct_image_handling(resources_dir: Path):
     """Test that the converter itself produces proper bytes before API processing.
 

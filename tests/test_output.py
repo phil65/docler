@@ -52,57 +52,49 @@ async def _test_provider_export(provider_cls, snapshot: SnapshotAssertion):
 
 
 @pytest.mark.integration
-@pytest.mark.asyncio
 async def test_datalab_export(snapshot):
     """Test DataLab provider export functionality."""
     await _test_provider_export(DataLabConverter, snapshot)
 
 
 @pytest.mark.integration
-@pytest.mark.asyncio
 async def test_marker_export(snapshot):
     """Test Marker provider export functionality."""
     await _test_provider_export(MarkerConverter, snapshot)
 
 
 @pytest.mark.integration
-@pytest.mark.asyncio
 async def test_docling_export(snapshot):
     """Test Docling provider export functionality."""
     await _test_provider_export(DoclingConverter, snapshot)
 
 
 @pytest.mark.integration
-@pytest.mark.asyncio
 async def test_upstage_export(snapshot):
     """Test Upstage provider export functionality."""
     await _test_provider_export(UpstageConverter, snapshot)
 
 
 @pytest.mark.integration
-@pytest.mark.asyncio
 async def test_azure_export(snapshot):
     """Test Azure provider export functionality."""
     await _test_provider_export(AzureConverter, snapshot)
 
 
 @pytest.mark.integration
-@pytest.mark.asyncio
 async def test_llamaparse_export(snapshot):
     """Test LlamaParse provider export functionality."""
     await _test_provider_export(LlamaParseConverter, snapshot)
 
 
 @pytest.mark.integration
-@pytest.mark.asyncio
 async def test_mistral_export(snapshot):
     """Test Mistral provider export functionality."""
     await _test_provider_export(MistralConverter, snapshot)
 
 
 # @pytest.mark.integration
-# @pytest.mark.asyncio
-# async def test_docling_remote_export(docker_services: Services, snapshot):
+# # async def test_docling_remote_export(docker_services: Services, snapshot):
 #     """Test DoclingRemote provider export functionality."""
 #     docker_services.wait_until_responsive(
 #         timeout=30.0, pause=0.1, check=lambda: is_responsive("http://localhost:5001")
