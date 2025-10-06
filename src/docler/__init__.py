@@ -1,10 +1,17 @@
-"""Document conversion library supporting multiple providers."""
+"""Docler: Abstractions & Tools for OCR / document processing"""
 
 from __future__ import annotations
 
 from importlib.metadata import version
 
 __version__ = version("docler")
+__title__ = "Docler"
+__description__ = "Abstractions & Tools for OCR / document processing"
+__author__ = "Philipp Temminghoff"
+__author_email__ = "philipptemminghoff@googlemail.com"
+__copyright__ = "Copyright (c) 2025 Philipp Temminghoff"
+__license__ = "MIT"
+__url__ = "https://github.com/phil65/docler"
 
 from docler.converters.base import DocumentConverter
 from docler.converters.dir_converter import Conversion, DirectoryConverter
