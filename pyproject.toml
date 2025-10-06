@@ -124,8 +124,8 @@ lint = [
 ]
 
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["uv_build>=0.8.22"]
+build-backend = "uv_build"
 
 [tool.coverage.report]
 exclude_lines = [
@@ -134,14 +134,6 @@ exclude_lines = [
   "@overload",
   "except ImportError",
   'if __name__ == "__main__":',
-]
-
-[tool.hatch.build.targets.wheel]
-packages = [
-  "src/docler",
-  "src/docler_streamlit",
-  "src/docler_api",
-  "src/docler_mcp",
 ]
 
 [tool.mknodes]
@@ -332,3 +324,11 @@ python-version = "3.12"
 
 [tool.uv]
 default-groups = ["dev", "lint", "docs"]
+
+[tool.uv.build-backend]
+module-name = [
+  "docler",
+  "docler_streamlit",
+  "docler_api",
+  "docler_mcp",
+]
