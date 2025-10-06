@@ -2,6 +2,10 @@
 
 from __future__ import annotations
 
+from importlib.metadata import version
+
+__version__ = version("docler")
+
 from docler.converters.base import DocumentConverter
 from docler.converters.dir_converter import Conversion, DirectoryConverter
 from docler.converters.registry import ConverterRegistry
@@ -18,8 +22,6 @@ from docler.converters.markitdown_provider import MarkItDownConverter
 from docler.converters.mistral_provider import MistralConverter
 from docler.converters.upstage_provider import UpstageConverter
 
-__version__ = "0.4.20"
-
 __all__ = [
     "AggregatedConverter",
     "AzureConverter",
@@ -35,4 +37,5 @@ __all__ = [
     "MarkerConverter",
     "MistralConverter",
     "UpstageConverter",
+    "__version__",
 ]
