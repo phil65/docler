@@ -102,7 +102,7 @@ class AIDocumentAnnotator[TMetadata](Annotator[AIDocumentAnnotatorConfig]):
         )
 
         # Process chunks in batches
-        for batch in batched(document.chunks, self.batch_size):
+        for batch in batched(document.chunks, self.batch_size, strict=False):
             tasks = []
 
             for chunk in batch:

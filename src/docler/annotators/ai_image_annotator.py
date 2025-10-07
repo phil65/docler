@@ -3,11 +3,10 @@
 from __future__ import annotations
 
 from itertools import batched
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING, ClassVar, TypeVar
 
 import anyenv
 from schemez import Schema
-from typing_extensions import TypeVar
 
 from docler.annotators.base import Annotator
 from docler.common_types import DEFAULT_IMAGE_ANNOTATOR_MODEL
@@ -139,7 +138,7 @@ class AIImageAnnotator[TMetadata](Annotator[AIImageAnnotatorConfig]):
             if not chunk.images:
                 continue
 
-            for batch in batched(chunk.images, self.batch_size):
+            for batch in batched(chunk.images, self.batch_size, strict=False):
                 tasks = [self._process_image(img) for img in batch]
                 try:
                     await anyenv.gather(*tasks)
