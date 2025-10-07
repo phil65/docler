@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from itertools import batched
-from typing import TYPE_CHECKING, ClassVar, TypeVar
+from typing import TYPE_CHECKING, ClassVar
 
 import anyenv
 from schemez import Schema
@@ -43,10 +43,9 @@ class DefaultImageMetadata(Schema):
     """Dominant colors in the image."""
 
 
-TMetadata = TypeVar("TMetadata", bound=Schema, default=DefaultImageMetadata)
-
-
-class AIImageAnnotator[TMetadata](Annotator[AIImageAnnotatorConfig]):
+class AIImageAnnotator[TMetadata: Schema = DefaultImageMetadata](
+    Annotator[AIImageAnnotatorConfig]
+):
     """AI-based image annotator.
 
     Analyzes images in chunks and adds descriptions and metadata.

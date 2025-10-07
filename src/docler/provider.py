@@ -4,15 +4,12 @@ from __future__ import annotations
 
 from contextlib import AsyncExitStack
 import importlib.util
-from typing import Any, ClassVar, Self, TypeVar
+from typing import Any, ClassVar, Self
 
 from pydantic import BaseModel, Field, HttpUrl, SecretStr, field_serializer
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from docler.log import get_logger
-
-
-TConfig = TypeVar("TConfig", bound=BaseModel)
 
 
 class ProviderConfig(BaseSettings):
@@ -51,7 +48,7 @@ class ProviderConfig(BaseSettings):
         raise NotImplementedError
 
 
-class BaseProvider[TConfig]:
+class BaseProvider[TConfig: BaseModel]:
     """Base class for configurable providers."""
 
     Config: ClassVar[type[ProviderConfig]]

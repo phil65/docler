@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from itertools import batched
-from typing import TYPE_CHECKING, ClassVar, TypeVar
+from typing import TYPE_CHECKING, ClassVar
 
 import anyenv
 from schemez import Schema
@@ -36,10 +36,7 @@ class DefaultMetadata(Schema):
     """Main entities."""
 
 
-T = TypeVar("T", bound=Schema)
-
-
-class AIDocumentAnnotator[TMetadata](Annotator[AIDocumentAnnotatorConfig]):
+class AIDocumentAnnotator[TMetadata: Schema](Annotator[AIDocumentAnnotatorConfig]):
     """AI-based document and chunk annotator.
 
     Enhances documents and chunks with metadata.
