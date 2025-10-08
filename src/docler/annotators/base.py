@@ -5,6 +5,8 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, ClassVar
 
+from pydantic import BaseModel
+
 from docler.provider import BaseProvider
 
 
@@ -13,7 +15,7 @@ if TYPE_CHECKING:
     from docler.models import ChunkedDocument
 
 
-class Annotator[TConfig](ABC, BaseProvider[TConfig]):
+class Annotator[TConfig: BaseModel](ABC, BaseProvider[TConfig]):
     """Base class for chunk annotation processors."""
 
     Config: ClassVar[type[BaseAnnotatorConfig]]

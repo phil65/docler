@@ -5,6 +5,8 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, ClassVar
 
+from pydantic import BaseModel
+
 from docler.provider import BaseProvider
 
 
@@ -14,7 +16,7 @@ if TYPE_CHECKING:
     from docler.vector_db.base import BaseVectorDB
 
 
-class VectorManagerBase[TConfig](BaseProvider[TConfig], ABC):
+class VectorManagerBase[TConfig: BaseModel](BaseProvider[TConfig], ABC):
     """Abstract base class for vector database managers."""
 
     Config: ClassVar[type[BaseVectorStoreConfig]]

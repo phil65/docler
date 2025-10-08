@@ -5,6 +5,8 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, ClassVar
 
+from pydantic import BaseModel
+
 from docler.provider import BaseProvider
 
 
@@ -14,7 +16,7 @@ if TYPE_CHECKING:
     from docler.configs.processor_configs import BaseProcessorConfig
 
 
-class DocumentProcessor[TConfig](BaseProvider[TConfig], ABC):
+class DocumentProcessor[TConfig: BaseModel](BaseProvider[TConfig], ABC):
     """Base class for document pre-processors."""
 
     Config: ClassVar[type[BaseProcessorConfig]]

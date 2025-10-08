@@ -9,6 +9,7 @@ import tempfile
 from typing import TYPE_CHECKING, ClassVar
 
 import anyenv
+from pydantic import BaseModel
 from upathtools import read_path, to_upath
 
 from docler.provider import BaseProvider
@@ -25,7 +26,7 @@ if TYPE_CHECKING:
     from docler.configs.converter_configs import ConverterConfig
 
 
-class DocumentConverter[TConfig](BaseProvider[TConfig], ABC):
+class DocumentConverter[TConfig: BaseModel](BaseProvider[TConfig], ABC):
     """Abstract base class for document converters.
 
     Implementation classes should override either:
