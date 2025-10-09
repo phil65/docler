@@ -7,7 +7,6 @@ from collections import defaultdict
 from typing import TYPE_CHECKING, Any, ClassVar
 
 from mkdown import Document, Image, create_image_reference, create_page_break
-import requests
 from upathtools import to_upath
 
 from docler.configs.converter_configs import UpstageConfig
@@ -37,7 +36,7 @@ class UpstageConverter(DocumentConverter[UpstageConfig]):
     Config = UpstageConfig
 
     NAME = "upstage"
-    REQUIRED_PACKAGES: ClassVar = {"requests"}
+    REQUIRED_PACKAGES: ClassVar = {"httpx"}
     SUPPORTED_MIME_TYPES: ClassVar[set[str]] = {
         "application/pdf",
         "image/jpeg",
@@ -116,17 +115,22 @@ class UpstageConverter(DocumentConverter[UpstageConfig]):
         }
 
         try:
-            response = requests.post(
-                self.base_url,
-                headers=headers,
-                files=files,
-                data=data,
-                timeout=300,
-            )
-            response.raise_for_status()
-            result = response.json()
-        except requests.HTTPError as e:
-            msg = f"Upstage API error: {e.response.text if e.response else str(e)}"
+            import httpx
+
+            # Download the image
+            with httpx.Client(follow_redirects=True) as client:
+                response = client.post(
+                    self.base_url,
+                    headers=headers,
+                    files=files,
+                    data=data,
+                    timeout=300,
+                )
+                response.raise_for_status()
+                result = response.json()
+
+        except httpx.HTTPError as e:
+            msg = f"Upstage API error: {e}"
             raise ValueError(msg) from e
         except Exception as e:
             msg = f"Failed to convert document via Upstage API: {e}"
