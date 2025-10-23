@@ -80,13 +80,13 @@ class LLMConverter(DocumentConverter[LLMConverterConfig]):
             content: BaseContent = PDFBase64Content.from_bytes(file_content)
         else:
             content = ImageBase64Content.from_bytes(file_content)
-        agent = Agent[None](model=self.model, system_prompt=self.system_prompt)
+        agent = Agent(model=self.model, system_prompt=self.system_prompt)
         extra = (
             f" Extract only the following pages: {self.page_range}"
             if self.page_range
             else ""
         )
-        response = agent.run_sync(self.user_prompt + extra, content)
+        response = agent.run.sync(self.user_prompt + extra, content)
         return Document(
             content=response.content,
             title=path.stem,
