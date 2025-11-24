@@ -67,9 +67,7 @@ async def api_chunk_document(
     pdf_password: str | None = None,
 ) -> ChunkedDocument:
     """Convert and chunk a document."""
-    return await routes.chunk_document(
-        file, converter_config, chunker_config, pdf_password
-    )
+    return await routes.chunk_document(file, converter_config, chunker_config, pdf_password)
 
 
 @app.post("/api/pdf/metadata")

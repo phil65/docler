@@ -93,6 +93,4 @@ class AggregatedConverter(DocumentConverter[AggregatedConverterConfig]):
         try:
             return await converter._convert_path_async(file_path, mime_type)
         except NotImplementedError:
-            return await anyenv.run_in_thread(
-                converter._convert_path_sync, file_path, mime_type
-            )
+            return await anyenv.run_in_thread(converter._convert_path_sync, file_path, mime_type)

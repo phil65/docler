@@ -99,8 +99,7 @@ class ProcessRunner:
         reuse: bool = False,
         wait_http: list[str] | None = None,  # ["http://localhost:8000/health"]
         wait_tcp: list[tuple[str, int]] | None = None,  # [("localhost", 6379)]
-        wait_predicates: list[Callable[[], bool] | Callable[[], Awaitable[bool]]]
-        | None = None,
+        wait_predicates: list[Callable[[], bool] | Callable[[], Awaitable[bool]]] | None = None,
         wait_output: list[RegexPattern] | None = None,
         wait_stderr: list[RegexPattern] | None = None,
         wait_timeout: float = 30.0,
@@ -130,16 +129,12 @@ class ProcessRunner:
     async def _wait_for_conditions(self):
         async def check_all() -> bool:
             # Check HTTP endpoints
-            http_results = await asyncio.gather(
-                *(_check_http(url) for url in self.wait_http)
-            )
+            http_results = await asyncio.gather(*(_check_http(url) for url in self.wait_http))
             if not all(http_results):
                 return False
 
             # Check TCP ports
-            tcp_results = await asyncio.gather(
-                *(_check_tcp(h, p) for h, p in self.wait_tcp)
-            )
+            tcp_results = await asyncio.gather(*(_check_tcp(h, p) for h, p in self.wait_tcp))
             if not all(tcp_results):
                 return False
 

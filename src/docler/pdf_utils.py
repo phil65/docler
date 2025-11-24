@@ -169,9 +169,7 @@ def extract_pdf_pages(
                     raise ValueError(msg)  # noqa: TRY301
 
             pages = (
-                parse_page_range(page_range, shift=-1)
-                if page_range
-                else range(len(reader.pages))
+                parse_page_range(page_range, shift=-1) if page_range else range(len(reader.pages))
             )
             writer = PdfWriter()
             for i in pages:

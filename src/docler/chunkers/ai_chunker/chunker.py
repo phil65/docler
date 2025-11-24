@@ -55,9 +55,7 @@ class AIChunker(TextChunker[AiChunkerConfig]):
         # ).to_structured(Chunks)
         # prompt = CHUNKING_PROMPT.format(numbered_text=numbered_text)
         # response = await agent.run(prompt)
-        agent: Agent[None] = Agent[None](
-            model=self.model, system_prompt=self.system_prompt
-        )
+        agent: Agent[None] = Agent[None](model=self.model, system_prompt=self.system_prompt)
         prompt = self.user_prompt.format(numbered_text=numbered_text)
         chunks = await agent.talk.extract_multiple(
             text,

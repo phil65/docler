@@ -90,9 +90,7 @@ class TokenAwareChunker(TextChunker[TokenAwareChunkerConfig]):
             token_count = count_tokens(current_chunk, self.model)
 
             # Keep adding lines until we reach the token limit or end of document
-            while end_idx < len(
-                lines
-            ) and token_count < self.max_tokens_per_chunk - count_tokens(
+            while end_idx < len(lines) and token_count < self.max_tokens_per_chunk - count_tokens(
                 lines[end_idx], self.model
             ):
                 end_idx += 1
@@ -101,9 +99,7 @@ class TokenAwareChunker(TextChunker[TokenAwareChunkerConfig]):
 
             # Find images relevant to this chunk
             chunk_images = [
-                img
-                for img in doc.images
-                if img.filename and img.filename in current_chunk
+                img for img in doc.images if img.filename and img.filename in current_chunk
             ]
 
             # Create the chunk with appropriate metadata

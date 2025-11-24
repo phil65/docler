@@ -93,9 +93,7 @@ class BGEEmbeddingConfig(BaseEmbeddingConfig):
 class SentenceTransformerEmbeddingConfig(BaseEmbeddingConfig):
     """Configuration for Sentence Transformer embeddings."""
 
-    type: Literal["sentence_transformer"] = Field(
-        default="sentence_transformer", init=False
-    )
+    type: Literal["sentence_transformer"] = Field(default="sentence_transformer", init=False)
     """Type discriminator for Sentence Transformer embedding provider."""
 
     model: SentenceTransformerModel = "all-MiniLM-L6-v2"

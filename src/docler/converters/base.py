@@ -126,10 +126,7 @@ class DocumentConverter[TConfig: BaseModel](BaseProvider[TConfig], ABC):
             msg = f"Could not determine mime type for: {file_path}"
             raise ValueError(msg)
         if mime_type not in self.SUPPORTED_MIME_TYPES:
-            msg = (
-                f"Unsupported file type {mime_type}."
-                f"Must be one of: {self.SUPPORTED_MIME_TYPES}"
-            )
+            msg = f"Unsupported file type {mime_type}.Must be one of: {self.SUPPORTED_MIME_TYPES}"
             raise ValueError(msg)
 
         # For local files, convert directly
@@ -169,9 +166,7 @@ class DocumentConverter[TConfig: BaseModel](BaseProvider[TConfig], ABC):
         try:
             return await self._convert_path_async(file_path, mime_type)
         except NotImplementedError:
-            return await anyenv.run_in_thread(
-                self._convert_path_sync, file_path, mime_type
-            )
+            return await anyenv.run_in_thread(self._convert_path_sync, file_path, mime_type)
 
     def _convert_path_sync(self, file_path: StrPath, mime_type: MimeType) -> Document:
         """Synchronous implementation for CPU-bound operations."""

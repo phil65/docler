@@ -183,9 +183,7 @@ class UpstageConverter(DocumentConverter[UpstageConfig]):
                 if found_index != -1:
                     marker = create_page_break(next_page=page_num, newline_separators=1)
                     modified_markdown = (
-                        modified_markdown[:found_index]
-                        + marker
-                        + modified_markdown[found_index:]
+                        modified_markdown[:found_index] + marker + modified_markdown[found_index:]
                     )
                     insertion_offset = found_index + len(marker) + len(first_element_md)
                 else:

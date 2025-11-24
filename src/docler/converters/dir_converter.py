@@ -145,9 +145,7 @@ class DirectoryConverter:
 
             try:
                 # Convert chunk
-                documents = await self.converter.convert_files([
-                    path for _, path in chunk
-                ])
+                documents = await self.converter.convert_files([path for _, path in chunk])
 
                 # Store results
                 for (rel_path, _), doc in zip(chunk, documents):

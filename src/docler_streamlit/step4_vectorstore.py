@@ -140,9 +140,7 @@ def show_step_4():
                 with st.spinner("Uploading chunks..."):
                     try:
                         # Get the backend for the selected store
-                        backend = anyenv.run_sync(
-                            manager.get_vector_store(state.vector_store_name)
-                        )
+                        backend = anyenv.run_sync(manager.get_vector_store(state.vector_store_name))
 
                         # Create our helper class
                         vector_store = VectorStore(state.vector_store_name, backend)
@@ -177,9 +175,7 @@ def show_step_4():
 
                             if results:
                                 for i, (chunk, score) in enumerate(results):
-                                    with st.expander(
-                                        f"Result {i + 1} - Score: {score:.4f}"
-                                    ):
+                                    with st.expander(f"Result {i + 1} - Score: {score:.4f}"):
                                         st.markdown(chunk.content)
                             else:
                                 st.info("No results found.")

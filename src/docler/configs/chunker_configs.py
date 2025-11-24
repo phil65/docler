@@ -137,9 +137,6 @@ class TokenAwareChunkerConfig(BaseChunkerConfig):
 
 
 ChunkerConfig = Annotated[
-    LlamaIndexChunkerConfig
-    | MarkdownChunkerConfig
-    | AiChunkerConfig
-    | TokenAwareChunkerConfig,
+    LlamaIndexChunkerConfig | MarkdownChunkerConfig | AiChunkerConfig | TokenAwareChunkerConfig,
     Field(discriminator="type"),
 ]

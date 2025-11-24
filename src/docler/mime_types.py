@@ -14,25 +14,17 @@ PLAIN_TEXT_MIME_TYPE: Final = "text/plain"
 POWER_POINT_MIME_TYPE: Final = (
     "application/vnd.openxmlformats-officedocument.presentationml.presentation"
 )
-DOCX_MIME_TYPE: Final = (
-    "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-)
+DOCX_MIME_TYPE: Final = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
 # Excel formats
-EXCEL_MIME_TYPE: Final = (
-    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-)
+EXCEL_MIME_TYPE: Final = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 EXCEL_BINARY_MIME_TYPE: Final = "application/vnd.ms-excel"
 EXCEL_MACRO_MIME_TYPE: Final = "application/vnd.ms-excel.sheet.macroEnabled.12"
-EXCEL_BINARY_2007_MIME_TYPE: Final = (
-    "application/vnd.ms-excel.sheet.binary.macroEnabled.12"
-)
+EXCEL_BINARY_2007_MIME_TYPE: Final = "application/vnd.ms-excel.sheet.binary.macroEnabled.12"
 EXCEL_ADDON_MIME_TYPE: Final = "application/vnd.ms-excel.addin.macroEnabled.12"
 EXCEL_TEMPLATE_MIME_TYPE: Final = "application/vnd.ms-excel.template.macroEnabled.12"
 
 # OpenDocument spreadsheet format
-OPENDOC_SPREADSHEET_MIME_TYPE: Final = (
-    "application/vnd.oasis.opendocument.spreadsheet"  # ods
-)
+OPENDOC_SPREADSHEET_MIME_TYPE: Final = "application/vnd.oasis.opendocument.spreadsheet"  # ods
 PLAIN_TEXT_MIME_TYPES: Final[set[str]] = {PLAIN_TEXT_MIME_TYPE, MARKDOWN_MIME_TYPE}
 
 AUDIO_MIME_TYPES = {

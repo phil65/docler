@@ -44,9 +44,7 @@ async def _test_provider_export(provider_cls, snapshot: SnapshotAssertion):
         md_files = list(base.glob("*.md"))
         assert md_files, "No markdown file exported"
         md_content = md_files[0].read_text(encoding="utf-8")
-        file_list = sorted(
-            str(f.relative_to(base)) for f in base.rglob("*") if f.is_file()
-        )
+        file_list = sorted(str(f.relative_to(base)) for f in base.rglob("*") if f.is_file())
         assert md_content == snapshot(name="markdown_content")
         assert file_list == snapshot(name="files_list")
 

@@ -37,9 +37,7 @@ class LineCorrection(Schema):
     """The corrected text."""
 
 
-def apply_corrections(
-    text: str, corrections: list[LineCorrection]
-) -> tuple[str, set[int]]:
+def apply_corrections(text: str, corrections: list[LineCorrection]) -> tuple[str, set[int]]:
     """Apply corrections to the original text.
 
     Args:
@@ -168,8 +166,7 @@ class LLMProofReader(DocumentProcessor[LLMProofReaderConfig]):
             "corrected_lines": sorted(corrected_lines),
             "metadata_only": self.add_metadata_only,
             "corrections": [
-                {"line_number": c.line_number, "corrected": c.corrected}
-                for c in corrections
+                {"line_number": c.line_number, "corrected": c.corrected} for c in corrections
             ],
         }
         if self.include_diffs:

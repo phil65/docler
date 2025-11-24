@@ -21,9 +21,7 @@ MAX_POLLS = 300
 POLL_INTERVAL = 2
 
 
-def _normalize_markdown_images(
-    content: str, image_replacements: dict[str, tuple[str, str]]
-) -> str:
+def _normalize_markdown_images(content: str, image_replacements: dict[str, tuple[str, str]]) -> str:
     """Normalize image references in markdown content.
 
     Args:

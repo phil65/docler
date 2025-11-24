@@ -38,9 +38,7 @@ ConverterShorthand = Literal[
     "llm",
 ]
 
-DoclingEngine = Literal[
-    "easy_ocr", "tesseract_cli_ocr", "tesseract_ocr", "ocr_mac", "rapid_ocr"
-]
+DoclingEngine = Literal["easy_ocr", "tesseract_cli_ocr", "tesseract_ocr", "ocr_mac", "rapid_ocr"]
 
 UpstageOCRType = Literal["auto", "force"]
 UpstageOutputFormat = Literal["markdown", "text", "html"]

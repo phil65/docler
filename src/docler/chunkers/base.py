@@ -118,9 +118,7 @@ class TextChunker[TConfig: BaseModel](BaseProvider[TConfig], ABC):
         content_with_boundaries = []
 
         # Sort chunks by start position if available
-        sorted_chunks = sorted(
-            chunks, key=lambda c: c.metadata.get("start_line", c.chunk_index)
-        )
+        sorted_chunks = sorted(chunks, key=lambda c: c.metadata.get("start_line", c.chunk_index))
 
         for i, chunk in enumerate(sorted_chunks):
             metadata = chunk.metadata or {}
@@ -153,8 +151,7 @@ class TextChunker[TConfig: BaseModel](BaseProvider[TConfig], ABC):
                         extra_data={
                             k: v
                             for k, v in metadata.items()
-                            if k
-                            not in {"start_line", "end_line", "keywords", "token_count"}
+                            if k not in {"start_line", "end_line", "keywords", "token_count"}
                         },
                     )
 
@@ -174,8 +171,7 @@ class TextChunker[TConfig: BaseModel](BaseProvider[TConfig], ABC):
                         extra_data={
                             k: v
                             for k, v in metadata.items()
-                            if k
-                            not in {"start_line", "end_line", "keywords", "token_count"}
+                            if k not in {"start_line", "end_line", "keywords", "token_count"}
                         },
                     )
 
@@ -187,9 +183,7 @@ class TextChunker[TConfig: BaseModel](BaseProvider[TConfig], ABC):
                         # If this is the last chunk, add all remaining content
                         content_with_boundaries.extend(lines[start_idx:])
                     else:
-                        next_start = sorted_chunks[i + 1].metadata.get(
-                            "start_line", len(lines) + 1
-                        )
+                        next_start = sorted_chunks[i + 1].metadata.get("start_line", len(lines) + 1)
                         next_start_idx = max(0, next_start - 1)
                         content_with_boundaries.extend(lines[start_idx:next_start_idx])
 

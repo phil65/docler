@@ -84,9 +84,7 @@ async def convert_document(
                 # If it's not an encryption issue, let it pass through to the converter
                 pass
 
-    with tempfile.NamedTemporaryFile(
-        suffix=f"_{file.filename}", delete=False
-    ) as temp_file:
+    with tempfile.NamedTemporaryFile(suffix=f"_{file.filename}", delete=False) as temp_file:
         temp_path = temp_file.name
         temp_file.write(content)
 
@@ -184,9 +182,7 @@ async def chunk_document(
                 # If it's not an encryption issue, let it pass through to the converter
                 pass
 
-    with tempfile.NamedTemporaryFile(
-        suffix=f"_{file.filename}", delete=False
-    ) as temp_file:
+    with tempfile.NamedTemporaryFile(suffix=f"_{file.filename}", delete=False) as temp_file:
         temp_path = temp_file.name
         temp_file.write(content)
 
@@ -291,9 +287,7 @@ async def get_pdf_metadata(
 
     # Validate file size (100MB limit for metadata extraction)
     if file.size and file.size > 100 * 1024 * 1024:
-        raise HTTPException(
-            status_code=400, detail="File size too large. Maximum size is 100MB."
-        )
+        raise HTTPException(status_code=400, detail="File size too large. Maximum size is 100MB.")
 
     try:
         content = await file.read()
@@ -301,12 +295,8 @@ async def get_pdf_metadata(
     except ValueError as e:
         if "Incorrect password" in str(e):
             raise HTTPException(status_code=401, detail="Incorrect PDF password") from e
-        raise HTTPException(
-            status_code=400, detail=f"Failed to process PDF: {e!s}"
-        ) from e
+        raise HTTPException(status_code=400, detail=f"Failed to process PDF: {e!s}") from e
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Internal error processing PDF: {e!s}"
-        ) from e
+        raise HTTPException(status_code=500, detail=f"Internal error processing PDF: {e!s}") from e
     else:
         return metadata

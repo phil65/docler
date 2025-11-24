@@ -127,9 +127,7 @@ class DoclingConverter(DocumentConverter[DoclingConverterConfig]):
         stream = BytesIO(pdf_path.read_bytes())
         source = DocumentStream(name=pdf_path.name, stream=stream)
         page_range = parse_page_range(self.page_range) if self.page_range else None
-        doc_result = self.converter.convert(
-            source, page_range=page_range or DEFAULT_PAGE_RANGE
-        )
+        doc_result = self.converter.convert(source, page_range=page_range or DEFAULT_PAGE_RANGE)
         mk_content = doc_result.document.export_to_markdown(
             image_mode=ImageRefMode.REFERENCED,
             delim=self.delim,

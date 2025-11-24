@@ -185,9 +185,7 @@ async def test_api_always_includes_images_as_base64(resources_dir: Path):
                     b"MM\x00*",  # TIFF (big endian)
                 ]
 
-                has_valid_magic = any(
-                    decoded.startswith(magic) for magic in valid_magic_bytes
-                )
+                has_valid_magic = any(decoded.startswith(magic) for magic in valid_magic_bytes)
                 assert has_valid_magic, (
                     f"Image {i} decoded content does not start with valid magic bytes."
                     f" First 10 bytes: {decoded[:10]!r}"
@@ -267,13 +265,10 @@ async def test_converter_direct_image_handling(resources_dir: Path):
                 b"MM\x00*",  # TIFF (big endian)
             ]
 
-            has_valid_magic = any(
-                image.content.startswith(magic) for magic in valid_magic_bytes
-            )
+            has_valid_magic = any(image.content.startswith(magic) for magic in valid_magic_bytes)
             content = image.content[:10]
             assert has_valid_magic, (
-                f"Image {i} doesnt start with valid magic bytes."
-                f" First 10 bytes: {content!r}"
+                f"Image {i} doesnt start with valid magic bytes. First 10 bytes: {content!r}"
             )
 
             # Validate MIME type consistency
@@ -300,9 +295,7 @@ async def test_converter_direct_image_handling(resources_dir: Path):
                 assert isinstance(base64_str, str), "to_base64() should return a string"
                 # Verify we can decode it back to the original bytes
                 decoded_back = base64.b64decode(base64_str)
-                assert decoded_back == image.content, (
-                    f"Image {i} base64 round-trip failed"
-                )
+                assert decoded_back == image.content, f"Image {i} base64 round-trip failed"
             except Exception as e:  # noqa: BLE001
                 pytest.fail(f"Image {i} to_base64() method failed: {e}")
 

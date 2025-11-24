@@ -21,9 +21,7 @@ def process_response(result: list[Any], api_key: str) -> tuple[list[str], list[I
             image_count = len(images)
             id_ = f"img-{image_count}"
             asset_name = img["name"]
-            asset_url = (
-                f"{DEFAULT_BASE_URL}/api/parsing/job/{job_id}/result/image/{asset_name}"
-            )
+            asset_url = f"{DEFAULT_BASE_URL}/api/parsing/job/{job_id}/result/image/{asset_name}"
             headers = {"Authorization": f"Bearer {api_key}"}
             response = anyenv.get_bytes_sync(asset_url, headers=headers)
             img_data = base64.b64encode(response).decode("utf-8")

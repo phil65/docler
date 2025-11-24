@@ -241,9 +241,7 @@ class TestGetPdfInfo:
             # Should try empty password
             mock_reader.decrypt.assert_called_with("")
             assert result.page_count == 1
-            assert (
-                not result.is_encrypted
-            )  # Should be False after successful empty password
+            assert not result.is_encrypted  # Should be False after successful empty password
             assert result.title == "Empty Password PDF"
             assert result.author == ""  # None should become empty string
 

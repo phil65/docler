@@ -54,9 +54,7 @@ async def convert_to_markdown(
         target = UPath(target_folder).expanduser()
         source = UPath(source_path).expanduser()
         target.mkdir(parents=True, exist_ok=True)
-        converters: list[type[DocumentConverter]] = (
-            DocumentConverter.get_available_providers()
-        )
+        converters: list[type[DocumentConverter]] = DocumentConverter.get_available_providers()
         converter_cls = next(i for i in converters if provider == i.NAME)
         converter = converter_cls(languages=languages, page_range=page_range)
         # await ctx.info(f"Starting conversion for {source_path} using {provider!r}...")

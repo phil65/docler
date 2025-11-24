@@ -104,9 +104,7 @@ def show_step_3():
             try:
                 chunked = anyenv.run_sync(chunker.chunk(doc))
                 state.chunked_doc = chunked
-                st.success(
-                    f"Document successfully chunked into {len(chunked.chunks)} chunks!"
-                )
+                st.success(f"Document successfully chunked into {len(chunked.chunks)} chunks!")
             except Exception as e:
                 st.error(f"Chunking failed: {e}")
                 logger.exception("Chunking failed")

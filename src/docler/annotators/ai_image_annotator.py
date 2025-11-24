@@ -43,9 +43,7 @@ class DefaultImageMetadata(Schema):
     """Dominant colors in the image."""
 
 
-class AIImageAnnotator[TMetadata: Schema = DefaultImageMetadata](
-    Annotator[AIImageAnnotatorConfig]
-):
+class AIImageAnnotator[TMetadata: Schema = DefaultImageMetadata](Annotator[AIImageAnnotatorConfig]):
     """AI-based image annotator.
 
     Analyzes images in chunks and adds descriptions and metadata.

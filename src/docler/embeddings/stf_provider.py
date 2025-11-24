@@ -15,9 +15,7 @@ if TYPE_CHECKING:
     import numpy as np
 
 
-class SentenceTransformerEmbeddings(
-    EmbeddingProvider[SentenceTransformerEmbeddingConfig]
-):
+class SentenceTransformerEmbeddings(EmbeddingProvider[SentenceTransformerEmbeddingConfig]):
     """Local embeddings using sentence-transformers."""
 
     Config = SentenceTransformerEmbeddingConfig

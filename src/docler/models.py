@@ -27,9 +27,7 @@ class ChunkedDocument(Document):
     """List of chunks derived from this document."""
 
     @classmethod
-    def from_document(
-        cls, document: Document, chunks: list[TextChunk]
-    ) -> ChunkedDocument:
+    def from_document(cls, document: Document, chunks: list[TextChunk]) -> ChunkedDocument:
         """Create a ChunkedDocument from an existing Document and its chunks.
 
         Args:
