@@ -26,7 +26,7 @@ if TYPE_CHECKING:
     from docler.configs.converter_configs import ConverterConfig
 
 
-class DocumentConverter[TConfig: BaseModel](BaseProvider[TConfig], ABC):
+class DocumentConverter[TConfig: BaseModel = Any](BaseProvider[TConfig], ABC):
     """Abstract base class for document converters.
 
     Implementation classes should override either:

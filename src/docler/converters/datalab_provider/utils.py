@@ -37,7 +37,7 @@ def _normalize_markdown_images(content: str, image_replacements: dict[str, tuple
         result = result.replace(f"]({original_name})", f"]({filename})")
 
     # Then fix image alt texts with proper IDs
-    def replace_image_alt(match):
+    def replace_image_alt(match: re.Match[str]) -> str:
         """Replace image alt text with appropriate image ID."""
         filename = match.group(2)
         # Get the correct image ID for this filename
@@ -72,7 +72,7 @@ async def get_response(
     check_url = json_data["request_check_url"]
     for _ in range(MAX_POLLS):
         time.sleep(POLL_INTERVAL)
-        result = await anyenv.get_json(check_url, headers=headers, return_type=dict)  # type: ignore
+        result = await anyenv.get_json(check_url, headers=headers, return_type=dict)
         if result["status"] == "complete":
             break
     else:
@@ -94,14 +94,14 @@ def process_response(result: dict[str, Any]) -> tuple[str, list[Image]]:
     # Make pattern flexible to handle variations in spacing and dash count
     page_break_pattern = r"(?:^|\n\n)\s*\{(\d+)\}\s*-+\s*\n\n"
 
-    def replace_page_break(match):
+    def replace_page_break(match: re.Match[str]) -> str:
         try:
             page_num = int(match.group(1))
             return create_page_break(next_page=page_num + 1, newline_separators=2)
         except (ValueError, IndexError) as e:
             logger.warning("Failed to parse page number from page break marker: %s", e)
             # Return the original match if we can't parse it
-            return match.group(0)
+            return match.group(0)  # type: ignore[no-any-return]
 
     # Count matches before replacement for logging
     original_count = len(re.findall(page_break_pattern, md_content))

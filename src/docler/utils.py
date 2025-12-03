@@ -78,7 +78,7 @@ def check_mime(
     return mime
 
 
-def decode_base64_to_image(encoded_string: str, image_format="PNG") -> ImageFile:
+def decode_base64_to_image(encoded_string: str, image_format: str = "PNG") -> ImageFile:
     """Decode a base64 string to an image."""
     from PIL import Image
 
@@ -90,7 +90,9 @@ def decode_base64_to_image(encoded_string: str, image_format="PNG") -> ImageFile
         raise ValueError(msg)  # noqa: B904
 
 
-def encode_image_to_base64(image: ImageFile | Image, image_format="WEBP", quality=20):
+def encode_image_to_base64(
+    image: ImageFile | Image, image_format: str = "WEBP", quality: int = 20
+) -> str:
     """Encode an image to base64 string."""
     buffer = io.BytesIO()
     image.save(buffer, format=image_format, quality=quality)

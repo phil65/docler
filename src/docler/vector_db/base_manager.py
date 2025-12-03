@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar
 
 from pydantic import BaseModel
 
@@ -31,11 +31,11 @@ class VectorManagerBase[TConfig: BaseModel](BaseProvider[TConfig], ABC):
         """List all available vector stores for this provider."""
 
     @abstractmethod
-    async def create_vector_store(self, name: str, **kwargs) -> BaseVectorDB:
+    async def create_vector_store(self, name: str, **kwargs: Any) -> BaseVectorDB:
         """Create a new vector store."""
 
     @abstractmethod
-    async def get_vector_store(self, name: str, **kwargs) -> BaseVectorDB:
+    async def get_vector_store(self, name: str, **kwargs: Any) -> BaseVectorDB:
         """Get a connection to an existing vector store."""
 
     @abstractmethod

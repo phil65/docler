@@ -65,7 +65,7 @@ async def _check_predicate(
     pred: Callable[[], bool] | Callable[[], Awaitable[bool]],
 ) -> bool:
     if asyncio.iscoroutinefunction(pred):
-        return await pred()
+        return await pred()  # type: ignore[no-any-return]
     return await asyncio.to_thread(pred)  # type: ignore
 
 

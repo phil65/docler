@@ -68,7 +68,7 @@ def generate_html_diff(original: str, corrected: str) -> str:
     dmp = diff_match_patch()
     diffs = dmp.diff_main(original, corrected)
     dmp.diff_cleanupSemantic(diffs)
-    return dmp.diff_prettyHtml(diffs)
+    return dmp.diff_prettyHtml(diffs)  # type: ignore[no-any-return]
 
 
 def generate_all_diffs(original: str, corrected: str) -> dict[str, str]:

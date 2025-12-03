@@ -129,7 +129,7 @@ class PineconeBackend(VectorStoreBackend):
         filters: dict[str, Any] | None = None,
     ) -> list[SearchResult]:
         """Search Pinecone for similar vectors."""
-        vector_list: list[float] = query_vector.tolist()  # type: ignore
+        vector_list: list[float] = query_vector.tolist()
         filter_obj = convert_filters(filters) if filters else None
         index = await self._get_index()
         try:
@@ -144,7 +144,7 @@ class PineconeBackend(VectorStoreBackend):
         except Exception:
             logger.exception("Error searching Pinecone")
             return []
-        return [to_search_result(i) for i in results.matches]  # type: ignore
+        return [to_search_result(i) for i in results.matches]
 
     async def close(self) -> None:
         """Close the Pinecone connection."""
