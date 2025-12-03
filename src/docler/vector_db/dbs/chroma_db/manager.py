@@ -15,7 +15,7 @@ from docler.vector_db.dbs.chroma_db.db import ChromaBackend
 
 
 if TYPE_CHECKING:
-    import chromadb
+    from chromadb.api.async_api import AsyncClientAPI
 
     from docler.common_types import StrPath
 
@@ -51,7 +51,7 @@ class ChromaVectorManager(VectorManagerBase[ChromaConfig]):
         self.port = port
         self.ssl = ssl
         self.headers = headers
-        self._list_client: chromadb.AsyncClientAPI | None = None
+        self._list_client: AsyncClientAPI | None = None
 
     @staticmethod
     def run_server(path: StrPath, **kwargs: Any) -> ProcessRunner:
@@ -74,7 +74,7 @@ class ChromaVectorManager(VectorManagerBase[ChromaConfig]):
         """Extract configuration from instance."""
         return ChromaConfig(persist_directory=self.persist_directory)
 
-    async def _get_list_client(self) -> chromadb.AsyncClientAPI:
+    async def _get_list_client(self) -> AsyncClientAPI:
         """Get a client for listing collections."""
         import chromadb
 

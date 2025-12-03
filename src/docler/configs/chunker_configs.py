@@ -12,7 +12,10 @@ from docler.provider import ProviderConfig
 
 
 if TYPE_CHECKING:
-    from docler.chunkers.base import TextChunker
+    from docler.chunkers.ai_chunker import AIChunker
+    from docler.chunkers.llamaindex_chunker import LlamaIndexChunker
+    from docler.chunkers.markdown_chunker import MarkdownChunker
+    from docler.chunkers.token_chunker import TokenAwareChunker
 
 
 DEFAULT_CHUNKER_SYSTEM_PROMPT = """
@@ -63,7 +66,7 @@ class LlamaIndexChunkerConfig(BaseChunkerConfig):
     include_prev_next_rel: bool = False
     """Whether to track relationships between chunks."""
 
-    def get_provider(self) -> TextChunker:
+    def get_provider(self) -> LlamaIndexChunker:
         """Get the chunker instance."""
         from docler.chunkers.llamaindex_chunker import LlamaIndexChunker
 
@@ -85,7 +88,7 @@ class MarkdownChunkerConfig(BaseChunkerConfig):
     chunk_overlap: int = Field(default=200, ge=0)
     """Number of characters to overlap between chunks."""
 
-    def get_provider(self) -> TextChunker:
+    def get_provider(self) -> MarkdownChunker:
         """Get the chunker instance."""
         from docler.chunkers.markdown_chunker import MarkdownChunker
 
@@ -107,7 +110,7 @@ class AiChunkerConfig(BaseChunkerConfig):
     user_prompt: str = DEFAULT_CHUNKER_USER_TEMPLATE
     """Custom prompt to override default chunk extraction prompt."""
 
-    def get_provider(self) -> TextChunker:
+    def get_provider(self) -> AIChunker:
         """Get the chunker instance."""
         from docler.chunkers.ai_chunker import AIChunker
 
@@ -129,7 +132,7 @@ class TokenAwareChunkerConfig(BaseChunkerConfig):
     chunk_overlap_lines: int = Field(default=20, ge=0)
     """Number of lines to overlap between chunks."""
 
-    def get_provider(self) -> TextChunker:
+    def get_provider(self) -> TokenAwareChunker:
         """Get the chunker instance."""
         from docler.chunkers.token_chunker import TokenAwareChunker
 

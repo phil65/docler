@@ -23,8 +23,7 @@ from docler.utils import add_line_numbers
 
 
 if TYPE_CHECKING:
-    from docler.configs.chunker_configs import ChunkerConfig
-    from docler.configs.file_db_configs import ChunkerShorthand
+    from docler.configs.chunker_configs import ChunkerConfig, ChunkerShorthand
 
 
 class LineCorrection(Schema):

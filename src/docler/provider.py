@@ -43,7 +43,7 @@ class ProviderConfig(BaseSettings):
     def get_config_fields(self) -> dict[str, Any]:
         return self.model_dump(exclude={"type"}, mode="json")
 
-    def get_provider(self) -> BaseProvider:
+    def get_provider(self) -> BaseProvider[Any]:
         """Get the provider instance."""
         raise NotImplementedError
 
