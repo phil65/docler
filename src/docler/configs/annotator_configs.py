@@ -12,7 +12,8 @@ from docler.provider import ProviderConfig
 
 
 if TYPE_CHECKING:
-    from docler.annotators.base import Annotator
+    from docler.annotators.ai_document_annotator import AIDocumentAnnotator
+    from docler.annotators.ai_image_annotator import AIImageAnnotator
 
 
 DEFAULT_DOC_SYSTEM_PROMPT = """
@@ -75,7 +76,7 @@ class AIDocumentAnnotatorConfig(BaseAnnotatorConfig):
     batch_size: int = Field(default=5, ge=1)
     """Number of chunks to process in parallel."""
 
-    def get_provider(self) -> Annotator:
+    def get_provider(self) -> AIDocumentAnnotator:
         """Get the annotator instance."""
         from docler.annotators.ai_document_annotator import AIDocumentAnnotator
 
@@ -100,7 +101,7 @@ class AIImageAnnotatorConfig(BaseAnnotatorConfig):
     batch_size: int = Field(default=3, ge=1)
     """Number of images to process concurrently."""
 
-    def get_provider(self) -> Annotator:
+    def get_provider(self) -> AIImageAnnotator:
         """Get the annotator instance."""
         from docler.annotators.ai_image_annotator import AIImageAnnotator
 

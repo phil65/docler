@@ -34,7 +34,9 @@ class DefaultMetadata(Schema):
     """Main entities."""
 
 
-class AIDocumentAnnotator[TMetadata: Schema](Annotator[AIDocumentAnnotatorConfig]):
+class AIDocumentAnnotator[TMetadata: Schema = DefaultMetadata](
+    Annotator[AIDocumentAnnotatorConfig]
+):
     """AI-based document and chunk annotator.
 
     Enhances documents and chunks with metadata.

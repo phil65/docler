@@ -155,6 +155,7 @@ docstring-style = "google"
 python_version = "3.13"
 disable_error_code = ["import"]
 pretty = true
+strict = true
 check_untyped_defs = true
 exclude = ["venv/", ".venv/", "tests/"]
 plugins = ["pydantic.mypy"]

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Annotated, Literal
+from typing import TYPE_CHECKING, Annotated, Any, Literal
 
 from pydantic import Field, HttpUrl, SecretStr  # noqa: TC002
 
@@ -58,7 +58,7 @@ OpenAIEmbeddingModel = Literal[
 class BaseEmbeddingConfig(ProviderConfig):
     """Base configuration for embedding providers."""
 
-    def get_provider(self) -> EmbeddingProvider:
+    def get_provider(self) -> EmbeddingProvider[Any]:
         """Get the embedding provider instance."""
         raise NotImplementedError
 

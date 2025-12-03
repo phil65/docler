@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Annotated, Literal
+from typing import TYPE_CHECKING, Annotated, Any, Literal
 
 from pydantic import Field, HttpUrl, SecretStr  # noqa: TC002
 from pydantic.functional_validators import model_validator
@@ -27,7 +27,7 @@ VectorDBShorthand = Literal["chroma", "qdrant", "pinecone"]
 class BaseVectorStoreConfig(ProviderConfig):
     """Base configuration for vector stores."""
 
-    def get_provider(self) -> VectorManagerBase:
+    def get_provider(self) -> VectorManagerBase[Any]:
         """Get the converter instance."""
         raise NotImplementedError
 
