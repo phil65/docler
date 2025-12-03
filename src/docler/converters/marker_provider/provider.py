@@ -100,19 +100,17 @@ class MarkerConverter(DocumentConverter[MarkerConfig]):
             # Marker API expects 0-based page ranges
             rng = shift_page_range(page_range, -1) if page_range else None
             self.config["page_range"] = rng
-        self.llm_provider = llm_provider
+        self.llm_provider: ProviderType | None = llm_provider
 
     def _convert_path_sync(self, file_path: StrPath, mime_type: MimeType) -> Document:
         """Implementation of abstract method."""
         from marker.converters.pdf import PdfConverter
         from marker.models import create_model_dict
 
+        service = PROVIDERS.get(self.llm_provider) if self.llm_provider else None
         local_file = to_upath(file_path)
-        converter = PdfConverter(
-            artifact_dict=create_model_dict(),
-            llm_service=PROVIDERS.get(self.llm_provider) if self.llm_provider else None,  # pyright: ignore
-            config=self.config,
-        )
+        artifacts = create_model_dict()
+        converter = PdfConverter(artifact_dict=artifacts, llm_service=service, config=self.config)
         rendered: MarkdownOutput = converter(str(local_file))
         content, images = process_response(rendered.model_dump())
         return Document(
