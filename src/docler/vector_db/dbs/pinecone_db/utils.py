@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from pinecone.core.openapi.db_data.models import ScoredVector
 
 
-def convert_filters(filters: dict[str, Any]) -> dict:
+def convert_filters(filters: dict[str, Any]) -> dict[str, Any]:
     """Convert standard filters to Pinecone filter format."""
     pinecone_filter = {}
     for key, value in filters.items():

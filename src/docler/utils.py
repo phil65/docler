@@ -10,20 +10,20 @@ from typing import TYPE_CHECKING, Literal, overload
 
 
 if TYPE_CHECKING:
-    import PIL.Image
+    from PIL.Image import Image
     from PIL.ImageFile import ImageFile
 
     from docler.common_types import StrPath
 
 
-def pil_to_bytes(image: PIL.Image.Image) -> bytes:
+def pil_to_bytes(image: Image) -> bytes:
     """Convert PIL image to bytes in its native format."""
     img_byte_arr = BytesIO()
     image.save(img_byte_arr, format=image.format or "JPEG")
     return img_byte_arr.getvalue()
 
 
-def get_mime_from_pil(image: PIL.Image.Image, fallback: str = "JPEG") -> str:
+def get_mime_from_pil(image: Image, fallback: str = "JPEG") -> str:
     """Get MIME type from PIL image format."""
     fmt = image.format or fallback
     return f"image/{fmt.lower()}"
@@ -78,7 +78,7 @@ def check_mime(
     return mime
 
 
-def decode_base64_to_image(encoded_string, image_format="PNG") -> ImageFile:
+def decode_base64_to_image(encoded_string: str, image_format="PNG") -> ImageFile:
     """Decode a base64 string to an image."""
     from PIL import Image
 
@@ -90,7 +90,7 @@ def decode_base64_to_image(encoded_string, image_format="PNG") -> ImageFile:
         raise ValueError(msg)  # noqa: B904
 
 
-def encode_image_to_base64(image, image_format="WEBP", quality=20):
+def encode_image_to_base64(image: ImageFile | Image, image_format="WEBP", quality=20):
     """Encode an image to base64 string."""
     buffer = io.BytesIO()
     image.save(buffer, format=image_format, quality=quality)

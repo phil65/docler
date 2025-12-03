@@ -31,7 +31,7 @@ class ProviderConfig(BaseSettings):
         return next(kls for kls in cls.__subclasses__() if kls.type == name)
 
     @field_serializer("*", when_used="json-unless-none")
-    def serialize_special_types(self, v, _info):
+    def serialize_special_types(self, v: Any, _info: Any) -> Any:
         match v:
             case SecretStr():
                 return v.get_secret_value()
@@ -63,7 +63,7 @@ class BaseProvider[TConfig: BaseModel]:
         """Async context manager entry."""
         return self
 
-    async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
+    async def __aexit__(self, *args: object) -> None:
         """Async context manager exit."""
 
     @classmethod

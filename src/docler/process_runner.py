@@ -227,7 +227,7 @@ class ProcessRunner:
 
         return self
 
-    async def __aexit__(self, *_) -> None:
+    async def __aexit__(self, *args: object) -> None:
         """Clean up process with timeout."""
         if self.process is None:
             return

@@ -127,7 +127,7 @@ class RemoteVectorStoreBackend(VectorStoreBackend):
         vector_store_id: str,
         connection_url: str,
         api_key: str | None = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         """Initialize a remote vector store.
 

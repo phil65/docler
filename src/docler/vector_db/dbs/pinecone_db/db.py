@@ -82,7 +82,7 @@ class PineconeBackend(VectorStoreBackend):
             ids = [str(uuid.uuid4()) for _ in vectors]
         vectors_data = []
         for i, (vector, meta) in enumerate(zip(vectors, metadata)):
-            vector_list: list[float] = vector.tolist()  # type: ignore
+            vector_list: list[float] = vector.tolist()
             meta_copy = prepare_metadata(meta)
             vectors_data.append((ids[i], vector_list, meta_copy))
 
