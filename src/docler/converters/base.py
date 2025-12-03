@@ -10,6 +10,7 @@ from typing import TYPE_CHECKING, Any, ClassVar
 
 import anyenv
 from pydantic import BaseModel
+from upath.types import JoinablePathLike
 from upathtools import read_path, to_upath
 
 from docler.provider import BaseProvider
@@ -85,7 +86,7 @@ class DocumentConverter[TConfig: BaseModel = Any](BaseProvider[TConfig], ABC):
         """
         return mime_type in self.get_supported_mime_types()
 
-    async def convert_files(self, file_paths: Sequence[StrPath]) -> list[Document]:
+    async def convert_files(self, file_paths: Sequence[JoinablePathLike]) -> list[Document]:
         """Convert multiple document files in parallel.
 
         Args:
@@ -99,10 +100,10 @@ class DocumentConverter[TConfig: BaseModel = Any](BaseProvider[TConfig], ABC):
             ValueError: If any file format is not supported.
         """
         tasks = [self.convert_file(path) for path in file_paths]
-        return await anyenv.gather(*tasks)  # type: ignore
+        return list(await anyenv.gather(*tasks))
 
-    async def convert_file(self, file_path: StrPath) -> Document:
-        """Convert a document file using Marker.
+    async def convert_file(self, file_path: JoinablePathLike) -> Document:
+        """Convert a document file.
 
         Supports both local and remote files through fsspec/upath.
 
