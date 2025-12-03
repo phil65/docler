@@ -40,7 +40,7 @@ class EmbeddingProvider[TConfig: BaseModel](BaseProvider[TConfig], ABC):
             List of embedding vectors
         """
 
-        async def text_iterator():
+        async def text_iterator() -> AsyncIterator[str]:
             for text in texts:
                 yield text
 

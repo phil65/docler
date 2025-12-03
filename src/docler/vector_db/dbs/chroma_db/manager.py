@@ -54,7 +54,7 @@ class ChromaVectorManager(VectorManagerBase[ChromaConfig]):
         self._list_client: chromadb.AsyncClientAPI | None = None
 
     @staticmethod
-    def run_server(path: StrPath, **kwargs) -> ProcessRunner:
+    def run_server(path: StrPath, **kwargs: Any) -> ProcessRunner:
         cmd = f"chroma run {path}"
         # if self.port:
         #     cmd += f" --port {self.port}"
@@ -97,7 +97,7 @@ class ChromaVectorManager(VectorManagerBase[ChromaConfig]):
             self.logger.exception("Error listing ChromaDB collections")
             return []
 
-    async def create_vector_store(self, name: str, **kwargs) -> BaseVectorDB:
+    async def create_vector_store(self, name: str, **kwargs: Any) -> BaseVectorDB:
         """Create a new vector store (collection)."""
         try:
             db = ChromaBackend(

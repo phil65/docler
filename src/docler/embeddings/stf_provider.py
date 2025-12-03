@@ -26,7 +26,7 @@ class SentenceTransformerEmbeddings(EmbeddingProvider[SentenceTransformerEmbeddi
     def __init__(self, model: str = "all-MiniLM-L6-v2") -> None:
         from sentence_transformers import SentenceTransformer
 
-        self.model = SentenceTransformer(model)  # type: ignore
+        self.model = SentenceTransformer(model)
         self.dimensions = self.model.get_sentence_embedding_dimension()  # pyright: ignore
 
     async def embed_stream(

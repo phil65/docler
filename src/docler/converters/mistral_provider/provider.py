@@ -103,7 +103,7 @@ class MistralConverter(DocumentConverter[MistralConfig]):
         self.logger.debug("Uploading PDF file %s...", file_path.name)
 
         file_ = File(file_name=file_path.stem, content=file_data)
-        uploaded = client.files.upload(file=file_, purpose="ocr")  # type: ignore
+        uploaded = client.files.upload(file=file_, purpose="ocr")
         signed_url = client.files.get_signed_url(file_id=uploaded.id, expiry=60)
 
         self.logger.debug("Processing with OCR model...")

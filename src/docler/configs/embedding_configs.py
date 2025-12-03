@@ -11,6 +11,7 @@ from docler.provider import ProviderConfig
 
 if TYPE_CHECKING:
     from docler.embeddings.base import EmbeddingProvider
+    from docler.embeddings.bge_provider import BGEEmbeddings
     from docler.embeddings.litellm_provider import LiteLLMEmbeddings
     from docler.embeddings.openai_provider import OpenAIEmbeddings
     from docler.embeddings.stf_provider import SentenceTransformerEmbeddings
@@ -90,7 +91,7 @@ class BGEEmbeddingConfig(BaseEmbeddingConfig):
     model: str = "BAAI/bge-large-en-v1.5"
     """Model name or path."""
 
-    def get_provider(self):
+    def get_provider(self) -> BGEEmbeddings:
         """Get the embedding provider instance."""
         from docler.embeddings.bge_provider import BGEEmbeddings
 

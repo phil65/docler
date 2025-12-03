@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, ClassVar, Literal
 
+from llama_index.core.node_parser import NodeParser
 from mkdown import TextChunk
 
 from docler.chunkers.base import TextChunker
@@ -54,7 +55,7 @@ class LlamaIndexChunker(TextChunker[LlamaIndexChunkerConfig]):
         self.include_metadata = include_metadata
         self.include_prev_next_rel = include_prev_next_rel
 
-    def _get_llama_chunker(self):
+    def _get_llama_chunker(self) -> NodeParser:
         """Dynamically import and create a LlamaIndex chunker.
 
         Returns:

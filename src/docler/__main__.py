@@ -43,7 +43,7 @@ def flow() -> None:
 
 
 @cli.command("chunk_ui")
-def chunk_ui():
+def chunk_ui() -> None:
     """Start the Streamlit web interface."""
     app_path = str(PACKAGE_DIR / "chunk_app.py")
     try:
@@ -106,7 +106,7 @@ def mcp(
     ),
     host: str = typer.Option("0.0.0.0", help="Host to bind the server to"),
     port: int = typer.Option(8000, help="Port to bind the server to"),
-):
+) -> None:
     """Start the MCP server."""
     try:
         # Lazy import to avoid unnecessary dependencies if not using MCP

@@ -56,7 +56,7 @@ class QdrantBackend(VectorStoreBackend):
         self._collection_name = collection_name
 
     @property
-    def vector_store_id(self):
+    def vector_store_id(self) -> str:
         return self._collection_name
 
     async def add_vectors(
