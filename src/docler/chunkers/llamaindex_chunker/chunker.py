@@ -126,14 +126,14 @@ class LlamaIndexChunker(TextChunker[LlamaIndexChunkerConfig]):
         Raises:
             ImportError: If llama-index isn't installed
         """
-        from llama_index import core
+        from llama_index.core import schema
 
         meta = {
             "source": doc.source_path or "",
             "title": doc.title or "",
             **(extra_metadata or {}),
         }
-        llama_doc = core.Document(text=doc.content, metadata=meta)
+        llama_doc = schema.Document(text=doc.content, metadata=meta)
         chunker = self._get_llama_chunker()
         nodes = chunker.get_nodes_from_documents([llama_doc])
         chunks = []

@@ -121,14 +121,15 @@ class QdrantBackend(VectorStoreBackend):
     ) -> list[SearchResult]:
         """Search Qdrant for similar vectors."""
         vector_list = query_vector.astype(float).tolist()
-        results = await self._client.search(
+        results = await self._client.query_points(
             collection_name=self._collection_name,
             query_vector=vector_list,  # type: ignore
             limit=k,
             with_payload=True,
             filter=get_query(filters),
         )
-        return [to_search_result(i) for i in results]
+        points = results.points
+        return [to_search_result(i) for i in points]
 
     async def close(self):
         """Close the Qdrant connection."""
