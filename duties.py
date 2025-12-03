@@ -11,19 +11,19 @@ from duty import duty  # pyright: ignore[reportMissingImports]
 def build(ctx, *args: str):
     """Build a MkNodes page."""
     args_str = " " + " ".join(args) if args else ""
-    ctx.run(f"uv run mknodes build{args_str}")
+    ctx.run(f"uv run mkdocs-mknodes build{args_str}")
 
 
 @duty(capture=False)
 def serve(ctx, *args: str):
     """Serve a MkNodes page."""
     args_str = " " + " ".join(args) if args else ""
-    ctx.run(f"uv run mknodes serve{args_str}")
+    ctx.run(f"uv run mkdocs-mknodes serve{args_str}")
 
 
 @duty(capture=False)
 def test(ctx, *args: str):
-    """Serve a MkNodes page."""
+    """Run tests."""
     args_str = " " + " ".join(args) if args else ""
     ctx.run(f"uv run pytest{args_str}")
 
@@ -46,7 +46,7 @@ def lint(ctx):
     """Lint the code and fix issues if possible."""
     ctx.run("uv run ruff check --fix --unsafe-fixes .")
     ctx.run("uv run ruff format .")
-    ctx.run("uv run mypy src/docler/")
+    ctx.run("uv run mypy src/docler/ --fixed-format-cache")
 
 
 @duty(capture=False)
@@ -54,7 +54,7 @@ def lint_check(ctx):
     """Lint the code."""
     ctx.run("uv run ruff check .")
     ctx.run("uv run ruff format --check .")
-    ctx.run("uv run mypy src/docler/")
+    ctx.run("uv run mypy src/docler/ --fixed-format-cache")
 
 
 @duty(capture=False)
