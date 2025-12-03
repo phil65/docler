@@ -83,9 +83,9 @@ class PineconeVectorManager(VectorManagerBase[PineconeConfig]):
                 dimension=dimension,
                 namespace=namespace,
             )
-            return cast(BaseVectorDB, db)  # type: ignore[override]
+            return cast(BaseVectorDB, db)
 
-    async def get_vector_store(self, name: str, **kwargs) -> BaseVectorDB:
+    async def get_vector_store(self, name: str, **kwargs: Any) -> BaseVectorDB:
         """Get a connection to an existing vector store."""
         from pinecone import PineconeAsyncio
 

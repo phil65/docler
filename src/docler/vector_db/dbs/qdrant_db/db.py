@@ -123,7 +123,7 @@ class QdrantBackend(VectorStoreBackend):
         vector_list = query_vector.astype(float).tolist()
         results = await self._client.query_points(
             collection_name=self._collection_name,
-            query_vector=vector_list,  # type: ignore
+            query_vector=vector_list,
             limit=k,
             with_payload=True,
             filter=get_query(filters),

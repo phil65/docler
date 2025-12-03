@@ -40,7 +40,7 @@ class ProviderConfig(BaseSettings):
             case _:
                 return v
 
-    def get_config_fields(self):
+    def get_config_fields(self) -> dict[str, Any]:
         return self.model_dump(exclude={"type"}, mode="json")
 
     def get_provider(self) -> BaseProvider:

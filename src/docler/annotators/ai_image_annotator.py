@@ -111,7 +111,7 @@ class AIImageAnnotator[TMetadata: Schema = DefaultImageMetadata](Annotator[AIIma
             )
 
             result = await agent.run(prompt, img_content)
-            metadata = result.content.model_dump()  # type: ignore
+            metadata = result.content.model_dump()
             description = metadata.pop("description", None)
             if description:
                 image.description = description

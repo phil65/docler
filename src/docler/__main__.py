@@ -29,7 +29,7 @@ class TransportType(str, Enum):
 
 
 @cli.command()
-def flow():
+def flow() -> None:
     """Start the Streamlit web interface."""
     app_path = str(PACKAGE_DIR / "app.py")
     try:
@@ -57,7 +57,7 @@ def chunk_ui():
 
 
 @cli.command("ocr_ui")
-def ocr_ui():
+def ocr_ui() -> None:
     """Start the Streamlit web interface."""
     app_path = str(PACKAGE_DIR / "ocr_app.py")
     try:
@@ -76,7 +76,7 @@ def api(
     port: int = typer.Option(8000, help="Port to bind to"),
     log_level: str = typer.Option("info", help="Log level"),
     reload: bool = typer.Option(False, help="Enable auto-reload on file changes"),
-):
+) -> None:
     """Start the Docler API server."""
     try:
         # Lazy import to avoid unnecessary dependencies if not using the API

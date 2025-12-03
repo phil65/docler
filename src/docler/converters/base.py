@@ -6,7 +6,7 @@ from abc import ABC
 import mimetypes
 import pathlib
 import tempfile
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar
 
 import anyenv
 from pydantic import BaseModel
@@ -56,7 +56,7 @@ class DocumentConverter[TConfig: BaseModel](BaseProvider[TConfig], ABC):
         self.languages = languages
         self.page_range = page_range
 
-    def __init_subclass__(cls, **kwargs) -> None:
+    def __init_subclass__(cls, **kwargs: Any) -> None:
         """Register subclasses automatically when they're defined."""
         super().__init_subclass__(**kwargs)
         DocumentConverter.registry[cls.NAME] = cls

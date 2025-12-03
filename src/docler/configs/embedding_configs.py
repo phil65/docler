@@ -2,11 +2,18 @@
 
 from __future__ import annotations
 
-from typing import Annotated, Literal
+from typing import TYPE_CHECKING, Annotated, Literal
 
 from pydantic import Field, HttpUrl, SecretStr  # noqa: TC002
 
 from docler.provider import ProviderConfig
+
+
+if TYPE_CHECKING:
+    from docler.embeddings.base import EmbeddingProvider
+    from docler.embeddings.litellm_provider import LiteLLMEmbeddings
+    from docler.embeddings.openai_provider import OpenAIEmbeddings
+    from docler.embeddings.stf_provider import SentenceTransformerEmbeddings
 
 
 EmbeddingShorthand = Literal["openai", "bge", "sentence-transformer", "mistral-embed"]
@@ -50,7 +57,7 @@ OpenAIEmbeddingModel = Literal[
 class BaseEmbeddingConfig(ProviderConfig):
     """Base configuration for embedding providers."""
 
-    def get_provider(self):
+    def get_provider(self) -> EmbeddingProvider:
         """Get the embedding provider instance."""
         raise NotImplementedError
 
@@ -67,7 +74,7 @@ class OpenAIEmbeddingConfig(BaseEmbeddingConfig):
     model: OpenAIEmbeddingModel = "text-embedding-3-small"
     """Model identifier for embeddings."""
 
-    def get_provider(self):
+    def get_provider(self) -> OpenAIEmbeddings:
         """Get the embedding provider instance."""
         from docler.embeddings.openai_provider import OpenAIEmbeddings
 
@@ -99,7 +106,7 @@ class SentenceTransformerEmbeddingConfig(BaseEmbeddingConfig):
     model: SentenceTransformerModel = "all-MiniLM-L6-v2"
     """Model name or path."""
 
-    def get_provider(self):
+    def get_provider(self) -> SentenceTransformerEmbeddings:
         """Get the embedding provider instance."""
         from docler.embeddings.stf_provider import SentenceTransformerEmbeddings
 
@@ -130,7 +137,7 @@ class LiteLLMEmbeddingConfig(BaseEmbeddingConfig):
     extra_params: dict[str, str | float | bool | None] = Field(default_factory=dict)
     """Additional parameters to pass to LiteLLM."""
 
-    def get_provider(self):
+    def get_provider(self) -> LiteLLMEmbeddings:
         """Get the embedding provider instance."""
         from docler.embeddings.litellm_provider import LiteLLMEmbeddings
 

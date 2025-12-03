@@ -107,7 +107,7 @@ class AIDocumentAnnotator[TMetadata: Schema](Annotator[AIDocumentAnnotatorConfig
             try:
                 results = await anyenv.gather(*tasks)
                 for chunk, result in zip(batch, results):
-                    metadata = result.content.model_dump()  # type: ignore
+                    metadata = result.content.model_dump()
                     chunk.metadata |= metadata
             except Exception:
                 self.logger.exception("Error annotating batch")
