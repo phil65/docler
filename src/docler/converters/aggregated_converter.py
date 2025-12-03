@@ -60,11 +60,10 @@ class AggregatedConverter(DocumentConverter[AggregatedConverterConfig]):
 
     def to_config(self) -> AggregatedConverterConfig:
         """Extract configuration from the converter instance."""
-        config = AggregatedConverterConfig()
-        for converter in self._registry._converters:
-            config.converters.append(converter.to_config())
-        config.mime_preferences = dict(self._registry._preferences)
-        return config
+        return AggregatedConverterConfig(
+            mime_preferences=dict(self._registry._preferences),
+            converters=[converter.to_config() for converter in self._registry._converters],
+        )
 
     def get_supported_mime_types(self) -> set[str]:
         """Get all MIME types supported by registered converters."""
