@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 
 RegexPattern = str
 
-_process_registry: dict[tuple[str, ...], weakref.ref[subprocess.Popen]] = {}
+_process_registry: dict[tuple[str, ...], weakref.ref[subprocess.Popen[bytes]]] = {}
 _registry_lock = asyncio.Lock()
 
 
@@ -117,7 +117,7 @@ class ProcessRunner:
         self.wait_stderr = [re.compile(p) for p in (wait_stderr or [])]
         self.wait_timeout = wait_timeout
         self.poll_interval = poll_interval
-        self.process: subprocess.Popen | None = None
+        self.process: subprocess.Popen[bytes] | None = None
         self._stdout_patterns_found = dict.fromkeys(self.wait_output, False)
         self._stderr_patterns_found = dict.fromkeys(self.wait_stderr, False)
         self._stdout_buffer: list[str] = []
@@ -126,7 +126,7 @@ class ProcessRunner:
         self._stdout_reader: threading.Thread | None = None
         self._stderr_reader: threading.Thread | None = None
 
-    async def _wait_for_conditions(self):
+    async def _wait_for_conditions(self) -> None:
         async def check_all() -> bool:
             # Check HTTP endpoints
             http_results = await asyncio.gather(*(_check_http(url) for url in self.wait_http))

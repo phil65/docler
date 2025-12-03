@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Any
 
 
-def convert_filters(filters: dict[str, Any]) -> Any:  # type: ignore
+def convert_filters(filters: dict[str, Any]) -> Any:
     """Convert standard filters to OpenAI's filter format.
 
     Args:

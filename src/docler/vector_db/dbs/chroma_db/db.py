@@ -47,9 +47,9 @@ class ChromaBackend(VectorStoreBackend):
         import chromadb
 
         if persist_directory:
-            self._client = chromadb.PersistentClient(path=persist_directory)  # type: ignore
+            self._client = chromadb.PersistentClient(path=persist_directory)
         else:
-            self._client = chromadb.Client()  # type: ignore
+            self._client = chromadb.Client()
         self._collection = self._client.get_or_create_collection(
             name=vector_store_id,
             metadata={"hnsw:space": distance_metric},

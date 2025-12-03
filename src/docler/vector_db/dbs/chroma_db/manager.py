@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 import shutil
-from typing import TYPE_CHECKING, ClassVar, cast
+from typing import TYPE_CHECKING, Any, ClassVar, cast
 
 from docler.configs.vector_db_configs import ChromaConfig
 from docler.models import VectorStoreInfo
@@ -115,7 +115,7 @@ class ChromaVectorManager(VectorManagerBase[ChromaConfig]):
     async def get_vector_store(
         self,
         name: str,
-        **kwargs,
+        **kwargs: Any,
     ) -> BaseVectorDB:
         """Get a connection to an existing collection."""
         try:

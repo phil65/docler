@@ -158,7 +158,7 @@ class QdrantVectorManager(VectorManagerBase[QdrantConfig]):
         name: str,
         vector_size: int = 1536,
         metric: Metric = "cosine",
-        **kwargs,
+        **kwargs: Any,
     ) -> BaseVectorDB:
         """Create a new vector store (collection)."""
         from qdrant_client.http import models
@@ -190,7 +190,7 @@ class QdrantVectorManager(VectorManagerBase[QdrantConfig]):
     async def get_vector_store(
         self,
         name: str,
-        **kwargs,
+        **kwargs: Any,
     ) -> BaseVectorDB:
         """Get a connection to an existing collection."""
         from qdrant_client.http.models import VectorParams

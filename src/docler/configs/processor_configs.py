@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Annotated, Literal
+from typing import TYPE_CHECKING, Annotated, Any, Literal
 
 from pydantic import Field
 from schemez import ModelIdentifier  # noqa: TC002
@@ -65,7 +65,7 @@ class LLMProofReaderConfig(BaseProcessorConfig):
     add_metadata_only: bool = False
     """If True, only add metadata without modifying content."""
 
-    def get_provider(self) -> DocumentProcessor:
+    def get_provider(self) -> DocumentProcessor[Any]:
         """Get the processor instance."""
         from docler.processors.ai_processor import LLMProofReader
 

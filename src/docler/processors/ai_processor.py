@@ -191,7 +191,7 @@ class LLMProofReader(DocumentProcessor[LLMProofReaderConfig]):
 if __name__ == "__main__":
     import anyenv
 
-    async def main():
+    async def main() -> Document:
         # Create a test document with OCR errors
         test_content = """\
 OCR Test Document

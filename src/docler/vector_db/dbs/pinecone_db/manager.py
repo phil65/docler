@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, ClassVar, Literal, cast
+from typing import TYPE_CHECKING, Any, ClassVar, Literal, cast
 
 from pydantic import SecretStr
 
@@ -65,7 +65,7 @@ class PineconeVectorManager(VectorManagerBase[PineconeConfig]):
         cloud: PineconeCloud = "aws",
         region: PineconeRegion = "us-east-1",
         namespace: str = "default",
-        **kwargs,
+        **kwargs: Any,
     ) -> BaseVectorDB:
         """Create a new vector store."""
         from pinecone import PineconeAsyncio, ServerlessSpec
