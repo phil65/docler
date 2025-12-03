@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from mkdown import Document
 
 
-def main():
+def main() -> None:
     """Main Streamlit app."""
     st.title("Document Processing Pipeline")
     state = SessionState.get()

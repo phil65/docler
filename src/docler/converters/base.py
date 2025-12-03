@@ -51,12 +51,12 @@ class DocumentConverter[TConfig: BaseModel](BaseProvider[TConfig], ABC):
         self,
         languages: list[SupportedLanguage] | None = None,
         page_range: PageRangeString | None = None,
-    ):
+    ) -> None:
         super().__init__()
         self.languages = languages
         self.page_range = page_range
 
-    def __init_subclass__(cls, **kwargs):
+    def __init_subclass__(cls, **kwargs) -> None:
         """Register subclasses automatically when they're defined."""
         super().__init_subclass__(**kwargs)
         DocumentConverter.registry[cls.NAME] = cls

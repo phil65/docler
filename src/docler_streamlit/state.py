@@ -27,10 +27,10 @@ class SessionState(State):
     converter_configs: dict[str, BaseConverterConfig] = Field(default_factory=dict)
     processor_config: LLMProofReaderConfig | None = None
 
-    def next_step(self):
+    def next_step(self) -> None:
         """Move to the next step in the workflow."""
         self.step += 1
 
-    def prev_step(self):
+    def prev_step(self) -> None:
         """Move to the previous step in the workflow."""
         self.step -= 1

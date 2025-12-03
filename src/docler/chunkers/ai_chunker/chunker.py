@@ -31,7 +31,7 @@ class AIChunker(TextChunker[AiChunkerConfig]):
         model: str | None = None,
         user_prompt: str | None = None,
         system_prompt: str | None = None,
-    ):
+    ) -> None:
         """Initialize the AI chunker.
 
         Args:
@@ -83,7 +83,7 @@ if __name__ == "__main__":
 
     from mkdown import Document
 
-    async def main():
+    async def main() -> None:
         # Example usage
         doc = Document(source_path="example.txt", content=DEFAULT_CHUNKER_SYSTEM_PROMPT)
         chunker = AIChunker()

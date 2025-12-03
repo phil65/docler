@@ -39,7 +39,7 @@ class QdrantBackend(VectorStoreBackend):
         api_key: str | None = None,
         vector_size: int = 1536,
         prefer_grpc: bool = True,
-    ):
+    ) -> None:
         """Initialize Qdrant backend."""
         from qdrant_client import AsyncQdrantClient
 
@@ -131,7 +131,7 @@ class QdrantBackend(VectorStoreBackend):
         points = results.points
         return [to_search_result(i) for i in points]
 
-    async def close(self):
+    async def close(self) -> None:
         """Close the Qdrant connection."""
         await self._client.close()
 

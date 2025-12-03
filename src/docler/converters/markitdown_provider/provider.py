@@ -70,7 +70,7 @@ class MarkItDownConverter(DocumentConverter[MarkItDownConfig]):
         self,
         languages: list[SupportedLanguage] | None = None,
         page_range: PageRangeString | None = None,
-    ):
+    ) -> None:
         """Initialize the MarkItDown converter.
 
         Args:

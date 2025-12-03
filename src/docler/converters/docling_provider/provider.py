@@ -50,7 +50,7 @@ class DoclingConverter(DocumentConverter[DoclingConverterConfig]):
         indent: int = 4,
         text_width: int = -1,
         ocr_engine: DoclingEngine = "easy_ocr",
-    ):
+    ) -> None:
         """Initialize the Docling converter.
 
         Args:

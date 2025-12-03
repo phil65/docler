@@ -62,7 +62,7 @@ class AIImageAnnotator[TMetadata: Schema = DefaultImageMetadata](Annotator[AIIma
         user_prompt: str | None = None,
         metadata_model: type[TMetadata] = DefaultImageMetadata,  # type: ignore
         batch_size: int = 3,
-    ):
+    ) -> None:
         """Initialize the AI image annotator.
 
         Args:
@@ -153,7 +153,7 @@ if __name__ == "__main__":
 
     from docler.models import ChunkedDocument
 
-    async def main():
+    async def main() -> None:
         annotator = AIImageAnnotator[DefaultImageMetadata]()
         url = "https://www.a-i-stack.com/wp-content/uploads/go-x/u/93dcedb9-17f3-4aee-9b5a-3744e5e84686/image-342x342.png"
         image = await Image.from_file(url)

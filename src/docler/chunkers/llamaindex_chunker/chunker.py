@@ -39,7 +39,7 @@ class LlamaIndexChunker(TextChunker[LlamaIndexChunkerConfig]):
         chunk_overlap: int = 200,
         include_metadata: bool = True,
         include_prev_next_rel: bool = False,
-    ):
+    ) -> None:
         """Initialize the LlamaIndex chunker.
 
         Args:
@@ -158,7 +158,7 @@ if __name__ == "__main__":
 
     from mkdown import Document
 
-    async def main():
+    async def main() -> None:
         # Example usage
         doc = Document(
             source_path="example.txt",

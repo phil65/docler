@@ -30,7 +30,7 @@ class LiteLLMEmbeddings(EmbeddingProvider[LiteLLMEmbeddingConfig]):
         input_type: str | None = None,
         base_url: str | None = None,
         **litellm_kwargs: str | float | bool,
-    ):
+    ) -> None:
         """Initialize the LiteLLM embeddings provider.
 
         Args:

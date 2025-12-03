@@ -39,7 +39,7 @@ class PineconeBackend(VectorStoreBackend):
         api_key: str | None = None,
         dimension: int = 1536,
         namespace: str = "default",
-    ):
+    ) -> None:
         """Initialize Pinecone backend."""
         self.api_key = api_key or get_api_key("PINECONE_API_KEY")
         self._host = host
@@ -146,14 +146,14 @@ class PineconeBackend(VectorStoreBackend):
             return []
         return [to_search_result(i) for i in results.matches]  # type: ignore
 
-    async def close(self):
+    async def close(self) -> None:
         """Close the Pinecone connection."""
         self._index = None
 
 
 if __name__ == "__main__":
 
-    async def main():
+    async def main() -> None:
         db = PineconeBackend(host="https://test-y8nq1hj.svc.aped-4627-b74a.pinecone.io")
         data = await db.list_vector_ids()
         print(data)

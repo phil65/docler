@@ -32,7 +32,7 @@ class ChromaBackend(VectorStoreBackend):
         vector_store_id: str = "default",
         persist_directory: str | None = None,
         distance_metric: Metric = "cosine",
-    ):
+    ) -> None:
         """Initialize ChromaDB backend.
 
         Args:
@@ -150,7 +150,7 @@ if __name__ == "__main__":
 
     from docler.vector_db.dbs.chroma_db import ChromaVectorManager
 
-    async def main():
+    async def main() -> None:
         async with ChromaVectorManager.run_server("chroma"):
             db = ChromaBackend(persist_directory="./chroma")
             query_vector = np.array([0.1, 0.2, 0.3])

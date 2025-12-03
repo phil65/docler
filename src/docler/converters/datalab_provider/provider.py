@@ -61,7 +61,7 @@ class DataLabConverter(DocumentConverter[DataLabConfig]):
         api_key: str | None = None,
         force_ocr: bool = False,
         use_llm: bool = False,
-    ):
+    ) -> None:
         """Initialize the DataLab converter.
 
         Args:

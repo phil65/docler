@@ -49,7 +49,7 @@ class TokenAwareChunker(TextChunker[TokenAwareChunkerConfig]):
         model: str,
         max_tokens_per_chunk: int = 4000,
         chunk_overlap_lines: int = 20,
-    ):
+    ) -> None:
         """Initialize token-aware chunker.
 
         Args:
@@ -141,7 +141,7 @@ if __name__ == "__main__":
 
     from mkdown import Document
 
-    async def main():
+    async def main() -> None:
         # Example usage
         doc = Document(
             source_path="example.txt",

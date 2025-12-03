@@ -76,7 +76,7 @@ class MarkerConverter(DocumentConverter[MarkerConfig]):
         dpi: int = 192,
         use_llm: bool = False,
         llm_provider: ProviderType | None = None,
-    ):
+    ) -> None:
         """Initialize the Marker converter.
 
         Args:
@@ -125,7 +125,7 @@ class MarkerConverter(DocumentConverter[MarkerConfig]):
 if __name__ == "__main__":
     import devtools
 
-    async def main():
+    async def main() -> None:
         # # Example usage with PDF
         pdf_path = "/home/phil65/dev/aistack-lab/sap_dokus_pdf/CCM_CONV.pdf"
         converter = MarkerConverter()

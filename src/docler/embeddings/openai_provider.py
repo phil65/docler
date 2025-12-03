@@ -25,7 +25,7 @@ class OpenAIEmbeddings(EmbeddingProvider[OpenAIEmbeddingConfig]):
     REQUIRED_PACKAGES: ClassVar = {"openai", "httpx"}
     dimensions: ClassVar[int] = 1536
 
-    def __init__(self, api_key: str | None = None, model: str = "text-embedding-3-small"):
+    def __init__(self, api_key: str | None = None, model: str = "text-embedding-3-small") -> None:
         self.api_key = api_key or get_api_key("OPENAI_API_KEY")
         self.model = model
         self.use_openai = find_spec("openai")

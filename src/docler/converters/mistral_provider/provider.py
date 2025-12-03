@@ -49,7 +49,7 @@ class MistralConverter(DocumentConverter[MistralConfig]):
         api_key: str | None = None,
         ocr_model: str = "mistral-ocr-latest",
         image_min_size: int | None = None,
-    ):
+    ) -> None:
         """Initialize the Mistral converter.
 
         Args:
@@ -200,7 +200,7 @@ class MistralConverter(DocumentConverter[MistralConfig]):
 if __name__ == "__main__":
     import devtools
 
-    async def main():
+    async def main() -> None:
         # # Example usage with PDF
         pdf_path = "/home/phil65/dev/oss/docler/tests/resources/pdf_sample_page_nums.pdf"
         converter = MistralConverter()

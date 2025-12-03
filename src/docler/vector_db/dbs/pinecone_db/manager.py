@@ -29,7 +29,7 @@ class PineconeVectorManager(VectorManagerBase[PineconeConfig]):
     NAME = "pinecone"
     REQUIRED_PACKAGES: ClassVar = {"pinecone-client"}
 
-    def __init__(self, api_key: str | None = None):
+    def __init__(self, api_key: str | None = None) -> None:
         """Initialize the Pinecone Vector Store manager."""
         super().__init__()
         self.api_key = api_key or get_api_key("PINECONE_API_KEY")
@@ -128,14 +128,14 @@ class PineconeVectorManager(VectorManagerBase[PineconeConfig]):
         else:
             return True
 
-    async def close(self):
+    async def close(self) -> None:
         """Close all vector store connections."""
 
 
 if __name__ == "__main__":
     import anyenv
 
-    async def main():
+    async def main() -> None:
         manager = PineconeVectorManager()
         indexes = await manager.list_vector_stores()
         print(indexes)

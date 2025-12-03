@@ -124,7 +124,7 @@ def mcp(
         logger.info("Shutting down...")
 
 
-def main():
+def main() -> None:
     """Main entry point."""
     cli()
 

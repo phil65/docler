@@ -23,7 +23,7 @@ class SentenceTransformerEmbeddings(EmbeddingProvider[SentenceTransformerEmbeddi
     NAME = "SentenceTransformers"
     REQUIRED_PACKAGES: ClassVar = {"sentence-transformers"}
 
-    def __init__(self, model: str = "all-MiniLM-L6-v2"):
+    def __init__(self, model: str = "all-MiniLM-L6-v2") -> None:
         from sentence_transformers import SentenceTransformer
 
         self.model = SentenceTransformer(model)  # type: ignore
@@ -54,7 +54,7 @@ class SentenceTransformerEmbeddings(EmbeddingProvider[SentenceTransformerEmbeddi
 if __name__ == "__main__":
     import asyncio
 
-    async def main():
+    async def main() -> None:
         provider = SentenceTransformerEmbeddings()
         for embedding in await provider.embed_texts(["Hello world"]):
             print(embedding)

@@ -21,7 +21,7 @@ logger = get_logger(__name__)
 class VectorStore:
     """Helper class to manage both embedding and vector storage."""
 
-    def __init__(self, store_name: str, backend):
+    def __init__(self, store_name: str, backend) -> None:
         """Initialize with a vector store backend."""
         self.store_name = store_name
         self.backend = backend
@@ -84,7 +84,7 @@ class VectorStore:
         return chunks_with_scores
 
 
-def show_step_4():
+def show_step_4() -> None:
     """Show vector store upload screen (step 4)."""
     state = SessionState.get()
     st.header("Step 4: Upload to Vector Store")

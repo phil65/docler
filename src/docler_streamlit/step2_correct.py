@@ -14,7 +14,7 @@ from docler_streamlit.state import SessionState
 logger = get_logger(__name__)
 
 
-def show_step_2():
+def show_step_2() -> None:
     """Show document proof reading/correction screen (step 2)."""
     state = SessionState.get()
     st.header("Step 2: Document Correction")
@@ -23,7 +23,7 @@ def show_step_2():
         st.button("← Back", on_click=state.prev_step)
     with col3:
         # When proceeding without corrections, copy original document
-        def proceed_to_chunking():
+        def proceed_to_chunking() -> None:
             if state.document and not state.corrected_document:
                 state.corrected_document = state.document
             state.next_step()

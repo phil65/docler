@@ -58,7 +58,7 @@ class UpstageConverter(DocumentConverter[UpstageConfig]):
         chart_recognition: bool = True,
         align_orientation: bool = False,
         base64_categories: set[UpstageCategory] | None = None,
-    ):
+    ) -> None:
         """Initialize the Upstage converter.
 
         Args:

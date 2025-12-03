@@ -24,7 +24,7 @@ LANGUAGES: list[SupportedLanguage] = ["en", "de", "fr", "es", "zh"]
 ALLOWED_EXTENSIONS = ["pdf", "docx", "jpg", "png", "ppt", "pptx", "xls", "xlsx"]
 
 
-def main():
+def main() -> None:
     """Main Streamlit app."""
     st.title("Document Converter")
     uploaded_file = st.file_uploader("Choose a file", type=ALLOWED_EXTENSIONS)

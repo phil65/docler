@@ -18,7 +18,7 @@ logger = get_logger(__name__)
 ALLOWED_EXTENSIONS = ["pdf", "docx", "jpg", "png", "ppt", "pptx", "xls", "xlsx"]
 
 
-def show_step_1():
+def show_step_1() -> None:
     """Show document conversion screen (step 1)."""
     state = SessionState.get()
     st.header("Step 1: Document Conversion")

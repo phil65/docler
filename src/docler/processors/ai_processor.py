@@ -101,7 +101,7 @@ class LLMProofReader(DocumentProcessor[LLMProofReaderConfig]):
         chunker: ChunkerConfig | ChunkerShorthand | None = None,
         include_diffs: bool = True,
         add_metadata_only: bool = False,
-    ):
+    ) -> None:
         """Initialize LLM document proof-reader.
 
         Args:

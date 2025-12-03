@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 LANGUAGES: list[SupportedLanguage] = ["en", "de", "fr", "es", "zh"]
 
 
-def display_chunk_preview(chunk: TextChunk, expanded: bool = False):
+def display_chunk_preview(chunk: TextChunk, expanded: bool = False) -> None:
     """Display a tabbed preview of a text chunk.
 
     Args:
@@ -57,7 +57,7 @@ def display_chunk_preview(chunk: TextChunk, expanded: bool = False):
                     st.divider()
 
 
-def display_document_preview(doc: Document):
+def display_document_preview(doc: Document) -> None:
     """Display a tabbed preview of a document.
 
     Args:

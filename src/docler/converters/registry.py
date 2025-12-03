@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 class ConverterRegistry:
     """Registry for document converters."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize an empty converter registry."""
         # All registered converters
         self._converters: list[DocumentConverter] = []
@@ -51,7 +51,7 @@ class ConverterRegistry:
     def get_converter_by_name(self, name: str):
         return next(i for i in self._converters if name == i.NAME)
 
-    def register(self, converter: DocumentConverter):
+    def register(self, converter: DocumentConverter) -> None:
         """Register a converter."""
         self._converters.append(converter)
 
@@ -90,7 +90,7 @@ class ConverterRegistry:
 
         return None
 
-    def set_preference(self, mime_or_extension: str, converter_name: str):
+    def set_preference(self, mime_or_extension: str, converter_name: str) -> None:
         """Set a preference for a specific converter for a MIME type or file extension.
 
         Args:
@@ -118,7 +118,7 @@ if __name__ == "__main__":
 
     logging.basicConfig(level=logging.DEBUG)
 
-    async def main():
+    async def main() -> None:
         registry = ConverterRegistry.create_default(languages=["en"])
         converter = registry.get_converter("document.pdf")
         if converter:

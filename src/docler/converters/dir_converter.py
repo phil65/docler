@@ -48,7 +48,7 @@ class Conversion:
 class DirectoryConverter:
     """Directory conversion functionality."""
 
-    def __init__(self, converter: DocumentConverter, *, chunk_size: int = 50):
+    def __init__(self, converter: DocumentConverter, *, chunk_size: int = 50) -> None:
         """Initialize the directory converter.
 
         Args:
@@ -171,7 +171,7 @@ if __name__ == "__main__":
 
     from docler.converters.mistral_provider.provider import MistralConverter
 
-    async def main():
+    async def main() -> None:
         converter = MistralConverter()
         dir_converter = DirectoryConverter(converter)
         await dir_converter.convert("path/to/directory")

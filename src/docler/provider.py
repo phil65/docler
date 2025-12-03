@@ -55,7 +55,7 @@ class BaseProvider[TConfig: BaseModel]:
     REQUIRED_PACKAGES: ClassVar[set[str]] = set()
     """Packages required for this converter."""
 
-    def __init__(self, *args: Any, **kwargs: Any):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         self.logger = get_logger(__name__)
         self.exit_stack = AsyncExitStack()
 

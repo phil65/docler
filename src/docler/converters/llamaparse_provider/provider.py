@@ -87,7 +87,7 @@ class LlamaParseConverter(DocumentConverter[LlamaParseConfig]):
         disable_ocr: bool = False,
         continuous_mode: bool = True,
         html_tables: bool = False,
-    ):
+    ) -> None:
         """Initialize the LlamaParse converter.
 
         Args:

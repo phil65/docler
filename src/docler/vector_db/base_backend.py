@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 class VectorStoreBackend(ABC):
     """Low-level vector store interface for raw vector operations."""
 
-    def __init__(self, *, vector_store_id: str, **kwargs: Any):
+    def __init__(self, *, vector_store_id: str, **kwargs: Any) -> None:
         """Initialize vector store backend.
 
         Args:
@@ -101,7 +101,7 @@ class VectorStoreBackend(ABC):
 class LocalVectorStoreBackend(VectorStoreBackend):
     """Vector store that operates entirely locally with file-based storage."""
 
-    def __init__(self, *, vector_store_id: str, storage_path: str, **kwargs: Any):
+    def __init__(self, *, vector_store_id: str, storage_path: str, **kwargs: Any) -> None:
         """Initialize a local vector store.
 
         Args:
@@ -128,7 +128,7 @@ class RemoteVectorStoreBackend(VectorStoreBackend):
         connection_url: str,
         api_key: str | None = None,
         **kwargs,
-    ):
+    ) -> None:
         """Initialize a remote vector store.
 
         Args:

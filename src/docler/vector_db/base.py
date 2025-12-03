@@ -16,7 +16,7 @@ Metric = Literal["cosine", "euclidean", "dot"]
 class BaseVectorDB(ABC):
     """Abstract interface for vector databases that handle both storage and retrieval."""
 
-    def __init__(self, vector_store_id: str):
+    def __init__(self, vector_store_id: str) -> None:
         self.vector_store_id = vector_store_id
 
     @abstractmethod

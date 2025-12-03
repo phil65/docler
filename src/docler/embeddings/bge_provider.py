@@ -24,7 +24,7 @@ class BGEEmbeddings(EmbeddingProvider[BGEEmbeddingConfig]):
     REQUIRED_PACKAGES: ClassVar = {"FlagEmbedding"}
     dimensions: ClassVar[int] = 1536  # OpenAI-compatible
 
-    def __init__(self, model: str = "BAAI/bge-large-en-v1.5"):
+    def __init__(self, model: str = "BAAI/bge-large-en-v1.5") -> None:
         from FlagEmbedding import FlagModel
 
         self.model = FlagModel(model, use_fp16=True)  # pyright: ignore

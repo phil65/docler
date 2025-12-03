@@ -84,7 +84,7 @@ class DoclingRemoteConverter(DocumentConverter[DoclingRemoteConfig]):
         do_formula_enrichment: bool = False,
         do_picture_classification: bool = False,
         do_picture_description: bool = False,
-    ):
+    ) -> None:
         """Initialize the remote Docling converter.
 
         Args:

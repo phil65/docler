@@ -47,7 +47,7 @@ class QdrantVectorManager(VectorManagerBase[QdrantConfig]):
         url: HttpUrl | str | None = None,
         api_key: str | None = None,
         prefer_grpc: bool = True,
-    ):
+    ) -> None:
         """Initialize the Qdrant Vector Store manager.
 
         Args:
@@ -236,7 +236,7 @@ class QdrantVectorManager(VectorManagerBase[QdrantConfig]):
         else:
             return True
 
-    async def close(self):
+    async def close(self) -> None:
         """Close all vector store connections."""
         await self._client.close()
 
@@ -244,7 +244,7 @@ class QdrantVectorManager(VectorManagerBase[QdrantConfig]):
 if __name__ == "__main__":
     import asyncio
 
-    async def main():
+    async def main() -> None:
         # async with QdrantVectorManager.run_server("test"):
         manager = QdrantVectorManager(url="http://localhost:6333")
         store = await manager.create_vector_store("test-store")

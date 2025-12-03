@@ -25,7 +25,7 @@ if TYPE_CHECKING:
 logger = get_logger(__name__)
 
 
-def show_step_3():
+def show_step_3() -> None:
     """Show document chunking screen (step 3)."""
     st.header("Step 3: Document Chunking")
     state = SessionState.get()

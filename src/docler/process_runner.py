@@ -24,7 +24,7 @@ _process_registry: dict[tuple[str, ...], weakref.ref[subprocess.Popen]] = {}
 _registry_lock = asyncio.Lock()
 
 
-def _clean_registry():
+def _clean_registry() -> None:
     """Remove dead processes from registry."""
     dead_keys = []
     for key, ref in _process_registry.items():
@@ -73,7 +73,7 @@ def _reader_thread(
     stream: IO[bytes],
     buffer: list[str],
     patterns: dict[re.Pattern[str], bool] | None = None,
-):
+) -> None:
     """Thread to read from process streams."""
     try:
         for line in iter(stream.readline, b""):
@@ -105,7 +105,7 @@ class ProcessRunner:
         wait_timeout: float = 30.0,
         poll_interval: float = 0.1,
         cleanup_timeout: float = 5.0,
-    ):
+    ) -> None:
         self.cleanup_timeout = cleanup_timeout
         self.command = command if isinstance(command, list) else command.split()
         self.command_key = tuple(self.command)
@@ -227,7 +227,7 @@ class ProcessRunner:
 
         return self
 
-    async def __aexit__(self, *_):
+    async def __aexit__(self, *_) -> None:
         """Clean up process with timeout."""
         if self.process is None:
             return
@@ -248,7 +248,7 @@ class ProcessRunner:
         """Return exit code if process has finished."""
         return self.process.poll() if self.process else None
 
-    def send_signal(self, sig: int):
+    def send_signal(self, sig: int) -> None:
         """Send a signal to the process."""
         if self.process:
             self.process.send_signal(sig)
@@ -261,7 +261,7 @@ class ProcessRunner:
 
 if __name__ == "__main__":
 
-    async def main():
+    async def main() -> None:
         docker_cmd = "docker run -p 6333:6333 -p 6334:6334 qdrant/qdrant"
         print(f"Running command: {docker_cmd}")
         async with ProcessRunner(docker_cmd, wait_tcp=[("localhost", 6333)]) as runner:

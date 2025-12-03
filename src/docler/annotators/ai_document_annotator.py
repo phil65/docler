@@ -54,7 +54,7 @@ class AIDocumentAnnotator[TMetadata: Schema](Annotator[AIDocumentAnnotatorConfig
         metadata_model: type[TMetadata] = DefaultMetadata,  # type: ignore
         max_context_length: int = 1500,
         batch_size: int = 5,
-    ):
+    ) -> None:
         """Initialize the AI document annotator.
 
         Args:
@@ -120,7 +120,7 @@ if __name__ == "__main__":
 
     from docler.models import ChunkedDocument
 
-    async def main():
+    async def main() -> None:
         text = "Test"
         annotator = AIDocumentAnnotator[DefaultMetadata]()
         chunked_doc = ChunkedDocument(content=text)

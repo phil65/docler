@@ -35,7 +35,7 @@ class ChromaVectorManager(VectorManagerBase[ChromaConfig]):
         port: int = 8000,
         ssl: bool = False,
         headers: dict[str, str] | None = None,
-    ):
+    ) -> None:
         """Initialize the ChromaDB vector store manager.
 
         Args:
@@ -153,7 +153,7 @@ class ChromaVectorManager(VectorManagerBase[ChromaConfig]):
         else:
             return True
 
-    async def close(self):
+    async def close(self) -> None:
         """Close all vector store connections."""
         if self._list_client:
             try:
@@ -170,7 +170,7 @@ if __name__ == "__main__":
 
     logging.basicConfig(level=logging.INFO)
 
-    async def main():
+    async def main() -> None:
         async with ChromaVectorManager.run_server(
             "test",
             wait_output=[".*Uvicorn running.*"],

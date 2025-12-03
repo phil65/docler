@@ -44,7 +44,7 @@ class LLMConverter(DocumentConverter[LLMConverterConfig]):
         model: str = DEFAULT_CONVERTER_MODEL,
         system_prompt: str | None = None,
         user_prompt: str | None = None,
-    ):
+    ) -> None:
         """Initialize the LiteLLM converter.
 
         Args:
