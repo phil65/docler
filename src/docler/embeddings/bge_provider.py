@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import asyncio
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar
 
 from docler.configs.embedding_configs import BGEEmbeddingConfig
 from docler.embeddings.base import EmbeddingProvider
@@ -33,7 +33,7 @@ class BGEEmbeddings(EmbeddingProvider[BGEEmbeddingConfig]):
         self,
         texts: AsyncIterator[str],
         batch_size: int = 8,
-    ) -> AsyncIterator[np.ndarray]:
+    ) -> AsyncIterator[np.ndarray[Any, Any]]:
         batch: list[str] = []
 
         async for text in texts:

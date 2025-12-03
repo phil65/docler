@@ -17,7 +17,7 @@ def process_response(document: dict[str, Any]) -> tuple[str, list[Image]]:
         img_pattern = r"!\[([^]]*)\]\(data:image/([^;]+);base64,([^)]+)\)"
         image_counter = 0
 
-        def replace_image(match) -> str:
+        def replace_image(match: re.Match[Any]) -> str:
             nonlocal image_counter
             alt_text = match.group(1)
             img_type = match.group(2)

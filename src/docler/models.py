@@ -62,7 +62,7 @@ class Vector:
     """A single vector."""
 
     id: str
-    data: np.ndarray
+    data: np.ndarray[Any, Any]
     metadata: dict[str, Any] = field(default_factory=dict)
 
 

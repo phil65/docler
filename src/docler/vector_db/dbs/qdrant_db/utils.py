@@ -28,7 +28,7 @@ def get_query(filters: dict[str, Any] | None = None) -> models.Filter | None:
 
 
 def to_pointstructs(
-    vectors: list[np.ndarray], ids: list[str], metadata: list[dict[str, Any]]
+    vectors: list[np.ndarray[Any, Any]], ids: list[str], metadata: list[dict[str, Any]]
 ) -> list[models.PointStruct]:
     points = []
     for i, vector in enumerate(vectors):

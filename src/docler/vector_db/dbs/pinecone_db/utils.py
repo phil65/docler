@@ -10,7 +10,7 @@ from docler.models import SearchResult, VectorStoreInfo
 
 if TYPE_CHECKING:
     from pinecone import IndexModel
-    from pinecone.core.openapi.db_data.models import ScoredVector
+    from pinecone.core.openapi.db_data.model.scored_vector import ScoredVector
 
 
 def convert_filters(filters: dict[str, Any]) -> dict[str, Any]:
@@ -98,4 +98,4 @@ def to_vector_store_info(index: IndexModel) -> VectorStoreInfo:
         vector_type=index.vector_type,
         tags=index.tags,
     )
-    return VectorStoreInfo(db_id=index.host, name=index.name, metadata=meta)
+    return VectorStoreInfo(db_id=index.host, name=index.name, metadata=meta)  # pyright: ignore[reportArgumentType]

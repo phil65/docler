@@ -13,7 +13,7 @@ from docler.log import get_logger
 
 if TYPE_CHECKING:
     from llama_index.core.node_parser import NodeParser
-    from mkdown import Document
+    from mkdown import Document, Image
 
 
 logger = get_logger(__name__)
@@ -98,7 +98,7 @@ class LlamaIndexChunker(TextChunker[LlamaIndexChunkerConfig]):
             include_prev_next_rel=self.include_prev_next_rel,
         )
 
-    def _find_images_for_chunk(self, doc: Document, chunk_text: str) -> list:
+    def _find_images_for_chunk(self, doc: Document, chunk_text: str) -> list[Image]:
         """Find images that are referenced in the chunk.
 
         Args:

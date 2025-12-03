@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar
 
 import numpy as np
 
@@ -56,7 +56,7 @@ class LiteLLMEmbeddings(EmbeddingProvider[LiteLLMEmbeddingConfig]):
         self,
         texts: AsyncIterator[str],
         batch_size: int = 8,
-    ) -> AsyncIterator[np.ndarray]:
+    ) -> AsyncIterator[np.ndarray[Any, Any]]:
         """Stream embeddings one at a time.
 
         Args:
@@ -81,7 +81,7 @@ class LiteLLMEmbeddings(EmbeddingProvider[LiteLLMEmbeddingConfig]):
             for embedding in embeddings:
                 yield embedding
 
-    async def _get_embeddings(self, texts: list[str]) -> list[np.ndarray]:
+    async def _get_embeddings(self, texts: list[str]) -> list[np.ndarray[Any, Any]]:
         """Get embeddings for a batch of texts.
 
         Args:

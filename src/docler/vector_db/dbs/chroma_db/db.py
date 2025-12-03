@@ -61,7 +61,7 @@ class ChromaBackend(VectorStoreBackend):
 
     async def add_vectors(
         self,
-        vectors: list[np.ndarray],
+        vectors: list[np.ndarray[Any, Any]],
         metadata: list[dict[str, Any]],
         ids: list[str] | None = None,
     ) -> list[str]:
@@ -121,7 +121,7 @@ class ChromaBackend(VectorStoreBackend):
 
     async def search_vectors(
         self,
-        query_vector: np.ndarray,
+        query_vector: np.ndarray[Any, Any],
         k: int = 4,
         filters: dict[str, Any] | None = None,
     ) -> list[SearchResult]:

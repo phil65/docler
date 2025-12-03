@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar
 
 from pydantic import BaseModel
 
@@ -27,10 +27,10 @@ class EmbeddingProvider[TConfig: BaseModel](BaseProvider[TConfig], ABC):
         self,
         texts: AsyncIterator[str],
         batch_size: int = 8,
-    ) -> AsyncIterator[np.ndarray]:
+    ) -> AsyncIterator[np.ndarray[Any, Any]]:
         """Stream embeddings one at a time."""
 
-    async def embed_texts(self, texts: list[str]) -> list[np.ndarray]:
+    async def embed_texts(self, texts: list[str]) -> list[np.ndarray[Any, Any]]:
         """Convert multiple texts to embeddings.
 
         Args:
@@ -46,7 +46,7 @@ class EmbeddingProvider[TConfig: BaseModel](BaseProvider[TConfig], ABC):
 
         return [i async for i in self.embed_stream(text_iterator())]
 
-    async def embed_query(self, query: str) -> np.ndarray:
+    async def embed_query(self, query: str) -> np.ndarray[Any, Any]:
         """Convert a single query to an embedding.
 
         Args:

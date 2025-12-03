@@ -101,7 +101,7 @@ def process_response(result: dict[str, Any]) -> tuple[str, list[Image]]:
         except (ValueError, IndexError) as e:
             logger.warning("Failed to parse page number from page break marker: %s", e)
             # Return the original match if we can't parse it
-            return match.group(0)  # type: ignore[no-any-return]
+            return match.group(0)
 
     # Count matches before replacement for logging
     original_count = len(re.findall(page_break_pattern, md_content))

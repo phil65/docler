@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from importlib.util import find_spec
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar
 
 from docler.configs.embedding_configs import OpenAIEmbeddingConfig
 from docler.embeddings.base import EmbeddingProvider
@@ -34,7 +34,7 @@ class OpenAIEmbeddings(EmbeddingProvider[OpenAIEmbeddingConfig]):
         self,
         texts: AsyncIterator[str],
         batch_size: int = 8,
-    ) -> AsyncIterator[np.ndarray]:
+    ) -> AsyncIterator[np.ndarray[Any, Any]]:
         """Embeddings iterator."""
         import numpy as np
 
