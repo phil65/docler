@@ -126,7 +126,7 @@ class QdrantVectorManager(VectorManagerBase[QdrantConfig]):
             cmd = f"docker run -p 6333:6333 -p 6334:6334 -v {volume_path}:/qdrant/storage qdrant/qdrant"  # noqa: E501
         else:
             # Unix-style command
-            cmd = f"docker run -p 6333:6333 -p 6334:6334 -v {path}:/qdrant/storage:z qdrant/qdrant"  # noqa: E501
+            cmd = f"docker run -p 6333:6333 -p 6334:6334 -v {path}:/qdrant/storage:z qdrant/qdrant"
 
         return ProcessRunner(cmd, wait_tcp=[("localhost", 6333)], **kwargs)
 

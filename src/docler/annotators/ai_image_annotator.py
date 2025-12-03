@@ -18,7 +18,6 @@ from docler.configs.annotator_configs import (
 
 
 if TYPE_CHECKING:
-    from llmling_agent import StructuredAgent
     from mkdown import Image
 
     from docler.models import ChunkedDocument
@@ -96,10 +95,11 @@ class AIImageAnnotator[TMetadata: Schema = DefaultImageMetadata](Annotator[AIIma
 
         b64_content = image.to_base64()
         img_content = ImageBase64Content(data=b64_content, mime_type=image.mime_type)
-        agent: StructuredAgent[None, TMetadata] = Agent[None](  # type: ignore
+        agent = Agent(
             model=self.model,
             system_prompt=self.system_prompt,
-        ).to_structured(self.metadata_model)
+            output_type=self.metadata_model,
+        )
 
         try:
             filename_info = f" ({image.filename})" if image.filename else ""

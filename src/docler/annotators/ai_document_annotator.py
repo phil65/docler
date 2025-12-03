@@ -18,8 +18,6 @@ from docler.configs.annotator_configs import (
 
 
 if TYPE_CHECKING:
-    from llmling_agent import StructuredAgent
-
     from docler.models import ChunkedDocument
 
 
@@ -86,11 +84,11 @@ class AIDocumentAnnotator[TMetadata: Schema](Annotator[AIDocumentAnnotatorConfig
         """
         from llmling_agent import Agent
 
-        agent: StructuredAgent[None, TMetadata] = Agent[None](  # type: ignore
+        agent = Agent(
             model=self.model,
             system_prompt=self.system_prompt,
-        ).to_structured(self.metadata_model)
-
+            output_type=self.metadata_model,
+        )
         # Get a condensed version of the document for context
         context = (
             document.content[: self.max_context_length] + "..."

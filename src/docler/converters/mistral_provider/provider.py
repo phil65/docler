@@ -202,7 +202,7 @@ if __name__ == "__main__":
 
     async def main():
         # # Example usage with PDF
-        pdf_path = "/home/phil65/dev/aistack-lab/sap_dokus_pdf/CCM_CONV.pdf"
+        pdf_path = "/home/phil65/dev/oss/docler/tests/resources/pdf_sample_page_nums.pdf"
         converter = MistralConverter()
         result = await converter.convert_file(pdf_path)
 
