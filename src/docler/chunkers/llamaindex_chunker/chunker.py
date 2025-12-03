@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, ClassVar, Literal
 
-from llama_index.core.node_parser import NodeParser
 from mkdown import TextChunk
 
 from docler.chunkers.base import TextChunker
@@ -13,6 +12,7 @@ from docler.log import get_logger
 
 
 if TYPE_CHECKING:
+    from llama_index.core.node_parser import NodeParser
     from mkdown import Document
 
 

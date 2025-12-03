@@ -10,6 +10,8 @@ from docler.models import SearchResult
 
 
 if TYPE_CHECKING:
+    import numpy as np
+
     from docler.vector_db.dbs.qdrant_db.manager import Metric
 
 
@@ -25,7 +27,9 @@ def get_query(filters: dict[str, Any] | None = None) -> models.Filter | None:
     return Filter(must=conditions) if conditions else None
 
 
-def to_pointstructs(vectors, ids, metadata) -> list[models.PointStruct]:
+def to_pointstructs(
+    vectors: list[np.ndarray], ids: list[str], metadata: list[dict[str, Any]]
+) -> list[models.PointStruct]:
     points = []
     for i, vector in enumerate(vectors):
         vector_ls = vector.astype(float).tolist()

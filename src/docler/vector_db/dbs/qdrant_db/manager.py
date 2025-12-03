@@ -97,7 +97,7 @@ class QdrantVectorManager(VectorManagerBase[QdrantConfig]):
         )
 
     @staticmethod
-    def run_server(path: StrPath, **kwargs) -> ProcessRunner:
+    def run_server(path: StrPath, **kwargs: Any) -> ProcessRunner:
         """Run a Qdrant server using Docker.
 
         Args:
