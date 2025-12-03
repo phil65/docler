@@ -67,7 +67,7 @@ class QdrantBackend(VectorStoreBackend):
     ) -> list[str]:
         """Add vectors to Qdrant."""
         ids_ = [str(uuid.uuid4()) for _ in vectors] if ids is None else ids
-        points = to_pointstructs(vectors, metadata, ids_)
+        points = to_pointstructs(vectors, metadata=metadata, ids=ids_)
         await self._client.upsert(collection_name=self._collection_name, points=points)
         return ids_
 
