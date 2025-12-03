@@ -99,7 +99,7 @@ class QdrantBackend(VectorStoreBackend):
             with_payload=False,
             with_vectors=False,
         )
-        return [record.id for record in records]
+        return [str(r.id) if isinstance(r.id, uuid.UUID) else r.id for r in records]
 
     async def delete(self, chunk_id: str) -> bool:
         """Delete vector by ID."""
