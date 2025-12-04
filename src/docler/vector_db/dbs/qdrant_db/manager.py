@@ -16,7 +16,8 @@ from docler.vector_db.dbs.qdrant_db.utils import get_distance
 
 
 if TYPE_CHECKING:
-    from docler.common_types import StrPath
+    from upath.types import JoinablePathLike
+
     from docler.models import VectorStoreInfo
 
 Metric = Literal["cosine", "euclidean", "dotproduct", "manhattan"]
@@ -97,7 +98,7 @@ class QdrantVectorManager(VectorManagerBase[QdrantConfig]):
         )
 
     @staticmethod
-    def run_server(path: StrPath, **kwargs: Any) -> ProcessRunner:
+    def run_server(path: JoinablePathLike, **kwargs: Any) -> ProcessRunner:
         """Run a Qdrant server using Docker.
 
         Args:

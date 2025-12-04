@@ -21,8 +21,9 @@ if TYPE_CHECKING:
 
     from docling.datamodel.pipeline_options import OcrOptions
     from schemez import MimeType
+    from upath.types import JoinablePathLike
 
-    from docler.common_types import PageRangeString, StrPath, SupportedLanguage
+    from docler.common_types import PageRangeString, SupportedLanguage
     from docler.configs.converter_configs import DoclingEngine
 
 PAGE_BREAK_MARKER = "<!-- PageBreak -->"
@@ -105,7 +106,7 @@ class DoclingConverter(DocumentConverter[DoclingConverterConfig]):
         fmt_opts = {InputFormat.PDF: PdfFormatOption(pipeline_options=pipeline_options)}
         self.converter = DoclingDocumentConverter(format_options=fmt_opts)  # type: ignore
 
-    def _convert_path_sync(self, file_path: StrPath, mime_type: MimeType) -> Document:
+    def _convert_path_sync(self, file_path: JoinablePathLike, mime_type: MimeType) -> Document:
         """Convert a PDF file using Docling.
 
         Args:

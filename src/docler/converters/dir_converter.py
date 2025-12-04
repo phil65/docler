@@ -14,8 +14,8 @@ if TYPE_CHECKING:
 
     from mkdown import Document
     import upath
+    from upath.types import JoinablePathLike
 
-    from docler.common_types import StrPath
     from docler.converters.base import DocumentConverter
 
 
@@ -60,7 +60,7 @@ class DirectoryConverter:
 
     async def convert(
         self,
-        directory: StrPath,
+        directory: JoinablePathLike,
         *,
         pattern: str = "**/*",
         recursive: bool = True,
@@ -94,7 +94,7 @@ class DirectoryConverter:
 
     async def convert_with_progress(
         self,
-        directory: StrPath,
+        directory: JoinablePathLike,
         *,
         pattern: str = "**/*",
         recursive: bool = True,

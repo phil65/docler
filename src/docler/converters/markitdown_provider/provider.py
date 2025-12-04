@@ -19,8 +19,9 @@ if TYPE_CHECKING:
     from re import Match
 
     from schemez import MimeType
+    from upath.types import JoinablePathLike
 
-    from docler.common_types import PageRangeString, StrPath, SupportedLanguage
+    from docler.common_types import PageRangeString, SupportedLanguage
 
 
 logger = get_logger(__name__)
@@ -82,7 +83,7 @@ class MarkItDownConverter(DocumentConverter[MarkItDownConfig]):
         super().__init__(languages=languages, page_range=page_range)
         self.converter = MarkItDown()
 
-    def _convert_path_sync(self, file_path: StrPath, mime_type: MimeType) -> Document:
+    def _convert_path_sync(self, file_path: JoinablePathLike, mime_type: MimeType) -> Document:
         """Convert a file using MarkItDown.
 
         Args:

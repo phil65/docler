@@ -17,8 +17,9 @@ from docler.utils import get_api_key
 
 if TYPE_CHECKING:
     from schemez import MimeType
+    from upath.types import JoinablePathLike
 
-    from docler.common_types import PageRangeString, StrPath, SupportedLanguage
+    from docler.common_types import PageRangeString, SupportedLanguage
 
 
 logger = get_logger(__name__)
@@ -84,7 +85,7 @@ class DataLabConverter(DocumentConverter[DataLabConfig]):
 
     async def _convert_path_async(
         self,
-        file_path: StrPath,
+        file_path: JoinablePathLike,
         mime_type: MimeType,
     ) -> Document:
         """Convert a file using DataLab's API.

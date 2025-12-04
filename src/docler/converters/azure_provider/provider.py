@@ -24,8 +24,9 @@ if TYPE_CHECKING:
     from azure.ai.documentintelligence.models import AnalyzeResult
     from mkdown import Image
     from schemez import MimeType
+    from upath.types import JoinablePathLike
 
-    from docler.common_types import PageRangeString, StrPath, SupportedLanguage
+    from docler.common_types import PageRangeString, SupportedLanguage
     from docler.configs.converter_configs import AzureFeatureFlag, AzureModel
 
 logger = get_logger(__name__)
@@ -134,7 +135,7 @@ class AzureConverter(DocumentConverter[AzureConfig]):
 
         return images
 
-    def _convert_path_sync(self, file_path: StrPath, mime_type: MimeType) -> Document:
+    def _convert_path_sync(self, file_path: JoinablePathLike, mime_type: MimeType) -> Document:
         """Convert a document file synchronously using Azure Document Intelligence."""
         from azure.ai.documentintelligence.models import (
             AnalyzeOutputOption,

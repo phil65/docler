@@ -14,8 +14,9 @@ from docler.converters.registry import ConverterRegistry
 if TYPE_CHECKING:
     from mkdown import Document
     from schemez import MimeType
+    from upath.types import JoinablePathLike
 
-    from docler.common_types import PageRangeString, StrPath, SupportedLanguage
+    from docler.common_types import PageRangeString, SupportedLanguage
 
 
 class AggregatedConverter(DocumentConverter[AggregatedConverterConfig]):
@@ -80,7 +81,7 @@ class AggregatedConverter(DocumentConverter[AggregatedConverterConfig]):
 
     async def _convert_path_async(
         self,
-        file_path: StrPath,
+        file_path: JoinablePathLike,
         mime_type: MimeType,
     ) -> Document:
         """Delegate conversion to the appropriate converter."""

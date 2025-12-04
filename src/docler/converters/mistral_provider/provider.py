@@ -18,8 +18,9 @@ from docler.utils import get_api_key
 if TYPE_CHECKING:
     from schemez import MimeType
     import upath
+    from upath.types import JoinablePathLike
 
-    from docler.common_types import PageRangeString, StrPath, SupportedLanguage
+    from docler.common_types import PageRangeString, SupportedLanguage
 
 
 # https://docs.mistral.ai/api/#tag/ocr
@@ -67,7 +68,7 @@ class MistralConverter(DocumentConverter[MistralConfig]):
         self.model = ocr_model
         self.image_min_size = image_min_size
 
-    def _convert_path_sync(self, file_path: StrPath, mime_type: MimeType) -> Document:
+    def _convert_path_sync(self, file_path: JoinablePathLike, mime_type: MimeType) -> Document:
         """Implementation of abstract method."""
         local_file = to_upath(file_path)
         data = local_file.read_bytes()

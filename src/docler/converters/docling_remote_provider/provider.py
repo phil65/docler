@@ -17,8 +17,9 @@ from docler.log import get_logger
 
 if TYPE_CHECKING:
     from schemez import MimeType
+    from upath.types import JoinablePathLike
 
-    from docler.common_types import PageRangeString, StrPath, SupportedLanguage
+    from docler.common_types import PageRangeString, SupportedLanguage
 
 logger = get_logger(__name__)
 
@@ -143,7 +144,7 @@ class DoclingRemoteConverter(DocumentConverter[DoclingRemoteConfig]):
 
     async def _convert_path_async(
         self,
-        file_path: StrPath,
+        file_path: JoinablePathLike,
         mime_type: MimeType,
     ) -> Document:
         """Convert a document using remote Docling service.

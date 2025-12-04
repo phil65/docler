@@ -16,8 +16,7 @@ from docler.vector_db.dbs.chroma_db.db import ChromaBackend
 
 if TYPE_CHECKING:
     from chromadb.api.async_api import AsyncClientAPI
-
-    from docler.common_types import StrPath
+    from upath.types import JoinablePathLike
 
 
 class ChromaVectorManager(VectorManagerBase[ChromaConfig]):
@@ -54,7 +53,7 @@ class ChromaVectorManager(VectorManagerBase[ChromaConfig]):
         self._list_client: AsyncClientAPI | None = None
 
     @staticmethod
-    def run_server(path: StrPath, **kwargs: Any) -> ProcessRunner:
+    def run_server(path: JoinablePathLike, **kwargs: Any) -> ProcessRunner:
         cmd = f"chroma run {path}"
         # if self.port:
         #     cmd += f" --port {self.port}"

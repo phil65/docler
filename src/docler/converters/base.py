@@ -10,7 +10,6 @@ from typing import TYPE_CHECKING, Any, ClassVar
 
 import anyenv
 from pydantic import BaseModel
-from upath.types import JoinablePathLike
 from upathtools import read_path, to_upath
 
 from docler.provider import BaseProvider
@@ -22,8 +21,9 @@ if TYPE_CHECKING:
     from mkdown import Document
     from schemez import MimeType
     import upath
+    from upath.types import JoinablePathLike
 
-    from docler.common_types import PageRangeString, StrPath, SupportedLanguage
+    from docler.common_types import PageRangeString, SupportedLanguage
     from docler.configs.converter_configs import ConverterConfig
 
 
@@ -156,7 +156,7 @@ class DocumentConverter[TConfig: BaseModel = Any](BaseProvider[TConfig], ABC):
 
     async def _convert_path_threaded(
         self,
-        file_path: StrPath,
+        file_path: JoinablePathLike,
         mime_type: MimeType,
     ) -> Document:
         """Internal method to handle conversion routing.
@@ -169,13 +169,13 @@ class DocumentConverter[TConfig: BaseModel = Any](BaseProvider[TConfig], ABC):
         except NotImplementedError:
             return await anyenv.run_in_thread(self._convert_path_sync, file_path, mime_type)
 
-    def _convert_path_sync(self, file_path: StrPath, mime_type: MimeType) -> Document:
+    def _convert_path_sync(self, file_path: JoinablePathLike, mime_type: MimeType) -> Document:
         """Synchronous implementation for CPU-bound operations."""
         raise NotImplementedError
 
     async def _convert_path_async(
         self,
-        file_path: StrPath,
+        file_path: JoinablePathLike,
         mime_type: MimeType,
     ) -> Document:
         """Asynchronous implementation for IO-bound operations."""
@@ -183,7 +183,7 @@ class DocumentConverter[TConfig: BaseModel = Any](BaseProvider[TConfig], ABC):
 
     async def convert_directory(
         self,
-        directory: StrPath,
+        directory: JoinablePathLike,
         *,
         pattern: str = "**/*",
         recursive: bool = True,

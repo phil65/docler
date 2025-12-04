@@ -12,8 +12,7 @@ from typing import TYPE_CHECKING, Literal, overload
 if TYPE_CHECKING:
     from PIL.Image import Image
     from PIL.ImageFile import ImageFile
-
-    from docler.common_types import StrPath
+    from upath.types import JoinablePathLike
 
 
 def pil_to_bytes(image: Image) -> bytes:
@@ -31,7 +30,7 @@ def get_mime_from_pil(image: Image, fallback: str = "JPEG") -> str:
 
 @overload
 def check_mime(
-    path: StrPath,
+    path: JoinablePathLike,
     *,
     allowed_mime_types: set[str] | None = None,
     raise_if_none_found: Literal[True],
@@ -40,7 +39,7 @@ def check_mime(
 
 @overload
 def check_mime(
-    path: StrPath,
+    path: JoinablePathLike,
     *,
     allowed_mime_types: set[str] | None = None,
     raise_if_none_found: Literal[False] = False,
@@ -48,7 +47,7 @@ def check_mime(
 
 
 def check_mime(
-    path: StrPath,
+    path: JoinablePathLike,
     *,
     allowed_mime_types: set[str] | None = None,
     raise_if_none_found: bool = False,

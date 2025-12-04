@@ -20,8 +20,9 @@ logger = get_logger(__name__)
 if TYPE_CHECKING:
     from marker.output import MarkdownOutput
     from schemez import MimeType
+    from upath.types import JoinablePathLike
 
-    from docler.common_types import PageRangeString, StrPath, SupportedLanguage
+    from docler.common_types import PageRangeString, SupportedLanguage
 
 
 ProviderType = Literal["gemini", "ollama", "vertex", "claude"]
@@ -102,7 +103,7 @@ class MarkerConverter(DocumentConverter[MarkerConfig]):
             self.config["page_range"] = rng
         self.llm_provider: ProviderType | None = llm_provider
 
-    def _convert_path_sync(self, file_path: StrPath, mime_type: MimeType) -> Document:
+    def _convert_path_sync(self, file_path: JoinablePathLike, mime_type: MimeType) -> Document:
         """Implementation of abstract method."""
         from marker.converters.pdf import PdfConverter
         from marker.models import create_model_dict
