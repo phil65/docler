@@ -75,7 +75,7 @@ class ChromaBackend(VectorStoreBackend):
         ids_ = [str(uuid.uuid4()) for _ in vectors] if ids is None else ids
         vector_lists: list[float] = [v.tolist() for v in vectors]
         await anyenv.run_in_thread(
-            self._collection.add,  # type: ignore
+            self._collection.add,
             ids_,
             vector_lists,
             metadata,
@@ -106,7 +106,7 @@ class ChromaBackend(VectorStoreBackend):
         limit: int | None = None,
     ) -> list[str]:
         data = self._collection.get(include=[], limit=limit)
-        return data["ids"]
+        return data["ids"]  # type: ignore[no-any-return]
 
     async def delete(self, chunk_id: str) -> bool:
         """Delete vector from ChromaDB."""

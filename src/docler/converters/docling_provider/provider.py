@@ -96,7 +96,7 @@ class DoclingConverter(DocumentConverter[DoclingConverterConfig]):
         # Configure pipeline options
         engine = opts.get(ocr_engine)
         assert engine
-        ocr_opts = engine(lang=convert_languages(languages or ["en"], engine))  # type: ignore
+        ocr_opts = engine(lang=convert_languages(languages or ["en"], engine))
         pipeline_options = PdfPipelineOptions(
             ocr_options=ocr_opts,
             generate_picture_images=True,
@@ -104,7 +104,7 @@ class DoclingConverter(DocumentConverter[DoclingConverterConfig]):
             generate_page_images=True,
         )
         fmt_opts = {InputFormat.PDF: PdfFormatOption(pipeline_options=pipeline_options)}
-        self.converter = DoclingDocumentConverter(format_options=fmt_opts)  # type: ignore
+        self.converter = DoclingDocumentConverter(format_options=fmt_opts)  # pyright: ignore[reportArgumentType]
 
     def _convert_path_sync(self, file_path: JoinablePathLike, mime_type: MimeType) -> Document:
         """Convert a PDF file using Docling.
