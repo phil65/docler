@@ -60,12 +60,7 @@ class MarkItDownConverter(DocumentConverter[MarkItDownConfig]):
         "image/gif",
     }
 
-    SUPPORTED_PROTOCOLS: ClassVar[set[str]] = {
-        "",
-        "file",
-        "http",
-        "https",
-    }
+    SUPPORTED_PROTOCOLS: ClassVar[set[str]] = {"", "file", "http", "https"}
 
     def __init__(
         self,
