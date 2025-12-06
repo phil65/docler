@@ -83,7 +83,16 @@ class DoclingConverter(DocumentConverter[DoclingConverterConfig]):
         self.indent = indent
         self.text_width = text_width
 
-        opts = {
+        opts: dict[
+            str,
+            type[
+                EasyOcrOptions
+                | TesseractCliOcrOptions
+                | TesseractOcrOptions
+                | OcrMacOptions
+                | RapidOcrOptions
+            ],
+        ] = {
             "easy_ocr": EasyOcrOptions,
             "tesseract_cli_ocr": TesseractCliOcrOptions,
             "tesseract_ocr": TesseractOcrOptions,
@@ -93,7 +102,7 @@ class DoclingConverter(DocumentConverter[DoclingConverterConfig]):
         # Configure pipeline options
         engine = opts.get(ocr_engine)
         assert engine
-        ocr_opts = engine(lang=convert_languages(languages or ["en"], engine))  # type: ignore[arg-type]
+        ocr_opts = engine(lang=convert_languages(languages or ["en"], engine))
         pipeline_options = PdfPipelineOptions(
             ocr_options=ocr_opts,
             generate_picture_images=True,
