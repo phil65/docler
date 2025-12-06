@@ -2,15 +2,13 @@
 
 from __future__ import annotations
 
-from io import BytesIO
 import re
 from typing import TYPE_CHECKING, ClassVar
 
-from mkdown import Document, Image, create_image_reference, create_page_break
-from upathtools import to_upath
+from mkdown import Image, create_image_reference, create_page_break
 
 from docler.configs.converter_configs import DoclingConverterConfig
-from docler.converters.base import DocumentConverter
+from docler.converters.base import ConverterResult, DocumentConverter
 from docler.converters.docling_provider.utils import convert_languages, parse_page_range
 from docler.log import get_logger
 from docler.utils import pil_to_bytes
@@ -18,10 +16,10 @@ from docler.utils import pil_to_bytes
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
+    from io import BytesIO
 
     from docling.datamodel.pipeline_options import OcrOptions
     from schemez import MimeType
-    from upath.types import JoinablePathLike
 
     from docler.common_types import PageRangeString, SupportedLanguage
     from docler.configs.converter_configs import DoclingEngine
@@ -106,27 +104,21 @@ class DoclingConverter(DocumentConverter[DoclingConverterConfig]):
         fmt_opts = {InputFormat.PDF: PdfFormatOption(pipeline_options=pipeline_options)}
         self.converter = DoclingDocumentConverter(format_options=fmt_opts)  # pyright: ignore[reportArgumentType]
 
-    def _convert_path_sync(self, file_path: JoinablePathLike, mime_type: MimeType) -> Document:
+    def _convert_sync(self, data: BytesIO, mime_type: MimeType) -> ConverterResult:
         """Convert a PDF file using Docling.
 
         Args:
-            file_path: Path to the PDF file to process.
+            data: File content as BytesIO.
             mime_type: MIME type of the file (must be PDF).
 
         Returns:
-            Converted document with extracted text and images.
-
-        Raises:
-            FileNotFoundError: If the file doesn't exist.
-            ValueError: If the file is not a PDF.
+            Intermediate conversion result.
         """
         from docling.datamodel.settings import DEFAULT_PAGE_RANGE
         from docling_core.types.doc.base import ImageRefMode
         from docling_core.types.io import DocumentStream
 
-        pdf_path = to_upath(file_path)
-        stream = BytesIO(pdf_path.read_bytes())
-        source = DocumentStream(name=pdf_path.name, stream=stream)
+        source = DocumentStream(name="document.pdf", stream=data)
         page_range = parse_page_range(self.page_range) if self.page_range else None
         doc_result = self.converter.convert(source, page_range=page_range or DEFAULT_PAGE_RANGE)
         mk_content = doc_result.document.export_to_markdown(
@@ -163,13 +155,7 @@ class DoclingConverter(DocumentConverter[DoclingConverterConfig]):
             image = Image(id=image_id, content=content, mime_type=mime, filename=filename)
             images.append(image)
 
-        return Document(
-            content=mk_content,
-            images=images,
-            title=pdf_path.stem,
-            source_path=str(pdf_path),
-            mime_type=mime_type,
-        )
+        return ConverterResult(content=mk_content, images=images)
 
 
 if __name__ == "__main__":

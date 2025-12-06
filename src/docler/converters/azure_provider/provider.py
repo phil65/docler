@@ -4,9 +4,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, ClassVar
 
-from mkdown import Document
-from upathtools import to_upath
-
 from docler.configs.converter_configs import AzureConfig
 from docler.converters.azure_provider.utils import (
     get_metadata,
@@ -14,17 +11,18 @@ from docler.converters.azure_provider.utils import (
     to_image,
     update_content,
 )
-from docler.converters.base import DocumentConverter
+from docler.converters.base import ConverterResult, DocumentConverter
 from docler.converters.exceptions import MissingConfigurationError
 from docler.log import get_logger
 from docler.utils import get_api_key
 
 
 if TYPE_CHECKING:
+    from io import BytesIO
+
     from azure.ai.documentintelligence.models import AnalyzeResult
     from mkdown import Image
     from schemez import MimeType
-    from upath.types import JoinablePathLike
 
     from docler.common_types import PageRangeString, SupportedLanguage
     from docler.configs.converter_configs import AzureFeatureFlag, AzureModel
@@ -135,27 +133,33 @@ class AzureConverter(DocumentConverter[AzureConfig]):
 
         return images
 
-    def _convert_path_sync(self, file_path: JoinablePathLike, mime_type: MimeType) -> Document:
-        """Convert a document file synchronously using Azure Document Intelligence."""
+    def _convert_sync(self, data: BytesIO, mime_type: MimeType) -> ConverterResult:
+        """Convert a document file synchronously using Azure Document Intelligence.
+
+        Args:
+            data: File content as BytesIO.
+            mime_type: MIME type of the file.
+
+        Returns:
+            Intermediate conversion result.
+        """
         from azure.ai.documentintelligence.models import (
             AnalyzeOutputOption,
             DocumentAnalysisFeature,
         )
         from azure.core.exceptions import HttpResponseError
 
-        path = to_upath(file_path)
         features = [getattr(DocumentAnalysisFeature, f) for f in self.features]
         try:
-            with path.open("rb") as f:
-                poller = self._client.begin_analyze_document(
-                    model_id=self.model,
-                    body=f,
-                    pages=self.page_range,
-                    features=features,
-                    output=[AnalyzeOutputOption.FIGURES],
-                    locale=self.languages[0] if self.languages else None,
-                    output_content_format="markdown",
-                )
+            poller = self._client.begin_analyze_document(
+                model_id=self.model,
+                body=data,
+                pages=self.page_range,
+                features=features,
+                output=[AnalyzeOutputOption.FIGURES],
+                locale=self.languages[0] if self.languages else None,
+                output_content_format="markdown",
+            )
             result: AnalyzeResult = poller.result()
             content = result.content
         except HttpResponseError as e:
@@ -170,14 +174,7 @@ class AzureConverter(DocumentConverter[AzureConfig]):
 
             if images:
                 content = update_content(content, images)
-            return Document(
-                content=content,
-                images=images,
-                title=path.stem,
-                source_path=str(path),
-                mime_type=mime_type,
-                metadata=metadata,
-            )
+            return ConverterResult(content=content, images=images, metadata=metadata)
 
 
 if __name__ == "__main__":

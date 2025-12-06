@@ -5,20 +5,19 @@ from __future__ import annotations
 import base64
 from typing import TYPE_CHECKING, ClassVar
 
-from mkdown import Document, Image, create_image_reference, create_page_break
-from upathtools import to_upath
+from mkdown import Image, create_image_reference, create_page_break
 
 from docler.configs.converter_configs import MistralConfig
-from docler.converters.base import DocumentConverter
+from docler.converters.base import ConverterResult, DocumentConverter
 from docler.converters.mistral_provider.utils import convert_image, get_images
 from docler.pdf_utils import parse_page_range, shift_page_range
 from docler.utils import get_api_key
 
 
 if TYPE_CHECKING:
+    from io import BytesIO
+
     from schemez import MimeType
-    import upath
-    from upath.types import JoinablePathLike
 
     from docler.common_types import PageRangeString, SupportedLanguage
 
@@ -68,42 +67,39 @@ class MistralConverter(DocumentConverter[MistralConfig]):
         self.model = ocr_model
         self.image_min_size = image_min_size
 
-    def _convert_path_sync(self, file_path: JoinablePathLike, mime_type: MimeType) -> Document:
+    def _convert_sync(self, data: BytesIO, mime_type: MimeType) -> ConverterResult:
         """Implementation of abstract method."""
-        local_file = to_upath(file_path)
-        data = local_file.read_bytes()
+        file_data = data.read()
 
         if mime_type.startswith("image/"):
-            doc = self._process_image(data, local_file, mime_type)
+            result = self._process_image(file_data, mime_type)
             first_page_marker = create_page_break(next_page=1, newline_separators=1)
-            doc.content = first_page_marker.lstrip() + doc.content.lstrip()
-            return doc
+            result.content = first_page_marker.lstrip() + result.content.lstrip()
+            return result
         # PDF processing handles page breaks internally
-        return self._process_pdf(data, local_file, mime_type)
+        return self._process_pdf(file_data, mime_type)
 
     def _process_pdf(
         self,
         file_data: bytes,
-        file_path: upath.UPath,
         mime_type: MimeType,
-    ) -> Document:
+    ) -> ConverterResult:
         """Process a PDF file using Mistral OCR.
 
         Args:
             file_data: Raw PDF data
-            file_path: Path to the file (for metadata)
             mime_type: MIME type of the file
 
         Returns:
-            Converted document
+            Intermediate conversion result
         """
         from mistralai import Mistral
         from mistralai.models import File
 
         client = Mistral(api_key=self.api_key)
-        self.logger.debug("Uploading PDF file %s...", file_path.name)
+        self.logger.debug("Uploading PDF file...")
 
-        file_ = File(file_name=file_path.stem, content=file_data)
+        file_ = File(file_name="document.pdf", content=file_data)
         uploaded = client.files.upload(file=file_, purpose="ocr")
         signed_url = client.files.get_signed_url(file_id=uploaded.id, expiry=60)
 
@@ -138,34 +134,26 @@ class MistralConverter(DocumentConverter[MistralConfig]):
                 content_parts.append(page.markdown.lstrip())
         content = "\n\n".join(content_parts)  # Use double newline between parts
 
-        return Document(
-            content=content,
-            images=images,
-            title=file_path.stem,
-            source_path=str(file_path),
-            mime_type=mime_type,
-        )
+        return ConverterResult(content=content, images=images)
 
     def _process_image(
         self,
         file_data: bytes,
-        file_path: upath.UPath,
         mime_type: MimeType,
-    ) -> Document:
+    ) -> ConverterResult:
         """Process an image file using Mistral OCR.
 
         Args:
             file_data: Raw image data
-            file_path: Path to the file (for metadata)
             mime_type: MIME type of the file
 
         Returns:
-            Converted document (without the initial page 1 marker, added later)
+            Intermediate conversion result (without the initial page 1 marker, added later)
         """
         from mistralai import Mistral
 
         client = Mistral(api_key=self.api_key)
-        self.logger.debug("Processing image %s with Mistral OCR...", file_path.name)
+        self.logger.debug("Processing image with Mistral OCR...")
         img_b64 = base64.b64encode(file_data).decode("utf-8")
         img_url = f"data:{mime_type};base64,{img_b64}"
 
@@ -180,22 +168,19 @@ class MistralConverter(DocumentConverter[MistralConfig]):
         # Extract the content (for images, we'll usually have just one page)
         content = "\n\n".join(page.markdown for page in r.pages)
         image_id = "img-0"
+        # Use a generic filename since we don't have path info
+        ext = mime_type.split("/")[-1]
+        filename = f"image.{ext}"
         image = Image(
             id=image_id,
             content=file_data,
             mime_type=mime_type,
-            filename=file_path.name,
+            filename=filename,
         )
-        image_ref = create_image_reference(image_id, file_path.name)
+        image_ref = create_image_reference(image_id, filename)
         content = image_ref + "\n\n" + content
         additional_images = get_images(r)
-        return Document(
-            content=content,
-            images=[image, *additional_images],
-            title=file_path.stem,
-            source_path=str(file_path),
-            mime_type=mime_type,
-        )
+        return ConverterResult(content=content, images=[image, *additional_images])
 
 
 if __name__ == "__main__":

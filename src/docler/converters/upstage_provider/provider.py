@@ -6,18 +6,18 @@ import base64
 from collections import defaultdict
 from typing import TYPE_CHECKING, Any, ClassVar
 
-from mkdown import Document, Image, create_image_reference, create_page_break
-from upathtools import to_upath
+from mkdown import Image, create_image_reference, create_page_break
 
 from docler.configs.converter_configs import UpstageConfig
-from docler.converters.base import DocumentConverter
+from docler.converters.base import ConverterResult, DocumentConverter
 from docler.pdf_utils import extract_pdf_pages
 from docler.utils import get_api_key
 
 
 if TYPE_CHECKING:
+    from io import BytesIO
+
     from schemez import MimeType
-    from upath.types import JoinablePathLike
 
     from docler.common_types import PageRangeString, SupportedLanguage
     from docler.configs.converter_configs import UpstageCategory, UpstageOCRType
@@ -87,26 +87,28 @@ class UpstageConverter(DocumentConverter[UpstageConfig]):
         """Price per page in USD."""
         return 0.01
 
-    def _convert_path_sync(self, file_path: JoinablePathLike, mime_type: MimeType) -> Document:
+    def _convert_sync(self, data: BytesIO, mime_type: MimeType) -> ConverterResult:
         """Convert a document using Upstage's Document AI API.
 
         Args:
-            file_path: Path to the document file
-            mime_type: MIME type of the file
+            data: File content as BytesIO.
+            mime_type: MIME type of the file.
 
         Returns:
-            Converted document with extracted text, images, and page break markers.
+            Intermediate conversion result with extracted text, images, and page break markers.
 
         Raises:
             ValueError: If conversion fails or response is malformed.
         """
-        path = to_upath(file_path)
-        file_content = path.read_bytes()
+        file_content = data.read()
         if self.page_range is not None:
             file_content = extract_pdf_pages(file_content, self.page_range)
         headers = {"Authorization": f"Bearer {self.api_key}"}
-        files = {"document": (path.name, file_content, mime_type)}
-        data = {
+        # Use a generic filename since we don't have path info
+        ext = mime_type.split("/")[-1]
+        filename = f"document.{ext}"
+        files = {"document": (filename, file_content, mime_type)}
+        form_data = {
             "ocr": self.ocr,
             "model": self.model,
             "output_formats": "['markdown']",
@@ -124,7 +126,7 @@ class UpstageConverter(DocumentConverter[UpstageConfig]):
                     self.base_url,
                     headers=headers,
                     files=files,
-                    data=data,
+                    data=form_data,
                     timeout=300,
                 )
                 response.raise_for_status()
@@ -142,7 +144,6 @@ class UpstageConverter(DocumentConverter[UpstageConfig]):
         initial_markdown = content_data.get("markdown")
         if not initial_markdown:
             msg = "No content found in Upstage API response."
-            # self.logger.warning("Full Upstage response: %s", result)
             raise ValueError(msg)
 
         elements = result.get("elements", [])
@@ -194,8 +195,6 @@ class UpstageConverter(DocumentConverter[UpstageConfig]):
         images: list[Image] = []
         image_counter = 0
         # Use a temporary variable for markdown content during image replacement
-        # to avoid interfering with the page break logic's offset calculations if
-        # image placeholders were part of the first element's markdown.
         content_for_image_replacement = modified_markdown
 
         for element in elements:
@@ -215,23 +214,23 @@ class UpstageConverter(DocumentConverter[UpstageConfig]):
                     img_data = base64_data  # Assume it's pure base64
 
                 img_bytes = base64.b64decode(img_data)
-                ext = img_mime_type.split("/")[-1]
+                img_ext = img_mime_type.split("/")[-1]
                 # Handle potential complex mime types like 'svg+xml'
-                ext = ext.split("+")[0]
-                filename = f"{image_id}.{ext}"
+                img_ext = img_ext.split("+")[0]
+                img_filename = f"{image_id}.{img_ext}"
 
                 image = Image(
                     id=image_id,
                     content=img_bytes,
                     mime_type=img_mime_type,
-                    filename=filename,
+                    filename=img_filename,
                 )
                 images.append(image)
 
                 # Replace the *first* available placeholder in the markdown
                 placeholder = "![image](/image/placeholder)"
                 if placeholder in content_for_image_replacement:
-                    img_ref = create_image_reference(image_id, filename)
+                    img_ref = create_image_reference(image_id, img_filename)
                     content_for_image_replacement = content_for_image_replacement.replace(
                         placeholder, img_ref, 1
                     )
@@ -239,12 +238,9 @@ class UpstageConverter(DocumentConverter[UpstageConfig]):
                     msg = "Found image data for %s but no placeholder left in markdown."
                     self.logger.warning(msg, image_id)
         modified_markdown = content_for_image_replacement
-        return Document(
+        return ConverterResult(
             content=modified_markdown.strip(),
             images=images,
-            title=path.stem,
-            source_path=str(path),
-            mime_type=mime_type,
             metadata=result.get("metadata", {}),
         )
 

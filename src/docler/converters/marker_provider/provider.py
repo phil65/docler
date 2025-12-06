@@ -2,13 +2,11 @@
 
 from __future__ import annotations
 
+import pathlib
 from typing import TYPE_CHECKING, ClassVar, Literal
 
-from mkdown import Document
-from upathtools import to_upath
-
 from docler.configs.converter_configs import MarkerConfig
-from docler.converters.base import DocumentConverter
+from docler.converters.base import ConverterResult, DocumentConverter
 from docler.converters.datalab_provider.utils import process_response
 from docler.log import get_logger
 from docler.pdf_utils import shift_page_range
@@ -18,9 +16,10 @@ logger = get_logger(__name__)
 
 
 if TYPE_CHECKING:
+    from io import BytesIO
+
     from marker.output import MarkdownOutput
     from schemez import MimeType
-    from upath.types import JoinablePathLike
 
     from docler.common_types import PageRangeString, SupportedLanguage
 
@@ -103,24 +102,28 @@ class MarkerConverter(DocumentConverter[MarkerConfig]):
             self.config["page_range"] = rng
         self.llm_provider: ProviderType | None = llm_provider
 
-    def _convert_path_sync(self, file_path: JoinablePathLike, mime_type: MimeType) -> Document:
-        """Implementation of abstract method."""
+    def _convert_sync(self, data: BytesIO, mime_type: MimeType) -> ConverterResult:
+        """Implementation of abstract method.
+
+        Marker requires a file path, so we write to a temporary file.
+        """
         from marker.converters.pdf import PdfConverter
         from marker.models import create_model_dict
 
-        service = PROVIDERS.get(self.llm_provider) if self.llm_provider else None
-        local_file = to_upath(file_path)
-        artifacts = create_model_dict()
-        converter = PdfConverter(artifact_dict=artifacts, llm_service=service, config=self.config)
-        rendered: MarkdownOutput = converter(str(local_file))
-        content, images = process_response(rendered.model_dump())
-        return Document(
-            content=content,
-            images=images,
-            title=local_file.stem,
-            source_path=str(local_file),
-            mime_type=mime_type,
-        )
+        # Marker needs a file path, so use temp file
+        tmp = self._write_temp_file(data, mime_type)
+        try:
+            service = PROVIDERS.get(self.llm_provider) if self.llm_provider else None
+            artifacts = create_model_dict()
+            converter = PdfConverter(
+                artifact_dict=artifacts, llm_service=service, config=self.config
+            )
+            rendered: MarkdownOutput = converter(tmp.name)
+            content, images = process_response(rendered.model_dump())
+            return ConverterResult(content=content, images=images)
+        finally:
+            tmp.close()
+            pathlib.Path(tmp.name).unlink()
 
 
 if __name__ == "__main__":

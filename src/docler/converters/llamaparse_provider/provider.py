@@ -2,22 +2,20 @@
 
 from __future__ import annotations
 
+import pathlib
 from typing import TYPE_CHECKING, ClassVar
 
-import anyenv
-from mkdown import Document
-from upathtools import to_upath
-
 from docler.configs.converter_configs import LlamaParseConfig
-from docler.converters.base import DocumentConverter
+from docler.converters.base import ConverterResult, DocumentConverter
 from docler.converters.llamaparse_provider.utils import process_response
 from docler.log import get_logger
 from docler.utils import get_api_key
 
 
 if TYPE_CHECKING:
+    from io import BytesIO
+
     from schemez import MimeType
-    from upath.types import JoinablePathLike
 
     from docler.common_types import PageRangeString, SupportedLanguage
     from docler.configs.converter_configs import LlamaParseMode
@@ -109,7 +107,6 @@ class LlamaParseConverter(DocumentConverter[LlamaParseConfig]):
         self.parse_mode = parse_mode
         self.skip_diagonal_text = skip_diagonal_text
         self.disable_ocr = disable_ocr
-        # self.bounding_box = None
         self.continuous_mode = continuous_mode
         self.html_tables = html_tables
 
@@ -118,38 +115,39 @@ class LlamaParseConverter(DocumentConverter[LlamaParseConfig]):
         """Price per page in USD."""
         return 0.0045
 
-    def _convert_path_sync(self, file_path: JoinablePathLike, mime_type: MimeType) -> Document:
-        """Convert a document using LlamaParse."""
+    def _convert_sync(self, data: BytesIO, mime_type: MimeType) -> ConverterResult:
+        """Convert a document using LlamaParse.
+
+        LlamaParse requires a file path, so we write to a temporary file.
+        """
         from llama_parse import LlamaParse, ResultType
 
-        path = to_upath(file_path)
-        parser = LlamaParse(
-            api_key=self.api_key,
-            result_type=ResultType.MD,
-            language=self.language,
-            adaptive_long_table=self.adaptive_long_table,
-            parse_mode=self.parse_mode,
-            target_pages=self.page_range,
-            skip_diagonal_text=self.skip_diagonal_text,
-            disable_ocr=self.disable_ocr,
-            continuous_mode=self.continuous_mode,
-            output_tables_as_HTML=self.html_tables,
-            # take_screenshot=True,
-            # we are doing page separators manually right now
-            # page_separator=r'<!-- docler:page_break {"next_page":{pageNumber}} -->',
-        )
-        result = parser.get_json_result(str(path))
-        content_parts, images = process_response(result, self.api_key)
-        return Document(
-            content="\n\n".join(content_parts),
-            images=images,
-            title=path.stem,
-            source_path=str(path),
-            mime_type=mime_type,
-        )
+        # LlamaParse needs a file path, so use temp file
+        tmp = self._write_temp_file(data, mime_type)
+        try:
+            parser = LlamaParse(
+                api_key=self.api_key,
+                result_type=ResultType.MD,
+                language=self.language,
+                adaptive_long_table=self.adaptive_long_table,
+                parse_mode=self.parse_mode,
+                target_pages=self.page_range,
+                skip_diagonal_text=self.skip_diagonal_text,
+                disable_ocr=self.disable_ocr,
+                continuous_mode=self.continuous_mode,
+                output_tables_as_HTML=self.html_tables,
+            )
+            result = parser.get_json_result(tmp.name)
+            content_parts, images = process_response(result, self.api_key)
+            return ConverterResult(content="\n\n".join(content_parts), images=images)
+        finally:
+            tmp.close()
+            pathlib.Path(tmp.name).unlink()
 
 
 if __name__ == "__main__":
+    import anyenv
+
     pdf_path = "src/docler/resources/pdf_sample.pdf"
     converter = LlamaParseConverter()
     result = anyenv.run_sync(converter.convert_file(pdf_path))

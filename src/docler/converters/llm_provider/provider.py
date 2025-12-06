@@ -4,23 +4,21 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, ClassVar
 
-from mkdown import Document
-from upathtools import to_upath
-
 from docler.common_types import DEFAULT_CONVERTER_MODEL
 from docler.configs.converter_configs import (
     LLM_SYSTEM_PROMPT,
     LLM_USER_PROMPT,
     LLMConverterConfig,
 )
-from docler.converters.base import DocumentConverter
+from docler.converters.base import ConverterResult, DocumentConverter
 from docler.log import get_logger
 
 
 if TYPE_CHECKING:
+    from io import BytesIO
+
     from llmling_agent.models.content import BaseContent
     from schemez import MimeType
-    from upath.types import JoinablePathLike
 
     from docler.common_types import PageRangeString, SupportedLanguage
 
@@ -59,37 +57,31 @@ class LLMConverter(DocumentConverter[LLMConverterConfig]):
             ValueError: If model doesn't support PDF input
         """
         super().__init__(languages=languages, page_range=page_range)
-        self.model = model  # .replace(":", "/")
+        self.model = model
         self.system_prompt = system_prompt or LLM_SYSTEM_PROMPT
         self.user_prompt = user_prompt or LLM_USER_PROMPT
 
-    def _convert_path_sync(self, file_path: JoinablePathLike, mime_type: MimeType) -> Document:
+    def _convert_sync(self, data: BytesIO, mime_type: MimeType) -> ConverterResult:
         """Convert a PDF file using the configured LLM.
 
         Args:
-            file_path: Path to the PDF file
-            mime_type: MIME type (must be PDF)
+            data: File content as BytesIO.
+            mime_type: MIME type (must be PDF).
 
         Returns:
-            Converted document
+            Intermediate conversion result.
         """
         from llmling_agent import Agent, ImageBase64Content, PDFBase64Content
 
-        path = to_upath(file_path)
-        file_content = path.read_bytes()
-        if path.suffix == ".pdf":
+        file_content = data.read()
+        if mime_type == "application/pdf":
             content: BaseContent = PDFBase64Content.from_bytes(file_content)
         else:
             content = ImageBase64Content.from_bytes(file_content)
         agent = Agent(model=self.model, system_prompt=self.system_prompt)
         extra = f" Extract only the following pages: {self.page_range}" if self.page_range else ""
         response = agent.run.sync(self.user_prompt + extra, content)  # type: ignore[attr-defined]
-        return Document(
-            content=response.content,
-            title=path.stem,
-            source_path=str(path),
-            mime_type=mime_type,
-        )
+        return ConverterResult(content=response.content)
 
 
 if __name__ == "__main__":

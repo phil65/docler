@@ -4,11 +4,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, ClassVar, Literal
 
-from mkdown import Document
-from upathtools import read_path, to_upath
-
 from docler.configs.converter_configs import DataLabConfig
-from docler.converters.base import DocumentConverter
+from docler.converters.base import ConverterResult, DocumentConverter
 from docler.converters.datalab_provider.utils import get_response, process_response
 from docler.log import get_logger
 from docler.pdf_utils import shift_page_range
@@ -16,8 +13,9 @@ from docler.utils import get_api_key
 
 
 if TYPE_CHECKING:
+    from io import BytesIO
+
     from schemez import MimeType
-    from upath.types import JoinablePathLike
 
     from docler.common_types import PageRangeString, SupportedLanguage
 
@@ -83,27 +81,29 @@ class DataLabConverter(DocumentConverter[DataLabConfig]):
         """Price per page in USD."""
         return 0.003 if self.use_llm else 0.0015
 
-    async def _convert_path_async(
+    async def _convert_async(
         self,
-        file_path: JoinablePathLike,
+        data: BytesIO,
         mime_type: MimeType,
-    ) -> Document:
+    ) -> ConverterResult:
         """Convert a file using DataLab's API.
 
         Args:
-            file_path: Path to the file to process.
+            data: File content as BytesIO.
             mime_type: MIME type of the file.
 
         Returns:
-            Converted document.
+            Intermediate conversion result.
 
         Raises:
             ValueError: If conversion fails.
         """
-        path = to_upath(file_path)
         form = {"output_format": "markdown", "paginate": self.add_page_breaks}
-        data = await read_path(path, mode="rb")
-        files = {"file": (path.name, data, mime_type)}
+        file_content = data.read()
+        # Use a generic filename since we don't have path info
+        ext = mime_type.split("/")[-1]
+        filename = f"document.{ext}"
+        files = {"file": (filename, file_content, mime_type)}
         if self.languages:
             form["langs"] = ",".join(self.languages)
         if self.force_ocr:
@@ -116,13 +116,7 @@ class DataLabConverter(DocumentConverter[DataLabConfig]):
             form["page_range"] = rng
         result = await get_response(form, files, self.api_key)
         md_content, images = process_response(result)
-        return Document(
-            content=md_content.strip(),
-            images=images,
-            title=path.stem,
-            source_path=str(path),
-            mime_type=mime_type,
-        )
+        return ConverterResult(content=md_content.strip(), images=images)
 
 
 if __name__ == "__main__":

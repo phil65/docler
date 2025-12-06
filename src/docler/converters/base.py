@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 from abc import ABC
+import base64
+from dataclasses import dataclass, field
+from io import BytesIO
 import mimetypes
-import pathlib
 import tempfile
 from typing import TYPE_CHECKING, Any, ClassVar
 
@@ -18,7 +20,7 @@ from docler.provider import BaseProvider
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
-    from mkdown import Document
+    from mkdown import Document, Image
     from schemez import MimeType
     import upath
     from upath.types import JoinablePathLike
@@ -27,12 +29,39 @@ if TYPE_CHECKING:
     from docler.configs.converter_configs import ConverterConfig
 
 
+@dataclass
+class ConverterResult:
+    """Intermediate result from document conversion.
+
+    This is returned by the internal conversion methods before the base class
+    assembles the final Document with source path and other metadata.
+    """
+
+    content: str
+    """The converted markdown content."""
+    images: list[Image] = field(default_factory=list)
+    """Extracted images from the document."""
+    title: str | None = None
+    """Optional title. If None, base class derives from filename."""
+    metadata: dict[str, Any] | None = None
+    """Optional metadata from the conversion process."""
+
+
+def _get_extension_for_mime(mime_type: str) -> str:
+    """Get file extension for a MIME type."""
+    ext = mimetypes.guess_extension(mime_type)
+    return ext or ".bin"
+
+
 class DocumentConverter[TConfig: BaseModel = Any](BaseProvider[TConfig], ABC):
     """Abstract base class for document converters.
 
     Implementation classes should override either:
-    - _convert_path_sync: For CPU-bound operations
-    - _convert_path_async: For IO-bound/API-based operations
+    - _convert_sync: For CPU-bound operations
+    - _convert_async: For IO-bound/API-based operations
+
+    Both methods receive BytesIO and mime_type, returning a ConverterResult.
+    The base class handles file I/O and assembles the final Document.
     """
 
     Config: ClassVar[type[ConverterConfig]]
@@ -86,6 +115,76 @@ class DocumentConverter[TConfig: BaseModel = Any](BaseProvider[TConfig], ABC):
         """
         return mime_type in self.get_supported_mime_types()
 
+    async def convert_content(
+        self,
+        content: bytes | BytesIO | str,
+        mime_type: MimeType,
+        *,
+        source_path: str | None = None,
+        title: str | None = None,
+    ) -> Document:
+        """Convert document content directly from bytes, BytesIO, or base64 string.
+
+        Args:
+            content: Document content as bytes, BytesIO, or base64-encoded string.
+            mime_type: MIME type of the content.
+            source_path: Optional source path for metadata.
+            title: Optional title. If None, uses "Untitled".
+
+        Returns:
+            Converted document with extracted text and images.
+
+        Raises:
+            ValueError: If the content type or MIME type is not supported.
+        """
+        from mkdown import Document
+
+        if mime_type not in self.SUPPORTED_MIME_TYPES:
+            msg = f"Unsupported MIME type {mime_type}. Must be one of: {self.SUPPORTED_MIME_TYPES}"
+            raise ValueError(msg)
+
+        # Handle different input types
+        if isinstance(content, str):
+            # Assume base64-encoded string
+            try:
+                content_bytes = base64.b64decode(content)
+            except Exception as e:
+                msg = f"Failed to decode base64 content: {e}"
+                raise ValueError(msg) from e
+            data = BytesIO(content_bytes)
+        elif isinstance(content, bytes):
+            data = BytesIO(content)
+        elif isinstance(content, BytesIO):
+            data = content
+        else:
+            msg = f"Unsupported content type: {type(content)}"
+            raise TypeError(msg)
+
+        result = await self._convert_threaded(data, mime_type)
+
+        # Assemble final Document
+        document = Document(
+            content=result.content,
+            images=result.images,
+            title=result.title or title or "Untitled",
+            source_path=source_path or "",
+            mime_type=mime_type,
+            metadata=result.metadata or {},
+        )
+
+        # Inject conversion cost into metadata
+        if self.price_per_page is not None and document.page_count > 0:
+            total_cost = self.price_per_page * document.page_count
+            if document.metadata is None:
+                document.metadata = {}
+            document.metadata.update({
+                "conversion_cost_usd": total_cost,
+                "price_per_page_usd": self.price_per_page,
+                "pages_processed": document.page_count,
+            })
+
+        return document
+
     async def convert_files(self, file_paths: Sequence[JoinablePathLike]) -> list[Document]:
         """Convert multiple document files in parallel.
 
@@ -126,60 +225,82 @@ class DocumentConverter[TConfig: BaseModel = Any](BaseProvider[TConfig], ABC):
         if not mime_type:
             msg = f"Could not determine mime type for: {file_path}"
             raise ValueError(msg)
-        if mime_type not in self.SUPPORTED_MIME_TYPES:
-            msg = f"Unsupported file type {mime_type}.Must be one of: {self.SUPPORTED_MIME_TYPES}"
-            raise ValueError(msg)
 
-        # For local files, convert directly
+        # Read file content
         if path.protocol in self.SUPPORTED_PROTOCOLS:
-            document = await self._convert_path_threaded(path, mime_type)
+            content = await anyenv.run_in_thread(path.read_bytes)
         else:
-            # For remote files, download to temporary file first
             content = await read_path(path, mode="rb")
-            with tempfile.NamedTemporaryFile(suffix=path.suffix) as temp_file:
-                temp_path = pathlib.Path(temp_file.name)
-                temp_path.write_bytes(content)
-                document = await self._convert_path_threaded(temp_path, mime_type)
 
-        # Inject conversion cost into metadata
-        if self.price_per_page is not None and document.page_count > 0:
-            total_cost = self.price_per_page * document.page_count
-            if document.metadata is None:
-                document.metadata = {}
-            document.metadata.update({
-                "conversion_cost_usd": total_cost,
-                "price_per_page_usd": self.price_per_page,
-                "pages_processed": document.page_count,
-            })
+        # Use convert_content for the actual conversion
+        return await self.convert_content(
+            content=content,
+            mime_type=mime_type,
+            source_path=str(path),
+            title=path.stem,
+        )
 
-        return document
-
-    async def _convert_path_threaded(
+    async def _convert_threaded(
         self,
-        file_path: JoinablePathLike,
+        data: BytesIO,
         mime_type: MimeType,
-    ) -> Document:
+    ) -> ConverterResult:
         """Internal method to handle conversion routing.
 
-        Will use _convert_path_async if implemented, otherwise falls back to
-        running _convert_path_sync in a thread.
+        Will use _convert_async if implemented, otherwise falls back to
+        running _convert_sync in a thread.
         """
         try:
-            return await self._convert_path_async(file_path, mime_type)
+            return await self._convert_async(data, mime_type)
         except NotImplementedError:
-            return await anyenv.run_in_thread(self._convert_path_sync, file_path, mime_type)
+            return await anyenv.run_in_thread(self._convert_sync, data, mime_type)
 
-    def _convert_path_sync(self, file_path: JoinablePathLike, mime_type: MimeType) -> Document:
-        """Synchronous implementation for CPU-bound operations."""
+    def _convert_sync(self, data: BytesIO, mime_type: MimeType) -> ConverterResult:
+        """Synchronous implementation for CPU-bound operations.
+
+        Args:
+            data: File content as BytesIO.
+            mime_type: MIME type of the file.
+
+        Returns:
+            Intermediate conversion result.
+        """
         raise NotImplementedError
 
-    async def _convert_path_async(
+    async def _convert_async(
         self,
-        file_path: JoinablePathLike,
+        data: BytesIO,
         mime_type: MimeType,
-    ) -> Document:
-        """Asynchronous implementation for IO-bound operations."""
+    ) -> ConverterResult:
+        """Asynchronous implementation for IO-bound operations.
+
+        Args:
+            data: File content as BytesIO.
+            mime_type: MIME type of the file.
+
+        Returns:
+            Intermediate conversion result.
+        """
         raise NotImplementedError
+
+    def _write_temp_file(
+        self, data: BytesIO, mime_type: MimeType
+    ) -> tempfile._TemporaryFileWrapper[bytes]:
+        """Write BytesIO to a temporary file for converters that need file paths.
+
+        Args:
+            data: File content as BytesIO.
+            mime_type: MIME type to determine file extension.
+
+        Returns:
+            NamedTemporaryFile object. Caller is responsible for cleanup.
+        """
+        ext = _get_extension_for_mime(mime_type)
+        tmp = tempfile.NamedTemporaryFile(suffix=ext, delete=False)  # noqa: SIM115
+        tmp.write(data.read())
+        tmp.flush()
+        data.seek(0)  # Reset for potential reuse
+        return tmp
 
     async def convert_directory(
         self,

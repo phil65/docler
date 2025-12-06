@@ -6,18 +6,17 @@ from typing import TYPE_CHECKING, ClassVar, Literal
 
 import anyenv
 import httpx
-from mkdown import Document
-from upathtools import to_upath
 
 from docler.configs.converter_configs import DoclingRemoteConfig
-from docler.converters.base import DocumentConverter
+from docler.converters.base import ConverterResult, DocumentConverter
 from docler.converters.docling_remote_provider.utils import process_response
 from docler.log import get_logger
 
 
 if TYPE_CHECKING:
+    from io import BytesIO
+
     from schemez import MimeType
-    from upath.types import JoinablePathLike
 
     from docler.common_types import PageRangeString, SupportedLanguage
 
@@ -142,19 +141,19 @@ class DoclingRemoteConverter(DocumentConverter[DoclingRemoteConfig]):
         if languages:
             self.config["ocr_lang"] = languages
 
-    async def _convert_path_async(
+    async def _convert_async(
         self,
-        file_path: JoinablePathLike,
+        data: BytesIO,
         mime_type: MimeType,
-    ) -> Document:
+    ) -> ConverterResult:
         """Convert a document using remote Docling service.
 
         Args:
-            file_path: Path to the document to convert.
+            data: File content as BytesIO.
             mime_type: MIME type of the file.
 
         Returns:
-            Converted document.
+            Intermediate conversion result.
 
         Raises:
             ValueError: If conversion fails or response is malformed.
@@ -163,14 +162,16 @@ class DoclingRemoteConverter(DocumentConverter[DoclingRemoteConfig]):
         if self.api_key:
             headers["Authorization"] = f"Bearer {self.api_key}"
 
-        path = to_upath(file_path)
-        file_content = await anyenv.run_in_thread(path.read_bytes)
+        file_content = data.read()
+        # Use a generic filename since we don't have path info
+        ext = mime_type.split("/")[-1]
+        filename = f"document.{ext}"
         url = f"{self.endpoint}{CONVERT_FILE}"
         async with httpx.AsyncClient(timeout=60.0) as client:
-            files = {"files": (path.name, file_content, mime_type)}
-            data = {"parameters": anyenv.dump_json(self.config)}
+            files = {"files": (filename, file_content, mime_type)}
+            form_data = {"parameters": anyenv.dump_json(self.config)}
             try:
-                response = await client.post(url, headers=headers, files=files, data=data)
+                response = await client.post(url, headers=headers, files=files, data=form_data)
                 response.raise_for_status()
                 result = response.json()
             except httpx.HTTPError as e:
@@ -189,13 +190,10 @@ class DoclingRemoteConverter(DocumentConverter[DoclingRemoteConfig]):
                 msg = "No markdown content found in response"
             raise ValueError(msg)
         content, images = process_response(document)
-        return Document(
+        return ConverterResult(
             content=content,
             images=images,
-            title=path.stem,
-            source_path=str(path),
-            mime_type=mime_type,
-            metadata=result.get("timings", {}),  # Store timings as metadata
+            metadata=result.get("timings", {}),
         )
 
 

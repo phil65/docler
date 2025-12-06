@@ -6,11 +6,10 @@ from io import BytesIO
 import re
 from typing import TYPE_CHECKING, ClassVar
 
-from mkdown import Document, create_page_break
-from upathtools import to_upath
+from mkdown import create_page_break
 
 from docler.configs.converter_configs import MarkItDownConfig
-from docler.converters.base import DocumentConverter
+from docler.converters.base import ConverterResult, DocumentConverter
 from docler.log import get_logger
 from docler.pdf_utils import extract_pdf_pages
 
@@ -19,7 +18,6 @@ if TYPE_CHECKING:
     from re import Match
 
     from schemez import MimeType
-    from upath.types import JoinablePathLike
 
     from docler.common_types import PageRangeString, SupportedLanguage
 
@@ -78,34 +76,30 @@ class MarkItDownConverter(DocumentConverter[MarkItDownConfig]):
         super().__init__(languages=languages, page_range=page_range)
         self.converter = MarkItDown()
 
-    def _convert_path_sync(self, file_path: JoinablePathLike, mime_type: MimeType) -> Document:
+    def _convert_sync(self, data: BytesIO, mime_type: MimeType) -> ConverterResult:
         """Convert a file using MarkItDown.
 
         Args:
-            file_path: Path to the file to process.
+            data: File content as BytesIO.
             mime_type: MIME type of the file.
 
         Returns:
-            Converted document.
+            Intermediate conversion result.
 
         Raises:
             ValueError: If conversion fails.
         """
-        path = to_upath(file_path)
         try:
             if mime_type == "application/pdf" and self.page_range:
-                # For PDFs with page range:
-                # 1. Extract specific pages with pdfminer
-                # 2. Convert extracted text with markitdown
-                pdf_data = path.read_bytes()
+                # For PDFs with page range, extract specific pages
+                pdf_data = data.read()
                 extracted_bytes = extract_pdf_pages(pdf_data, self.page_range)
                 buffer = BytesIO(extracted_bytes)
                 result = self.converter.convert(buffer)
             else:
                 # For other files or full PDFs, use regular conversion
-                result = self.converter.convert(str(path), keep_data_uris=True)
+                result = self.converter.convert(data, keep_data_uris=True)
 
-            # Rest of the processing stays the same...
             def replace_slide_marker(match: Match[str]) -> str:
                 slide_num = match.group(1) if match.groups() else "?"
                 try:
@@ -117,15 +111,10 @@ class MarkItDownConverter(DocumentConverter[MarkItDownConfig]):
             slide_pattern = r"<!-- Slide number:\s*(\d+)\s*-->"
             markdown = re.sub(slide_pattern, replace_slide_marker, result.text_content)
 
-            return Document(
-                content=markdown,
-                title=result.title or path.stem,
-                source_path=str(path),
-                mime_type=mime_type,
-            )
+            return ConverterResult(content=markdown, title=result.title)
 
         except Exception as e:
-            msg = f"Failed to convert file {file_path}"
+            msg = f"Failed to convert file: {e}"
             self.logger.exception(msg)
             raise ValueError(msg) from e
 
