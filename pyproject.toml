@@ -53,13 +53,10 @@ docler = "docler.__main__:cli"
 
 [project.optional-dependencies]
 all = [
-  "docler[marker,azure,bge,diffs,docling,litellm,llama-index,llama-parse,marker,markitdown,mcp,mistralai,openai,pinecone,server]",
-  # "chromadb>=0.6.3; python_version < '3.14'",
+  "docler[marker,azure,diffs,docling,llama-parse,marker,markitdown,mcp,mistralai,openai,server]",
   "llmling-agent[default]"
 ]
 azure = ["azure-ai-documentintelligence"]
-bge = ["FlagEmbedding; python_version < '3.14'"]
-chromadb = ["chromadb>=0.6.3; python_version < '3.14'"]
 diffs = ["diff-match-patch"]
 docling = [
   "docling[ocrmac,vlm,rapidocr]; python_version < '3.14'"
@@ -68,8 +65,6 @@ light = [
   "docler[mistralai,diffs,llama-parse,openai,azure]",
   "llmling-agent[default]"
 ]
-litellm = ["litellm; python_version < '3.14'"]
-llama-index = ["llama-index; python_version < '3.14'"]
 llama-parse = ["llama-parse; python_version < '3.14'"]
 marker = ["marker-pdf; python_version < '3.14'"]
 markitdown = ["markitdown[all]; python_version < '3.14'"]
@@ -80,8 +75,6 @@ olmocr = [
   "accelerate; python_version < '3.14'"
 ]
 openai = ["openai"]
-pinecone = ["pinecone[asyncio]"]
-qdrant = ["qdrant-client[fastembed]; python_version < '3.14'"]
 server = ["uvicorn", "fastapi"]
 streamlit = [
   "streamlit; python_version < '3.14'",
