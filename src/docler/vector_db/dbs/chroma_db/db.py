@@ -75,7 +75,7 @@ class ChromaBackend(VectorStoreBackend):
         ids_ = [str(uuid.uuid4()) for _ in vectors] if ids is None else ids
         vector_lists: list[float] = [v.tolist() for v in vectors]
         await anyenv.run_in_thread(
-            self._collection.add,
+            self._collection.add,  # type: ignore[arg-type]
             ids_,
             vector_lists,
             metadata,

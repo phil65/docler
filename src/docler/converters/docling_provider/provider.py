@@ -15,10 +15,9 @@ from docler.utils import pil_to_bytes
 
 
 if TYPE_CHECKING:
-    from collections.abc import Mapping
     from io import BytesIO
 
-    from docling.datamodel.pipeline_options import OcrOptions
+    from docling.document_converter import FormatOption
     from schemez import MimeType
 
     from docler.common_types import PageRangeString, SupportedLanguage
@@ -84,7 +83,7 @@ class DoclingConverter(DocumentConverter[DoclingConverterConfig]):
         self.indent = indent
         self.text_width = text_width
 
-        opts: Mapping[DoclingEngine, type[OcrOptions]] = {
+        opts = {
             "easy_ocr": EasyOcrOptions,
             "tesseract_cli_ocr": TesseractCliOcrOptions,
             "tesseract_ocr": TesseractOcrOptions,
@@ -94,14 +93,16 @@ class DoclingConverter(DocumentConverter[DoclingConverterConfig]):
         # Configure pipeline options
         engine = opts.get(ocr_engine)
         assert engine
-        ocr_opts = engine(lang=convert_languages(languages or ["en"], engine))
+        ocr_opts = engine(lang=convert_languages(languages or ["en"], engine))  # type: ignore[arg-type]
         pipeline_options = PdfPipelineOptions(
             ocr_options=ocr_opts,
             generate_picture_images=True,
             images_scale=image_scale,
             generate_page_images=True,
         )
-        fmt_opts = {InputFormat.PDF: PdfFormatOption(pipeline_options=pipeline_options)}
+        fmt_opts: dict[InputFormat, FormatOption] = {
+            InputFormat.PDF: PdfFormatOption(pipeline_options=pipeline_options)
+        }
         self.converter = DoclingDocumentConverter(format_options=fmt_opts)  # pyright: ignore[reportArgumentType]
 
     def _convert_sync(self, data: BytesIO, mime_type: MimeType) -> ConverterResult:
