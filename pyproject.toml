@@ -53,33 +53,43 @@ docler = "docler.__main__:cli"
 
 [project.optional-dependencies]
 all = [
-  "docler[marker,azure,bge,diffs,docling,litellm,llama-index,llama-parse,marker,markitdown,mcp,mistralai,openai,pinecone,qdrant,server,smart-pdf,streamlit]",
-  "chromadb>=0.6.3; python_version < '3.14'",
+  "docler[marker,azure,bge,diffs,docling,litellm,llama-index,llama-parse,marker,markitdown,mcp,mistralai,openai,pinecone,server]",
+  # "chromadb>=0.6.3; python_version < '3.14'",
   "llmling-agent[default]"
 ]
 azure = ["azure-ai-documentintelligence"]
-bge = ["FlagEmbedding"]
+bge = ["FlagEmbedding; python_version < '3.14'"]
 chromadb = ["chromadb>=0.6.3; python_version < '3.14'"]
 diffs = ["diff-match-patch"]
-docling = ["docling[ocrmac,vlm,rapidocr]"]  # tesserocr
+docling = [
+  "docling[ocrmac,vlm,rapidocr]; python_version < '3.14'"
+]  # tesserocr
 light = [
   "docler[mistralai,diffs,llama-parse,openai,azure]",
   "llmling-agent[default]"
 ]
-litellm = ["litellm", "tokonomics"]
-llama-index = ["llama-index"]
-llama-parse = ["llama-parse"]
-marker = ["marker-pdf"]
-# olmocr = ["olmocr", "accelerate"]
-markitdown = ["markitdown[all]>0.1.0"]
+litellm = ["litellm; python_version < '3.14'"]
+llama-index = ["llama-index; python_version < '3.14'"]
+llama-parse = ["llama-parse; python_version < '3.14'"]
+marker = ["marker-pdf; python_version < '3.14'"]
+markitdown = ["markitdown[all]; python_version < '3.14'"]
 mcp = ["fastmcp"]
 mistralai = ["mistralai"]
+olmocr = [
+  "olmocr; python_version < '3.14'",
+  "accelerate; python_version < '3.14'"
+]
 openai = ["openai"]
 pinecone = ["pinecone[asyncio]"]
-qdrant = ["qdrant-client[fastembed]"]
+qdrant = ["qdrant-client[fastembed]; python_version < '3.14'"]
 server = ["uvicorn", "fastapi"]
-smart-pdf = ["llmsherpa", "llama-index-readers-smart-pdf-loader"]
-streamlit = ["streamlit", "streambricks", "tokonomics", "st-diff-viewer"]
+streamlit = [
+  "streamlit; python_version < '3.14'",
+  "streambricks; python_version < '3.14'",
+  "tokonomics",
+  "st-diff-viewer; python_version < '3.14'"
+]
+token-chunking = ["tokonomics"]
 
 [dependency-groups]
 dev = [
