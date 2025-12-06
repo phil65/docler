@@ -53,40 +53,17 @@ docler = "docler.__main__:cli"
 
 [project.optional-dependencies]
 all = [
-  "marker-pdf",
-  "mistralai",
-  "docling[ocrmac,vlm,rapidocr]",
-  "markitdown[all]>0.1.0",
-  # "litellm",
-  "llmling-agent[default]",
-  # "llama-parse",
-  "streamlit",
-  "st-diff-viewer",
-  # "llmsherpa",
-  # "llama-index-readers-smart-pdf-loader",
-  "chromadb",
-  "upstash-vector",
-  "openai",
-  "pinecone[asyncio]",
-  "qdrant-client[fastembed]",
-  "azure-ai-documentintelligence",
-  "uvicorn",
-  "fastapi",
-  "fastmcp",
+  "docler[marker,azure,bge,chromadb,diffs,docling,litellm,llama-index,llama-parse,marker,markitdown,mcp,mistralai,openai,pinecone,qdrant,server,smart-pdf,streamlit]",
+  "llmling-agent[default]"
 ]
 azure = ["azure-ai-documentintelligence"]
 bge = ["FlagEmbedding"]
-chromadb = ["chromadb>=0.6.3"]
+chromadb = ["chromadb>=0.6.3; python_version < '3.14'"]
 diffs = ["diff-match-patch"]
 docling = ["docling[ocrmac,vlm,rapidocr]"]  # tesserocr
 light = [
-  "mistralai",
-  "diff-match-patch",
-  "llmling-agent[default]",
-  # "llama-index",
-  "llama-parse",
-  "openai",
-  "azure-ai-documentintelligence",
+  "docler[mistralai,diffs,llama-parse,openai,azure]",
+  "llmling-agent[default]"
 ]
 litellm = ["litellm", "tokonomics"]
 llama-index = ["llama-index"]
