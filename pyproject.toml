@@ -2,7 +2,7 @@
 
 [project]
 name = "docler"
-version = "1.1.0"
+version = "2.0.0"
 description = "Abstractions & Tools for OCR / document processing"
 readme = "README.md"
 requires-python = ">=3.13"
