@@ -53,7 +53,8 @@ docler = "docler.__main__:cli"
 
 [project.optional-dependencies]
 all = [
-  "docler[marker,azure,bge,chromadb,diffs,docling,litellm,llama-index,llama-parse,marker,markitdown,mcp,mistralai,openai,pinecone,qdrant,server,smart-pdf,streamlit]",
+  "docler[marker,azure,bge,diffs,docling,litellm,llama-index,llama-parse,marker,markitdown,mcp,mistralai,openai,pinecone,qdrant,server,smart-pdf,streamlit]",
+  "docler[chromadb];python_version < '3.14'",
   "llmling-agent[default]"
 ]
 azure = ["azure-ai-documentintelligence"]
