@@ -79,8 +79,6 @@ server = ["uvicorn", "fastapi"]
 streamlit = [
   "streamlit; python_version < '3.14'",
   "streambricks; python_version < '3.14'",
-  "tokonomics",
-  "st-diff-viewer; python_version < '3.14'"
 ]
 token-chunking = ["tokonomics"]
 
