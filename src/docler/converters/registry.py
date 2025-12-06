@@ -90,6 +90,32 @@ class ConverterRegistry:
 
         return None
 
+    def get_converter_by_mime(self, mime_type: MimeType) -> DocumentConverter | None:
+        """Get the appropriate converter for a MIME type.
+
+        Args:
+            mime_type: MIME type to look up
+
+        Returns:
+            Converter instance for this MIME type, or None if no converter is registered.
+        """
+        # Check for preference
+        if mime_type in self._preferences:
+            preferred_name = self._preferences[mime_type]
+            for converter in self._converters:
+                if (
+                    preferred_name == converter.NAME
+                    and mime_type in converter.get_supported_mime_types()
+                ):
+                    return converter
+
+        # No preference, use first converter that supports this MIME type
+        for converter in self._converters:
+            if mime_type in converter.get_supported_mime_types():
+                return converter
+
+        return None
+
     def set_preference(self, mime_or_extension: str, converter_name: str) -> None:
         """Set a preference for a specific converter for a MIME type or file extension.
 

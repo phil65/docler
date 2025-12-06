@@ -12,11 +12,12 @@ from docler.converters.registry import ConverterRegistry
 
 
 if TYPE_CHECKING:
-    from mkdown import Document
+    from io import BytesIO
+
     from schemez import MimeType
-    from upath.types import JoinablePathLike
 
     from docler.common_types import PageRangeString, SupportedLanguage
+    from docler.converters.base import ConverterResult
 
 
 class AggregatedConverter(DocumentConverter[AggregatedConverterConfig]):
@@ -70,6 +71,10 @@ class AggregatedConverter(DocumentConverter[AggregatedConverterConfig]):
         """Get all MIME types supported by registered converters."""
         return self._registry.get_supported_mime_types()
 
+    def supports_mime_type(self, mime_type: str) -> bool:
+        """Check if any registered converter supports this MIME type."""
+        return mime_type in self.get_supported_mime_types()
+
     def set_converter_preference(self, mime_or_extension: str, converter_name: str) -> None:
         """Set a preference for which converter to use for a specific file type.
 
@@ -79,18 +84,25 @@ class AggregatedConverter(DocumentConverter[AggregatedConverterConfig]):
         """
         self._registry.set_preference(mime_or_extension, converter_name)
 
-    async def _convert_path_async(
+    async def _convert_async(
         self,
-        file_path: JoinablePathLike,
+        data: BytesIO,
         mime_type: MimeType,
-    ) -> Document:
-        """Delegate conversion to the appropriate converter."""
-        converter = self._registry.get_converter(str(file_path), mime_type)
+    ) -> ConverterResult:
+        """Delegate conversion to the appropriate converter.
+
+        Note: We need a filename/extension to select the right converter,
+        but we only have BytesIO. We use the mime_type as a fallback.
+        For better results, use convert_file() or pass a preference.
+        """
+        # Use mime_type directly since we don't have a filename
+        converter = self._registry.get_converter_by_mime(mime_type)
         if not converter:
-            msg = f"No converter found for file: {file_path} (mime type: {mime_type})"
+            msg = f"No converter found for mime type: {mime_type}"
             raise ValueError(msg)
 
+        # Delegate to the selected converter's conversion method
         try:
-            return await converter._convert_path_async(file_path, mime_type)
+            return await converter._convert_async(data, mime_type)
         except NotImplementedError:
-            return await anyenv.run_in_thread(converter._convert_path_sync, file_path, mime_type)
+            return await anyenv.run_in_thread(converter._convert_sync, data, mime_type)

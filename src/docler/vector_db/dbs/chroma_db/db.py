@@ -106,7 +106,7 @@ class ChromaBackend(VectorStoreBackend):
         limit: int | None = None,
     ) -> list[str]:
         data = self._collection.get(include=[], limit=limit)
-        return data["ids"]  # type: ignore[no-any-return]
+        return data["ids"]
 
     async def delete(self, chunk_id: str) -> bool:
         """Delete vector from ChromaDB."""

@@ -139,8 +139,9 @@ class DocumentConverter[TConfig: BaseModel = Any](BaseProvider[TConfig], ABC):
         """
         from mkdown import Document
 
-        if mime_type not in self.SUPPORTED_MIME_TYPES:
-            msg = f"Unsupported MIME type {mime_type}. Must be one of: {self.SUPPORTED_MIME_TYPES}"
+        if not self.supports_mime_type(mime_type):
+            supported = self.get_supported_mime_types()
+            msg = f"Unsupported MIME type {mime_type}. Must be one of: {supported}"
             raise ValueError(msg)
 
         # Handle different input types
