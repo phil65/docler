@@ -141,11 +141,7 @@ class DoclingRemoteConverter(DocumentConverter[DoclingRemoteConfig]):
         if languages:
             self.config["ocr_lang"] = languages
 
-    async def _convert_async(
-        self,
-        data: BytesIO,
-        mime_type: MimeType,
-    ) -> ConverterResult:
+    async def _convert_async(self, data: BytesIO, mime_type: MimeType) -> ConverterResult:
         """Convert a document using remote Docling service.
 
         Args:

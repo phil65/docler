@@ -84,11 +84,7 @@ class AggregatedConverter(DocumentConverter[AggregatedConverterConfig]):
         """
         self._registry.set_preference(mime_or_extension, converter_name)
 
-    async def _convert_async(
-        self,
-        data: BytesIO,
-        mime_type: MimeType,
-    ) -> ConverterResult:
+    async def _convert_async(self, data: BytesIO, mime_type: MimeType) -> ConverterResult:
         """Delegate conversion to the appropriate converter.
 
         Note: We need a filename/extension to select the right converter,

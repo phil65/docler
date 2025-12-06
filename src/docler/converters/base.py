@@ -241,11 +241,7 @@ class DocumentConverter[TConfig: BaseModel = Any](BaseProvider[TConfig], ABC):
             title=path.stem,
         )
 
-    async def _convert_threaded(
-        self,
-        data: BytesIO,
-        mime_type: MimeType,
-    ) -> ConverterResult:
+    async def _convert_threaded(self, data: BytesIO, mime_type: MimeType) -> ConverterResult:
         """Internal method to handle conversion routing.
 
         Will use _convert_async if implemented, otherwise falls back to
@@ -268,11 +264,7 @@ class DocumentConverter[TConfig: BaseModel = Any](BaseProvider[TConfig], ABC):
         """
         raise NotImplementedError
 
-    async def _convert_async(
-        self,
-        data: BytesIO,
-        mime_type: MimeType,
-    ) -> ConverterResult:
+    async def _convert_async(self, data: BytesIO, mime_type: MimeType) -> ConverterResult:
         """Asynchronous implementation for IO-bound operations.
 
         Args:
