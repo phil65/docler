@@ -46,7 +46,7 @@ def lint(ctx):
     """Lint the code and fix issues if possible."""
     ctx.run("uv run ruff check --fix --unsafe-fixes .")
     ctx.run("uv run ruff format .")
-    ctx.run("uv run mypy src/docler/ --fixed-format-cache")
+    ctx.run("uv run mypy src/ --fixed-format-cache")
 
 
 @duty(capture=False)

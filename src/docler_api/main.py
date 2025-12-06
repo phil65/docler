@@ -61,7 +61,7 @@ async def api_list_chunkers() -> dict[str, list[dict[str, Any]]]:
 
 @app.post("/api/chunk")
 async def api_chunk_document(
-    file,
+    file: UploadFile,
     converter_config: ConverterConfig,
     chunker_config: ChunkerConfig,
     pdf_password: str | None = None,

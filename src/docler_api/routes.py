@@ -12,12 +12,13 @@ from pydantic import TypeAdapter
 import upath
 
 from docler.configs.converter_configs import ConverterConfig
-from docler.models import PageMetadata  # noqa: TC001
+from docler.models import ChunkedDocument, PageMetadata  # noqa: TC001
 from docler.pdf_utils import decrypt_pdf, get_pdf_info
 
 
 if TYPE_CHECKING:
     from fastapi import UploadFile
+    from mkdown import Document
 
     from docler.configs.chunker_configs import ChunkerConfig
 
@@ -31,7 +32,7 @@ async def convert_document(
     pdf_password: Annotated[
         str | None, Form(description="Password for encrypted PDF files")
     ] = None,
-):
+) -> Document:
     """Convert a document file to markdown using specified converter configuration."""
     # Parse the JSON config string manually
 
@@ -130,7 +131,7 @@ async def chunk_document(
         default=None,
         description="Password for encrypted PDF files",
     ),
-):
+) -> ChunkedDocument:
     """Convert and chunk a document file using specified configurations.
 
     Args:
@@ -226,7 +227,7 @@ async def chunk_document(
         path.unlink(missing_ok=True)
 
 
-async def list_converters():
+async def list_converters() -> dict[str, list[dict[str, Any]]]:
     """List all available converters."""
     from docler.converters.registry import ConverterRegistry
 
@@ -245,7 +246,7 @@ async def list_converters():
     return {"converters": converters}
 
 
-async def list_chunkers():
+async def list_chunkers() -> dict[str, list[dict[str, Any]]]:
     """List all available chunkers."""
     from docler.chunkers.base import TextChunker
 
