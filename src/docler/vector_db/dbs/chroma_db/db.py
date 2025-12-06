@@ -5,6 +5,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, ClassVar, Literal, cast
 import uuid
 
+import anyenv
+
 from docler.log import get_logger
 from docler.models import Vector
 from docler.vector_db.base_backend import VectorStoreBackend
@@ -66,8 +68,6 @@ class ChromaBackend(VectorStoreBackend):
         ids: list[str] | None = None,
     ) -> list[str]:
         """Add multiple vectors to ChromaDB."""
-        import anyenv
-
         if len(vectors) != len(metadata):
             msg = "Number of vectors and metadata entries must match"
             raise ValueError(msg)
@@ -84,7 +84,6 @@ class ChromaBackend(VectorStoreBackend):
 
     async def get_vector(self, chunk_id: str) -> Vector | None:
         """Get vector and metadata from ChromaDB."""
-        import anyenv
         import numpy as np
 
         result = await anyenv.run_in_thread(
@@ -110,8 +109,6 @@ class ChromaBackend(VectorStoreBackend):
 
     async def delete(self, chunk_id: str) -> bool:
         """Delete vector from ChromaDB."""
-        import anyenv
-
         try:
             await anyenv.run_in_thread(self._collection.delete, ids=[chunk_id])
         except Exception:  # noqa: BLE001
@@ -126,8 +123,6 @@ class ChromaBackend(VectorStoreBackend):
         filters: dict[str, Any] | None = None,
     ) -> list[SearchResult]:
         """Search ChromaDB for similar vectors."""
-        import anyenv
-
         query_list = [query_vector.tolist()]
         results = await anyenv.run_in_thread(
             self._collection.query,
