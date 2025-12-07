@@ -3,17 +3,15 @@
 from __future__ import annotations
 
 import mimetypes
-import tempfile
 from typing import TYPE_CHECKING, Annotated, Any
 
 import anyenv
 from fastapi import Body, File, Form, HTTPException, Query
 from pydantic import TypeAdapter
-import upath
 
 from docler.configs.converter_configs import ConverterConfig
 from docler.models import ChunkedDocument, PageMetadata  # noqa: TC001
-from docler.pdf_utils import decrypt_pdf, get_pdf_info
+from docler.pdf_utils import get_pdf_info
 
 
 if TYPE_CHECKING:
@@ -44,65 +42,33 @@ async def convert_document(
 
     content = await file.read()
 
-    # Handle PDF decryption if needed
-    if file.content_type == "application/pdf" or (
-        file.filename and file.filename.lower().endswith(".pdf")
-    ):
-        # Check if PDF is encrypted
-        try:
-            pdf_info = get_pdf_info(content)
-            if pdf_info.is_encrypted:
-                if pdf_password is None:
-                    # Try empty password first
-                    try:
-                        content = decrypt_pdf(content, None)
-                    except ValueError as e:
-                        if "requires a password" in str(e):
-                            raise HTTPException(
-                                status_code=400,
-                                detail=(
-                                    "PDF is encrypted but no password provided. "
-                                    "Please provide pdf_password parameter."
-                                ),
-                            ) from e
-                        raise HTTPException(
-                            status_code=400, detail=f"Failed to decrypt PDF: {e}"
-                        ) from e
-                else:
-                    # Decrypt the PDF with provided password
-                    try:
-                        content = decrypt_pdf(content, pdf_password)
-                    except ValueError as e:
-                        if "Incorrect password" in str(e):
-                            raise HTTPException(  # noqa: B904
-                                status_code=401, detail="Incorrect PDF password"
-                            )
-                        raise HTTPException(
-                            status_code=400, detail=f"Failed to decrypt PDF: {e}"
-                        ) from e
-        except ValueError as e:
-            if "encrypted" not in str(e).lower():
-                # If it's not an encryption issue, let it pass through to the converter
-                pass
-
-    with tempfile.NamedTemporaryFile(suffix=f"_{file.filename}", delete=False) as temp_file:
-        temp_path = temp_file.name
-        temp_file.write(content)
-
     try:
         mime_type, _ = mimetypes.guess_type(file.filename or "")
         if not mime_type:
-            mime_type = file.content_type
+            mime_type = file.content_type or "application/octet-stream"
 
         # Create converter from config
         converter = parsed.get_provider()
-        document = await converter.convert_file(temp_path)
+        document = await converter.convert_content(
+            content=content,
+            mime_type=mime_type,
+            source_path=file.filename,
+            title=file.filename,
+            pdf_password=pdf_password,
+        )
 
         # Always include images as base64
         for image in document.images:
             if isinstance(image.content, bytes):
                 # Convert bytes to base64 string
                 image.content = image.to_base64()
+    except ValueError as e:
+        if "password" in str(e).lower():
+            status_code = 401 if "incorrect" in str(e).lower() else 400
+            raise HTTPException(status_code=status_code, detail=str(e)) from e
+        raise HTTPException(
+            status_code=400, detail=f"Error during document conversion: {e!s}"
+        ) from e
     except Exception as e:
         if not isinstance(e, HTTPException):
             raise HTTPException(
@@ -111,10 +77,6 @@ async def convert_document(
         raise
     else:
         return document
-    finally:
-        # Clean up the temporary file
-        path = upath.UPath(temp_path)
-        path.unlink(missing_ok=True)
 
 
 async def chunk_document(
@@ -145,59 +107,19 @@ async def chunk_document(
     """
     content = await file.read()
 
-    # Handle PDF decryption if needed
-    if file.content_type == "application/pdf" or (
-        file.filename and file.filename.lower().endswith(".pdf")
-    ):
-        # Check if PDF is encrypted
-        try:
-            pdf_info = get_pdf_info(content)
-            if pdf_info.is_encrypted:
-                if pdf_password is None:
-                    # Try empty password first
-                    try:
-                        content = decrypt_pdf(content, None)
-                    except ValueError as e:
-                        if "requires a password" in str(e):
-                            raise HTTPException(
-                                status_code=400,
-                                detail="PDF is encrypted but no password provided.",
-                            ) from e
-                        raise HTTPException(
-                            status_code=400, detail=f"Failed to decrypt PDF: {e}"
-                        ) from e
-                else:
-                    # Decrypt the PDF with provided password
-                    try:
-                        content = decrypt_pdf(content, pdf_password)
-                    except ValueError as e:
-                        if "Incorrect password" in str(e):
-                            raise HTTPException(  # noqa: B904
-                                status_code=401, detail="Incorrect PDF password"
-                            )
-                        raise HTTPException(
-                            status_code=400, detail=f"Failed to decrypt PDF: {e}"
-                        ) from e
-        except ValueError as e:
-            if "encrypted" not in str(e).lower():
-                # If it's not an encryption issue, let it pass through to the converter
-                pass
-
-    with tempfile.NamedTemporaryFile(suffix=f"_{file.filename}", delete=False) as temp_file:
-        temp_path = temp_file.name
-        temp_file.write(content)
-
     try:
         mime_type, _ = mimetypes.guess_type(file.filename or "")
         if not mime_type:
-            mime_type = file.content_type
-
-        # Get converter and chunker instances
+            mime_type = file.content_type or "application/octet-stream"
         converter = converter_config.get_provider()
         chunker = chunker_config.get_provider()
-
-        # Convert the document
-        document = await converter.convert_file(temp_path)
+        document = await converter.convert_content(
+            content=content,
+            mime_type=mime_type,
+            source_path=file.filename,
+            title=file.filename,
+            pdf_password=pdf_password,
+        )
 
         # Chunk the document
         chunked_document = await chunker.chunk(document)
@@ -212,19 +134,20 @@ async def chunk_document(
                 if isinstance(image.content, bytes):
                     # Convert bytes to base64 string
                     image.content = image.to_base64()
+    except ValueError as e:
+        if "password" in str(e).lower():
+            status_code = 401 if "incorrect" in str(e).lower() else 400
+            raise HTTPException(status_code=status_code, detail=str(e)) from e
+        raise HTTPException(
+            status_code=400, detail=f"Error during document conversion or chunking: {e!s}"
+        ) from e
     except Exception as e:
         if not isinstance(e, HTTPException):
-            raise HTTPException(
-                status_code=500,
-                detail=f"Error during document conversion or chunking: {e!s}",
-            ) from e
+            msg = f"Error during document conversion or chunking: {e!s}"
+            raise HTTPException(status_code=500, detail=msg) from e
         raise
     else:
         return chunked_document
-    finally:
-        # Clean up the temporary file
-        path = upath.UPath(temp_path)
-        path.unlink(missing_ok=True)
 
 
 async def list_converters() -> dict[str, list[dict[str, Any]]]:

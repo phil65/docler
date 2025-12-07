@@ -122,6 +122,7 @@ class DocumentConverter[TConfig: BaseModel = Any](BaseProvider[TConfig], ABC):
         *,
         source_path: str | None = None,
         title: str | None = None,
+        pdf_password: str | None = None,
     ) -> Document:
         """Convert document content directly from bytes, BytesIO, or base64 string.
 
@@ -130,6 +131,7 @@ class DocumentConverter[TConfig: BaseModel = Any](BaseProvider[TConfig], ABC):
             mime_type: MIME type of the content.
             source_path: Optional source path for metadata.
             title: Optional title. If None, uses "Untitled".
+            pdf_password: Password for encrypted PDF files.
 
         Returns:
             Converted document with extracted text and images.
@@ -161,6 +163,42 @@ class DocumentConverter[TConfig: BaseModel = Any](BaseProvider[TConfig], ABC):
             msg = f"Unsupported content type: {type(content)}"
             raise TypeError(msg)
 
+        # Handle PDF decryption if needed
+        if mime_type == "application/pdf":
+            from docler.pdf_utils import decrypt_pdf, get_pdf_info
+
+            try:
+                pdf_info = get_pdf_info(data.getvalue())
+                if pdf_info.is_encrypted:
+                    if pdf_password is None:
+                        # Try empty password first
+                        try:
+                            decrypted_content = decrypt_pdf(data.getvalue(), None)
+                            data = BytesIO(decrypted_content)
+                        except ValueError as e:
+                            if "requires a password" in str(e):
+                                msg = (
+                                    "PDF is encrypted but no password provided. "
+                                    "Please provide pdf_password parameter."
+                                )
+                                raise ValueError(msg) from e
+                            raise
+                    else:
+                        # Decrypt the PDF with provided password
+                        try:
+                            decrypted_content = decrypt_pdf(data.getvalue(), pdf_password)
+                            data = BytesIO(decrypted_content)
+                        except ValueError as e:
+                            if "Incorrect password" in str(e):
+                                raise ValueError("Incorrect PDF password") from e
+                            raise
+            except ValueError as e:
+                if "encrypted" not in str(e).lower():
+                    # If it's not an encryption issue, let it pass through to the converter
+                    pass
+                else:
+                    raise
+
         result = await self._convert_threaded(data, mime_type)
 
         # Assemble final Document
@@ -186,11 +224,14 @@ class DocumentConverter[TConfig: BaseModel = Any](BaseProvider[TConfig], ABC):
 
         return document
 
-    async def convert_files(self, file_paths: Sequence[JoinablePathLike]) -> list[Document]:
+    async def convert_files(
+        self, file_paths: Sequence[JoinablePathLike], *, pdf_password: str | None = None
+    ) -> list[Document]:
         """Convert multiple document files in parallel.
 
         Args:
             file_paths: Sequence of paths to documents to convert.
+            pdf_password: Password for encrypted PDF files.
 
         Returns:
             List of converted documents in the same order as the input paths.
@@ -199,16 +240,19 @@ class DocumentConverter[TConfig: BaseModel = Any](BaseProvider[TConfig], ABC):
             FileNotFoundError: If any file doesn't exist.
             ValueError: If any file format is not supported.
         """
-        tasks = [self.convert_file(path) for path in file_paths]
+        tasks = [self.convert_file(path, pdf_password=pdf_password) for path in file_paths]
         return list(await anyenv.gather(*tasks))
 
-    async def convert_file(self, file_path: JoinablePathLike) -> Document:
+    async def convert_file(
+        self, file_path: JoinablePathLike, *, pdf_password: str | None = None
+    ) -> Document:
         """Convert a document file.
 
         Supports both local and remote files through fsspec/upath.
 
         Args:
             file_path: Path to the file to process (local or remote URI).
+            pdf_password: Password for encrypted PDF files.
 
         Returns:
             Converted document with extracted text and images.
@@ -239,6 +283,7 @@ class DocumentConverter[TConfig: BaseModel = Any](BaseProvider[TConfig], ABC):
             mime_type=mime_type,
             source_path=str(path),
             title=path.stem,
+            pdf_password=pdf_password,
         )
 
     async def _convert_threaded(self, data: BytesIO, mime_type: MimeType) -> ConverterResult:
@@ -304,6 +349,7 @@ class DocumentConverter[TConfig: BaseModel = Any](BaseProvider[TConfig], ABC):
         exclude: list[str] | None = None,
         max_depth: int | None = None,
         chunk_size: int = 50,
+        pdf_password: str | None = None,
     ) -> dict[str, Document]:
         """Convert all supported files in a directory.
 
@@ -314,6 +360,7 @@ class DocumentConverter[TConfig: BaseModel = Any](BaseProvider[TConfig], ABC):
             exclude: List of patterns to exclude.
             max_depth: Maximum directory depth for recursive search.
             chunk_size: Number of files to convert in parallel.
+            pdf_password: Password for encrypted PDF files.
 
         Returns:
             Mapping of relative paths to converted documents.
@@ -355,7 +402,9 @@ class DocumentConverter[TConfig: BaseModel = Any](BaseProvider[TConfig], ABC):
         for i in range(0, len(supported_files), chunk_size):
             chunk = supported_files[i : i + chunk_size]
             # Convert using full paths
-            documents = await self.convert_files([path for _, path in chunk])
+            documents = await self.convert_files(
+                [path for _, path in chunk], pdf_password=pdf_password
+            )
 
             # Store results with relative paths as keys
             for (rel_path, _), doc in zip(chunk, documents):
