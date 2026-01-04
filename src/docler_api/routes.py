@@ -9,16 +9,16 @@ import anyenv
 from fastapi import Body, File, Form, HTTPException, Query
 from pydantic import TypeAdapter
 
-from docler.configs.converter_configs import ConverterConfig
 from docler.models import ChunkedDocument, PageMetadata  # noqa: TC001
 from docler.pdf_utils import get_pdf_info
+from docler_config.converter_configs import ConverterConfig
 
 
 if TYPE_CHECKING:
     from fastapi import UploadFile
     from mkdown import Document
 
-    from docler.configs.chunker_configs import ChunkerConfig
+    from docler_config.chunker_configs import ChunkerConfig
 
 
 config_adapter = TypeAdapter[ConverterConfig](ConverterConfig)

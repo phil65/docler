@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, ClassVar
 
-from docler.configs.converter_configs import AzureConfig
 from docler.converters.azure_provider.utils import (
     get_metadata,
     replace_page_breaks,
@@ -15,6 +14,7 @@ from docler.converters.base import ConverterResult, DocumentConverter
 from docler.converters.exceptions import MissingConfigurationError
 from docler.log import get_logger
 from docler.utils import get_api_key
+from docler_config.converter_configs import AzureConfig
 
 
 if TYPE_CHECKING:
@@ -25,7 +25,7 @@ if TYPE_CHECKING:
     from schemez import MimeType
 
     from docler.common_types import PageRangeString, SupportedLanguage
-    from docler.configs.converter_configs import AzureFeatureFlag, AzureModel
+    from docler_config.converter_configs import AzureFeatureFlag, AzureModel
 
 logger = get_logger(__name__)
 

@@ -8,7 +8,7 @@ from docler.chunkers.ai_chunker.models import Chunk, Chunks
 from docler.chunkers.ai_chunker.utils import add_line_numbers, create_text_chunk
 from docler.chunkers.base import TextChunker
 from docler.common_types import DEFAULT_CHUNKER_MODEL
-from docler.configs.chunker_configs import (
+from docler_config.chunker_configs import (
     DEFAULT_CHUNKER_SYSTEM_PROMPT,
     DEFAULT_CHUNKER_USER_TEMPLATE,
     AiChunkerConfig,
@@ -46,7 +46,7 @@ class AIChunker(TextChunker[AiChunkerConfig]):
 
     async def _get_chunks(self, text: str) -> Chunks:
         """Get chunk definitions from LLM."""
-        from llmling_agent import Agent
+        from agentpool import Agent
 
         numbered_text = add_line_numbers(text)
         # agent: llmling_agent.StructuredAgent[None, Chunks] = llmling_agent.Agent[None](

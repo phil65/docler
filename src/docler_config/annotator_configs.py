@@ -7,14 +7,16 @@ from typing import TYPE_CHECKING, Annotated, Literal
 from pydantic import Field
 from schemez import ModelIdentifier  # noqa: TC002
 
-from docler.common_types import DEFAULT_ANNOTATOR_MODEL, DEFAULT_IMAGE_ANNOTATOR_MODEL
-from docler.provider import ProviderConfig
+from docler_config.provider import ProviderConfig
 
 
 if TYPE_CHECKING:
     from docler.annotators.ai_document_annotator import AIDocumentAnnotator
     from docler.annotators.ai_image_annotator import AIImageAnnotator
 
+
+DEFAULT_ANNOTATOR_MODEL = "google-gla:gemini-2.0-flash"
+DEFAULT_IMAGE_ANNOTATOR_MODEL = "google-gla:gemini-2.0-flash"
 
 DEFAULT_DOC_SYSTEM_PROMPT = """
 You are an expert document analyzer that extracts meaningful metadata.

@@ -4,12 +4,11 @@ from __future__ import annotations
 
 from contextlib import AsyncExitStack
 import importlib.util
+import logging
 from typing import Any, ClassVar, Self
 
 from pydantic import BaseModel, Field, HttpUrl, SecretStr, field_serializer
 from pydantic_settings import BaseSettings, SettingsConfigDict
-
-from docler.log import get_logger
 
 
 class ProviderConfig(BaseSettings):
@@ -56,7 +55,7 @@ class BaseProvider[TConfig: BaseModel]:
     """Packages required for this converter."""
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
-        self.logger = get_logger(__name__)
+        self.logger = logging.getLogger(__name__)
         self.exit_stack = AsyncExitStack()
 
     async def __aenter__(self) -> Self:

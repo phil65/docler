@@ -26,7 +26,7 @@ if TYPE_CHECKING:
     from upath.types import JoinablePathLike
 
     from docler.common_types import PageRangeString, SupportedLanguage
-    from docler.configs.converter_configs import ConverterConfig
+    from docler_config.converter_configs import ConverterConfig
 
 
 @dataclass

@@ -6,9 +6,9 @@ from typing import TYPE_CHECKING
 
 import anyenv
 
-from docler.configs.converter_configs import AggregatedConverterConfig
 from docler.converters.base import DocumentConverter
 from docler.converters.registry import ConverterRegistry
+from docler_config.converter_configs import AggregatedConverterConfig
 
 
 if TYPE_CHECKING:

@@ -6,24 +6,24 @@ from mkdown import Document
 from schemez import Schema
 
 from docler.common_types import DEFAULT_PROOF_READER_MODEL
-from docler.configs.chunker_configs import (
+from docler.diffs import generate_all_diffs
+from docler.processors.base import DocumentProcessor
+from docler.utils import add_line_numbers
+from docler_config.chunker_configs import (
     AiChunkerConfig,
     LlamaIndexChunkerConfig,
     MarkdownChunkerConfig,
     TokenAwareChunkerConfig,
 )
-from docler.configs.processor_configs import (
+from docler_config.processor_configs import (
     DEFAULT_PROOF_READER_PROMPT_TEMPLATE,
     DEFAULT_PROOF_READER_SYSTEM_PROMPT,
     LLMProofReaderConfig,
 )
-from docler.diffs import generate_all_diffs
-from docler.processors.base import DocumentProcessor
-from docler.utils import add_line_numbers
 
 
 if TYPE_CHECKING:
-    from docler.configs.chunker_configs import ChunkerConfig, ChunkerShorthand
+    from docler_config.chunker_configs import ChunkerConfig, ChunkerShorthand
 
 
 class LineCorrection(Schema):
@@ -123,7 +123,7 @@ class LLMProofReader(DocumentProcessor[LLMProofReaderConfig]):
 
     async def process(self, doc: Document) -> Document:
         """Process document using line-based corrections."""
-        from llmling_agent import Agent
+        from agentpool import Agent
 
         agent = Agent[None](model=self.model, system_prompt=self.system_prompt)
 
@@ -142,7 +142,6 @@ class LLMProofReader(DocumentProcessor[LLMProofReaderConfig]):
                     text=numbered_text,
                     as_type=LineCorrection,
                     prompt=user_prompt,
-                    mode="structured",
                 )
                 corrections.extend(chunk_corrections)
         else:

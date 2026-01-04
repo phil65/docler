@@ -7,8 +7,8 @@ from typing import TYPE_CHECKING, Any, ClassVar, Literal
 from mkdown import TextChunk
 
 from docler.chunkers.base import TextChunker
-from docler.configs.chunker_configs import LlamaIndexChunkerConfig
 from docler.log import get_logger
+from docler_config.chunker_configs import LlamaIndexChunkerConfig
 
 
 if TYPE_CHECKING:

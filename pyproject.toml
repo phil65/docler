@@ -316,6 +316,7 @@ default-groups = ["dev", "lint", "docs"]
 [tool.uv.build-backend]
 module-name = [
   "docler",
+  "docler_config",
   "docler_streamlit",
   "docler_api",
   "docler_mcp",

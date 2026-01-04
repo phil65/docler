@@ -11,8 +11,8 @@ from docler.provider import BaseProvider
 
 
 if TYPE_CHECKING:
-    from docler.configs.annotator_configs import BaseAnnotatorConfig
     from docler.models import ChunkedDocument
+    from docler_config.annotator_configs import BaseAnnotatorConfig
 
 
 class Annotator[TConfig: BaseModel](ABC, BaseProvider[TConfig]):

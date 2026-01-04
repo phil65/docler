@@ -10,7 +10,7 @@ from schemez import Schema
 
 from docler.annotators.base import Annotator
 from docler.common_types import DEFAULT_ANNOTATOR_MODEL
-from docler.configs.annotator_configs import (
+from docler_config.annotator_configs import (
     DEFAULT_DOC_PROMPT_TEMPLATE,
     DEFAULT_DOC_SYSTEM_PROMPT,
     AIDocumentAnnotatorConfig,
@@ -84,7 +84,7 @@ class AIDocumentAnnotator[TMetadata: Schema = DefaultMetadata](
         Returns:
             Document with enhanced metadata
         """
-        from llmling_agent import Agent
+        from agentpool import Agent
 
         agent = Agent(
             model=self.model,

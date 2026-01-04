@@ -7,11 +7,11 @@ from typing import TYPE_CHECKING, ClassVar
 
 from mkdown import Image, create_image_reference, create_page_break
 
-from docler.configs.converter_configs import DoclingConverterConfig
 from docler.converters.base import ConverterResult, DocumentConverter
 from docler.converters.docling_provider.utils import convert_languages, parse_page_range
 from docler.log import get_logger
 from docler.utils import pil_to_bytes
+from docler_config.converter_configs import DoclingConverterConfig
 
 
 if TYPE_CHECKING:
@@ -21,7 +21,7 @@ if TYPE_CHECKING:
     from schemez import MimeType
 
     from docler.common_types import PageRangeString, SupportedLanguage
-    from docler.configs.converter_configs import DoclingEngine
+    from docler_config.converter_configs import DoclingEngine
 
 PAGE_BREAK_MARKER = "<!-- PageBreak -->"
 logger = get_logger(__name__)

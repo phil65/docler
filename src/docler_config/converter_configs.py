@@ -15,17 +15,16 @@ from pydantic import Field, HttpUrl, SecretStr  # noqa: TC002
 from pydantic_settings import SettingsConfigDict
 from schemez import ModelIdentifier  # noqa: TC002
 
-from docler.common_types import (
-    DEFAULT_CONVERTER_MODEL,
-    PageRangeString,  # noqa: TC001
-    SupportedLanguage,  # noqa: TC001
-)
-from docler.provider import ProviderConfig
+from docler_config.provider import ProviderConfig
 
 
 if TYPE_CHECKING:
     from docler.converters.base import DocumentConverter
 
+
+DEFAULT_CONVERTER_MODEL = "google-gla:gemini-2.0-flash"
+PageRangeString = str
+SupportedLanguage = Literal["en", "de", "fr", "es", "zh"]
 
 ConverterShorthand = Literal[
     "docling",

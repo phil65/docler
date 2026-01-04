@@ -8,10 +8,10 @@ from typing import TYPE_CHECKING, Any, ClassVar
 
 from mkdown import Image, create_image_reference, create_page_break
 
-from docler.configs.converter_configs import UpstageConfig
 from docler.converters.base import ConverterResult, DocumentConverter
 from docler.pdf_utils import extract_pdf_pages
 from docler.utils import get_api_key
+from docler_config.converter_configs import UpstageConfig
 
 
 if TYPE_CHECKING:
@@ -20,7 +20,7 @@ if TYPE_CHECKING:
     from schemez import MimeType
 
     from docler.common_types import PageRangeString, SupportedLanguage
-    from docler.configs.converter_configs import UpstageCategory, UpstageOCRType
+    from docler_config.converter_configs import UpstageCategory, UpstageOCRType
 
 
 # API endpoints

@@ -13,7 +13,7 @@ from docler.provider import BaseProvider
 if TYPE_CHECKING:
     from mkdown import Document
 
-    from docler.configs.processor_configs import BaseProcessorConfig
+    from docler_config.processor_configs import BaseProcessorConfig
 
 
 class DocumentProcessor[TConfig: BaseModel](BaseProvider[TConfig], ABC):

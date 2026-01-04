@@ -7,10 +7,10 @@ from typing import TYPE_CHECKING, ClassVar, Literal
 import anyenv
 import httpx
 
-from docler.configs.converter_configs import DoclingRemoteConfig
 from docler.converters.base import ConverterResult, DocumentConverter
 from docler.converters.docling_remote_provider.utils import process_response
 from docler.log import get_logger
+from docler_config.converter_configs import DoclingRemoteConfig
 
 
 if TYPE_CHECKING:

@@ -5,11 +5,11 @@ from __future__ import annotations
 import pathlib
 from typing import TYPE_CHECKING, ClassVar, Literal
 
-from docler.configs.converter_configs import MarkerConfig
 from docler.converters.base import ConverterResult, DocumentConverter
 from docler.converters.datalab_provider.utils import process_response
 from docler.log import get_logger
 from docler.pdf_utils import shift_page_range
+from docler_config.converter_configs import MarkerConfig
 
 
 logger = get_logger(__name__)

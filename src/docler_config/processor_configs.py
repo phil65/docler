@@ -7,16 +7,16 @@ from typing import TYPE_CHECKING, Annotated, Any, Literal
 from pydantic import Field
 from schemez import ModelIdentifier  # noqa: TC002
 
-from docler.common_types import DEFAULT_PROOF_READER_MODEL
-from docler.configs.chunker_configs import ChunkerConfig  # noqa: TC001
-from docler.provider import ProviderConfig
+from docler_config.chunker_configs import ChunkerConfig  # noqa: TC001
+from docler_config.provider import ProviderConfig
 
 
 if TYPE_CHECKING:
     from docler.processors.base import DocumentProcessor
 
 
-# Default prompts for LLM proof reader
+DEFAULT_PROOF_READER_MODEL = "google-gla:gemini-2.0-flash"
+
 DEFAULT_PROOF_READER_SYSTEM_PROMPT = """\
 You are a professional OCR proof-reader. Your task is to correct OCR errors
 in the provided text, focusing especially on fixing misrecognized characters,

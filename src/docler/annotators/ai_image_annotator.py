@@ -10,7 +10,7 @@ from schemez import Schema
 
 from docler.annotators.base import Annotator
 from docler.common_types import DEFAULT_IMAGE_ANNOTATOR_MODEL
-from docler.configs.annotator_configs import (
+from docler_config.annotator_configs import (
     DEFAULT_IMAGE_PROMPT_TEMPLATE,
     DEFAULT_IMAGE_SYSTEM_PROMPT,
     AIImageAnnotatorConfig,
@@ -88,13 +88,19 @@ class AIImageAnnotator[TMetadata: Schema = DefaultImageMetadata](Annotator[AIIma
         Returns:
             Image with added description and metadata
         """
-        from llmling_agent import Agent, ImageBase64Content
+        import base64
+
+        from agentpool import Agent
+        from pydantic_ai import BinaryImage
 
         if image.description and image.metadata:
             return image
 
-        b64_content = image.to_base64()
-        img_content = ImageBase64Content(data=b64_content, mime_type=image.mime_type)
+        if isinstance(image.content, bytes):
+            data = image.content
+        else:
+            data = base64.b64decode(image.content)
+        img_content = BinaryImage(data=data, media_type=image.mime_type)
         agent = Agent(
             model=self.model,
             system_prompt=self.system_prompt,

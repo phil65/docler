@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from docler.configs.annotator_configs import (
+from docler_config.annotator_configs import (
     AIDocumentAnnotatorConfig,
     AIImageAnnotatorConfig,
     AnnotatorConfig,
@@ -12,7 +12,7 @@ from docler.configs.annotator_configs import (
     DEFAULT_IMAGE_PROMPT_TEMPLATE,
     DEFAULT_IMAGE_SYSTEM_PROMPT,
 )
-from docler.configs.chunker_configs import (
+from docler_config.chunker_configs import (
     AiChunkerConfig,
     BaseChunkerConfig,
     ChunkerConfig,
@@ -22,7 +22,7 @@ from docler.configs.chunker_configs import (
     DEFAULT_CHUNKER_USER_TEMPLATE,
     DEFAULT_CHUNKER_SYSTEM_PROMPT,
 )
-from docler.configs.converter_configs import (
+from docler_config.converter_configs import (
     ConverterShorthand,
     AzureConfig,
     AzureFeatureFlag,
@@ -41,7 +41,7 @@ from docler.configs.converter_configs import (
     UpstageConfig,
 )
 
-from docler.configs.processor_configs import (
+from docler_config.processor_configs import (
     BaseProcessorConfig,
     DEFAULT_PROOF_READER_PROMPT_TEMPLATE,
     DEFAULT_PROOF_READER_SYSTEM_PROMPT,

@@ -7,8 +7,7 @@ from typing import TYPE_CHECKING, Annotated, Literal
 from pydantic import Field
 from schemez import ModelIdentifier  # noqa: TC002
 
-from docler.common_types import DEFAULT_CHUNKER_MODEL
-from docler.provider import ProviderConfig
+from docler_config.provider import ProviderConfig
 
 
 if TYPE_CHECKING:
@@ -17,6 +16,8 @@ if TYPE_CHECKING:
     from docler.chunkers.markdown_chunker import MarkdownChunker
     from docler.chunkers.token_chunker import TokenAwareChunker
 
+
+DEFAULT_CHUNKER_MODEL = "openrouter:openai/o3-mini"
 
 DEFAULT_CHUNKER_SYSTEM_PROMPT = """
 You are an expert at dividing text into meaningful chunks

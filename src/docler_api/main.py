@@ -9,10 +9,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from mkdown import Document
 
 from docler import __version__ as docler_version
-from docler.configs.chunker_configs import ChunkerConfig
-from docler.configs.converter_configs import ConverterConfig
 from docler.models import ChunkedDocument, PageMetadata
 from docler_api import routes
+from docler_config.chunker_configs import ChunkerConfig
+from docler_config.converter_configs import ConverterConfig
 
 
 app = FastAPI(

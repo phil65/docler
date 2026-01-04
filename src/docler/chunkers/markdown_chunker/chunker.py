@@ -8,7 +8,7 @@ from mkdown import TextChunk
 
 from docler.chunkers.base import TextChunker
 from docler.chunkers.markdown_chunker.utils import assign_images, split_by_headers
-from docler.configs.chunker_configs import MarkdownChunkerConfig
+from docler_config.chunker_configs import MarkdownChunkerConfig
 
 
 if TYPE_CHECKING:

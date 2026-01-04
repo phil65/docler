@@ -5,13 +5,13 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, ClassVar
 
 from docler.common_types import DEFAULT_CONVERTER_MODEL
-from docler.configs.converter_configs import (
+from docler.converters.base import ConverterResult, DocumentConverter
+from docler.log import get_logger
+from docler_config.converter_configs import (
     LLM_SYSTEM_PROMPT,
     LLM_USER_PROMPT,
     LLMConverterConfig,
 )
-from docler.converters.base import ConverterResult, DocumentConverter
-from docler.log import get_logger
 
 
 if TYPE_CHECKING:
@@ -71,13 +71,14 @@ class LLMConverter(DocumentConverter[LLMConverterConfig]):
         Returns:
             Intermediate conversion result.
         """
-        from llmling_agent import Agent, ImageBase64Content, PDFBase64Content
+        from agentpool import Agent
+        from pydantic_ai import BinaryContent, BinaryImage
 
         file_content = data.read()
         if mime_type == "application/pdf":
-            content: BaseContent = PDFBase64Content.from_bytes(file_content)
+            content: BaseContent = BinaryContent(file_content, media_type=mime_type)
         else:
-            content = ImageBase64Content.from_bytes(file_content)
+            content = BinaryImage(file_content, media_type=mime_type)
         agent = Agent(model=self.model, system_prompt=self.system_prompt)
         extra = f" Extract only the following pages: {self.page_range}" if self.page_range else ""
         response = agent.run.sync(self.user_prompt + extra, content)  # type: ignore[attr-defined]
