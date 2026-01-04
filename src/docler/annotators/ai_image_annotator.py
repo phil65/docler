@@ -53,7 +53,7 @@ class AIImageAnnotator[TMetadata: Schema = DefaultImageMetadata](Annotator[AIIma
 
     Config = AIImageAnnotatorConfig
 
-    REQUIRED_PACKAGES: ClassVar = {"llmling-agent"}
+    REQUIRED_PACKAGES: ClassVar = {"agentpool"}
 
     def __init__(
         self,

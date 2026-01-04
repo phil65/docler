@@ -46,7 +46,7 @@ class AIDocumentAnnotator[TMetadata: Schema = DefaultMetadata](
     """
 
     Config = AIDocumentAnnotatorConfig
-    REQUIRED_PACKAGES: ClassVar = {"llmling-agent"}
+    REQUIRED_PACKAGES: ClassVar = {"agentpool"}
 
     def __init__(
         self,

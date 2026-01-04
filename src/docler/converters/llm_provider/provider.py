@@ -32,7 +32,7 @@ class LLMConverter(DocumentConverter[LLMConverterConfig]):
     Config = LLMConverterConfig
 
     NAME = "llm"
-    REQUIRED_PACKAGES: ClassVar = {"llmling-agent"}
+    REQUIRED_PACKAGES: ClassVar = {"agentpool"}
     SUPPORTED_MIME_TYPES: ClassVar[set[str]] = {"application/pdf"}
 
     def __init__(

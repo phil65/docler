@@ -54,7 +54,7 @@ docler = "docler.__main__:cli"
 [project.optional-dependencies]
 all = [
   "docler[marker,azure,diffs,docling,llama-parse,marker,markitdown,mcp,mistralai,openai,server]",
-  "llmling-agent[default]"
+  "agentpool[default]"
 ]
 azure = ["azure-ai-documentintelligence"]
 diffs = ["diff-match-patch"]
@@ -63,7 +63,7 @@ docling = [
 ]  # tesserocr
 light = [
   "docler[mistralai,diffs,llama-parse,openai,azure]",
-  "llmling-agent[default]"
+  "agentpool[default]"
 ]
 llama-parse = ["llama-parse; python_version < '3.14'"]
 marker = ["marker-pdf; python_version < '3.14'"]

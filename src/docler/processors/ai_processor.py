@@ -89,7 +89,7 @@ class LLMProofReader(DocumentProcessor[LLMProofReaderConfig]):
     """LLM-based proof-reader that improves OCR output using line-based corrections."""
 
     Config = LLMProofReaderConfig
-    REQUIRED_PACKAGES: ClassVar = {"llmling-agent"}
+    REQUIRED_PACKAGES: ClassVar = {"agentpool"}
     NAME = "proof_reading"
 
     def __init__(

@@ -23,7 +23,7 @@ class AIChunker(TextChunker[AiChunkerConfig]):
     """LLM-based document chunker."""
 
     NAME = "ai"
-    REQUIRED_PACKAGES: ClassVar = {"llmling-agent"}
+    REQUIRED_PACKAGES: ClassVar = {"agentpool"}
     Config = AiChunkerConfig
 
     def __init__(
