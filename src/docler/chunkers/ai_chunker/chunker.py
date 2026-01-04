@@ -57,12 +57,7 @@ class AIChunker(TextChunker[AiChunkerConfig]):
         # response = await agent.run(prompt)
         agent: Agent[None] = Agent[None](model=self.model, system_prompt=self.system_prompt)
         prompt = self.user_prompt.format(numbered_text=numbered_text)
-        chunks = await agent.talk.extract_multiple(
-            text,
-            Chunk,
-            prompt=prompt,
-            mode="structured",  # tool_calls
-        )
+        chunks = await agent.talk.extract_multiple(text, Chunk, prompt=prompt)
         return Chunks(chunks=chunks)
 
     async def split(

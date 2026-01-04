@@ -153,7 +153,6 @@ class LLMProofReader(DocumentProcessor[LLMProofReaderConfig]):
                 text=numbered_text,
                 as_type=LineCorrection,
                 prompt=user_prompt,
-                mode="structured",
             )
 
         new_content, corrected_lines = apply_corrections(doc.content, corrections)
