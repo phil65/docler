@@ -50,7 +50,7 @@ jobs:
         run: uv run --no-group docs pytest --cov-report=xml --cov=src/docler/ --cov-report=term-missing
 
       - name: Upload test results to Codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v6
         with:
           fail_ci_if_error: false
           verbose: true
