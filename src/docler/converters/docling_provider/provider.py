@@ -47,7 +47,7 @@ class DoclingConverter(DocumentConverter[DoclingConverterConfig]):
         escaping_underscores: bool = True,
         indent: int = 4,
         text_width: int = -1,
-        ocr_engine: DoclingEngine = "easy_ocr",
+        ocr_engine: DoclingEngine = "rapid_ocr",
     ) -> None:
         """Initialize the Docling converter.
 
@@ -60,7 +60,7 @@ class DoclingConverter(DocumentConverter[DoclingConverterConfig]):
             escaping_underscores: Whether to escape underscores.
             indent: Indentation level for markdown sections.
             text_width: Maximum width for text in markdown sections.
-            ocr_engine: The OCR engine to use.
+            ocr_engine: The OCR engine to use (default rapid_ocr, installed by the docling extra).
         """
         from docling.datamodel.base_models import InputFormat
         from docling.datamodel.pipeline_options import (

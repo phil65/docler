@@ -132,8 +132,8 @@ class DoclingConverterConfig(BaseConverterConfig):
         # | TesseractOcrOptions
         # | OcrMacOptions
         # | RapidOcrOptions
-    ) = "easy_ocr"
-    """OCR engine to use."""
+    ) = "rapid_ocr"
+    """OCR engine to use. Defaults to RapidOCR, which the `docling` extra installs."""
 
     model_config = SettingsConfigDict(env_prefix="DOCLING_")
 
