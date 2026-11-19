@@ -331,6 +331,10 @@ class MarkerConfig(BaseConverterConfig):
         return MarkerConverter(**self.get_config_fields())
 
 
+def _default_base64_categories() -> set[UpstageCategory]:
+    return {"figure", "chart"}
+
+
 class UpstageConfig(BaseConverterConfig):
     """Configuration for Upstage Document AI converter."""
 
@@ -349,9 +353,7 @@ class UpstageConfig(BaseConverterConfig):
     ocr: UpstageOCRType = "auto"
     """OCR mode ('auto' or 'force')."""
 
-    base64_categories: set[UpstageCategory] = Field(
-        default_factory=lambda: {"figure", "chart"}  # type: ignore
-    )
+    base64_categories: set[UpstageCategory] = Field(default_factory=_default_base64_categories)
     """Element categories to encode in base64."""
 
     model_config = SettingsConfigDict(env_prefix="UPSTAGE_")

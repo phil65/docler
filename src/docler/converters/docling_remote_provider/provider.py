@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, ClassVar, Literal
+from typing import TYPE_CHECKING, Any, ClassVar, Literal
 
 import anyenv
 import httpx
@@ -109,7 +109,7 @@ class DoclingRemoteConverter(DocumentConverter[DoclingRemoteConfig]):
         super().__init__(languages=languages, page_range=page_range)
         self.endpoint = endpoint.rstrip("/")
         self.api_key = api_key
-        self.config = {
+        self.config: dict[str, Any] = {
             "from_formats": [
                 "pdf",
                 "docx",

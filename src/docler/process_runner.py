@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 import contextlib
 import http.client
+import inspect
 import os
 import re
 import socket
@@ -64,7 +65,7 @@ async def _check_tcp(host: str, port: int) -> bool:
 async def _check_predicate(
     pred: Callable[[], bool] | Callable[[], Awaitable[bool]],
 ) -> bool:
-    if asyncio.iscoroutinefunction(pred):
+    if inspect.iscoroutinefunction(pred):
         return await pred()  # type: ignore[no-any-return]
     return await asyncio.to_thread(pred)  # type: ignore
 

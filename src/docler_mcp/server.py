@@ -29,8 +29,8 @@ mcp = FastMCP("phil65")
 @mcp.tool(
     annotations=ToolAnnotations(
         title="Convert to Markdown",
-        readOnlyHint=False,
-        idempotentHint=True,
+        read_only_hint=False,
+        idempotent_hint=True,
     )
 )
 async def convert_to_markdown(

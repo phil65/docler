@@ -101,9 +101,8 @@ docs = [
   # Only add below (Copier)
 ]
 lint = [
-  "mypy; python_version >= '3.14'",
-  "mypy[faster-cache]; python_version < '3.14'",
   "ruff",
+  "ty",
   # Only add below (Copier)
 ]
 
@@ -131,15 +130,6 @@ allowed-commit-types = [
   "chore",
 ]
 docstring-style = "google"
-
-[tool.mypy]
-python_version = "3.13"
-disable_error_code = ["import"]
-pretty = true
-strict = true
-check_untyped_defs = true
-exclude = ["venv/", ".venv/", "tests/"]
-plugins = ["pydantic.mypy"]
 
 [tool.pyright]
 venvPath = "."
@@ -312,9 +302,30 @@ max-complexity = 15
 [tool.ruff.format]
 preview = true
 
+[tool.ty.src]
+# `ty check` (hooks, CI, editors) type-checks the package code only.
+include = ["src"]
+
 [tool.ty.environment]
 python-version = "3.13"
 python-platform = "all"
+
+[tool.ty.analysis]
+# Optional provider extras that CI does not install (docling pulls in torch;
+# marker cannot share an environment with `all`). Checked wherever installed.
+allowed-unresolved-imports = [
+  "docling.**",
+  "docling_core.**",
+  "marker.**",
+  "markitdown.**",
+  "streambricks.**",
+  "streamlit.**",
+]
+
+[tool.ty.rules]
+# Narrowing an overridden class attribute (e.g. pydantic discriminators,
+# `Config` attributes) is an intentional pattern.
+incompatible-mutable-override = "ignore"
 
 [tool.uv]
 default-groups = ["dev", "lint", "docs"]

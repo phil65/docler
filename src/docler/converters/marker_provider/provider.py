@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import pathlib
-from typing import TYPE_CHECKING, ClassVar, Literal
+from typing import TYPE_CHECKING, Any, ClassVar, Literal
 
 from docler.converters.base import ConverterResult, DocumentConverter
 from docler.converters.datalab_provider.utils import process_response
@@ -87,7 +87,7 @@ class MarkerConverter(DocumentConverter[MarkerConfig]):
             llm_provider: Language model provider to use for OCR.
         """
         super().__init__(languages=languages, page_range=page_range)
-        self.config = {
+        self.config: dict[str, Any] = {
             "output_format": "markdown",
             "highres_image_dpi": dpi,
             "paginate_output": True,

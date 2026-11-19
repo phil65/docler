@@ -28,7 +28,7 @@ class TextChunker[TConfig: BaseModel](BaseProvider[TConfig], ABC):
     @abstractmethod
     async def split(
         self,
-        text: Document,
+        doc: Document,
         extra_metadata: dict[str, Any] | None = None,
     ) -> list[TextChunk]:
         """Split text into chunks."""

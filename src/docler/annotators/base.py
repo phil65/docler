@@ -23,12 +23,12 @@ class Annotator[TConfig: BaseModel](ABC, BaseProvider[TConfig]):
     @abstractmethod
     async def annotate(
         self,
-        chunked_doc: ChunkedDocument,
+        document: ChunkedDocument,
     ) -> ChunkedDocument:
         """Annotate a chunked document with additional metadata.
 
         Args:
-            chunked_doc: Chunked document containing the original content and chunks
+            document: Chunked document containing the original content and chunks
 
         Returns:
             Chunked document with annotated chunks
