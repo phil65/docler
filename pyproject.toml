@@ -312,12 +312,16 @@ python-platform = "all"
 
 [tool.ty.analysis]
 # Optional provider extras that CI does not install (docling pulls in torch;
-# marker cannot share an environment with `all`). Checked wherever installed.
+# marker cannot share an environment with `all`), or that are only available
+# below Python 3.14 (llama-parse, numpy via docling). Checked wherever installed.
 allowed-unresolved-imports = [
   "docling.**",
   "docling_core.**",
+  "llama_index.**",
+  "llama_parse.**",
   "marker.**",
   "markitdown.**",
+  "numpy.**",
   "streambricks.**",
   "streamlit.**",
 ]
