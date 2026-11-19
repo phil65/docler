@@ -60,8 +60,7 @@ async def convert_to_markdown(
         # await ctx.info(f"Starting conversion for {source_path} using {provider!r}...")
         document = await converter.convert_file(source)
         # await ctx.info(f"Exporting to {target}...")
-        # `target` was built from a string, so its URL round-trips through UPath().
-        await document.export_to_directory(str(target))
+        await document.export_to_directory(target)
         files_str = "\n- ".join(str(i) for i in target.iterdir())
     except FileNotFoundError as e:
         return f"Error: {e}. Is the path correct? Current cwd is {UPath.cwd()}."

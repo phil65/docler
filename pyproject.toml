@@ -30,7 +30,7 @@ classifiers = [
 ]
 dependencies = [
   "anyenv>=0.4.1",
-  "mkdown>=0.12.1",
+  "mkdown>=1.0.2",
   "pydantic",
   "pydantic-settings>=2.8.1",
   # "pymupdf>=1.26.1",  # Temporarily disabled in favor of pypdf
