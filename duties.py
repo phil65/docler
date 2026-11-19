@@ -55,7 +55,8 @@ def clean(ctx):
 def update(ctx):
     """Update all environment packages using pip directly."""
     ctx.run("uv lock --upgrade")
-    ctx.run("uv sync --all-extras")
+    # Not --all-extras: the marker extra conflicts with all/light (openai versions).
+    ctx.run("uv sync --extra all")
 
 
 @duty(capture=False)
