@@ -44,6 +44,7 @@ A unified Python library for document conversion and OCR that provides a consist
 import asyncio
 from docler import MistralConverter
 
+
 async def main():
     # Use the aggregated converter for automatic provider selection
     converter = MistralConverter()
@@ -55,6 +56,7 @@ async def main():
     print(f"Content: {result.content[:500]}...")
     print(f"Images: {len(result.images)} extracted")
     print(f"Pages: {result.page_count}")
+
 
 asyncio.run(main())
 ```
@@ -68,11 +70,7 @@ asyncio.run(main())
 ```python
 from docler import AzureConverter
 
-converter = AzureConverter(
-    endpoint="your-endpoint",
-    api_key="your-key",
-    model="prebuilt-layout"
-)
+converter = AzureConverter(endpoint="your-endpoint", api_key="your-key", model="prebuilt-layout")
 ```
 
 #### Mistral OCR
@@ -80,10 +78,7 @@ converter = AzureConverter(
 ```python
 from docler import MistralConverter
 
-converter = MistralConverter(
-    api_key="your-key",
-    languages=["en", "fr", "de"]
-)
+converter = MistralConverter(api_key="your-key", languages=["en", "fr", "de"])
 ```
 
 #### LlamaParse
@@ -91,10 +86,7 @@ converter = MistralConverter(
 ```python
 from docler import LlamaParseConverter
 
-converter = LlamaParseConverter(
-    api_key="your-key",
-    adaptive_long_table=True
-)
+converter = LlamaParseConverter(api_key="your-key", adaptive_long_table=True)
 ```
 
 #### Upstage Document AI
@@ -102,10 +94,7 @@ converter = LlamaParseConverter(
 ```python
 from docler import UpstageConverter
 
-converter = UpstageConverter(
-    api_key="your-key",
-    chart_recognition=True
-)
+converter = UpstageConverter(api_key="your-key", chart_recognition=True)
 ```
 
 #### DataLab
@@ -115,7 +104,7 @@ from docler import DataLabConverter
 
 converter = DataLabConverter(
     api_key="your-key",
-    use_llm=False  # Enable for higher accuracy
+    use_llm=False,  # Enable for higher accuracy
 )
 ```
 
@@ -129,7 +118,7 @@ from docler import MarkerConverter
 converter = MarkerConverter(
     dpi=192,
     use_llm=True,  # Requires local LLM setup
-    llm_provider="ollama"
+    llm_provider="ollama",
 )
 ```
 
@@ -138,10 +127,7 @@ converter = MarkerConverter(
 ```python
 from docler import DoclingConverter
 
-converter = DoclingConverter(
-    ocr_engine="easy_ocr",
-    image_scale=2.0
-)
+converter = DoclingConverter(ocr_engine="rapid_ocr", image_scale=2.0)
 ```
 
 #### Docling Remote
@@ -149,10 +135,7 @@ converter = DoclingConverter(
 ```python
 from docler import DoclingRemoteConverter
 
-converter = DoclingRemoteConverter(
-    endpoint="http://localhost:5001",
-    pdf_backend="dlparse_v4"
-)
+converter = DoclingRemoteConverter(endpoint="http://localhost:5001", pdf_backend="dlparse_v4")
 ```
 
 #### MarkItDown (Microsoft)
@@ -172,7 +155,7 @@ from docler import LLMConverter
 
 converter = LLMConverter(
     model="gpt-4o",  # or claude-3-5-sonnet, etc.
-    system_prompt="Extract text preserving formatting..."
+    system_prompt="Extract text preserving formatting...",
 )
 ```
 
@@ -241,13 +224,13 @@ All converters return a standardized `Document` object with:
 
 ```python
 class Document:
-    content: str           # Extracted text in markdown format
-    images: list[Image]    # Extracted images with metadata
-    title: str            # Document title
-    source_path: str      # Original file path
-    mime_type: str        # File MIME type
-    metadata: dict        # Provider-specific metadata
-    page_count: int       # Number of pages processed
+    content: str  # Extracted text in markdown format
+    images: list[Image]  # Extracted images with metadata
+    title: str  # Document title
+    source_path: str  # Original file path
+    mime_type: str  # File MIME type
+    metadata: dict  # Provider-specific metadata
+    page_count: int  # Number of pages processed
 ```
 
 The markdown content includes standardized metadata for page breaks and structure:
@@ -270,10 +253,14 @@ pip install docler
 
 # With specific provider dependencies
 pip install docler[azure]      # Azure Document Intelligence
-pip install docler[mistral]    # Mistral OCR
+pip install docler[mistralai]  # Mistral OCR
 pip install docler[marker]     # Marker PDF processing
-pip install docler[all]        # All providers
+pip install docler[all]        # All providers except Marker
 ```
+
+Marker cannot be installed together with `docler[all]`/`docler[light]`: marker-pdf
+requires `openai<3`, while the AI features (agentpool) require `openai>=3.31`.
+Install `docler[marker]` in a separate environment.
 
 ## Environment Variables
 
