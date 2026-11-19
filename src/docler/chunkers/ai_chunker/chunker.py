@@ -49,7 +49,7 @@ class AIChunker(TextChunker[AiChunkerConfig]):
         from agentpool import Agent
 
         numbered_text = add_line_numbers(text)
-        # agent: llmling_agent.StructuredAgent[None, Chunks] = llmling_agent.Agent[None](
+        # agent: agentpool.StructuredAgent[None, Chunks] = agentpool.Agent[None](
         #     model=self.model,
         #     system_prompt=self.system_prompt,
         # ).to_structured(Chunks)

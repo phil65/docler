@@ -46,7 +46,7 @@ class DoclingRemoteConverter(DocumentConverter[DoclingRemoteConfig]):
         "application/pdf",
         # Office Documents
         "application/msword",  # .doc
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",  # .docx  # noqa: E501
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",  # .docx
         "application/vnd.ms-powerpoint",  # .ppt
         "application/vnd.openxmlformats-officedocument.presentationml.presentation",
         "application/vnd.ms-excel",  # .xls

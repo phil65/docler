@@ -49,7 +49,7 @@ class DataLabConverter(DocumentConverter[DataLabConfig]):
         "application/vnd.openxmlformats-officedocument.wordprocessingml.document",  # docx
         # Presentations
         "application/vnd.ms-powerpoint",  # ppt
-        "application/vnd.openxmlformats-officedocument.presentationml.presentation",  # pptx  # noqa: E501
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation",  # pptx
     }
 
     def __init__(

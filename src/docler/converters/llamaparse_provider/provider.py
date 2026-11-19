@@ -37,10 +37,10 @@ class LlamaParseConverter(DocumentConverter[LlamaParseConfig]):
         "application/pdf",
         # Office Documents
         "application/msword",  # .doc
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",  # .docx  # noqa: E501
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",  # .docx
         "application/vnd.ms-word.document.macroEnabled.12",  # .docm
         "application/vnd.ms-powerpoint",  # .ppt
-        "application/vnd.openxmlformats-officedocument.presentationml.presentation",  # .pptx # noqa: E501
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation",  # .pptx
         "application/vnd.ms-powerpoint.presentation.macroEnabled.12",  # .pptm
         "application/vnd.ms-excel",  # .xls
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",  # .xlsx

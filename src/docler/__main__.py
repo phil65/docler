@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from enum import Enum
+from enum import StrEnum
 import os
 import pathlib
 import subprocess
@@ -20,7 +20,7 @@ logger = get_logger(__name__)
 PACKAGE_DIR = pathlib.Path(__file__).parent.parent / "docler_streamlit"
 
 
-class TransportType(str, Enum):
+class TransportType(StrEnum):
     """Transport protocol types for MCP server."""
 
     STDIO = "stdio"
@@ -112,10 +112,13 @@ def mcp(
         # Lazy import to avoid unnecessary dependencies if not using MCP
         from docler_mcp.server import mcp as mcp_server
 
-        if transport == TransportType.STDIO:
-            mcp_server.run(transport=transport.value)
-        else:
-            mcp_server.run(transport=transport.value, host=host, port=port)
+        match transport:
+            case TransportType.STDIO:
+                mcp_server.run(transport="stdio")
+            case TransportType.SSE:
+                mcp_server.run(transport="sse", host=host, port=port)
+            case TransportType.STREAMABLE_HTTP:
+                mcp_server.run(transport="streamable-http", host=host, port=port)
     except ImportError as e:
         msg = f"Failed to import MCP components: {e}. Is the 'mcp' extra installed?"
         logger.exception(msg)

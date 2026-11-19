@@ -62,7 +62,7 @@ class MarkerConverter(DocumentConverter[MarkerConfig]):
         "application/vnd.oasis.opendocument.spreadsheet",  # ods
         # Presentations
         "application/vnd.ms-powerpoint",  # ppt
-        "application/vnd.openxmlformats-officedocument.presentationml.presentation",  # pptx  # noqa: E501
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation",  # pptx
         "application/vnd.oasis.opendocument.presentation",  # odp
         # HTML
         "text/html",

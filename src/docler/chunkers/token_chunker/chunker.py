@@ -31,7 +31,7 @@ def count_tokens(text: str, model_name: str) -> int:
     from tokonomics import count_tokens
 
     # Extract model name from full model identifier (e.g., "openai/gpt-4" -> "gpt-4")
-    model_name = model_name.split("/")[-1] if "/" in model_name else model_name
+    model_name = model_name.rsplit("/", maxsplit=1)[-1] if "/" in model_name else model_name
     model_name = model_name.split(":")[-1] if ":" in model_name else model_name
     return count_tokens(text, model=model_name)
 

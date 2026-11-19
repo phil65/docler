@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING, Annotated, Literal
 #     TesseractCliOcrOptions,
 #     TesseractOcrOptions,
 # )
-from pydantic import Field, HttpUrl, SecretStr  # noqa: TC002
+from pydantic import Field, HttpUrl, SecretStr
 from pydantic_settings import SettingsConfigDict
 from schemez import ModelIdentifier  # noqa: TC002
 

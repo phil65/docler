@@ -17,7 +17,6 @@ from docler_config.converter_configs import (
 if TYPE_CHECKING:
     from io import BytesIO
 
-    from llmling_agent.models.content import BaseContent
     from schemez import MimeType
 
     from docler.common_types import PageRangeString, SupportedLanguage
@@ -76,7 +75,7 @@ class LLMConverter(DocumentConverter[LLMConverterConfig]):
 
         file_content = data.read()
         if mime_type == "application/pdf":
-            content: BaseContent = BinaryContent(file_content, media_type=mime_type)
+            content: BinaryContent = BinaryContent(file_content, media_type=mime_type)
         else:
             content = BinaryImage(file_content, media_type=mime_type)
         agent = Agent(model=self.model, system_prompt=self.system_prompt)
