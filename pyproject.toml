@@ -69,7 +69,7 @@ llama-parse = ["llama-parse; python_version < '3.14'"]
 marker = ["marker-pdf; python_version < '3.14'"]
 markitdown = ["markitdown[all]; python_version < '3.14'"]
 mcp = ["fastmcp"]
-mistralai = ["mistralai"]
+mistralai = ["mistralai>=3"]
 olmocr = [
   "olmocr; python_version < '3.14'",
   "accelerate; python_version < '3.14'"

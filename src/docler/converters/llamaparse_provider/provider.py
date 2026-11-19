@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 import pathlib
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar
 
 from docler.converters.base import ConverterResult, DocumentConverter
+from docler.converters.exceptions import ConverterError
 from docler.converters.llamaparse_provider.utils import process_response
 from docler.log import get_logger
 from docler.utils import get_api_key
@@ -18,7 +19,7 @@ if TYPE_CHECKING:
     from schemez import MimeType
 
     from docler.common_types import PageRangeString, SupportedLanguage
-    from docler_config.converter_configs import LlamaParseMode
+    from docler_config.converter_configs import LlamaParseMode, LlamaParseTier
 
 
 logger = get_logger(__name__)
@@ -82,6 +83,7 @@ class LlamaParseConverter(DocumentConverter[LlamaParseConfig]):
         api_key: str | None = None,
         adaptive_long_table: bool = True,
         parse_mode: LlamaParseMode = "parse_page_with_llm",
+        tier: LlamaParseTier | None = None,
         skip_diagonal_text: bool = False,
         disable_ocr: bool = False,
         continuous_mode: bool = True,
@@ -94,10 +96,13 @@ class LlamaParseConverter(DocumentConverter[LlamaParseConfig]):
             page_range: Page range(s) to extract, like "1-5,7-10" (1-based)
             api_key: LlamaParse API key, defaults to LLAMAPARSE_API_KEY env var
             adaptive_long_table: Whether to use adaptive long table
-            parse_mode: Parse mode, defaults to "parse_page_with_llm"
+            parse_mode: Legacy parse mode, used when no tier is set
+            tier: Parsing tier (cost_effective, agentic, agentic_plus); takes
+                precedence over parse_mode
             skip_diagonal_text: Whether to skip diagonal text
             disable_ocr: Whether to disable OCR for images
-            continuous_mode: Whether to use continuous mode
+            continuous_mode: Merge tables spanning pages (only supported with a tier;
+                ignored for legacy parse modes, which the API rejects it with)
             html_tables: Whether to output HTML tables instead of markdown
         """
         super().__init__(languages=languages, page_range=page_range)
@@ -105,6 +110,7 @@ class LlamaParseConverter(DocumentConverter[LlamaParseConfig]):
         self.language = self.languages[0] if self.languages else None
         self.adaptive_long_table = adaptive_long_table
         self.parse_mode = parse_mode
+        self.tier = tier
         self.skip_diagonal_text = skip_diagonal_text
         self.disable_ocr = disable_ocr
         self.continuous_mode = continuous_mode
@@ -125,19 +131,34 @@ class LlamaParseConverter(DocumentConverter[LlamaParseConfig]):
         # LlamaParse needs a file path, so use temp file
         tmp = self._write_temp_file(data, mime_type)
         try:
+            mode_options: dict[str, Any]
+            if self.tier is not None:
+                # Tier-based jobs require a version; cross-page table merging
+                # replaced the former continuous mode.
+                mode_options = {
+                    "tier": self.tier,
+                    "version": "latest",
+                    "merge_tables_across_pages_in_markdown": self.continuous_mode,
+                }
+            else:
+                # The API rejects continuous_mode together with legacy parse modes.
+                mode_options = {"parse_mode": self.parse_mode}
             parser = LlamaParse(
                 api_key=self.api_key,
                 result_type=ResultType.MD,
                 language=self.language,
                 adaptive_long_table=self.adaptive_long_table,
-                parse_mode=self.parse_mode,
                 target_pages=self.page_range,
                 skip_diagonal_text=self.skip_diagonal_text,
                 disable_ocr=self.disable_ocr,
-                continuous_mode=self.continuous_mode,
                 output_tables_as_HTML=self.html_tables,
+                **mode_options,
             )
             result = parser.get_json_result(tmp.name)
+            if not result:
+                # llama_parse logs API errors and returns an empty list instead of raising.
+                msg = "LlamaParse returned no result (the API rejected the job; see logs)"
+                raise ConverterError(msg)
             content_parts, images = process_response(result, self.api_key)
             return ConverterResult(content="\n\n".join(content_parts), images=images)
         finally:

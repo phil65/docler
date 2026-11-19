@@ -7,7 +7,7 @@ from mkdown import Image
 
 
 if TYPE_CHECKING:
-    from mistralai import OCRImageObject, OCRResponse
+    from mistralai.client.models import OCRImageObject, OCRResponse
 
 
 def convert_image(img: OCRImageObject) -> Image:

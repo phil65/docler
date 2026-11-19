@@ -93,8 +93,8 @@ class MistralConverter(DocumentConverter[MistralConfig]):
         Returns:
             Intermediate conversion result
         """
-        from mistralai import Mistral
-        from mistralai.models import File
+        from mistralai.client import Mistral
+        from mistralai.client.models import File
 
         client = Mistral(api_key=self.api_key)
         self.logger.debug("Uploading PDF file...")
@@ -150,7 +150,7 @@ class MistralConverter(DocumentConverter[MistralConfig]):
         Returns:
             Intermediate conversion result (without the initial page 1 marker, added later)
         """
-        from mistralai import Mistral
+        from mistralai.client import Mistral
 
         client = Mistral(api_key=self.api_key)
         self.logger.debug("Processing image with Mistral OCR...")

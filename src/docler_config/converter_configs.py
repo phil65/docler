@@ -64,10 +64,16 @@ AzureFeatureFlag = Literal[
 LlamaParseMode = Literal[
     "parse_page_without_llm",
     "parse_page_with_llm",
-    "parse_page_with_lvm",
     "parse_page_with_agent",
-    "parse_document_with_llm",
 ]
+"""Legacy LlamaParse parse modes still accepted by the API.
+
+`parse_page_with_lvm` and `parse_document_with_llm` were retired upstream; use a
+`LlamaParseTier` instead.
+"""
+
+LlamaParseTier = Literal["cost_effective", "agentic", "agentic_plus"]
+"""LlamaParse parsing tiers (the API's replacement for parse modes)."""
 
 
 MarkerLLMProvider = Literal["gemini", "ollama", "vertex", "claude"]
@@ -250,7 +256,10 @@ class LlamaParseConfig(BaseConverterConfig):
     """Whether to use adaptive long table."""
 
     parse_mode: LlamaParseMode = "parse_page_with_llm"
-    """Parse mode, defaults to "parse_page_with_llm"."""
+    """Legacy parse mode, used when no `tier` is set."""
+
+    tier: LlamaParseTier | None = None
+    """Parsing tier. Takes precedence over `parse_mode` when set."""
 
     skip_diagonal_text: bool = False
     """Whether to skip diagonal text."""
@@ -259,7 +268,7 @@ class LlamaParseConfig(BaseConverterConfig):
     """Whether to disable OCR for images."""
 
     continuous_mode: bool = True
-    """Whether to use continuous mode."""
+    """Merge tables spanning pages. Only supported with a `tier`."""
 
     html_tables: bool = False
     """Whether to output HTML tables instead of markdown."""
