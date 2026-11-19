@@ -22,7 +22,7 @@ if TYPE_CHECKING:
     from docler.converters.base import DocumentConverter
 
 
-DEFAULT_CONVERTER_MODEL = "google-gla:gemini-2.0-flash"
+DEFAULT_CONVERTER_MODEL = "google-gla:gemini-3.8-flash"
 PageRangeString = str
 SupportedLanguage = Literal["en", "de", "fr", "es", "zh"]
 

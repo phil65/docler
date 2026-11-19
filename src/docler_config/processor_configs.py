@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from docler.processors.base import DocumentProcessor
 
 
-DEFAULT_PROOF_READER_MODEL = "google-gla:gemini-2.0-flash"
+DEFAULT_PROOF_READER_MODEL = "google-gla:gemini-3.8-flash"
 
 DEFAULT_PROOF_READER_SYSTEM_PROMPT = """\
 You are a professional OCR proof-reader. Your task is to correct OCR errors

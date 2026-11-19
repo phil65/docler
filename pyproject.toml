@@ -52,9 +52,11 @@ Source = "https://github.com/phil65/docler"
 docler = "docler.__main__:cli"
 
 [project.optional-dependencies]
+# marker is not part of `all`: marker-pdf requires openai<3 while agentpool (via
+# pydantic-ai) requires openai>=3.31, so they cannot share an environment.
 all = [
-  "docler[marker,azure,diffs,docling,llama-parse,marker,markitdown,mcp,mistralai,openai,server]",
-  "agentpool[default]"
+  "docler[azure,diffs,docling,llama-parse,markitdown,mcp,mistralai,openai,server]",
+  "agentpool>=2.10.0"
 ]
 azure = ["azure-ai-documentintelligence"]
 diffs = ["diff-match-patch"]
@@ -63,7 +65,7 @@ docling = [
 ]  # tesserocr
 light = [
   "docler[mistralai,diffs,llama-parse,openai,azure]",
-  "agentpool[default]"
+  "agentpool>=2.10.0"
 ]
 llama-parse = ["llama-parse; python_version < '3.14'"]
 marker = ["marker-pdf; python_version < '3.14'"]
@@ -315,6 +317,11 @@ python-platform = "all"
 
 [tool.uv]
 default-groups = ["dev", "lint", "docs"]
+# marker-pdf (openai<3) and agentpool (openai>=3.31) cannot be installed together.
+conflicts = [
+  [{ extra = "marker" }, { extra = "all" }],
+  [{ extra = "marker" }, { extra = "light" }],
+]
 
 [tool.uv.build-backend]
 module-name = [

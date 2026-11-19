@@ -81,7 +81,7 @@ class LLMConverter(DocumentConverter[LLMConverterConfig]):
             content = BinaryImage(file_content, media_type=mime_type)
         agent = Agent(model=self.model, system_prompt=self.system_prompt)
         extra = f" Extract only the following pages: {self.page_range}" if self.page_range else ""
-        response = agent.run.sync(self.user_prompt + extra, content)  # type: ignore[attr-defined]
+        response = agent.run.sync(self.user_prompt + extra, content)
         return ConverterResult(content=response.content)
 
 

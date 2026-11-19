@@ -15,8 +15,8 @@ if TYPE_CHECKING:
     from docler.annotators.ai_image_annotator import AIImageAnnotator
 
 
-DEFAULT_ANNOTATOR_MODEL = "google-gla:gemini-2.0-flash"
-DEFAULT_IMAGE_ANNOTATOR_MODEL = "google-gla:gemini-2.0-flash"
+DEFAULT_ANNOTATOR_MODEL = "google-gla:gemini-3.8-flash"
+DEFAULT_IMAGE_ANNOTATOR_MODEL = "google-gla:gemini-3.8-flash"
 
 DEFAULT_DOC_SYSTEM_PROMPT = """
 You are an expert document analyzer that extracts meaningful metadata.
