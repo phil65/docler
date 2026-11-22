@@ -40,7 +40,7 @@ class MarkerConverter(DocumentConverter[MarkerConfig]):
     Config = MarkerConfig
 
     NAME = "marker"
-    REQUIRED_PACKAGES: ClassVar = {"marker-pdf"}
+    REQUIRED_PACKAGES: ClassVar = {"marker"}
     SUPPORTED_MIME_TYPES: ClassVar = {
         # PDF
         "application/pdf",
