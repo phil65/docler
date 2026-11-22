@@ -25,41 +25,59 @@
 
 [Read the documentation!](https://phil65.github.io/docler/)
 
-A unified Python library for document conversion and OCR that provides a consistent interface to multiple document processing providers. Extract text, images, and metadata from PDFs, images, and office documents using state-of-the-art OCR and document AI services.
+A unified, async Python library for document conversion and OCR. Docler wraps many OCR and
+document-AI services behind one interface and turns PDFs, images and office documents into
+markdown with extracted images and metadata.
 
 ## Features
 
-- **Unified Interface**: Single API for multiple document processing providers
-- **Multiple Providers**: Support for 10+ OCR and document AI services
-- **Rich Output**: Extract text, images, tables, and metadata
-- **Async Support**: Built-in async/await support
-- **Flexible Configuration**: Provider-specific settings and preferences
-- **Page Range Support**: Process specific pages from documents
-- **Multi-language OCR**: Support for 100+ languages across providers
-- **Structured Output**: Standardized markdown with embedded metadata
+- **Unified interface**: one `DocumentConverter` API over 10 cloud and local backends
+- **Standardized output**: markdown with page-break markers, extracted images and metadata
+- **Async first**: convert single files, batches or whole directories (local or remote via fsspec)
+- **Page ranges and encrypted PDFs**: `page_range="1-5,10"`, `pdf_password=...`
+- **Chunking**: markdown-, token-, LlamaIndex- and LLM-based chunkers
+- **Serializable configs**: every provider has a pydantic config model (`docler_config`)
+- **Ready-made frontends**: FastAPI server, MCP server, Streamlit UIs, `docler` CLI
+
+## Installation
+
+```bash
+pip install docler                # core (no backend SDKs)
+pip install "docler[mistralai]"   # Mistral OCR
+pip install "docler[light]"       # cloud backends (Mistral, LlamaParse, Azure, ...) + LLM features
+pip install "docler[all]"         # everything except Marker
+pip install "docler[marker]"      # Marker, in a separate environment (see below)
+```
+
+Further extras: `azure`, `llama-parse`, `docling`, `markitdown`, `openai`, `diffs`,
+`server` (FastAPI), `mcp`, `streamlit`, `token-chunking`, `olmocr`. Local backends such as
+Docling, Marker and MarkItDown currently require Python < 3.14.
+
+Marker cannot be installed together with `docler[all]`/`docler[light]`: marker-pdf
+requires `openai<3`, while the AI features (agentpool) require `openai>=3.31`.
 
 ## Quick Start
 
 ```python
 import asyncio
+
 from docler import MistralConverter
 
 
 async def main():
-    # Use the aggregated converter for automatic provider selection
-    converter = MistralConverter()
+    converter = MistralConverter()  # reads MISTRAL_API_KEY
 
-    # Convert a document
-    result = await converter.convert_file("document.pdf")
+    doc = await converter.convert_file("document.pdf")
 
-    print(f"Title: {result.title}")
-    print(f"Content: {result.content[:500]}...")
-    print(f"Images: {len(result.images)} extracted")
-    print(f"Pages: {result.page_count}")
+    print(f"Title: {doc.title}")
+    print(f"Content: {doc.content[:500]}...")
+    print(f"Images: {len(doc.images)} extracted")
 
 
 asyncio.run(main())
 ```
+
+Without an API key, `MarkItDownConverter` (`docler[markitdown]`) works fully locally.
 
 ## Available OCR Converters
 
@@ -133,7 +151,7 @@ converter = DoclingConverter(ocr_engine="rapid_ocr", image_scale=2.0)
 #### Docling Remote
 
 ```python
-from docler import DoclingRemoteConverter
+from docler.converters.docling_remote_provider import DoclingRemoteConverter
 
 converter = DoclingRemoteConverter(endpoint="http://localhost:5001", pdf_backend="dlparse_v4")
 ```
@@ -154,7 +172,7 @@ converter = MarkItDownConverter()
 from docler import LLMConverter
 
 converter = LLMConverter(
-    model="gpt-4o",  # or claude-3-5-sonnet, etc.
+    model="openai:gpt-4o",  # any pydantic-ai model identifier
     system_prompt="Extract text preserving formatting...",
 )
 ```
@@ -172,6 +190,16 @@ converter = LLMConverter(
 | **Docling** | Free | ✅ | ❌ | Open-source processing |
 | **MarkItDown** | Free | ✅ | ❌ | Office documents |
 | **LLM** | Variable | ❌ | ✅ | Latest AI capabilities |
+
+`AggregatedConverter` picks a suitable registered converter per MIME type:
+
+```python
+from docler import AggregatedConverter
+
+converter = AggregatedConverter()
+converter.set_converter_preference("application/pdf", "mistral")
+doc = await converter.convert_file("document.pdf")
+```
 
 ## Advanced Usage
 
@@ -218,19 +246,59 @@ for file, result in zip(files, results):
     print(f"{file}: {len(result.content)} characters extracted")
 ```
 
+### Chunking
+
+```python
+from docler.chunkers.markdown_chunker import MarkdownChunker
+
+chunker = MarkdownChunker(max_chunk_size=1500)
+chunked = await chunker.chunk(doc)  # ChunkedDocument
+
+for chunk in chunked.chunks:
+    print(chunk.chunk_index, chunk.page_number, len(chunk.content), len(chunk.images))
+```
+
+Other chunkers: `TokenAwareChunker` (`docler.chunkers.token_chunker`, extra
+`token-chunking`), `LlamaIndexChunker` (`docler.chunkers.llamaindex_chunker`) and
+`AIChunker` (`docler.chunkers.ai_chunker`, LLM-based).
+
+### Configuration objects
+
+Every provider has a serializable pydantic config, handy for config files and the HTTP API:
+
+```python
+from docler_config.converter_configs import MistralConfig
+
+converter = MistralConfig(languages=["en"]).get_provider()
+```
+
+## Server, MCP and CLI
+
+```bash
+docler api --host 0.0.0.0 --port 8000   # FastAPI server (extra: server)
+docler mcp --transport stdio            # MCP server with a convert_to_markdown tool (extra: mcp)
+docler ocr_ui                           # Streamlit OCR UI (extra: streamlit)
+docler chunk_ui                         # Streamlit chunking UI
+```
+
+See [`src/docler_api/README.md`](src/docler_api/README.md) for the API endpoints. A
+`Dockerfile` and `compose.yml` are included for running the API server.
+
 ## Output Format
 
 All converters return a standardized `Document` object with:
 
 ```python
-class Document:
+class Document:  # from the mkdown package
     content: str  # Extracted text in markdown format
-    images: list[Image]  # Extracted images with metadata
-    title: str  # Document title
-    source_path: str  # Original file path
-    mime_type: str  # File MIME type
-    metadata: dict  # Provider-specific metadata
-    page_count: int  # Number of pages processed
+    images: list[Image]  # Extracted images (id, content, mime_type, filename, ...)
+    title: str | None  # Document title
+    author: str | None
+    created: datetime | None
+    modified: datetime | None
+    source_path: str | None  # Original file path
+    mime_type: str | None  # File MIME type
+    metadata: dict[str, Any]  # Provider-specific metadata
 ```
 
 The markdown content includes standardized metadata for page breaks and structure:
@@ -245,23 +313,6 @@ Content from page 1...
 More content from page 2...
 ```
 
-## Installation
-
-```bash
-# Basic installation
-pip install docler
-
-# With specific provider dependencies
-pip install docler[azure]      # Azure Document Intelligence
-pip install docler[mistralai]  # Mistral OCR
-pip install docler[marker]     # Marker PDF processing
-pip install docler[all]        # All providers except Marker
-```
-
-Marker cannot be installed together with `docler[all]`/`docler[light]`: marker-pdf
-requires `openai<3`, while the AI features (agentpool) require `openai>=3.31`.
-Install `docler[marker]` in a separate environment.
-
 ## Environment Variables
 
 Configure API keys via environment variables:
@@ -275,9 +326,12 @@ export UPSTAGE_API_KEY="your-key"
 export DATALAB_API_KEY="your-key"
 ```
 
+LLM-based components (`LLMConverter`, `AIChunker`, annotators) use the usual provider
+variables of pydantic-ai, e.g. `OPENAI_API_KEY` or `GEMINI_API_KEY`.
+
 ## Contributing
 
-We welcome contributions! See our [contributing guidelines](CONTRIBUTING.md) for details.
+Contributions are welcome. See [AGENTS.md](AGENTS.md) for the project layout and dev commands.
 
 ## License
 
