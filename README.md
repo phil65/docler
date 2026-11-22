@@ -9,7 +9,6 @@
 [![Implementation](https://img.shields.io/pypi/implementation/docler.svg)](https://pypi.org/project/docler/)
 [![Releases](https://img.shields.io/github/downloads/phil65/docler/total.svg)](https://github.com/phil65/docler/releases)
 [![Github Contributors](https://img.shields.io/github/contributors/phil65/docler)](https://github.com/phil65/docler/graphs/contributors)
-[![Github Discussions](https://img.shields.io/github/discussions/phil65/docler)](https://github.com/phil65/docler/discussions)
 [![Github Forks](https://img.shields.io/github/forks/phil65/docler)](https://github.com/phil65/docler/forks)
 [![Github Issues](https://img.shields.io/github/issues/phil65/docler)](https://github.com/phil65/docler/issues)
 [![Github Issues](https://img.shields.io/github/issues-pr/phil65/docler)](https://github.com/phil65/docler/pulls)
