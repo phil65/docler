@@ -5,12 +5,11 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, Literal
 
-from mkdown import Document
+from mkdown import Document, Image, TextChunk
 from pydantic import BaseModel, Field
 
 
 if TYPE_CHECKING:
-    from mkdown import TextChunk
     import numpy as np
 
 
@@ -35,6 +34,11 @@ class ChunkedDocument(Document):
             chunks: List of chunks derived from the document
         """
         return cls(**document.model_dump(), chunks=chunks)
+
+
+# mkdown's TextChunk only imports Image for type checking, so pydantic cannot
+# resolve the nested annotation on its own.
+ChunkedDocument.model_rebuild(_types_namespace={"Image": Image, "TextChunk": TextChunk})
 
 
 @dataclass

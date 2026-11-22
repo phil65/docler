@@ -152,5 +152,13 @@ Some text here.
     assert chunk_image.filename == image.filename
 
 
+async def test_chunk_returns_chunked_document(markdown_with_images: Document):
+    """chunk() wraps the chunks in a ChunkedDocument."""
+    chunked = await MarkdownChunker().chunk(markdown_with_images)
+    assert chunked.content == markdown_with_images.content
+    assert chunked.chunks
+    assert chunked.chunks[0].images
+
+
 if __name__ == "__main__":
     pytest.main(["-vv", __file__])
