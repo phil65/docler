@@ -54,12 +54,10 @@ curl -X POST "http://localhost:8000/api/convert" \
 
 ```bash
 curl -X POST "http://localhost:8000/api/chunk" \
-  -H "Content-Type: application/json" \
+  -H "Content-Type: multipart/form-data" \
   -F "file=@document.pdf" \
-  -d '{
-    "converter_config": {"type": "marker", "dpi": 300},
-    "chunker_config": {"type": "markdown", "max_chunk_size": 1000}
-  }'
+  -F 'converter_config={"type": "marker", "dpi": 300}' \
+  -F 'chunker_config={"type": "markdown", "max_chunk_size": 1000}'
 ```
 
 Images are automatically included as base64-encoded data in both the document and individual chunks.

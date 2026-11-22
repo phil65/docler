@@ -11,8 +11,6 @@ from mkdown import Document
 from docler import __version__ as docler_version
 from docler.models import ChunkedDocument, PageMetadata
 from docler_api import routes
-from docler_config.chunker_configs import ChunkerConfig
-from docler_config.converter_configs import ConverterConfig
 
 
 app = FastAPI(
@@ -61,10 +59,10 @@ async def api_list_chunkers() -> dict[str, list[dict[str, Any]]]:
 
 @app.post("/api/chunk")
 async def api_chunk_document(
-    file: UploadFile,
-    converter_config: ConverterConfig,
-    chunker_config: ChunkerConfig,
-    pdf_password: str | None = None,
+    file: UploadFile = File(..., description="The document file to chunk"),  # noqa: B008
+    converter_config: str = Form('{"type": "marker"}', description="Converter configuration JSON"),
+    chunker_config: str = Form('{"type": "markdown"}', description="Chunker configuration JSON"),
+    pdf_password: str | None = Form(None, description="Password for encrypted PDF files"),
 ) -> ChunkedDocument:
     """Convert and chunk a document."""
     return await routes.chunk_document(file, converter_config, chunker_config, pdf_password)

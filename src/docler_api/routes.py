@@ -6,11 +6,12 @@ import mimetypes
 from typing import TYPE_CHECKING, Annotated, Any
 
 import anyenv
-from fastapi import Body, File, Form, HTTPException, Query
+from fastapi import File, Form, HTTPException
 from pydantic import TypeAdapter
 
 from docler.models import ChunkedDocument, PageMetadata  # noqa: TC001
 from docler.pdf_utils import get_pdf_info
+from docler_config.chunker_configs import ChunkerConfig
 from docler_config.converter_configs import ConverterConfig
 
 
@@ -18,10 +19,9 @@ if TYPE_CHECKING:
     from fastapi import UploadFile
     from mkdown import Document
 
-    from docler_config.chunker_configs import ChunkerConfig
-
 
 config_adapter = TypeAdapter[ConverterConfig](ConverterConfig)
+chunker_config_adapter = TypeAdapter[ChunkerConfig](ChunkerConfig)
 
 
 async def convert_document(
@@ -82,38 +82,39 @@ async def convert_document(
 async def chunk_document(
     file: Annotated[UploadFile, File(description="The document file to chunk")],
     converter_config: Annotated[
-        ConverterConfig,
-        Body(default={"type": "marker"}, description="Converter configuration"),
-    ],
+        str, Form(description="Converter configuration JSON")
+    ] = '{"type": "marker"}',
     chunker_config: Annotated[
-        ChunkerConfig,
-        Body(default={"type": "markdown"}, description="Chunker configuration"),
-    ],
-    pdf_password: str | None = Query(
-        default=None,
-        description="Password for encrypted PDF files",
-    ),
+        str, Form(description="Chunker configuration JSON")
+    ] = '{"type": "markdown"}',
+    pdf_password: Annotated[
+        str | None, Form(description="Password for encrypted PDF files")
+    ] = None,
 ) -> ChunkedDocument:
     """Convert and chunk a document file using specified configurations.
 
     Args:
         file: The document file to convert and chunk
-        converter_config: Configuration for the document converter
-        chunker_config: Configuration for the text chunker
+        converter_config: Converter configuration as JSON string
+        chunker_config: Chunker configuration as JSON string
         pdf_password: Password for encrypted PDF files
 
     Returns:
         JSON response with the chunked document
     """
+    try:
+        converter = config_adapter.validate_python(anyenv.load_json(converter_config))
+        chunker = chunker_config_adapter.validate_python(anyenv.load_json(chunker_config))
+    except (anyenv.JsonLoadError, ValueError) as e:
+        raise HTTPException(status_code=400, detail=f"Invalid config JSON: {e}")  # noqa: B904
+
     content = await file.read()
 
     try:
         mime_type, _ = mimetypes.guess_type(file.filename or "")
         if not mime_type:
             mime_type = file.content_type or "application/octet-stream"
-        converter = converter_config.get_provider()
-        chunker = chunker_config.get_provider()
-        document = await converter.convert_content(
+        document = await converter.get_provider().convert_content(
             content=content,
             mime_type=mime_type,
             source_path=file.filename,
@@ -122,7 +123,7 @@ async def chunk_document(
         )
 
         # Chunk the document
-        chunked_document = await chunker.chunk(document)
+        chunked_document = await chunker.get_provider().chunk(document)
 
         # Always include images as base64
         for image in chunked_document.images:
@@ -171,7 +172,12 @@ async def list_converters() -> dict[str, list[dict[str, Any]]]:
 
 async def list_chunkers() -> dict[str, list[dict[str, Any]]]:
     """List all available chunkers."""
+    # Chunkers register on import; docler.chunkers itself imports none of them.
+    import docler.chunkers.ai_chunker
     from docler.chunkers.base import TextChunker
+    import docler.chunkers.llamaindex_chunker
+    import docler.chunkers.markdown_chunker
+    import docler.chunkers.token_chunker  # noqa: F401
 
     chunker_classes = TextChunker[Any].get_available_providers()
     chunkers = [
