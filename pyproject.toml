@@ -28,14 +28,15 @@ classifiers = [
 ]
 dependencies = [
   "anyenv>=0.4.1",
+  "httpx>=0.27",
   "mkdown>=1.0.2",
   "pydantic",
   "pydantic-settings>=2.8.1",
   # "pymupdf>=1.26.1",  # Temporarily disabled in favor of pypdf
   "pypdf",
   # Only add below (Copier)
-  "pytest-docker>=3.2.1",
   "schemez>=0.0.1",
+  "typer>=0.12",
   "upathtools>=0.4.3",
 ]
 
@@ -80,6 +81,7 @@ dev = [
   "pytest-asyncio",
   "pytest-cov",
   # Only add below (Copier)
+  "pytest-docker>=3.2.1",
   "syrupy>=4.9.1",
 ]
 benchmark = ["pyinstrument"]
