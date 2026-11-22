@@ -20,10 +20,8 @@ classifiers = [
   "Operating System :: OS Independent",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3 :: Only",
-  "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: 3.14",
-  "Topic :: Documentation",
   "Topic :: Software Development",
   "Topic :: Utilities",
   "Typing :: Typed",
@@ -54,28 +52,17 @@ docler = "docler.__main__:cli"
 [project.optional-dependencies]
 # marker is not part of `all`: marker-pdf requires openai<3 while agentpool (via
 # pydantic-ai) requires openai>=3.31, so they cannot share an environment.
-all = [
-  "docler[azure,diffs,docling,llama-parse,markitdown,mcp,mistralai,openai,server]",
-  "agentpool>=2.10.0"
-]
+all = ["docler[azure,diffs,docling,llama-parse,markitdown,mcp,mistralai,openai,server]", "agentpool>=2.10.0"]
 azure = ["azure-ai-documentintelligence"]
 diffs = ["diff-match-patch"]
-docling = [
-  "docling[ocrmac,vlm,rapidocr]; python_version < '3.14'"
-]  # tesserocr
-light = [
-  "docler[mistralai,diffs,llama-parse,openai,azure]",
-  "agentpool>=2.10.0"
-]
+docling = ["docling[ocrmac,vlm,rapidocr]; python_version < '3.14'"]  # tesserocr
+light = ["docler[mistralai,diffs,llama-parse,openai,azure]", "agentpool>=2.10.0"]
 llama-parse = ["llama-parse; python_version < '3.14'"]
 marker = ["marker-pdf; python_version < '3.14'"]
 markitdown = ["markitdown[all]; python_version < '3.14'"]
 mcp = ["fastmcp"]
 mistralai = ["mistralai>=3"]
-olmocr = [
-  "olmocr; python_version < '3.14'",
-  "accelerate; python_version < '3.14'"
-]
+olmocr = ["olmocr; python_version < '3.14'", "accelerate; python_version < '3.14'"]
 openai = ["openai"]
 server = ["uvicorn", "fastapi"]
 streamlit = [
@@ -86,6 +73,7 @@ token-chunking = ["tokonomics"]
 
 [dependency-groups]
 dev = [
+  "deptry",
   "devtools",
   "pyreadline3",
   "pytest",
