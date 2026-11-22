@@ -281,7 +281,7 @@ docler ocr_ui                           # Streamlit OCR UI (extra: streamlit)
 docler chunk_ui                         # Streamlit chunking UI
 ```
 
-See [`src/docler_api/README.md`](src/docler_api/README.md) for the API endpoints. A
+See [`src/docler_api/README.md`](https://github.com/phil65/docler/blob/main/src/docler_api/README.md) for the API endpoints. A
 `Dockerfile` and `compose.yml` are included for running the API server.
 
 ## Output Format
@@ -331,11 +331,11 @@ variables of pydantic-ai, e.g. `OPENAI_API_KEY` or `GEMINI_API_KEY`.
 
 ## Contributing
 
-Contributions are welcome. See [AGENTS.md](AGENTS.md) for the project layout and dev commands.
+Contributions are welcome. See [AGENTS.md](https://github.com/phil65/docler/blob/main/AGENTS.md) for the project layout and dev commands.
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) for details.
+MIT License - see [LICENSE](https://github.com/phil65/docler/blob/main/LICENSE) for details.
 
 ## Links
 

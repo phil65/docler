@@ -36,7 +36,6 @@ class AIChunker(TextChunker[AiChunkerConfig]):
 
         Args:
             model: LLM model to use
-            provider: LLM provider to use
             user_prompt: User prompt to use
             system_prompt: System prompt to use
         """

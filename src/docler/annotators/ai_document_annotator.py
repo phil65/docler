@@ -42,7 +42,7 @@ class AIDocumentAnnotator[TMetadata: Schema = DefaultMetadata](
     Enhances documents and chunks with metadata.
 
     Type Parameters:
-        T: Type of metadata model to use. Must be a schemez Schema.
+        TMetadata: Type of metadata model to use. Must be a schemez Schema.
     """
 
     Config = AIDocumentAnnotatorConfig
