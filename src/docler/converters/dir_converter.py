@@ -82,15 +82,16 @@ class DirectoryConverter:
         Raises:
             FileNotFoundError: If directory doesn't exist.
         """
-        async for _state in self.convert_with_progress(
+        results: dict[str, Document] = {}
+        async for state in self.convert_with_progress(
             directory,
             pattern=pattern,
             recursive=recursive,
             exclude=exclude,
             max_depth=max_depth,
         ):
-            pass
-        return _state.results
+            results = state.results
+        return results
 
     async def convert_with_progress(
         self,
@@ -117,7 +118,8 @@ class DirectoryConverter:
             FileNotFoundError: If directory doesn't exist.
         """
         # Get and filter files
-        base_dir = to_upath(directory)
+        # list_files returns absolute paths, so make the base comparable.
+        base_dir = to_upath(directory).absolute()
         if not base_dir.exists():
             msg = f"Directory not found: {directory}"
             raise FileNotFoundError(msg)
