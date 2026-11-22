@@ -28,20 +28,6 @@ class TransportType(StrEnum):
     STREAMABLE_HTTP = "streamable-http"
 
 
-@cli.command()
-def flow() -> None:
-    """Start the Streamlit web interface."""
-    app_path = str(PACKAGE_DIR / "app.py")
-    try:
-        cmd = [sys.executable, "-m", "streamlit", "run", app_path]
-        subprocess.run(cmd, env=os.environ.copy(), check=True)
-    except subprocess.CalledProcessError as e:
-        # msg = f"Failed to start Streamlit: {e}"
-        raise typer.Exit(1) from e
-    except KeyboardInterrupt:
-        logger.info("Shutting down...")
-
-
 @cli.command("chunk_ui")
 def chunk_ui() -> None:
     """Start the Streamlit web interface."""

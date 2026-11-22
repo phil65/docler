@@ -109,8 +109,6 @@ def process_response(result: dict[str, Any]) -> tuple[str, list[Image]]:
     if original_count > 0:
         msg = "Converted %d DataLab page breaks to standard format"
         logger.debug(msg, original_count)
-    from PIL.Image import Image as PILImage
-
     if result.get("images"):
         image_replacements = {}
         for i, (original_name, img_data) in enumerate(result["images"].items()):
@@ -118,7 +116,8 @@ def process_response(result: dict[str, Any]) -> tuple[str, list[Image]]:
             ext = original_name.split(".")[-1].lower()
             fname = f"{img_id}.{ext}"
             image_replacements[original_name] = (img_id, fname)
-            if isinstance(img_data, PILImage):
+            if not isinstance(img_data, str):
+                # Local marker returns PIL images, the DataLab API base64 strings.
                 content = pil_to_bytes(img_data)
             else:
                 if img_data.startswith("data:"):

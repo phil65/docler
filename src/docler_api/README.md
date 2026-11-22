@@ -13,7 +13,7 @@ pip install "docler[server]"
 ### Start the API server
 
 ```bash
-docler-api api --host 0.0.0.0 --port 8000
+docler api --host 0.0.0.0 --port 8000
 ```
 
 ### API Endpoints
@@ -84,5 +84,5 @@ curl -X POST "http://localhost:8000/api/pdf/metadata" \
 To run the server with auto-reload during development:
 
 ```bash
-docler-api api --reload
+docler api --reload
 ```
