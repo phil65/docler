@@ -5,7 +5,7 @@ from __future__ import annotations
 import tempfile
 from typing import TYPE_CHECKING
 
-import httpx
+import httpx2
 import pytest
 import upath
 
@@ -28,7 +28,7 @@ SAMPLE_PATH = "src/docler/resources/pdf_sample.pdf"
 
 def is_responsive(url):
     try:
-        response = httpx.get(url)
+        response = httpx2.get(url)
         if response.status_code == 200:  # noqa: PLR2004
             return True
     except ConnectionError:

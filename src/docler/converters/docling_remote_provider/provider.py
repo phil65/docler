@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, ClassVar, Literal
 
 import anyenv
-import httpx
+import httpx2
 
 from docler.converters.base import ConverterResult, DocumentConverter
 from docler.converters.docling_remote_provider.utils import process_response
@@ -40,7 +40,7 @@ class DoclingRemoteConverter(DocumentConverter[DoclingRemoteConfig]):
 
     Config = DoclingRemoteConfig
     NAME = "docling_remote"
-    REQUIRED_PACKAGES: ClassVar = {"httpx"}
+    REQUIRED_PACKAGES: ClassVar = {"httpx2"}
     SUPPORTED_MIME_TYPES: ClassVar[set[str]] = {
         # PDF
         "application/pdf",
@@ -163,14 +163,14 @@ class DoclingRemoteConverter(DocumentConverter[DoclingRemoteConfig]):
         ext = mime_type.split("/")[-1]
         filename = f"document.{ext}"
         url = f"{self.endpoint}{CONVERT_FILE}"
-        async with httpx.AsyncClient(timeout=60.0) as client:
+        async with httpx2.AsyncClient(timeout=60.0) as client:
             files = {"files": (filename, file_content, mime_type)}
             form_data = {"parameters": anyenv.dump_json(self.config)}
             try:
                 response = await client.post(url, headers=headers, files=files, data=form_data)
                 response.raise_for_status()
                 result = response.json()
-            except httpx.HTTPError as e:
+            except httpx2.HTTPError as e:
                 msg = f"Docling service error: {e}"
                 raise ValueError(msg) from e
             except Exception as e:

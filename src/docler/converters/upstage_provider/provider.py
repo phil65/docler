@@ -37,7 +37,7 @@ class UpstageConverter(DocumentConverter[UpstageConfig]):
     Config = UpstageConfig
 
     NAME = "upstage"
-    REQUIRED_PACKAGES: ClassVar = {"httpx"}
+    REQUIRED_PACKAGES: ClassVar = {"httpx2"}
     SUPPORTED_MIME_TYPES: ClassVar[set[str]] = {
         "application/pdf",
         "image/jpeg",
@@ -118,10 +118,10 @@ class UpstageConverter(DocumentConverter[UpstageConfig]):
         }
 
         try:
-            import httpx
+            import httpx2
 
             # Download the image
-            with httpx.Client(follow_redirects=True) as client:
+            with httpx2.Client(follow_redirects=True) as client:
                 response = client.post(
                     self.base_url,
                     headers=headers,
@@ -132,11 +132,11 @@ class UpstageConverter(DocumentConverter[UpstageConfig]):
                 response.raise_for_status()
                 result = response.json()
 
-        except httpx.HTTPStatusError as e:
+        except httpx2.HTTPStatusError as e:
             # Include the API's explanation (e.g. suspended key, invalid model).
             msg = f"Upstage API error {e.response.status_code}: {e.response.text[:500]}"
             raise ValueError(msg) from e
-        except httpx.HTTPError as e:
+        except httpx2.HTTPError as e:
             msg = f"Upstage API error: {e}"
             raise ValueError(msg) from e
         except Exception as e:
