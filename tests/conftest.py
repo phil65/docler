@@ -42,7 +42,7 @@ def resources_dir() -> Path:
 @pytest.fixture
 def sample_markdown_doc():
     """Return a sample markdown document for testing."""
-    from mkdown import Document
+    from docler.markdown import Document
 
     content = """# Introduction
 

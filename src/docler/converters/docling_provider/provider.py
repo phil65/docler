@@ -5,11 +5,10 @@ from __future__ import annotations
 import re
 from typing import TYPE_CHECKING, ClassVar
 
-from mkdown import Image, create_image_reference, create_page_break
-
 from docler.converters.base import ConverterResult, DocumentConverter
 from docler.converters.docling_provider.utils import convert_languages, parse_page_range
 from docler.log import get_logger
+from docler.markdown import Image, create_image_reference, create_page_break
 from docler.utils import pil_to_bytes
 from docler_config.converter_configs import DoclingConverterConfig
 

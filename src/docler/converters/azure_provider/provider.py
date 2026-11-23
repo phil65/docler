@@ -21,10 +21,10 @@ if TYPE_CHECKING:
     from io import BytesIO
 
     from azure.ai.documentintelligence.models import AnalyzeResult
-    from mkdown import Image
     from schemez import MimeType
 
     from docler.common_types import PageRangeString, SupportedLanguage
+    from docler.markdown import Image
     from docler_config.converter_configs import AzureFeatureFlag, AzureModel
 
 logger = get_logger(__name__)

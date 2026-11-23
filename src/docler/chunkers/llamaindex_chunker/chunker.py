@@ -4,16 +4,16 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, ClassVar, Literal
 
-from mkdown import TextChunk
-
 from docler.chunkers.base import TextChunker
 from docler.log import get_logger
+from docler.markdown import TextChunk
 from docler_config.chunker_configs import LlamaIndexChunkerConfig
 
 
 if TYPE_CHECKING:
     from llama_index.core.node_parser import NodeParser
-    from mkdown import Document, Image
+
+    from docler.markdown import Document, Image
 
 
 logger = get_logger(__name__)
@@ -157,7 +157,7 @@ class LlamaIndexChunker(TextChunker[LlamaIndexChunkerConfig]):
 if __name__ == "__main__":
     import asyncio
 
-    from mkdown import Document
+    from docler.markdown import Document
 
     async def main() -> None:
         # Example usage

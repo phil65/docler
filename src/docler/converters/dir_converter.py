@@ -12,11 +12,11 @@ from upathtools import list_files, to_upath
 if TYPE_CHECKING:
     from collections.abc import AsyncIterator
 
-    from mkdown import Document
     import upath
     from upath.types import JoinablePathLike
 
     from docler.converters.base import DocumentConverter
+    from docler.markdown import Document
 
 
 @dataclass

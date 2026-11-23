@@ -6,9 +6,8 @@ import base64
 from collections import defaultdict
 from typing import TYPE_CHECKING, Any, ClassVar
 
-from mkdown import Image, create_image_reference, create_page_break
-
 from docler.converters.base import ConverterResult, DocumentConverter
+from docler.markdown import Image, create_image_reference, create_page_break
 from docler.pdf_utils import extract_pdf_pages
 from docler.utils import get_api_key
 from docler_config.converter_configs import UpstageConfig

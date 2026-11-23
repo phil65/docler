@@ -2,7 +2,8 @@ import base64
 from typing import Any
 
 import anyenv
-from mkdown import Image, create_page_break
+
+from docler.markdown import Image, create_page_break
 
 
 def process_response(result: list[Any], api_key: str) -> tuple[list[str], list[Image]]:

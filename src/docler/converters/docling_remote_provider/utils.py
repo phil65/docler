@@ -6,7 +6,7 @@ import base64
 import re
 from typing import Any
 
-from mkdown import Image, create_image_reference
+from docler.markdown import Image, create_image_reference
 
 
 def process_response(document: dict[str, Any]) -> tuple[str, list[Image]]:

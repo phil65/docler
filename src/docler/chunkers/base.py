@@ -5,15 +5,15 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any, overload
 
-from mkdown import Document, create_chunk_boundary
 from pydantic import BaseModel
 
+from docler.markdown import Document, create_chunk_boundary
 from docler.models import ChunkedDocument
 from docler.provider import BaseProvider
 
 
 if TYPE_CHECKING:
-    from mkdown import TextChunk
+    from docler.markdown import TextChunk
 
 
 class TextChunker[TConfig: BaseModel](BaseProvider[TConfig], ABC):

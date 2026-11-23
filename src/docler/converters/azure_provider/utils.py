@@ -3,7 +3,7 @@ from __future__ import annotations
 import re
 from typing import TYPE_CHECKING, Any
 
-from mkdown import Image, create_image_reference, create_page_break
+from docler.markdown import Image, create_image_reference, create_page_break
 
 
 if TYPE_CHECKING:

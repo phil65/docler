@@ -3,7 +3,7 @@ from __future__ import annotations
 import base64
 from typing import TYPE_CHECKING
 
-from mkdown import Image
+from docler.markdown import Image
 
 
 if TYPE_CHECKING:

@@ -4,15 +4,14 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, ClassVar
 
-from mkdown import TextChunk
-
 from docler.chunkers.base import TextChunker
 from docler.log import get_logger
+from docler.markdown import TextChunk
 from docler_config.chunker_configs import TokenAwareChunkerConfig
 
 
 if TYPE_CHECKING:
-    from mkdown import Document
+    from docler.markdown import Document
 
 
 logger = get_logger(__name__)
@@ -139,7 +138,7 @@ class TokenAwareChunker(TextChunker[TokenAwareChunkerConfig]):
 if __name__ == "__main__":
     import asyncio
 
-    from mkdown import Document
+    from docler.markdown import Document
 
     async def main() -> None:
         # Example usage

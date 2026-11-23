@@ -17,7 +17,8 @@ from docler_config.converter_configs import ConverterConfig
 
 if TYPE_CHECKING:
     from fastapi import UploadFile
-    from mkdown import Document
+
+    from docler.markdown import Document
 
 
 config_adapter = TypeAdapter[ConverterConfig](ConverterConfig)

@@ -4,17 +4,16 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-from mkdown import TextChunk
-
 from docler.chunkers.base import TextChunker
 from docler.chunkers.markdown_chunker.utils import assign_images, split_by_headers
+from docler.markdown import TextChunk
 from docler_config.chunker_configs import MarkdownChunkerConfig
 
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
 
-    from mkdown import Document, Image
+    from docler.markdown import Document, Image
 
 
 class MarkdownChunker(TextChunker[MarkdownChunkerConfig]):

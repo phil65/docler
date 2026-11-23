@@ -6,10 +6,9 @@ from io import BytesIO
 import re
 from typing import TYPE_CHECKING, ClassVar
 
-from mkdown import create_page_break
-
 from docler.converters.base import ConverterResult, DocumentConverter
 from docler.log import get_logger
+from docler.markdown import create_page_break
 from docler.pdf_utils import extract_pdf_pages
 from docler_config.converter_configs import MarkItDownConfig
 

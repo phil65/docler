@@ -19,8 +19,9 @@ from docler.converters.upstage_provider.provider import UpstageConverter
 
 
 if TYPE_CHECKING:
-    from mkdown import Document
     from syrupy.assertion import SnapshotAssertion
+
+    from docler.markdown import Document
 
 
 SAMPLE_PATH = "src/docler/resources/pdf_sample.pdf"

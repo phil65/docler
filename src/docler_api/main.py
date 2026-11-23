@@ -6,9 +6,9 @@ from typing import Any
 
 from fastapi import FastAPI, File, Form, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from mkdown import Document
 
 from docler import __version__ as docler_version
+from docler.markdown import Document
 from docler.models import ChunkedDocument, PageMetadata
 from docler_api import routes
 

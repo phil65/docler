@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-from mkdown import Document, Image
 import pytest
 
 from docler.chunkers.markdown_chunker import MarkdownChunker
+from docler.markdown import Document, Image
 
 
 MIME = "image/png"

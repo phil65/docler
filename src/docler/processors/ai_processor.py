@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, ClassVar
 
-from mkdown import Document
 from schemez import Schema
 
 from docler.common_types import DEFAULT_PROOF_READER_MODEL
 from docler.diffs import generate_all_diffs
+from docler.markdown import Document
 from docler.processors.base import DocumentProcessor
 from docler.utils import add_line_numbers
 from docler_config.chunker_configs import (

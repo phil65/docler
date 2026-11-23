@@ -11,8 +11,7 @@ from docler.provider import BaseProvider
 
 
 if TYPE_CHECKING:
-    from mkdown import Document
-
+    from docler.markdown import Document
     from docler_config.processor_configs import BaseProcessorConfig
 
 

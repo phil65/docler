@@ -5,8 +5,9 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, Literal
 
-from mkdown import Document, Image, TextChunk
 from pydantic import BaseModel, Field
+
+from docler.markdown import Document, Image, TextChunk
 
 
 if TYPE_CHECKING:
@@ -36,7 +37,7 @@ class ChunkedDocument(Document):
         return cls(**document.model_dump(), chunks=chunks)
 
 
-# mkdown's TextChunk only imports Image for type checking, so pydantic cannot
+# TextChunk (docler.markdown) only imports Image for type checking, so pydantic cannot
 # resolve the nested annotation on its own.
 ChunkedDocument.model_rebuild(_types_namespace={"Image": Image, "TextChunk": TextChunk})
 

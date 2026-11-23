@@ -20,12 +20,12 @@ from docler.provider import BaseProvider
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
-    from mkdown import Document, Image
     from schemez import MimeType
     import upath
     from upath.types import JoinablePathLike
 
     from docler.common_types import PageRangeString, SupportedLanguage
+    from docler.markdown import Document, Image
     from docler_config.converter_configs import ConverterConfig
 
 
@@ -139,7 +139,7 @@ class DocumentConverter[TConfig: BaseModel = Any](BaseProvider[TConfig], ABC):
         Raises:
             ValueError: If the content type or MIME type is not supported.
         """
-        from mkdown import Document
+        from docler.markdown import Document
 
         if not self.supports_mime_type(mime_type):
             supported = self.get_supported_mime_types()

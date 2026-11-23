@@ -16,7 +16,7 @@ from docler_config.chunker_configs import (
 
 
 if TYPE_CHECKING:
-    from mkdown import Document, TextChunk
+    from docler.markdown import Document, TextChunk
 
 
 class AIChunker(TextChunker[AiChunkerConfig]):
@@ -75,7 +75,7 @@ class AIChunker(TextChunker[AiChunkerConfig]):
 if __name__ == "__main__":
     import asyncio
 
-    from mkdown import Document
+    from docler.markdown import Document
 
     async def main() -> None:
         # Example usage

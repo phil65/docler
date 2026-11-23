@@ -288,7 +288,7 @@ See [`src/docler_api/README.md`](https://github.com/phil65/docler/blob/main/src/
 All converters return a standardized `Document` object with:
 
 ```python
-class Document:  # from the mkdown package
+class Document:  # docler.markdown.Document
     content: str  # Extracted text in markdown format
     images: list[Image]  # Extracted images (id, content, mime_type, filename, ...)
     title: str | None  # Document title

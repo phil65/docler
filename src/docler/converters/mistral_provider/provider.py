@@ -5,10 +5,9 @@ from __future__ import annotations
 import base64
 from typing import TYPE_CHECKING, ClassVar
 
-from mkdown import Image, create_image_reference, create_page_break
-
 from docler.converters.base import ConverterResult, DocumentConverter
 from docler.converters.mistral_provider.utils import convert_image, get_images
+from docler.markdown import Image, create_image_reference, create_page_break
 from docler.pdf_utils import parse_page_range, shift_page_range
 from docler.utils import get_api_key
 from docler_config.converter_configs import MistralConfig
