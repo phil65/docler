@@ -2,7 +2,7 @@
 
 [project]
 name = "docler"
-version = "2.3.0"
+version = "2.4.0"
 description = "Unified async interface to OCR and document-AI services for converting documents to markdown"
 readme = "README.md"
 requires-python = ">=3.13"
