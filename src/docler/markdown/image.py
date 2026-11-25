@@ -139,5 +139,5 @@ class Image(Schema):
             # Open the image and get dimensions
             with PILImage.open(BytesIO(image_data)) as img:
                 return (img.width, img.height)
-        except (ImportError, Exception):  # noqa: BLE001
+        except ImportError, Exception:  # noqa: BLE001
             return None

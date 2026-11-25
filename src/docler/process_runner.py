@@ -43,7 +43,7 @@ async def _check_http(url: str) -> bool:
     try:
         conn.request("GET", parsed.path or "/")
         response = conn.getresponse()
-    except (ConnectionRefusedError, socket.gaierror):
+    except ConnectionRefusedError, socket.gaierror:
         return False
     else:
         return 200 <= response.status < 400  # noqa: PLR2004
@@ -56,7 +56,7 @@ async def _check_tcp(host: str, port: int) -> bool:
         _, writer = await asyncio.open_connection(host, port)
         writer.close()
         await writer.wait_closed()
-    except (ConnectionRefusedError, socket.gaierror):
+    except ConnectionRefusedError, socket.gaierror:
         return False
     else:
         return True
