@@ -69,7 +69,7 @@ uv run pytest --snapshot-update     # update syrupy snapshots
 uvx ruff check . && uvx ruff format --check .
 uv run ty check                     # must be warning-free; checks src/ only
 uv run deptry src                   # dependency hygiene
-uv run mkdocs-mknodes build         # docs (duties.py wraps these; duty is not a declared dep: uvx duty ...)
+uv run mknodes build                # docs (duties.py wraps these; duty is not a declared dep: uvx duty ...)
 uvx duty lint                       # ruff fix + format + ty (via duties.py)
 uv build
 ```
@@ -120,5 +120,5 @@ Remote document-conversion APIs. Local libraries (docling, marker, markitdown, l
   converters, nothing imports the chunkers/annotators/processors implicitly.
 - `mkdown.TextChunk` imports `Image` only for type checking, hence the explicit
   `ChunkedDocument.model_rebuild(...)` in `src/docler/models.py`.
-- Docs are the mkdocs-mknodes default site: `README.md` is the index page, the rest is
+- Docs are the mknodes default site: `README.md` is the index page, the rest is
   generated from docstrings; `docs/` is intentionally empty.
