@@ -91,6 +91,19 @@ pytest and commitizen (conventional commits).
   `AZURE_DOC_INTELLIGENCE_ENDPOINT`, `AZURE_DOC_INTELLIGENCE_KEY`); LLM-based
   components use pydantic-ai model ids (e.g. `openai:gpt-4o`) through `agentpool`.
 
+## Specs
+
+Remote document-conversion APIs. Local libraries (docling, marker, markitdown, llama-index chunkers) and the LLM-based converters are not listed.
+
+| Spec | URL | Targets | Code | Update check |
+|---|---|---|---|---|
+| Azure AI Document Intelligence (via `azure-ai-documentintelligence`) | https://learn.microsoft.com/en-us/azure/ai-services/document-intelligence/prebuilt/layout | unpinned (SDK default API version; model `prebuilt-layout` by default) | `src/docler/converters/azure_provider/` | same URL, SDK releases on PyPI |
+| Datalab Marker API | https://www.datalab.to/app/reference | API v1 (`https://www.datalab.to/api/v1/marker`) | `src/docler/converters/datalab_provider/` | https://www.datalab.to/openapi.json |
+| docling-serve | https://github.com/docling-project/docling-serve/blob/main/docs/usage.md | `/v1alpha/convert/{source,file}` (`docling_remote_provider/provider.py`); current upstream docs use `/v1/convert/...` | `src/docler/converters/docling_remote_provider/` | https://github.com/docling-project/docling-serve/releases |
+| LlamaParse (via `llama-parse`) | https://developers.llamaindex.ai/llamaparse/parse/ | unpinned (tracks latest SDK) | `src/docler/converters/llamaparse_provider/` | same URL, `llama-parse` releases on PyPI |
+| Mistral OCR (via `mistralai>=3`) | https://docs.mistral.ai/api/endpoint/ocr | unpinned (model `mistral-ocr-latest` by default) | `src/docler/converters/mistral_provider/` | same URL |
+| Upstage Document Parse | https://console.upstage.ai/api/document-digitization/document-parsing | API v1 (`https://api.upstage.ai/v1/document-digitization`) | `src/docler/converters/upstage_provider/` | same URL |
+
 ## Pitfalls
 
 - Copier-managed project (`.copier-answers.yml`, template `copier-phil65`): workflows,

@@ -59,6 +59,12 @@ Documentation = "https://phil65.github.io/docler/"
 Homepage = "https://github.com/phil65/docler"
 Issues = "https://github.com/phil65/docler/issues"
 Source = "https://github.com/phil65/docler"
+"Spec: Azure Document Intelligence" = "https://learn.microsoft.com/en-us/azure/ai-services/document-intelligence/prebuilt/layout"
+"Spec: Datalab" = "https://www.datalab.to/app/reference"
+"Spec: LlamaParse" = "https://developers.llamaindex.ai/llamaparse/parse/"
+"Spec: Mistral OCR" = "https://docs.mistral.ai/api/endpoint/ocr"
+"Spec: Upstage Document Parse" = "https://console.upstage.ai/api/document-digitization/document-parsing"
+"Spec: docling-serve" = "https://github.com/docling-project/docling-serve/blob/main/docs/usage.md"
 
 [project.scripts]
 docler = "docler.__main__:cli"
