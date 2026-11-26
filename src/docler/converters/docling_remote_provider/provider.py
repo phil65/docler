@@ -19,20 +19,29 @@ if TYPE_CHECKING:
     from schemez import MimeType
 
     from docler.common_types import PageRangeString, SupportedLanguage
+    from docler_config.converter_configs import DoclingEngine
 
 logger = get_logger(__name__)
 
-# Default endpoint configurations
+# docling-serve's v1 API (checked against docling-serve v1.40.0, commit 5c101b6).
 DEFAULT_API_ENDPOINT = "http://localhost:5001"
-CONVERT_SOURCE = "/v1alpha/convert/source"
-CONVERT_FILE = "/v1alpha/convert/file"
+CONVERT_FILE = "/v1/convert/file"
 
-OCREngine = Literal["easyocr", "tesseract_cli", "tesseract", "rapidocr", "ocrmac"]
-PDFBackend = Literal["pypdfium2", "dlparse_v1", "dlparse_v2", "dlparse_v4"]
+PDFBackend = Literal["pypdfium2", "docling_parse", "dlparse_v1", "dlparse_v2", "dlparse_v4"]
 TableMode = Literal["fast", "accurate"]
 
+# docler's engine names (docling's option classes) -> docling-serve's OCR presets.
+OCR_PRESETS: dict[str, str] = {
+    "easy_ocr": "easyocr",
+    "rapid_ocr": "rapidocr",
+    "tesseract_cli_ocr": "tesseract",
+    "tesseract_ocr": "tesserocr",
+    "ocr_mac": "ocrmac",
+}
+FROM_FORMATS = ["pdf", "docx", "pptx", "html", "image", "asciidoc", "md", "xlsx"]
 
-# https://github.com/docling-project/docling-serve
+
+# https://github.com/docling-project/docling-serve (docs/usage.md: the options)
 
 
 class DoclingRemoteConverter(DocumentConverter[DoclingRemoteConfig]):
@@ -74,7 +83,7 @@ class DoclingRemoteConverter(DocumentConverter[DoclingRemoteConfig]):
         page_range: PageRangeString | None = None,
         api_key: str | None = None,
         endpoint: str = DEFAULT_API_ENDPOINT,
-        ocr_engine: OCREngine = "easyocr",
+        ocr_engine: DoclingEngine = "easy_ocr",
         pdf_backend: PDFBackend = "dlparse_v4",
         table_mode: TableMode = "fast",
         force_ocr: bool = False,
@@ -92,7 +101,7 @@ class DoclingRemoteConverter(DocumentConverter[DoclingRemoteConfig]):
             page_range: Page range(s) to extract, like "1-5,7-10" (1-based; PDFs only)
             api_key: Optional API key for auth.
             endpoint: Base URL of the Docling service.
-            ocr_engine: OCR engine to use.
+            ocr_engine: OCR engine to use (sent as docling-serve's `ocr_preset`).
             pdf_backend: PDF backend to use.
             table_mode: Table mode to use.
             force_ocr: Whether to force OCR even on digital documents.
@@ -109,26 +118,17 @@ class DoclingRemoteConverter(DocumentConverter[DoclingRemoteConfig]):
         super().__init__(languages=languages, page_range=page_range)
         self.endpoint = endpoint.rstrip("/")
         self.api_key = api_key
+        # One multipart form field per option (lists repeat the field), as v1 expects.
         self.config: dict[str, Any] = {
-            "from_formats": [
-                "pdf",
-                "docx",
-                "pptx",
-                "html",
-                "image",
-                "asciidoc",
-                "md",
-                "xlsx",
-            ],
+            "from_formats": FROM_FORMATS,
             "to_formats": ["md"],
             "image_export_mode": "embedded",
             "do_ocr": True,
             "force_ocr": force_ocr,
-            "ocr_engine": ocr_engine,
+            "ocr_preset": OCR_PRESETS[ocr_engine],
             "pdf_backend": pdf_backend,
             "table_mode": table_mode,
             "abort_on_error": False,
-            "return_as_file": False,
             "do_table_structure": do_table_structure,
             "do_code_enrichment": do_code_enrichment,
             "do_formula_enrichment": do_formula_enrichment,
@@ -137,9 +137,8 @@ class DoclingRemoteConverter(DocumentConverter[DoclingRemoteConfig]):
             "images_scale": image_scale,
             "include_images": True,
         }
-
         if languages:
-            self.config["ocr_lang"] = languages
+            self.config["ocr_lang"] = list(languages)
 
     async def _convert_async(self, data: BytesIO, mime_type: MimeType) -> ConverterResult:
         """Convert a document using remote Docling service.
@@ -159,15 +158,20 @@ class DoclingRemoteConverter(DocumentConverter[DoclingRemoteConfig]):
             headers["Authorization"] = f"Bearer {self.api_key}"
 
         file_content = data.read()
+        form = _form_fields(self.config)
         if self.page_range:
             if mime_type == "application/pdf":
-                from docler.pdf_utils import extract_pdf_pages
+                from docler.converters.docling_provider.utils import to_docling_page_range
 
-                # Cut the pages locally: works with any docling-serve version and with
-                # non-contiguous ranges (docling-serve's `page_range` takes one range).
-                file_content = await anyenv.run_in_thread(
-                    extract_pdf_pages, file_content, self.page_range
-                )
+                if span := to_docling_page_range(self.page_range):
+                    form["page_range"] = [str(span[0]), str(span[1])]
+                else:
+                    from docler.pdf_utils import extract_pdf_pages
+
+                    # v1's `page_range` takes one contiguous range: cut the pages locally.
+                    file_content = await anyenv.run_in_thread(
+                        extract_pdf_pages, file_content, self.page_range
+                    )
             else:
                 logger.warning("page_range only applies to PDFs; converting all of %s", mime_type)
         # Use a generic filename since we don't have path info
@@ -176,9 +180,8 @@ class DoclingRemoteConverter(DocumentConverter[DoclingRemoteConfig]):
         url = f"{self.endpoint}{CONVERT_FILE}"
         async with httpx2.AsyncClient(timeout=60.0) as client:
             files = {"files": (filename, file_content, mime_type)}
-            form_data = {"parameters": anyenv.dump_json(self.config)}
             try:
-                response = await client.post(url, headers=headers, files=files, data=form_data)
+                response = await client.post(url, headers=headers, files=files, data=form)
                 response.raise_for_status()
                 result = response.json()
             except httpx2.HTTPError as e:
@@ -189,7 +192,7 @@ class DoclingRemoteConverter(DocumentConverter[DoclingRemoteConfig]):
                 self.logger.exception(msg)
                 raise ValueError(msg) from e
 
-        document = result["document"]
+        document = result.get("document") or {}
         if not document.get("md_content"):
             if result.get("errors"):
                 msg = f"Conversion failed: {result['errors']}"
@@ -202,6 +205,18 @@ class DoclingRemoteConverter(DocumentConverter[DoclingRemoteConfig]):
             images=images,
             metadata=result.get("timings", {}),
         )
+
+
+def _form_fields(options: dict[str, Any]) -> dict[str, str | list[str]]:
+    """Encode options as multipart form values (booleans as `true` / `false`)."""
+
+    def encode(value: Any) -> str:
+        return str(value).lower() if isinstance(value, bool) else str(value)
+
+    return {
+        key: [encode(v) for v in value] if isinstance(value, list) else encode(value)
+        for key, value in options.items()
+    }
 
 
 if __name__ == "__main__":

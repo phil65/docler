@@ -152,7 +152,8 @@ converter = DoclingConverter(ocr_engine="rapid_ocr", image_scale=2.0)
 ```python
 from docler.converters.docling_remote_provider import DoclingRemoteConverter
 
-converter = DoclingRemoteConverter(endpoint="http://localhost:5001", pdf_backend="dlparse_v4")
+# docling-serve >= 1.0 (its `/v1` API)
+converter = DoclingRemoteConverter(endpoint="http://localhost:5001", ocr_engine="rapid_ocr")
 ```
 
 #### MarkItDown (Microsoft)
