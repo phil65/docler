@@ -319,3 +319,22 @@ def test_server_only_fields_cover_every_url_field():
         or any(part in name for part in ("url", "endpoint", "host", "api_base"))
     }
     assert url_fields <= SERVER_ONLY_FIELDS
+
+
+@pytest.mark.parametrize("reload", [False, True])
+def test_cli_api_passes_an_import_string(reload: bool, monkeypatch: pytest.MonkeyPatch):
+    """Uvicorn's --reload needs the app as an import string, not an object."""
+    from typer.testing import CliRunner
+    import uvicorn
+
+    from docler.__main__ import cli
+
+    calls: list[tuple[Any, dict[str, Any]]] = []
+    monkeypatch.setattr(uvicorn, "run", lambda app, **kw: calls.append((app, kw)))
+    args = ["api", "--reload"] if reload else ["api"]
+    result = CliRunner().invoke(cli, args)
+    assert result.exit_code == 0, result.output
+    app, kwargs = calls[0]
+    assert app == "docler_api.main:create_app"
+    assert kwargs["factory"] is True
+    assert kwargs["reload"] is reload

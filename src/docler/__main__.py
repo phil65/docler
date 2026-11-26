@@ -68,9 +68,9 @@ def api(
     """Start the Docler API server."""
     try:
         # Lazy import to avoid unnecessary dependencies if not using the API
+        import fastapi  # noqa: F401
         import uvicorn
 
-        from docler_api.main import create_app
         from docler_api.settings import ApiSettings, check_bind
 
         settings = ApiSettings.from_env()
@@ -79,9 +79,10 @@ def api(
         except RuntimeError as e:
             logger.error(str(e))  # noqa: TRY400
             raise typer.Exit(1) from e
-        app = create_app(settings)
+        # An import string (the factory reads the same env settings), as --reload needs.
         uvicorn.run(
-            app,
+            "docler_api.main:create_app",
+            factory=True,
             host=host,
             port=port,
             log_level=log_level,
