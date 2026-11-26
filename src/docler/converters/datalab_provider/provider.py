@@ -60,6 +60,7 @@ class DataLabConverter(DocumentConverter[DataLabConfig]):
         api_key: str | None = None,
         force_ocr: bool = False,
         use_llm: bool = False,
+        max_pages: int | None = None,
     ) -> None:
         """Initialize the DataLab converter.
 
@@ -69,11 +70,13 @@ class DataLabConverter(DocumentConverter[DataLabConfig]):
             languages: Languages to use for OCR.
             force_ocr: Whether to force OCR on every page.
             use_llm: Whether to use LLM for enhanced accuracy.
+            max_pages: Process at most this many pages.
         """
         super().__init__(languages=languages, page_range=page_range)
         self.api_key = api_key or get_api_key("DATALAB_API_KEY")
         self.force_ocr = force_ocr
         self.use_llm = use_llm
+        self.max_pages = max_pages
         self.add_page_breaks = True
 
     @property
@@ -106,6 +109,8 @@ class DataLabConverter(DocumentConverter[DataLabConfig]):
             form["force_ocr"] = "true"
         if self.use_llm:
             form["use_llm"] = "true"
+        if self.max_pages is not None:
+            form["max_pages"] = str(self.max_pages)
         if self.page_range:
             # DataLab expects 0-based indexes in page_range
             rng = shift_page_range(self.page_range, shift=-1) if self.page_range else None

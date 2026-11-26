@@ -76,7 +76,7 @@ azure = ["azure-ai-documentintelligence"]
 diffs = ["diff-match-patch"]
 docling = ["docling[ocrmac,vlm,rapidocr]; python_version < '3.14'"]  # tesserocr
 light = ["docler[mistralai,diffs,llama-parse,openai,azure]", "agentpool>=2.10.0"]
-llama-parse = ["llama-parse; python_version < '3.14'"]
+llama-parse = ["llama-parse"]
 marker = ["marker-pdf; python_version < '3.14'"]
 markitdown = ["markitdown[all]>=0.1; python_version < '3.15'"]
 mcp = ["fastmcp"]
@@ -322,8 +322,8 @@ python-platform = "all"
 
 [tool.ty.analysis]
 # Optional provider extras that CI does not install (docling pulls in torch;
-# marker cannot share an environment with `all`), or that are only available
-# below Python 3.14 (llama-parse, numpy via docling). Checked wherever installed.
+# marker cannot share an environment with `all`; markitdown not on 3.15 yet).
+# Checked wherever installed.
 allowed-unresolved-imports = [
   "docling.**",
   "docling_core.**",
