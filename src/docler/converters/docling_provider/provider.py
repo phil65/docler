@@ -2,20 +2,20 @@
 
 from __future__ import annotations
 
+from io import BytesIO
 import re
 from typing import TYPE_CHECKING, ClassVar
 
 from docler.converters.base import ConverterResult, DocumentConverter
-from docler.converters.docling_provider.utils import convert_languages, parse_page_range
+from docler.converters.docling_provider.utils import convert_languages, to_docling_page_range
 from docler.log import get_logger
 from docler.markdown import Image, create_image_reference, create_page_break
+from docler.pdf_utils import extract_pdf_pages
 from docler.utils import pil_to_bytes
 from docler_config.converter_configs import DoclingConverterConfig
 
 
 if TYPE_CHECKING:
-    from io import BytesIO
-
     from docling.document_converter import FormatOption
     from schemez import MimeType
 
@@ -127,9 +127,14 @@ class DoclingConverter(DocumentConverter[DoclingConverterConfig]):
         from docling_core.types.doc.base import ImageRefMode
         from docling_core.types.io import DocumentStream
 
+        page_range = DEFAULT_PAGE_RANGE
+        if self.page_range:
+            if docling_range := to_docling_page_range(self.page_range):
+                page_range = docling_range
+            else:  # Docling takes one contiguous range
+                data = BytesIO(extract_pdf_pages(data.getvalue(), self.page_range))
         source = DocumentStream(name="document.pdf", stream=data)
-        page_range = parse_page_range(self.page_range) if self.page_range else None
-        doc_result = self.converter.convert(source, page_range=page_range or DEFAULT_PAGE_RANGE)
+        doc_result = self.converter.convert(source, page_range=page_range)
         mk_content = doc_result.document.export_to_markdown(
             image_mode=ImageRefMode.REFERENCED,
             delim=self.delim,
@@ -139,7 +144,7 @@ class DoclingConverter(DocumentConverter[DoclingConverterConfig]):
             strict_text=self.strict_text,
             page_break_placeholder=PAGE_BREAK_MARKER,
         )
-        page_num = 1
+        page_num = page_range[0]
 
         def replace_marker(match: re.Match[str]) -> str:
             nonlocal page_num

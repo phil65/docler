@@ -59,24 +59,25 @@ def convert_languages(
     return list(languages)
 
 
-def parse_page_range(page_range: PageRangeString) -> tuple[int, int]:
-    """Convert a page range string to a tuple of (start, end) page numbers.
+def to_docling_page_range(page_range: PageRangeString) -> tuple[int, int] | None:
+    """Convert a page range string to Docling's (start, end) range (1-based, inclusive).
 
     Args:
-        page_range: String like "1-5" or None. 1-based page numbers.
+        page_range: String like "1-5,7,9-11". 1-based page numbers.
 
     Returns:
-        Tuple of (start, end) page numbers (0-based) or None if no range specified.
+        (first, last) page if the pages are contiguous, None if they aren't (Docling
+        takes a single range: extract the pages first).
 
     Raises:
         ValueError: If the page range format is invalid.
     """
-    try:
-        # Handle only first range for now (ignore possible additional ranges after comma)
-        first_range = page_range.split(",")[0]
-        start, end = map(int, first_range.split("-"))
-        # Convert to 0-based indexing
-        return (start - 1, end - 1)
-    except ValueError as e:
-        msg = f"Invalid page range format: {page_range}. Expected format: '1-5'"
-        raise ValueError(msg) from e
+    from docler.pdf_utils import parse_page_range
+
+    pages = sorted(parse_page_range(page_range))
+    if not pages:
+        msg = f"Invalid page range format: {page_range}"
+        raise ValueError(msg)
+    if pages != list(range(pages[0], pages[-1] + 1)):
+        return None
+    return (pages[0], pages[-1])

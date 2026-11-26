@@ -9,6 +9,7 @@ from docler.converters.base import ConverterResult, DocumentConverter
 from docler.converters.exceptions import ConverterError
 from docler.converters.llamaparse_provider.utils import process_response
 from docler.log import get_logger
+from docler.pdf_utils import shift_page_range
 from docler.utils import get_api_key
 from docler_config.converter_configs import LlamaParseConfig
 
@@ -148,7 +149,8 @@ class LlamaParseConverter(DocumentConverter[LlamaParseConfig]):
                 result_type=ResultType.MD,
                 language=self.language,
                 adaptive_long_table=self.adaptive_long_table,
-                target_pages=self.page_range,
+                # LlamaParse's target_pages are 0-based.
+                target_pages=shift_page_range(self.page_range, -1) if self.page_range else None,
                 skip_diagonal_text=self.skip_diagonal_text,
                 disable_ocr=self.disable_ocr,
                 output_tables_as_HTML=self.html_tables,
