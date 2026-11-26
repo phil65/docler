@@ -1,7 +1,5 @@
 """Document converter using LiteLLM providers that support PDF input."""
 
-from __future__ import annotations
-
 from typing import TYPE_CHECKING, ClassVar
 
 from docler.common_types import DEFAULT_CONVERTER_MODEL

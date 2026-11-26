@@ -1,7 +1,5 @@
 """Streamlit app for markdown chunking visualization."""
 
-from __future__ import annotations
-
 import anyenv
 import streamlit as st
 

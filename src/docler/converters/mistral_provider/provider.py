@@ -1,7 +1,5 @@
 """OCR functionality for processing documents using Mistral's API."""
 
-from __future__ import annotations
-
 import base64
 from typing import TYPE_CHECKING, ClassVar
 

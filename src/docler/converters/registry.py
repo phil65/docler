@@ -1,7 +1,5 @@
 """Registry for document converters."""
 
-from __future__ import annotations
-
 import logging
 import mimetypes
 from typing import TYPE_CHECKING, Any

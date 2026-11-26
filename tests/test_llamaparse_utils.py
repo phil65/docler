@@ -1,7 +1,5 @@
 """LlamaParse response processing (llama_index is faked: it needs Python < 3.14)."""
 
-from __future__ import annotations
-
 import sys
 import types
 from typing import Any

@@ -1,7 +1,5 @@
 """Configuration models for text chunking."""
 
-from __future__ import annotations
-
 from typing import TYPE_CHECKING, Annotated, Literal
 
 from pydantic import Field

@@ -1,7 +1,5 @@
 """Command line interface for Docler document converter."""
 
-from __future__ import annotations
-
 from enum import StrEnum
 import os
 import pathlib

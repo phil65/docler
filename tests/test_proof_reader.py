@@ -1,7 +1,5 @@
 """Tests for LLMProofReader with a fake LLM."""
 
-from __future__ import annotations
-
 import re
 import sys
 import types

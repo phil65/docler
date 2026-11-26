@@ -1,7 +1,5 @@
 """Converter configs read their own provider's env vars."""
 
-from __future__ import annotations
-
 from typing import TYPE_CHECKING
 
 from docler_config.converter_configs import AzureConfig

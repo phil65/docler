@@ -1,7 +1,5 @@
 """Configuration models for document and image annotators."""
 
-from __future__ import annotations
-
 from typing import TYPE_CHECKING, Annotated, Literal
 
 from pydantic import Field

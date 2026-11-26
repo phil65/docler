@@ -1,7 +1,5 @@
 """MarkItDown converter tests with a fake markitdown module (it needs Python < 3.14)."""
 
-from __future__ import annotations
-
 from dataclasses import dataclass
 from io import BytesIO
 import sys

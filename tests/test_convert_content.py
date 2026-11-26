@@ -1,7 +1,5 @@
 """Tests for DocumentConverter.convert_content (PDF handling) without a real backend."""
 
-from __future__ import annotations
-
 import io
 from typing import TYPE_CHECKING, ClassVar
 

@@ -1,7 +1,5 @@
 """Tests for PDF utilities with empty password handling."""
 
-from __future__ import annotations
-
 from unittest.mock import Mock, patch
 
 import pytest

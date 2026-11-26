@@ -1,7 +1,5 @@
 """Markdown document models and helpers (formerly the separate `mkdown` package)."""
 
-from __future__ import annotations
-
 from docler.markdown.document import Document
 from docler.markdown.textchunk import TextChunk
 from docler.markdown.image import Image

@@ -1,7 +1,5 @@
 """Language code handling for OCR backends."""
 
-from __future__ import annotations
-
 from typing import TYPE_CHECKING
 
 from docler.common_types import (

@@ -1,7 +1,5 @@
 """Marker provider with a fake marker package."""
 
-from __future__ import annotations
-
 import io
 import sys
 import types

@@ -1,7 +1,5 @@
 """DataLab API client: submit, then poll the check URL (against a local server)."""
 
-from __future__ import annotations
-
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
 import threading

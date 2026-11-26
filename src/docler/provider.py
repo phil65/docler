@@ -1,7 +1,5 @@
 """Data models for document representation."""
 
-from __future__ import annotations
-
 from contextlib import AsyncExitStack
 import importlib.util
 from typing import TYPE_CHECKING, Any, ClassVar, Self

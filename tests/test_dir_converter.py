@@ -1,7 +1,5 @@
 """Tests for directory conversion and fan-out with a fake converter."""
 
-from __future__ import annotations
-
 import asyncio
 from typing import TYPE_CHECKING, ClassVar
 

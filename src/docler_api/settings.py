@@ -1,7 +1,5 @@
 """Server settings of the Docler API, read from the environment."""
 
-from __future__ import annotations
-
 from dataclasses import dataclass, field
 import ipaddress
 import os

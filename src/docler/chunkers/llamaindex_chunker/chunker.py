@@ -1,7 +1,5 @@
 """LlamaIndex-based text chunking implementation."""
 
-from __future__ import annotations
-
 from typing import TYPE_CHECKING, Any, ClassVar, Literal
 
 from docler.chunkers.base import TextChunker

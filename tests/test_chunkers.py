@@ -1,7 +1,5 @@
 """Tests for the markdown chunker."""
 
-from __future__ import annotations
-
 import pytest
 
 from docler.chunkers.markdown_chunker import MarkdownChunker

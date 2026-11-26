@@ -1,7 +1,5 @@
 """Aggregated document converter that delegates to appropriate converters."""
 
-from __future__ import annotations
-
 from typing import TYPE_CHECKING
 
 import anyenv

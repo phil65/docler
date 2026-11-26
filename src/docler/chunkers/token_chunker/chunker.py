@@ -1,7 +1,5 @@
 """Token-aware text chunking implementation."""
 
-from __future__ import annotations
-
 from typing import TYPE_CHECKING, Any, ClassVar
 
 from docler.chunkers.base import TextChunker

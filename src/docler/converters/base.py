@@ -1,7 +1,5 @@
 """Base converter interface for document processing."""
 
-from __future__ import annotations
-
 from abc import ABC
 import asyncio
 import base64

@@ -1,7 +1,5 @@
 """Utilities for generating diffs between texts."""
 
-from __future__ import annotations
-
 from difflib import unified_diff
 import importlib.util
 

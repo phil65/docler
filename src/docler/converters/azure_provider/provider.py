@@ -1,7 +1,5 @@
 """Azure Document Intelligence converter implementation."""
 
-from __future__ import annotations
-
 from typing import TYPE_CHECKING, ClassVar
 
 from docler.converters.azure_provider.utils import (

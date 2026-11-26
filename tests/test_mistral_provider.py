@@ -1,7 +1,5 @@
 """Mistral OCR provider with a fake client."""
 
-from __future__ import annotations
-
 import io
 from types import SimpleNamespace
 from typing import Any

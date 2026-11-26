@@ -1,7 +1,5 @@
 """Document converter using MarkItDown."""
 
-from __future__ import annotations
-
 from io import BytesIO
 import mimetypes
 import re

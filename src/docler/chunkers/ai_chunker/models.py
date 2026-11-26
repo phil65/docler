@@ -1,7 +1,5 @@
 """Models for AI chunker."""
 
-from __future__ import annotations
-
 from schemez import Schema
 
 

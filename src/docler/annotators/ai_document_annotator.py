@@ -1,7 +1,5 @@
 """AI-powered document and chunk metadata annotation."""
 
-from __future__ import annotations
-
 import asyncio
 from typing import TYPE_CHECKING, ClassVar
 

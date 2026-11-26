@@ -1,7 +1,5 @@
 """Process runner with configurable wait conditions."""
 
-from __future__ import annotations
-
 import asyncio
 import contextlib
 import http.client

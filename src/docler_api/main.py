@@ -1,7 +1,5 @@
 """FastAPI server for docler document conversion library."""
 
-from __future__ import annotations
-
 from typing import Annotated, Any
 
 from fastapi import APIRouter, FastAPI, File, Form, UploadFile

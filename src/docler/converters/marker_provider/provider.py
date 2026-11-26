@@ -1,7 +1,5 @@
 """Document converter using Marker's PDF processing."""
 
-from __future__ import annotations
-
 import pathlib
 import threading
 from typing import TYPE_CHECKING, Any, ClassVar, Literal

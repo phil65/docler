@@ -3,8 +3,6 @@
 Abstractions & Tools for OCR / document processing.
 """
 
-from __future__ import annotations
-
 from importlib.metadata import version
 
 __version__ = version("docler")

@@ -5,8 +5,6 @@ The fake mimics docling-serve v1.40.0 (commit 5c101b6): `POST /v1/convert/file` 
 fields), and answers `{"document": {"md_content": ...}, "status", "errors", "timings"}`.
 """
 
-from __future__ import annotations
-
 import base64
 import io
 from pathlib import Path

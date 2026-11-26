@@ -1,7 +1,5 @@
 """Response models of the Docler API."""
 
-from __future__ import annotations
-
 from datetime import datetime
 from typing import TYPE_CHECKING, Any, Literal
 

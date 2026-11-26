@@ -4,8 +4,6 @@ Both run before the request body is read, so an unauthenticated or oversized upl
 refused without being parsed or spooled.
 """
 
-from __future__ import annotations
-
 import contextlib
 import hmac
 from typing import TYPE_CHECKING, Any

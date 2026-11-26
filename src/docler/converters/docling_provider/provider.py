@@ -1,7 +1,5 @@
 """Document converter using Docling's PDF processing."""
 
-from __future__ import annotations
-
 from io import BytesIO
 import re
 from typing import TYPE_CHECKING, ClassVar

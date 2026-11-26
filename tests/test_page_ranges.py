@@ -1,7 +1,5 @@
 """Page ranges (1-based in docler) as passed to backends."""
 
-from __future__ import annotations
-
 import io
 import sys
 import types

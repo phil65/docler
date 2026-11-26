@@ -1,7 +1,5 @@
 """Utility functions for the Streamlit app."""
 
-from __future__ import annotations
-
 from typing import TYPE_CHECKING
 
 import streamlit as st

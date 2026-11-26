@@ -1,7 +1,5 @@
 """Configuration models for Docler components."""
 
-from __future__ import annotations
-
 from docler_config.annotator_configs import (
     AIDocumentAnnotatorConfig,
     AIImageAnnotatorConfig,

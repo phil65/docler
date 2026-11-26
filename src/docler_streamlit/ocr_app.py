@@ -1,7 +1,5 @@
 """Streamlit app for document conversion."""
 
-from __future__ import annotations
-
 import logging
 from pathlib import Path
 import tempfile

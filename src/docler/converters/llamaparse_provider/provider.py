@@ -1,7 +1,5 @@
 """Document converter using LlamaParse."""
 
-from __future__ import annotations
-
 import pathlib
 from typing import TYPE_CHECKING, Any, ClassVar
 

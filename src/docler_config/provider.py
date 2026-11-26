@@ -1,7 +1,5 @@
 """Data models for document representation."""
 
-from __future__ import annotations
-
 from typing import Any, Self
 
 from pydantic import Field, HttpUrl, SecretStr, field_serializer

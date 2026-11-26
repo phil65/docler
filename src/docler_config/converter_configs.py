@@ -1,7 +1,5 @@
 """Converter configuration."""
 
-from __future__ import annotations
-
 from typing import TYPE_CHECKING, Annotated, Literal
 
 # from docling.datamodel.pipeline_options import (

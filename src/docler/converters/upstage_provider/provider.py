@@ -1,7 +1,5 @@
 """Document converter using Upstage's Document AI API."""
 
-from __future__ import annotations
-
 import base64
 from collections import defaultdict
 from typing import TYPE_CHECKING, Any, ClassVar
