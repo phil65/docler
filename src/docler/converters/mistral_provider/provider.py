@@ -100,37 +100,35 @@ class MistralConverter(DocumentConverter[MistralConfig]):
 
         file_ = File(file_name="document.pdf", content=file_data)
         uploaded = client.files.upload(file=file_, purpose="ocr")
-        signed_url = client.files.get_signed_url(file_id=uploaded.id, expiry=60)
-
-        self.logger.debug("Processing with OCR model...")
-        rng = shift_page_range(self.page_range, -1) if self.page_range else None
-        r = client.ocr.process(
-            model=self.model,
-            document={"type": "document_url", "document_url": signed_url.url},
-            include_image_base64=True,
-            image_min_size=self.image_min_size,
-            pages=list(parse_page_range(rng)) if rng else None,
-        )
+        try:
+            signed_url = client.files.get_signed_url(file_id=uploaded.id, expiry=60)
+            self.logger.debug("Processing with OCR model...")
+            rng = shift_page_range(self.page_range, -1) if self.page_range else None
+            r = client.ocr.process(
+                model=self.model,
+                document={"type": "document_url", "document_url": signed_url.url},
+                include_image_base64=True,
+                image_min_size=self.image_min_size,
+                pages=list(parse_page_range(rng)) if rng else None,
+            )
+        finally:
+            # Don't leave the document in the user's Mistral file storage.
+            try:
+                client.files.delete(file_id=uploaded.id)
+            except Exception:  # noqa: BLE001
+                self.logger.warning("Failed to delete uploaded file %s", uploaded.id)
         images = [
             convert_image(img)
             for page in r.pages
             for img in page.images
             if img.id and img.image_base64
         ]
-
+        # page.index is the 0-based page of the document (it honours page_range).
         content_parts: list[str] = []
-        if r.pages:
-            # Always add marker for the first page
-            first_page_marker = create_page_break(next_page=1, newline_separators=1)
-            content_parts.append(first_page_marker.lstrip())
-            content_parts.append(r.pages[0].markdown.lstrip())  # Add first page content
-            page_num = 1
-            for page in r.pages[1:]:
-                page_num += 1  # Increment for the next page in the output
-                # Use newline_separators=1 to potentially reduce vertical space
-                comment = create_page_break(next_page=page_num, newline_separators=1)
-                content_parts.append(comment)
-                content_parts.append(page.markdown.lstrip())
+        for page in r.pages:
+            marker = create_page_break(next_page=page.index + 1, newline_separators=1)
+            content_parts.append(marker if content_parts else marker.lstrip())
+            content_parts.append(page.markdown.lstrip())
         content = "\n\n".join(content_parts)  # Use double newline between parts
 
         return ConverterResult(content=content, images=images)
