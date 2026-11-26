@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from io import BytesIO
+import mimetypes
 import re
 from typing import TYPE_CHECKING, ClassVar
 
@@ -88,16 +89,25 @@ class MarkItDownConverter(DocumentConverter[MarkItDownConfig]):
         Raises:
             ValueError: If conversion fails.
         """
+        from markitdown import StreamInfo
+
+        # Without a hint markitdown guesses the type from the bytes alone.
+        extension = mimetypes.guess_extension(mime_type)
+        stream_info = StreamInfo(mimetype=mime_type, extension=extension)
         try:
             if mime_type == "application/pdf" and self.page_range:
                 # For PDFs with page range, extract specific pages
                 pdf_data = data.read()
                 extracted_bytes = extract_pdf_pages(pdf_data, self.page_range)
                 buffer = BytesIO(extracted_bytes)
-                result = self.converter.convert(buffer)
+                result = self.converter.convert(buffer, stream_info=stream_info)
             else:
                 # For other files or full PDFs, use regular conversion
-                result = self.converter.convert(data, keep_data_uris=True)
+                result = self.converter.convert(data, stream_info=stream_info, keep_data_uris=True)
+            if result is None:
+                # markitdown < 0.1 (which resolves on Python 3.15) can't convert streams
+                msg = "markitdown returned no result (markitdown >= 0.1 is needed)"
+                raise ValueError(msg)  # noqa: TRY301
 
             def replace_slide_marker(match: Match[str]) -> str:
                 slide_num = match.group(1) if match.groups() else "?"
