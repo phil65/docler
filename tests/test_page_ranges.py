@@ -38,3 +38,39 @@ def test_llamaparse_target_pages_are_zero_based(monkeypatch: pytest.MonkeyPatch)
 )
 def test_docling_page_range_is_one_based(page_range: str, expected: tuple[int, int] | None):
     assert to_docling_page_range(page_range) == expected
+
+
+async def test_docling_remote_sends_only_the_page_range(monkeypatch: pytest.MonkeyPatch):
+    from pathlib import Path
+
+    import httpx2
+    from pypdf import PdfReader
+
+    from docler.converters.docling_remote_provider import provider
+
+    uploaded: list[bytes] = []
+
+    def handle(request: httpx2.Request) -> httpx2.Response:
+        body = request.content
+        start = body.index(b"%PDF")
+        end = body.rindex(b"%%EOF") + len(b"%%EOF")
+        uploaded.append(body[start:end])
+        return httpx2.Response(200, json={"document": {"md_content": "text"}})
+
+    real_client = httpx2.AsyncClient
+
+    def client(**kwargs: Any) -> httpx2.AsyncClient:
+        return real_client(transport=httpx2.MockTransport(handle), **kwargs)
+
+    monkeypatch.setattr(provider.httpx2, "AsyncClient", client)
+    pdf = Path(__file__).parents[1] / "src/docler/resources/pdf_sample.pdf"
+    data = pdf.read_bytes()
+    assert len(PdfReader(io.BytesIO(data)).pages) == 4  # noqa: PLR2004
+
+    converter = provider.DoclingRemoteConverter(page_range="2,4")
+    await converter._convert_async(io.BytesIO(data), "application/pdf")
+    assert len(PdfReader(io.BytesIO(uploaded[-1])).pages) == 2  # noqa: PLR2004
+
+    converter = provider.DoclingRemoteConverter()
+    await converter._convert_async(io.BytesIO(data), "application/pdf")
+    assert len(PdfReader(io.BytesIO(uploaded[-1])).pages) == 4  # noqa: PLR2004

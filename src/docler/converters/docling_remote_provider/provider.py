@@ -89,7 +89,7 @@ class DoclingRemoteConverter(DocumentConverter[DoclingRemoteConfig]):
 
         Args:
             languages: List of supported languages.
-            page_range: Page range to exctract (0-based)
+            page_range: Page range(s) to extract, like "1-5,7-10" (1-based; PDFs only)
             api_key: Optional API key for auth.
             endpoint: Base URL of the Docling service.
             ocr_engine: OCR engine to use.
@@ -159,6 +159,17 @@ class DoclingRemoteConverter(DocumentConverter[DoclingRemoteConfig]):
             headers["Authorization"] = f"Bearer {self.api_key}"
 
         file_content = data.read()
+        if self.page_range:
+            if mime_type == "application/pdf":
+                from docler.pdf_utils import extract_pdf_pages
+
+                # Cut the pages locally: works with any docling-serve version and with
+                # non-contiguous ranges (docling-serve's `page_range` takes one range).
+                file_content = await anyenv.run_in_thread(
+                    extract_pdf_pages, file_content, self.page_range
+                )
+            else:
+                logger.warning("page_range only applies to PDFs; converting all of %s", mime_type)
         # Use a generic filename since we don't have path info
         ext = mime_type.split("/")[-1]
         filename = f"document.{ext}"
