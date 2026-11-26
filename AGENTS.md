@@ -41,8 +41,11 @@ One wheel, five top-level packages (`[tool.uv.build-backend] module-name`):
   `annotator_configs.py`, `processor_configs.py`). Each config has a `type` discriminator
   and `get_provider()`; providers have `from_config` / `to_config`. `ConverterConfig` etc.
   are discriminated unions.
-- `src/docler_api/`: FastAPI app (`main.py` endpoints, `routes.py` implementations).
-  Configs are passed as JSON strings in multipart form fields.
+- `src/docler_api/`: FastAPI app, `/v1/...` (`main.py`: `create_app`, endpoints;
+  `routes.py` implementations; `models.py` the response shape, images listed once;
+  `guard.py` ASGI middleware for the bearer token and the upload limit, before the body
+  is read; `settings.py` the `DOCLER_API_*` env vars). Configs are passed as JSON strings
+  in multipart form fields.
 - `src/docler_mcp/server.py`: FastMCP server (`convert_to_markdown` tool).
 - `src/docler_streamlit/`: Streamlit apps `ocr_app.py`, `chunk_app.py`.
 
@@ -54,7 +57,7 @@ One wheel, five top-level packages (`[tool.uv.build-backend] module-name`):
 | Add a chunker | `src/docler/chunkers/<name>/`, `src/docler_config/chunker_configs.py`, import it in `list_chunkers` in `src/docler_api/routes.py` |
 | Conversion I/O, page ranges, passwords | `src/docler/converters/base.py`, `src/docler/pdf_utils.py` |
 | Page-break / image markup in markdown | `mkdown` package (`create_page_break`, `create_image_reference`) |
-| HTTP API | `src/docler_api/main.py`, `src/docler_api/routes.py`, `src/docler_api/README.md` |
+| HTTP API | `src/docler_api/` (`main.py`, `routes.py`, `models.py`, `guard.py`), `src/docler_api/README.md`, tests in `tests/test_api.py` |
 | CLI | `src/docler/__main__.py` |
 | Docker image | `Dockerfile`, `compose.yml`, `.github/workflows/publish_docker.yml` |
 | Tests / snapshots | `tests/`, `tests/__snapshots__/`, recorded API responses in `tests/responses/` |

@@ -275,14 +275,16 @@ converter = MistralConfig(languages=["en"]).get_provider()
 ## Server, MCP and CLI
 
 ```bash
-docler api --host 0.0.0.0 --port 8000   # FastAPI server (extra: server)
+docler api --port 8000                  # FastAPI server on 127.0.0.1 (extra: server)
 docler mcp --transport stdio            # MCP server with a convert_to_markdown tool (extra: mcp)
 docler ocr_ui                           # Streamlit OCR UI (extra: streamlit)
 docler chunk_ui                         # Streamlit chunking UI
 ```
 
-See [`src/docler_api/README.md`](https://github.com/phil65/docler/blob/main/src/docler_api/README.md) for the API endpoints. A
-`Dockerfile` and `compose.yml` are included for running the API server.
+See [`src/docler_api/README.md`](https://github.com/phil65/docler/blob/main/src/docler_api/README.md) for the API endpoints
+(`/v1/...`), its bearer-token auth (`DOCLER_API_TOKEN`, required on any non-loopback
+host), CORS and the upload limit. A `Dockerfile` and `compose.yml` are included for
+running the API server (set `DOCLER_API_TOKEN` in `.env`).
 
 ## Output Format
 

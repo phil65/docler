@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING
 from fastapi import UploadFile
 import pytest
 
-from docler_api.routes import convert_document
+from docler_api.routes import convert
 
 
 if TYPE_CHECKING:
@@ -50,10 +50,8 @@ async def test_api_convert_document_with_mistral(resources_dir: Path):
     config_json = json.dumps(config_dict)
 
     # Call the API function with form-style parameters
-    result = await convert_document(
-        file=upload_file,
-        config=config_json,  # ← Now passing JSON string
-    )
+    response = await convert(file=upload_file, converter=config_json)
+    result = response.document
 
     # Validate response
     assert result is not None
@@ -75,8 +73,7 @@ async def test_api_convert_document_with_mistral(resources_dir: Path):
     assert result.source_path.endswith("pdf_sample.pdf")
 
     # Images should be a list (may be empty)
-    assert result.images
-    isinstance(result.images, list)
+    assert response.images
 
 
 @pytest.mark.integration
@@ -109,7 +106,7 @@ async def test_api_convert_document_with_page_range(resources_dir: Path):
     config_json = json.dumps(config_dict)
 
     # Call the API function
-    result = await convert_document(file=upload_file, config=config_json)
+    result = (await convert(file=upload_file, converter=config_json)).document
 
     # Validate response
     assert result is not None
@@ -149,10 +146,7 @@ async def test_api_always_includes_images_as_base64(resources_dir: Path):
     config_json = json.dumps(config_dict)
 
     # Call the API function (images are always included as base64)
-    result = await convert_document(
-        file=upload_file,
-        config=config_json,
-    )
+    result = await convert(file=upload_file, converter=config_json)
 
     # Validate basic response structure
     assert result is not None

@@ -58,7 +58,9 @@ def ocr_ui() -> None:
 
 @cli.command()
 def api(
-    host: str = typer.Option("0.0.0.0", help="Host to bind to"),
+    host: str = typer.Option(
+        "127.0.0.1", help="Host to bind to (other than loopback: needs DOCLER_API_TOKEN)"
+    ),
     port: int = typer.Option(8000, help="Port to bind to"),
     log_level: str = typer.Option("info", help="Log level"),
     reload: bool = typer.Option(False, help="Enable auto-reload on file changes"),
@@ -68,8 +70,16 @@ def api(
         # Lazy import to avoid unnecessary dependencies if not using the API
         import uvicorn
 
-        from docler_api.main import app
+        from docler_api.main import create_app
+        from docler_api.settings import ApiSettings, check_bind
 
+        settings = ApiSettings.from_env()
+        try:
+            check_bind(host, settings)
+        except RuntimeError as e:
+            logger.error(str(e))  # noqa: TRY400
+            raise typer.Exit(1) from e
+        app = create_app(settings)
         uvicorn.run(
             app,
             host=host,
