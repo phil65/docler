@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
+import asyncio
 import base64
 import re
-import time
 from typing import Any
 
 import anyenv
@@ -64,20 +64,22 @@ async def get_response(
 ) -> dict[str, Any]:
     headers = {"X-Api-Key": api_key}
     url = f"{API_BASE}/marker"
-    response = await anyenv.post(url, data=form, files=files, headers=headers)
-    json_data = await response.json()
-    if not json_data["success"]:
-        msg = f"Failed to submit conversion: {json_data['error']}"
-        raise ValueError(msg)
-    check_url = json_data["request_check_url"]
-    for _ in range(MAX_POLLS):
-        time.sleep(POLL_INTERVAL)
-        result = await anyenv.get_json(check_url, headers=headers, return_type=dict)
-        if result["status"] == "complete":
-            break
-    else:
-        msg = "Conversion timed out"
-        raise TimeoutError(msg)
+    # One connection for the submission and all polls.
+    async with anyenv.http_session() as session:
+        response = await session.post(url, data=form, files=files, headers=headers)
+        json_data = response.json()
+        if not json_data["success"]:
+            msg = f"Failed to submit conversion: {json_data['error']}"
+            raise ValueError(msg)
+        check_url = json_data["request_check_url"]
+        for _ in range(MAX_POLLS):
+            await asyncio.sleep(POLL_INTERVAL)
+            result = await session.get_json(check_url, headers=headers, return_type=dict)
+            if result["status"] == "complete":
+                break
+        else:
+            msg = "Conversion timed out"
+            raise TimeoutError(msg)
 
     if not result["success"]:
         msg = f"Conversion failed: {result['error']}"
