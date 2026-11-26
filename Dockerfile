@@ -1,5 +1,5 @@
 # Build stage for installing dependencies
-FROM python:3.13-slim-bookworm AS builder
+FROM python:3.14-slim-bookworm AS builder
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
 # Add build argument with default value
@@ -27,7 +27,7 @@ COPY . .
 RUN uv pip install --system ".[${EXTRAS}]"
 
 # Final stage with minimal runtime image
-FROM python:3.13-slim-bookworm
+FROM python:3.14-slim-bookworm
 
 # Pass build arg to final stage
 ARG EXTRAS="server,light"
@@ -46,7 +46,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Copy the installed Python packages and binaries
-COPY --from=builder /usr/local/lib/python3.13/site-packages/ /usr/local/lib/python3.13/site-packages/
+COPY --from=builder /usr/local/lib/python3.14/site-packages/ /usr/local/lib/python3.14/site-packages/
 COPY --from=builder /usr/local/bin/ /usr/local/bin/
 
 # Copy application code
