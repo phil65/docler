@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from itertools import batched
+import asyncio
 from typing import TYPE_CHECKING, ClassVar
 
 import anyenv
@@ -18,6 +18,7 @@ from docler_config.annotator_configs import (
 
 
 if TYPE_CHECKING:
+    from docler.markdown import TextChunk
     from docler.models import ChunkedDocument
 
 
@@ -98,22 +99,20 @@ class AIDocumentAnnotator[TMetadata: Schema = DefaultMetadata](
             else document.content
         )
 
-        # Process chunks in batches
-        for batch in batched(document.chunks, self.batch_size, strict=False):
-            tasks = []
+        semaphore = asyncio.Semaphore(self.batch_size)
 
-            for chunk in batch:
-                prompt = self.user_prompt.format(context=context, chunk=chunk.content)
-                tasks.append(agent.run(prompt))
-
+        async def annotate_chunk(chunk: TextChunk) -> None:
+            prompt = self.user_prompt.format(context=context, chunk=chunk.content)
             try:
-                results = await anyenv.gather(*tasks)
-                for chunk, result in zip(batch, results):
-                    metadata = result.content.model_dump()
-                    chunk.metadata |= metadata
+                async with semaphore:
+                    result = await agent.run(prompt)
             except Exception:
-                self.logger.exception("Error annotating batch")
+                # One failing chunk must not drop the others' results.
+                self.logger.exception("Error annotating chunk %s", chunk.chunk_index)
+                return
+            chunk.metadata |= result.content.model_dump()
 
+        await anyenv.gather(*(annotate_chunk(chunk) for chunk in document.chunks))
         return document
 
 

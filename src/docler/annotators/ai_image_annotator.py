@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from itertools import batched
+import asyncio
 from typing import TYPE_CHECKING, ClassVar
 
 import anyenv
@@ -136,18 +136,15 @@ class AIImageAnnotator[TMetadata: Schema = DefaultImageMetadata](Annotator[AIIma
         Returns:
             Document with annotated images in chunks
         """
-        for chunk in document.chunks:
-            if not chunk.images:
-                continue
+        # Images of all chunks at once (an image shared by chunks only once).
+        images = list({id(img): img for c in document.chunks for img in c.images}.values())
+        semaphore = asyncio.Semaphore(self.batch_size)
 
-            for batch in batched(chunk.images, self.batch_size, strict=False):
-                tasks = [self._process_image(img) for img in batch]
-                try:
-                    await anyenv.gather(*tasks)
-                except Exception:
-                    msg = "Error processing images in chunk %s"
-                    self.logger.exception(msg, chunk.chunk_index)
+        async def process(image: Image) -> None:
+            async with semaphore:
+                await self._process_image(image)  # logs its own errors
 
+        await anyenv.gather(*(process(img) for img in images))
         return document
 
 
