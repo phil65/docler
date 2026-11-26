@@ -1,11 +1,9 @@
 """Data models for document representation."""
 
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
-
-if TYPE_CHECKING:
-    from docler.markdown.image import Image
+from docler.markdown.image import Image  # noqa: TC001  # pydantic resolves the dataclass fields
 
 
 @dataclass
