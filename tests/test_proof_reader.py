@@ -60,6 +60,13 @@ async def test_markdown_sections_hit_their_own_lines(llm_calls: list[str]):
     assert result.content == "# A\nFOO BAR\nMORE\n\n# B\nBAZ QUX"
 
 
+async def test_markdown_section_headers_are_proof_read(llm_calls: list[str]):
+    content = "# intro\nfoo\n\n## next part\n\nbar"
+    reader = LLMProofReader(chunker=MarkdownChunkerConfig(min_chunk_size=1), include_diffs=False)
+    result = await reader.process(Document(content=content, source_path="x.md"))
+    assert result.content == "# INTRO\nFOO\n\n## NEXT PART\n\nBAR"
+
+
 def test_chunk_that_is_not_in_the_document_raises():
     chunk = TextChunk(content="rewritten", source_doc_id="x", chunk_index=0)
     with pytest.raises(ValueError, match="line positions"):

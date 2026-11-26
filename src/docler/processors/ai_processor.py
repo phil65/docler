@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import re
 from typing import TYPE_CHECKING, ClassVar
 
 from schemez import Schema
@@ -99,9 +100,23 @@ def chunk_line_spans(content: str, chunks: list[TextChunk]) -> list[tuple[int, i
             raise ValueError(msg)
         start = content.count("\n", 0, idx) + 1
         end = start + text.count("\n")
+        if header:
+            start = _header_line(content, start, header) or start
         spans.append((start, end))
         cursor = idx + 1
     return spans
+
+
+def _header_line(content: str, start: int, header: str) -> int | None:
+    """The line (1-based) of the `# header` above line `start` (blank lines between)."""
+    lines = content.splitlines()
+    pattern = re.compile(rf"^#{{1,6}}\s+{re.escape(header)}$")
+    prev = start - 1
+    while prev >= 1 and not lines[prev - 1].strip():
+        prev -= 1
+    if prev >= 1 and pattern.match(lines[prev - 1]):
+        return prev
+    return None
 
 
 def resolve_chunker_config(
