@@ -84,8 +84,7 @@ pytest and commitizen (conventional commits).
 
 ## Conventions
 
-- Google-style docstrings, no types in `Args`; `from __future__ import annotations`
-  everywhere; type-only imports under `TYPE_CHECKING` (ruff `TC` rules), except types
+- Google-style docstrings, no types in `Args`; no `from __future__ import annotations` (PEP 649; banned via ruff TID251); type-only imports under `TYPE_CHECKING` (ruff `TC` rules), except types
   pydantic must resolve at runtime.
 - Line length 100, ruff preview formatting. PEP 695 generics (`class X[T: BaseModel]`).
 - Tests are plain functions (no classes), async tests via `asyncio_mode = "auto"`.
