@@ -93,6 +93,7 @@ class DoclingRemoteConverter(DocumentConverter[DoclingRemoteConfig]):
         do_formula_enrichment: bool = False,
         do_picture_classification: bool = False,
         do_picture_description: bool = False,
+        timeout: float = 300.0,
     ) -> None:
         """Initialize the remote Docling converter.
 
@@ -111,6 +112,7 @@ class DoclingRemoteConverter(DocumentConverter[DoclingRemoteConfig]):
             do_formula_enrichment: Enable formula extraction.
             do_picture_classification: Enable picture classification.
             do_picture_description: Enable picture description.
+            timeout: HTTP timeout in seconds for the conversion request.
 
         Raises:
             MissingConfigurationError: If endpoint cannot be used.
@@ -118,6 +120,7 @@ class DoclingRemoteConverter(DocumentConverter[DoclingRemoteConfig]):
         super().__init__(languages=languages, page_range=page_range)
         self.endpoint = endpoint.rstrip("/")
         self.api_key = api_key
+        self.timeout = timeout
         # One multipart form field per option (lists repeat the field), as v1 expects.
         self.config: dict[str, Any] = {
             "from_formats": FROM_FORMATS,
@@ -178,7 +181,7 @@ class DoclingRemoteConverter(DocumentConverter[DoclingRemoteConfig]):
         ext = mime_type.split("/")[-1]
         filename = f"document.{ext}"
         url = f"{self.endpoint}{CONVERT_FILE}"
-        async with httpx2.AsyncClient(timeout=60.0) as client:
+        async with httpx2.AsyncClient(timeout=self.timeout) as client:
             files = {"files": (filename, file_content, mime_type)}
             try:
                 response = await client.post(url, headers=headers, files=files, data=form)

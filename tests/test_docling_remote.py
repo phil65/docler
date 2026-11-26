@@ -83,6 +83,7 @@ def seen(monkeypatch: pytest.MonkeyPatch) -> list[dict[str, Any]]:
     real_client = httpx2.AsyncClient
 
     def client(**kwargs: Any) -> httpx2.AsyncClient:
+        requests.append({"client_kwargs": kwargs})
         return real_client(transport=transport, **kwargs)
 
     monkeypatch.setattr(provider.httpx2, "AsyncClient", client)
@@ -112,6 +113,20 @@ async def test_posts_v1_form_fields_and_parses_markdown_and_images(seen: list[di
     assert result.images[0].content == base64.b64decode(PNG)
     assert result.images[0].mime_type == "image/png"
     assert result.metadata == {"convert": 0.1}
+
+
+@pytest.mark.parametrize(("kwargs", "expected"), [({}, 300.0), ({"timeout": 900}, 900.0)])
+async def test_timeout_is_configurable(
+    kwargs: dict[str, Any], expected: float, seen: list[dict[str, Any]]
+):
+    converter = DoclingRemoteConfig(**kwargs).get_provider()
+    await converter._convert_async(io.BytesIO(PDF.read_bytes()), "application/pdf")
+    assert seen[0]["client_kwargs"]["timeout"] == expected
+
+
+def test_timeout_from_env(monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setenv("DOCLING_REMOTE_TIMEOUT", "1200")
+    assert DoclingRemoteConfig().timeout == 1200  # noqa: PLR2004
 
 
 async def test_contiguous_page_range_uses_v1_page_range(seen: list[dict[str, Any]]):

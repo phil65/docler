@@ -380,6 +380,9 @@ class DoclingRemoteConfig(BaseConverterConfig):
     endpoint: HttpUrl = HttpUrl("http://localhost:5001")
     """Base URL of the Docling service."""
 
+    timeout: float = Field(default=300.0, gt=0)
+    """HTTP timeout in seconds (large PDFs take minutes). Env: DOCLING_REMOTE_TIMEOUT."""
+
     ocr_engine: DoclingEngine = "easy_ocr"
     """OCR engine to use."""
 
