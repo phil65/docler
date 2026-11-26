@@ -46,6 +46,7 @@ class DoclingConverter(DocumentConverter[DoclingConverterConfig]):
         indent: int = 4,
         text_width: int = -1,
         ocr_engine: DoclingEngine = "rapid_ocr",
+        generate_images: bool = True,
     ) -> None:
         """Initialize the Docling converter.
 
@@ -59,6 +60,7 @@ class DoclingConverter(DocumentConverter[DoclingConverterConfig]):
             indent: Indentation level for markdown sections.
             text_width: Maximum width for text in markdown sections.
             ocr_engine: The OCR engine to use (default rapid_ocr, installed by the docling extra).
+            generate_images: Whether to extract the document's pictures as images.
         """
         from docling.datamodel.base_models import InputFormat
         from docling.datamodel.pipeline_options import (
@@ -103,7 +105,7 @@ class DoclingConverter(DocumentConverter[DoclingConverterConfig]):
         ocr_opts = engine(lang=convert_languages(languages or ["en"], engine))
         pipeline_options = PdfPipelineOptions(
             ocr_options=ocr_opts,
-            generate_picture_images=True,
+            generate_picture_images=generate_images,
             images_scale=image_scale,
             generate_page_images=True,
         )
