@@ -135,6 +135,38 @@ def decrypt_pdf(data: bytes, password: str | None) -> bytes:
             raise ValueError(msg) from e
 
 
+def prepare_pdf(data: bytes, password: str | None) -> bytes:
+    """Decrypt a PDF for conversion if it is encrypted.
+
+    PDFs pypdf can't parse are returned unchanged, so the converter reports on them.
+
+    Args:
+        data: PDF file content as bytes
+        password: Password for encrypted PDFs, or None to try the empty password
+
+    Returns:
+        The decrypted PDF, or the unchanged data if it isn't encrypted or can't be parsed
+
+    Raises:
+        ValueError: If the PDF is encrypted and the password is missing or incorrect
+    """
+    try:
+        is_encrypted = PdfReader(io.BytesIO(data)).is_encrypted
+    except Exception:  # noqa: BLE001
+        return data
+    if not is_encrypted:
+        return data
+    try:
+        return decrypt_pdf(data, password)
+    except ValueError as e:
+        if "Incorrect password" in str(e):
+            raise ValueError("Incorrect PDF password") from e
+        if "requires a password" in str(e):
+            msg = "PDF is encrypted but no password provided. Please provide pdf_password."
+            raise ValueError(msg) from e
+        raise
+
+
 def extract_pdf_pages(
     data: bytes, page_range: PageRangeString | None, password: str | None = None
 ) -> bytes:

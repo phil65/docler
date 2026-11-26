@@ -163,41 +163,12 @@ class DocumentConverter[TConfig: BaseModel = Any](BaseProvider[TConfig], ABC):
             msg = f"Unsupported content type: {type(content)}"
             raise TypeError(msg)
 
-        # Handle PDF decryption if needed
         if mime_type == "application/pdf":
-            from docler.pdf_utils import decrypt_pdf, get_pdf_info
+            from docler.pdf_utils import prepare_pdf
 
-            try:
-                pdf_info = get_pdf_info(data.getvalue())
-                if pdf_info.is_encrypted:
-                    if pdf_password is None:
-                        # Try empty password first
-                        try:
-                            decrypted_content = decrypt_pdf(data.getvalue(), None)
-                            data = BytesIO(decrypted_content)
-                        except ValueError as e:
-                            if "requires a password" in str(e):
-                                msg = (
-                                    "PDF is encrypted but no password provided. "
-                                    "Please provide pdf_password parameter."
-                                )
-                                raise ValueError(msg) from e
-                            raise
-                    else:
-                        # Decrypt the PDF with provided password
-                        try:
-                            decrypted_content = decrypt_pdf(data.getvalue(), pdf_password)
-                            data = BytesIO(decrypted_content)
-                        except ValueError as e:
-                            if "Incorrect password" in str(e):
-                                raise ValueError("Incorrect PDF password") from e
-                            raise
-            except ValueError as e:
-                if "encrypted" not in str(e).lower():
-                    # If it's not an encryption issue, let it pass through to the converter
-                    pass
-                else:
-                    raise
+            # pypdf parses the whole document: keep it off the event loop.
+            prepared = await anyenv.run_in_thread(prepare_pdf, data.getvalue(), pdf_password)
+            data = BytesIO(prepared)
 
         result = await self._convert_threaded(data, mime_type)
 
