@@ -29,7 +29,13 @@ def create_text_chunk(
     chunk_lines = lines[chunk.start_row - 1 : chunk.end_row]
     chunk_text = "\n".join(chunk_lines)
     base = extra_metadata or {}
-    metadata = {**base, "keywords": chunk.keywords, "references": chunk.references}
+    metadata = {
+        **base,
+        "keywords": chunk.keywords,
+        "references": chunk.references,
+        "start_line": chunk.start_row,
+        "end_line": chunk.end_row,
+    }
     chunk_images = [i for i in doc.images if i.filename and i.filename in chunk_text]
     return TextChunk(
         content=chunk_text,

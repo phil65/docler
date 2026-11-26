@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 from typing import TYPE_CHECKING, ClassVar
 
 from schemez import Schema
@@ -23,7 +24,12 @@ from docler_config.processor_configs import (
 
 
 if TYPE_CHECKING:
+    from docler.markdown import TextChunk
     from docler_config.chunker_configs import ChunkerConfig, ChunkerShorthand
+
+
+MAX_CONCURRENT_REQUESTS = 5
+"""How many chunks are proof-read at the same time."""
 
 
 class LineCorrection(Schema):
@@ -56,6 +62,46 @@ def apply_corrections(text: str, corrections: list[LineCorrection]) -> tuple[str
             corrected_lines.add(line_idx)
 
     return "\n".join(lines), corrected_lines
+
+
+def chunk_line_spans(content: str, chunks: list[TextChunk]) -> list[tuple[int, int]]:
+    """Find the document lines (1-based, inclusive) each chunk covers.
+
+    Uses the chunk's `start_line` / `end_line` metadata, else finds its text in the
+    document. Corrections refer to document lines, so a chunk whose text isn't part of
+    the document (e.g. rewritten by the chunker) can't be proof-read.
+
+    Raises:
+        ValueError: If a chunk's lines can't be located in the document.
+    """
+    spans: list[tuple[int, int]] = []
+    cursor = 0
+    for chunk in chunks:
+        start, end = chunk.metadata.get("start_line"), chunk.metadata.get("end_line")
+        if isinstance(start, int) and isinstance(end, int):
+            spans.append((start, end))
+            continue
+        text = chunk.content.strip("\n")
+        # The markdown chunker puts the section header (without "#") in front.
+        header = chunk.metadata.get("header")
+        if header and text.startswith(f"{header}\n\n"):
+            text = text.removeprefix(f"{header}\n\n").strip("\n")
+        if not text.strip():
+            continue
+        idx = content.find(text, cursor)
+        if idx == -1:
+            idx = content.find(text)
+        if idx == -1:
+            msg = (
+                f"Chunk {chunk.chunk_index} doesn't match the document's lines; use a "
+                "chunker that keeps line positions (token_aware, ai) for proof reading"
+            )
+            raise ValueError(msg)
+        start = content.count("\n", 0, idx) + 1
+        end = start + text.count("\n")
+        spans.append((start, end))
+        cursor = idx + 1
+    return spans
 
 
 def resolve_chunker_config(
@@ -127,23 +173,32 @@ class LLMProofReader(DocumentProcessor[LLMProofReaderConfig]):
 
         agent = Agent[None](model=self.model, system_prompt=self.system_prompt)
 
-        corrections = []
+        corrections: list[LineCorrection] = []
         if self.chunker_config:
             # Process with chunking
             chunker = self.chunker_config.get_provider()
             temp_doc = Document(content=doc.content, source_path=doc.source_path)
             chunks = await chunker.split(temp_doc)
+            lines = doc.content.splitlines()
+            semaphore = asyncio.Semaphore(MAX_CONCURRENT_REQUESTS)
 
-            for chunk in chunks:
-                numbered_text = chunk.to_numbered_text()
-                user_prompt = self.prompt_template.format(chunk_text=numbered_text)
-
-                chunk_corrections = await agent.talk.extract_multiple(
-                    text=numbered_text,
-                    as_type=LineCorrection,
-                    prompt=user_prompt,
+            async def proof_read(start: int, end: int) -> list[LineCorrection]:
+                # Number the document's own lines, so corrections address them.
+                numbered_text = "\n".join(
+                    f"{start + i:5d} | {line}" for i, line in enumerate(lines[start - 1 : end])
                 )
-                corrections.extend(chunk_corrections)
+                user_prompt = self.prompt_template.format(chunk_text=numbered_text)
+                async with semaphore:
+                    found = await agent.talk.extract_multiple(
+                        text=numbered_text,
+                        as_type=LineCorrection,
+                        prompt=user_prompt,
+                    )
+                return [c for c in found if start <= c.line_number <= end]
+
+            spans = chunk_line_spans(doc.content, chunks)
+            results = await asyncio.gather(*(proof_read(s, e) for s, e in spans))
+            corrections = [c for result in results for c in result]
         else:
             # Process the entire document at once
             numbered_text = add_line_numbers(doc.content)
