@@ -169,7 +169,7 @@ async def test_pdf_metadata_rejects_non_pdf(client: httpx2.AsyncClient):
     assert response.status_code == 400  # noqa: PLR2004
 
 
-async def test_list_converters_and_chunkers(client: httpx2.AsyncClient):
+async def test_list_converters_and_chunkers(client: httpx2.AsyncClient, sent: list[Any]):
     converters = (await client.get("/v1/converters", headers=AUTH)).json()["converters"]
     assert any(c["name"] == "upstage" and c["config_schema"] for c in converters)
     chunkers = (await client.get("/v1/chunkers", headers=AUTH)).json()["chunkers"]
