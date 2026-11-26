@@ -27,13 +27,14 @@ chunker_config_adapter = TypeAdapter[ChunkerConfig](ChunkerConfig)
 # Fields that pick the host a provider sends the server's API keys (from env) and the
 # uploaded file to. Clients must not set them: the server configures them via env
 # (UPSTAGE_BASE_URL, AZURE_DOC_INTELLIGENCE_ENDPOINT, DOCLING_REMOTE_ENDPOINT).
+# Keys are compared lowercased: pydantic-settings matches field names case-insensitively.
 SERVER_ONLY_FIELDS = frozenset({"base_url", "endpoint"})
 
 
 def _find_server_only_fields(value: Any, path: str = "") -> list[str]:
     match value:
         case dict():
-            found = [f"{path}{k}" for k in value if k in SERVER_ONLY_FIELDS]
+            found = [f"{path}{k}" for k in value if str(k).lower() in SERVER_ONLY_FIELDS]
             for k, v in value.items():
                 found.extend(_find_server_only_fields(v, f"{path}{k}."))
             return found

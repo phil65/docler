@@ -34,6 +34,9 @@ URL_CONFIGS = [
         {"type": "aggregated", "converters": [{"type": "upstage", "base_url": ATTACKER}]},
         id="aggregated",
     ),
+    # pydantic-settings matches field names case-insensitively
+    pytest.param({"type": "upstage", "BASE_URL": ATTACKER}, id="upstage-upper"),
+    pytest.param({"type": "azure", "Endpoint": ATTACKER}, id="azure-mixed-case"),
 ]
 
 
@@ -294,3 +297,25 @@ async def test_streamed_upload_over_limit_is_413(sent: list[Any]):
     assert "content-length" not in response.request.headers
     assert response.status_code == 413  # noqa: PLR2004
     assert not sent
+
+
+def test_server_only_fields_cover_every_url_field():
+    """A new config field holding a URL must be added to SERVER_ONLY_FIELDS."""
+    from pydantic import HttpUrl
+    from pydantic_settings import BaseSettings
+
+    from docler_api.routes import SERVER_ONLY_FIELDS
+    from docler_config.provider import ProviderConfig
+
+    def subclasses(cls: type) -> list[type]:
+        return [cls, *(k for sub in cls.__subclasses__() for k in subclasses(sub))]
+
+    url_fields = {
+        name
+        for kls in subclasses(ProviderConfig)
+        if issubclass(kls, BaseSettings)
+        for name, field in kls.model_fields.items()
+        if HttpUrl in getattr(field.annotation, "__args__", (field.annotation,))
+        or any(part in name for part in ("url", "endpoint", "host", "api_base"))
+    }
+    assert url_fields <= SERVER_ONLY_FIELDS
