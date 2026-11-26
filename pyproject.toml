@@ -78,7 +78,7 @@ docling = ["docling[ocrmac,vlm,rapidocr]; python_version < '3.14'"]  # tesserocr
 light = ["docler[mistralai,diffs,llama-parse,openai,azure]", "agentpool>=2.10.0"]
 llama-parse = ["llama-parse; python_version < '3.14'"]
 marker = ["marker-pdf; python_version < '3.14'"]
-markitdown = ["markitdown[all]; python_version < '3.14'"]
+markitdown = ["markitdown[all]>=0.1; python_version < '3.15'"]
 mcp = ["fastmcp"]
 mistralai = ["mistralai>=3"]
 olmocr = ["olmocr; python_version < '3.14'", "accelerate; python_version < '3.14'"]
