@@ -50,7 +50,8 @@ pip install "docler[marker]"      # Marker, in a separate environment (see below
 
 Further extras: `azure`, `llama-parse`, `docling`, `markitdown`, `openai`, `diffs`,
 `server` (FastAPI), `mcp`, `streamlit`, `token-chunking`, `olmocr`. Local backends such as
-Docling, Marker and MarkItDown currently require Python < 3.14.
+Docling, Marker and MarkItDown run on Python 3.14 (not yet on 3.15, where some of their
+dependencies have no wheels).
 
 Marker cannot be installed together with `docler[all]`/`docler[light]`: marker-pdf
 requires `openai<3`, while the AI features (agentpool) require `openai>=3.31`.

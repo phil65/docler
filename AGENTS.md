@@ -78,7 +78,7 @@ uv build
 ```
 
 CI (`.github/workflows/build.yml`) runs `uv sync --extra light --extra server --no-group docs`,
-ruff, `ty check` and pytest on 3.13/3.14 (3.14 allowed to fail) x Linux/macOS/Windows.
+ruff, `ty check` and pytest on 3.14/3.15 (3.16 allowed to fail) x Linux/macOS/Windows.
 Docs (`documentation.yml`) sync `--extra all`. Pre-commit (prek) runs ruff, tombi, ty,
 pytest and commitizen (conventional commits).
 
@@ -114,8 +114,10 @@ Remote document-conversion APIs. Local libraries (docling, marker, markitdown, l
 - Extras conflict: `marker` (marker-pdf needs `openai<3`) cannot be installed with `all` /
   `light` (agentpool needs `openai>=3.31`); declared in `[tool.uv] conflicts`.
   Never `uv sync --all-extras`.
-- Many backends are `python_version < '3.14'` only (docling, llama-parse, marker,
-  markitdown, streamlit). Their imports are allowed-unresolved for ty
+- The local backends docling, marker, olmocr and markitdown are `python_version < '3.15'`
+  (their dependencies have no 3.15 wheels yet: numpy / pillow / orjson / onnxruntime pins).
+  PyTorch comes from the CPU index for uv (`[tool.uv.sources]`; torch / torchvision are listed
+  in the `docling` extra for that). Their imports are allowed-unresolved for ty
   (`[tool.ty.analysis]`); keep them lazy (inside functions) so `import docler` stays light.
 - `REQUIRED_PACKAGES` holds import names, not distribution names.
 - Providers register only when their module is imported; `docler/__init__.py` imports the

@@ -74,19 +74,24 @@ docler = "docler.__main__:cli"
 all = ["docler[azure,diffs,docling,llama-parse,markitdown,mcp,mistralai,openai,server]", "agentpool>=2.10.0"]
 azure = ["azure-ai-documentintelligence"]
 diffs = ["diff-match-patch"]
-docling = ["docling[ocrmac,vlm,rapidocr]; python_version < '3.14'"]  # tesserocr
+# torch / torchvision listed directly so uv takes them from the CPU index ([tool.uv.sources])
+docling = [
+  "docling[ocrmac,vlm,rapidocr]; python_version < '3.15'",
+  "torch; python_version < '3.15'",
+  "torchvision; python_version < '3.15'",
+]  # tesserocr
 light = ["docler[mistralai,diffs,llama-parse,openai,azure]", "agentpool>=2.10.0"]
 llama-parse = ["llama-parse"]
-marker = ["marker-pdf; python_version < '3.14'"]
+marker = ["marker-pdf; python_version < '3.15'"]
 markitdown = ["markitdown[all]>=0.1; python_version < '3.15'"]
 mcp = ["fastmcp"]
 mistralai = ["mistralai>=3"]
-olmocr = ["olmocr; python_version < '3.14'", "accelerate; python_version < '3.14'"]
+olmocr = ["olmocr; python_version < '3.15'", "accelerate; python_version < '3.15'"]
 openai = ["openai"]
 server = ["uvicorn", "fastapi"]
 streamlit = [
-  "streamlit; python_version < '3.14'",
-  "streambricks; python_version < '3.14'",
+  "streamlit",
+  "streambricks",
 ]
 token-chunking = ["tokonomics"]
 
@@ -349,6 +354,18 @@ conflicts = [
   [{ extra = "marker" }, { extra = "all" }],
   [{ extra = "marker" }, { extra = "light" }],
 ]
+
+# Project-specific: the local OCR extras (docling, marker, olmocr) pull PyTorch; uv takes the
+# CPU build (no multi-GB CUDA libraries) for development and the Docker image. pip installs
+# from PyPI are not affected.
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.uv.sources]
+torch = [{ index = "pytorch-cpu", marker = "sys_platform != 'darwin'" }]
+torchvision = [{ index = "pytorch-cpu", marker = "sys_platform != 'darwin'" }]
 
 [tool.uv.build-backend]
 module-name = [
