@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import pathlib
+import threading
 from typing import TYPE_CHECKING, Any, ClassVar, Literal
 
 from docler.converters.base import ConverterResult, DocumentConverter
@@ -41,6 +42,7 @@ class MarkerConverter(DocumentConverter[MarkerConfig]):
 
     NAME = "marker"
     REQUIRED_PACKAGES: ClassVar = {"marker"}
+    MAX_CONCURRENCY: ClassVar[int] = 1  # local ML models: one document at a time
     SUPPORTED_MIME_TYPES: ClassVar = {
         # PDF
         "application/pdf",
@@ -101,6 +103,17 @@ class MarkerConverter(DocumentConverter[MarkerConfig]):
             rng = shift_page_range(page_range, -1) if page_range else None
             self.config["page_range"] = rng
         self.llm_provider: ProviderType | None = llm_provider
+        self._artifacts: dict[str, Any] | None = None
+        self._artifacts_lock = threading.Lock()
+
+    def _get_artifacts(self) -> dict[str, Any]:
+        """Load marker's models (GBs, seconds) once per converter."""
+        from marker.models import create_model_dict
+
+        with self._artifacts_lock:
+            if self._artifacts is None:
+                self._artifacts = create_model_dict()
+            return self._artifacts
 
     def _convert_sync(self, data: BytesIO, mime_type: MimeType) -> ConverterResult:
         """Implementation of abstract method.
@@ -108,13 +121,12 @@ class MarkerConverter(DocumentConverter[MarkerConfig]):
         Marker requires a file path, so we write to a temporary file.
         """
         from marker.converters.pdf import PdfConverter
-        from marker.models import create_model_dict
 
         # Marker needs a file path, so use temp file
         tmp = self._write_temp_file(data, mime_type)
         try:
             service = PROVIDERS.get(self.llm_provider) if self.llm_provider else None
-            artifacts = create_model_dict()
+            artifacts = self._get_artifacts()
             converter = PdfConverter(
                 artifact_dict=artifacts, llm_service=service, config=self.config
             )

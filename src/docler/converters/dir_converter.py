@@ -120,8 +120,9 @@ class DirectoryConverter:
     ) -> AsyncIterator[Conversion]:
         """Convert files with progress updates.
 
-        Converts up to `chunk_size` files at a time and yields a state after each
-        file. A failing file is recorded in `errors`; the others go on.
+        Converts up to `chunk_size` files (at most the converter's `MAX_CONCURRENCY`)
+        at a time and yields a state after each file. A failing file is recorded in
+        `errors`; the others go on.
 
         Args:
             directory: Base directory to read from.
@@ -161,7 +162,7 @@ class DirectoryConverter:
 
         results: dict[str, Document] = {}
         errors: dict[str, Exception] = {}
-        semaphore = asyncio.Semaphore(self.chunk_size)
+        semaphore = asyncio.Semaphore(min(self.chunk_size, self.converter.MAX_CONCURRENCY))
 
         async def convert(rel_path: str, path: upath.UPath) -> tuple[str, Document | Exception]:
             async with semaphore:

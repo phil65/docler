@@ -34,6 +34,7 @@ class DoclingConverter(DocumentConverter[DoclingConverterConfig]):
     NAME = "docling"
     REQUIRED_PACKAGES: ClassVar = {"docling"}
     SUPPORTED_MIME_TYPES: ClassVar[set[str]] = {"application/pdf"}
+    MAX_CONCURRENCY: ClassVar[int] = 1  # one shared, local Docling converter
 
     def __init__(
         self,
