@@ -295,7 +295,7 @@ class AzureConfig(BaseConverterConfig):
     """Azure endpoint URL. Falls back to AZURE_DOC_INTELLIGENCE_ENDPOINT envvar."""
 
     api_key: SecretStr | None = None
-    """Azure API key. Falls back to AZURE_DOC_INTELLIGENCE_KEY env var."""
+    """Azure API key. Falls back to AZURE_DOC_INTELLIGENCE_KEY env var (read by the converter)."""
 
     model: AzureModel = "prebuilt-layout"
     """Pre-trained model to use."""
@@ -303,7 +303,7 @@ class AzureConfig(BaseConverterConfig):
     additional_features: set[AzureFeatureFlag] = Field(default_factory=set)
     """Optional add-on capabilities like BARCODES, FORMULAS, OCR_HIGH_RESOLUTION etc."""
 
-    model_config = SettingsConfigDict(env_prefix="LLAMAPARSE_")
+    model_config = SettingsConfigDict(env_prefix="AZURE_DOC_INTELLIGENCE_")
 
     def get_provider(self) -> DocumentConverter:
         """Get the converter instance."""
