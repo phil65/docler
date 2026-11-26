@@ -27,6 +27,11 @@ docler api --host 0.0.0.0 --port 8000
 - **GET /health** - Health check endpoint
 - **GET /ready** - Readiness check endpoint
 
+Converter configs sent by clients cannot set `base_url` or `endpoint` (the URL that receives
+the server's API keys and the uploaded file): the server sets them through its environment
+(`UPSTAGE_BASE_URL`, `AZURE_DOC_INTELLIGENCE_ENDPOINT`, `DOCLING_REMOTE_ENDPOINT`). Such a
+config is rejected with 400.
+
 ## Examples
 
 ### Convert a document

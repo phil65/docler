@@ -24,6 +24,45 @@ if TYPE_CHECKING:
 config_adapter = TypeAdapter[ConverterConfig](ConverterConfig)
 chunker_config_adapter = TypeAdapter[ChunkerConfig](ChunkerConfig)
 
+# Fields that pick the host a provider sends the server's API keys (from env) and the
+# uploaded file to. Clients must not set them: the server configures them via env
+# (UPSTAGE_BASE_URL, AZURE_DOC_INTELLIGENCE_ENDPOINT, DOCLING_REMOTE_ENDPOINT).
+SERVER_ONLY_FIELDS = frozenset({"base_url", "endpoint"})
+
+
+def _find_server_only_fields(value: Any, path: str = "") -> list[str]:
+    match value:
+        case dict():
+            found = [f"{path}{k}" for k in value if k in SERVER_ONLY_FIELDS]
+            for k, v in value.items():
+                found.extend(_find_server_only_fields(v, f"{path}{k}."))
+            return found
+        case list():
+            return [
+                f for i, v in enumerate(value) for f in _find_server_only_fields(v, f"{path}{i}.")
+            ]
+        case _:
+            return []
+
+
+def parse_client_config[T](adapter: TypeAdapter[T], config: str) -> T:
+    """Parse a config sent by a client, rejecting fields only the server may set.
+
+    Raises:
+        HTTPException: 400 if the JSON is invalid or sets a server-only field.
+    """
+    try:
+        config_dict = anyenv.load_json(config)
+    except anyenv.JsonLoadError as e:
+        raise HTTPException(status_code=400, detail=f"Invalid config JSON: {e}") from e
+    if forbidden := _find_server_only_fields(config_dict):
+        detail = f"Config fields can only be set on the server: {', '.join(forbidden)}"
+        raise HTTPException(status_code=400, detail=detail)
+    try:
+        return adapter.validate_python(config_dict)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=f"Invalid config JSON: {e}") from e
+
 
 async def convert_document(
     file: Annotated[UploadFile, File(description="The document file to convert")],
@@ -33,13 +72,7 @@ async def convert_document(
     ] = None,
 ) -> Document:
     """Convert a document file to markdown using specified converter configuration."""
-    # Parse the JSON config string manually
-
-    try:
-        config_dict = anyenv.load_json(config)
-        parsed = config_adapter.validate_python(config_dict)
-    except (anyenv.JsonLoadError, ValueError) as e:
-        raise HTTPException(status_code=400, detail=f"Invalid config JSON: {e}")  # noqa: B904
+    parsed = parse_client_config(config_adapter, config)
 
     content = await file.read()
 
@@ -103,11 +136,8 @@ async def chunk_document(
     Returns:
         JSON response with the chunked document
     """
-    try:
-        converter = config_adapter.validate_python(anyenv.load_json(converter_config))
-        chunker = chunker_config_adapter.validate_python(anyenv.load_json(chunker_config))
-    except (anyenv.JsonLoadError, ValueError) as e:
-        raise HTTPException(status_code=400, detail=f"Invalid config JSON: {e}")  # noqa: B904
+    converter = parse_client_config(config_adapter, converter_config)
+    chunker = parse_client_config(chunker_config_adapter, chunker_config)
 
     content = await file.read()
 
