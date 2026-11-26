@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from abc import ABC
+import asyncio
 import base64
 from dataclasses import dataclass, field
 from io import BytesIO
@@ -21,7 +22,6 @@ if TYPE_CHECKING:
     from collections.abc import Sequence
 
     from schemez import MimeType
-    import upath
     from upath.types import JoinablePathLike
 
     from docler.common_types import PageRangeString, SupportedLanguage
@@ -76,6 +76,8 @@ class DocumentConverter[TConfig: BaseModel = Any](BaseProvider[TConfig], ABC):
     Non-supported protocols will get handled using fsspec + a temporary file.
     """
     registry: ClassVar[dict[str, type[DocumentConverter]]] = {}
+    MAX_CONCURRENCY: ClassVar[int] = 8
+    """How many files `convert_files` converts at the same time."""
 
     def __init__(
         self,
@@ -211,8 +213,13 @@ class DocumentConverter[TConfig: BaseModel = Any](BaseProvider[TConfig], ABC):
             FileNotFoundError: If any file doesn't exist.
             ValueError: If any file format is not supported.
         """
-        tasks = [self.convert_file(path, pdf_password=pdf_password) for path in file_paths]
-        return list(await anyenv.gather(*tasks))
+        semaphore = asyncio.Semaphore(self.MAX_CONCURRENCY)
+
+        async def convert(path: JoinablePathLike) -> Document:
+            async with semaphore:
+                return await self.convert_file(path, pdf_password=pdf_password)
+
+        return list(await anyenv.gather(*(convert(path) for path in file_paths)))
 
     async def convert_file(
         self, file_path: JoinablePathLike, *, pdf_password: str | None = None
@@ -233,7 +240,7 @@ class DocumentConverter[TConfig: BaseModel = Any](BaseProvider[TConfig], ABC):
             ValueError: If the file type is not supported.
         """
         path = to_upath(file_path)
-        if not path.exists():
+        if not await anyenv.run_in_thread(path.exists):
             msg = f"File not found: {file_path}"
             raise FileNotFoundError(msg)
 
@@ -324,6 +331,9 @@ class DocumentConverter[TConfig: BaseModel = Any](BaseProvider[TConfig], ABC):
     ) -> dict[str, Document]:
         """Convert all supported files in a directory.
 
+        Files that fail to convert are left out of the result (and logged);
+        `DirectoryConverter.convert_with_progress` reports their errors.
+
         Args:
             directory: Base directory to read from.
             pattern: Glob pattern to match files against.
@@ -339,46 +349,13 @@ class DocumentConverter[TConfig: BaseModel = Any](BaseProvider[TConfig], ABC):
         Raises:
             FileNotFoundError: If directory doesn't exist.
         """
-        import mimetypes
+        from docler.converters.dir_converter import DirectoryConverter
 
-        from upathtools import list_files
-
-        # Get directory listing
-        base_dir = to_upath(directory)
-        if not base_dir.exists():
-            msg = f"Directory not found: {directory}"
-            raise FileNotFoundError(msg)
-
-        # Get all matching files
-        files = await list_files(
-            base_dir,
+        return await DirectoryConverter(self, chunk_size=chunk_size).convert(
+            directory,
             pattern=pattern,
             recursive=recursive,
-            include_dirs=False,
             exclude=exclude,
             max_depth=max_depth,
+            pdf_password=pdf_password,
         )
-
-        # Filter for supported mime types
-        supported_files: list[tuple[str, upath.UPath]] = []
-        for file_path in files:
-            mime_type, _ = mimetypes.guess_type(str(file_path))
-            if mime_type in self.SUPPORTED_MIME_TYPES:
-                # Store both relative path and full path
-                rel_path = str(file_path.relative_to(base_dir))
-                supported_files.append((rel_path, file_path))
-
-        # Convert files in chunks
-        results: dict[str, Document] = {}
-        for i in range(0, len(supported_files), chunk_size):
-            chunk = supported_files[i : i + chunk_size]
-            # Convert using full paths
-            documents = await self.convert_files(
-                [path for _, path in chunk], pdf_password=pdf_password
-            )
-
-            # Store results with relative paths as keys
-            for (rel_path, _), doc in zip(chunk, documents):
-                results[rel_path] = doc
-
-        return results

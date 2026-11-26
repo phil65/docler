@@ -2,11 +2,14 @@
 
 from __future__ import annotations
 
+import asyncio
 from dataclasses import dataclass, field
 import mimetypes
 from typing import TYPE_CHECKING
 
 from upathtools import list_files, to_upath
+
+from docler.log import get_logger
 
 
 if TYPE_CHECKING:
@@ -17,6 +20,9 @@ if TYPE_CHECKING:
 
     from docler.converters.base import DocumentConverter
     from docler.markdown import Document
+
+
+logger = get_logger(__name__)
 
 
 @dataclass
@@ -66,8 +72,11 @@ class DirectoryConverter:
         recursive: bool = True,
         exclude: list[str] | None = None,
         max_depth: int | None = None,
+        pdf_password: str | None = None,
     ) -> dict[str, Document]:
         """Convert all supported files in a directory.
+
+        Files that fail to convert are left out (and logged).
 
         Args:
             directory: Base directory to read from.
@@ -75,6 +84,7 @@ class DirectoryConverter:
             recursive: Whether to search subdirectories.
             exclude: List of patterns to exclude.
             max_depth: Maximum directory depth for recursive search.
+            pdf_password: Password for encrypted PDF files.
 
         Returns:
             Mapping of relative paths to converted documents.
@@ -82,16 +92,21 @@ class DirectoryConverter:
         Raises:
             FileNotFoundError: If directory doesn't exist.
         """
-        results: dict[str, Document] = {}
-        async for state in self.convert_with_progress(
+        state: Conversion | None = None
+        async for current in self.convert_with_progress(
             directory,
             pattern=pattern,
             recursive=recursive,
             exclude=exclude,
             max_depth=max_depth,
+            pdf_password=pdf_password,
         ):
-            results = state.results
-        return results
+            state = current
+        if state is None:
+            return {}
+        for path, error in state.errors.items():
+            logger.warning("Failed to convert %s: %s", path, error)
+        return state.results
 
     async def convert_with_progress(
         self,
@@ -101,8 +116,12 @@ class DirectoryConverter:
         recursive: bool = True,
         exclude: list[str] | None = None,
         max_depth: int | None = None,
+        pdf_password: str | None = None,
     ) -> AsyncIterator[Conversion]:
         """Convert files with progress updates.
+
+        Converts up to `chunk_size` files at a time and yields a state after each
+        file. A failing file is recorded in `errors`; the others go on.
 
         Args:
             directory: Base directory to read from.
@@ -110,6 +129,7 @@ class DirectoryConverter:
             recursive: Whether to search subdirectories.
             exclude: List of patterns to exclude.
             max_depth: Maximum directory depth for recursive search.
+            pdf_password: Password for encrypted PDF files.
 
         Yields:
             Conversion state updates.
@@ -141,31 +161,36 @@ class DirectoryConverter:
 
         results: dict[str, Document] = {}
         errors: dict[str, Exception] = {}
+        semaphore = asyncio.Semaphore(self.chunk_size)
 
-        for i in range(0, len(supported_files), self.chunk_size):
-            chunk = supported_files[i : i + self.chunk_size]
+        async def convert(rel_path: str, path: upath.UPath) -> tuple[str, Document | Exception]:
+            async with semaphore:
+                try:
+                    doc = await self.converter.convert_file(path, pdf_password=pdf_password)
+                except Exception as e:  # noqa: BLE001
+                    return rel_path, e
+                return rel_path, doc
 
-            try:
-                # Convert chunk
-                documents = await self.converter.convert_files([path for _, path in chunk])
-
-                # Store results
-                for (rel_path, _), doc in zip(chunk, documents):
-                    results[rel_path] = doc
-
-            except Exception as e:  # noqa: BLE001
-                # Store errors for all files in failed chunk
-                for rel_path, _ in chunk:
-                    errors[rel_path] = e
-            yield Conversion(
-                total_files=len(supported_files),
-                processed_files=i + len(chunk),
-                current_file=chunk[-1][0],  # last file in chunk
-                successful_files=len(results),
-                failed_files=len(errors),
-                errors=errors,
-                results=results,
-            )
+        tasks = [asyncio.ensure_future(convert(rel, path)) for rel, path in supported_files]
+        try:
+            for processed, next_done in enumerate(asyncio.as_completed(tasks), start=1):
+                rel_path, outcome = await next_done
+                if isinstance(outcome, Exception):
+                    errors[rel_path] = outcome
+                else:
+                    results[rel_path] = outcome
+                yield Conversion(
+                    total_files=len(supported_files),
+                    processed_files=processed,
+                    current_file=rel_path,
+                    successful_files=len(results),
+                    failed_files=len(errors),
+                    errors=errors,
+                    results=results,
+                )
+        finally:
+            for task in tasks:
+                task.cancel()
 
 
 if __name__ == "__main__":
